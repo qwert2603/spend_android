@@ -20,10 +20,11 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws Exception {
 
         Observable.just(1, 2, 3, 4, 5)
+                .doOnSubscribe(() -> qq("1"))
                 .doOnSubscribe(() -> {
                     throw new RuntimeException();
                 })
-                .doOnNext(ExampleUnitTest::qq)
+                .doOnSubscribe(() -> qq("3"))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.newThread())
                 .subscribe(ExampleUnitTest::qq, ExampleUnitTest::qq, () -> qq("all"));
