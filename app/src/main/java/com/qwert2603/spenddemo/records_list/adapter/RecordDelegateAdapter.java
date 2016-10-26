@@ -11,6 +11,7 @@ import com.qwert2603.spenddemo.R;
 import com.qwert2603.spenddemo.base.ViewType;
 import com.qwert2603.spenddemo.base.ViewTypeDelegateAdapter;
 import com.qwert2603.spenddemo.model.Record;
+import com.qwert2603.spenddemo.utils.DateUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +36,7 @@ public class RecordDelegateAdapter implements ViewTypeDelegateAdapter {
         Record record = (Record) viewType;
         recordViewHolder.mModelId = record.getId();
         recordViewHolder.mIdTextView.setText(String.valueOf(record.getId()));
+        recordViewHolder.mDateTextView.setText(DateUtils.formatDate(record.getDate()));
         recordViewHolder.mKindTextView.setText(record.getKind());
         recordViewHolder.mValueTextView.setText(String.valueOf(record.getValue()));
     }
@@ -55,6 +57,9 @@ public class RecordDelegateAdapter implements ViewTypeDelegateAdapter {
 
         @BindView(R.id.id_text_view)
         TextView mIdTextView;
+
+        @BindView(R.id.date_text_view)
+        TextView mDateTextView;
 
         @BindView(R.id.kind)
         TextView mKindTextView;

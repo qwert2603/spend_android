@@ -3,4 +3,13 @@
     <string name="kind">Kind</string>
     <string name="value">Value</string>
     <string name="date">Date</string>
+    <string name="show_local_changes">Show local changes</string>
+    <string name="local_changes">Local changes</string>
+    <string name="no_local_changes">No local changes</string>
+
+    <string-array name="change_kinds">
+        <item>INSERT</item>
+        <item>UPDATE</item>
+        <item>DELETE</item>
+    </string-array>
 </resources>

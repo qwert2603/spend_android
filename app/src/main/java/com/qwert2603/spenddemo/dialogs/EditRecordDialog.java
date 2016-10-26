@@ -14,9 +14,11 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.qwert2603.spenddemo.R;
 import com.qwert2603.spenddemo.data_manager.DataManager;
+import com.qwert2603.spenddemo.data_manager.RealmHelper;
 import com.qwert2603.spenddemo.model.Id;
 import com.qwert2603.spenddemo.model.Record;
 import com.qwert2603.spenddemo.utils.DateUtils;
+import com.qwert2603.spenddemo.utils.LogUtils;
 
 import java.util.Date;
 
@@ -57,8 +59,6 @@ public class EditRecordDialog extends DialogFragment {
 
     private Realm mRealm;
 
-    private int mRecordId;
-
     private Record mRecord;
 
     private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
@@ -72,12 +72,14 @@ public class EditRecordDialog extends DialogFragment {
         Bundle arguments = getArguments();
         mIsInserting = !arguments.containsKey(EXTRA_RECORD_ID);
         if (mIsInserting) {
-            mRecordId = DataManager.getNextRealmId(mRealm, Record.class);
+            int recordId = RealmHelper.getNextRecordId(mRealm);
+            LogUtils.d("EditRecordDialog#recordId == " + recordId);
             mRecord = new Record();
+            mRecord.setId(recordId);
             mRecord.setDate(new Date());
         } else {
-            mRecordId = arguments.getInt(EXTRA_RECORD_ID);
-            Record realmRecord = mRealm.where(Record.class).equalTo("mId", mRecordId).findFirst();
+            int recordId = arguments.getInt(EXTRA_RECORD_ID);
+            Record realmRecord = mRealm.where(Record.class).equalTo("mId", recordId).findFirst();
             mRecord = mRealm.copyFromRealm(realmRecord);
         }
     }

@@ -8,7 +8,7 @@ android {
     buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "com.qwert2603.spenddemo"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"

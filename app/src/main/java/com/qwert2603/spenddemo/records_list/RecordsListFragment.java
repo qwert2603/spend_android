@@ -1,7 +1,7 @@
 package com.qwert2603.spenddemo.records_list;
 
 import android.app.Activity;
-import android.net.ConnectivityManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +10,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,18 +21,16 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.qwert2603.spenddemo.R;
 import com.qwert2603.spenddemo.base.RxFragment;
 import com.qwert2603.spenddemo.base.ViewTypeDelegateAdapter;
+import com.qwert2603.spenddemo.changes_list.ChangesListActivity;
 import com.qwert2603.spenddemo.data_manager.DataManager;
 import com.qwert2603.spenddemo.dialogs.EditRecordDialog;
 import com.qwert2603.spenddemo.dialogs.QuestionDialog;
-import com.qwert2603.spenddemo.model.Change;
 import com.qwert2603.spenddemo.model.Record;
 import com.qwert2603.spenddemo.records_list.adapter.RecordsAdapter;
 import com.qwert2603.spenddemo.utils.LogUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -58,6 +59,12 @@ public class RecordsListFragment extends RxFragment {
     private DataManager mDataManager = new DataManager();
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
@@ -67,7 +74,7 @@ public class RecordsListFragment extends RxFragment {
         mRecyclerView.setAdapter(mRecordsAdapter);
 
         showRefresh();
-        Subscription subscription5 = mDataManager.getRecordsAndDates()
+        Subscription subscription5 = mDataManager.getAllRecords()
                 .subscribe(
                         items -> {
                             mRecordsAdapter.setItems(items);
@@ -94,21 +101,6 @@ public class RecordsListFragment extends RxFragment {
                 );
         mCompositeSubscription.add(subscription);
 
-        // TODO: 24.10.16 make activity for changes list
-        mFloatingActionButton.setOnLongClickListener(v -> {
-            Realm realm = Realm.getDefaultInstance();
-            RealmResults<Record> records = realm.where(Record.class).findAll();
-            for (Record record : records) {
-                LogUtils.d(record.toString());
-            }
-            RealmResults<Change> changes = realm.where(Change.class).findAll();
-            for (Change change : changes) {
-                LogUtils.d(change.toString());
-            }
-            realm.close();
-            return true;
-        });
-
         Subscription subscription4 = mRecordsAdapter.getClickObservable()
                 .map(click -> mRecordsAdapter.getItems().get(click.mPosition))
                 .filter(viewType -> viewType instanceof Record)
@@ -134,16 +126,22 @@ public class RecordsListFragment extends RxFragment {
         Subscription subscription2 = getOnActivityResultObservable()
                 .filter(args -> args.resultCode == Activity.RESULT_OK)
                 .filter(args -> args.requestCode == REQUEST_INSERT_RECORD)
-                .flatMap(o -> mDataManager.getRecordsAndDates())
-                .subscribe(mRecordsAdapter::setItems,
+                .flatMap(o -> mDataManager.getAllRecords())
+                .subscribe((items) -> {
+                            LogUtils.d("REQUEST_INSERT_RECORD_mRecordsAdapter.setItems(items);");
+                            mRecordsAdapter.setItems(items);
+                        },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
         mCompositeSubscription.add(subscription2);
 
         Subscription subscription6 = getOnActivityResultObservable()
                 .filter(args -> args.resultCode == Activity.RESULT_OK)
                 .filter(args -> args.requestCode == REQUEST_EDIT_RECORD)
-                .flatMap(o -> mDataManager.getRecordsAndDates())
-                .subscribe(mRecordsAdapter::setItems,
+                .flatMap(o -> mDataManager.getAllRecords())
+                .subscribe((items) -> {
+                            LogUtils.d("REQUEST_EDIT_RECORD_mRecordsAdapter.setItems(items);");
+                            mRecordsAdapter.setItems(items);
+                        },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
         mCompositeSubscription.add(subscription6);
 
@@ -152,23 +150,23 @@ public class RecordsListFragment extends RxFragment {
                 .filter(args -> args.requestCode == REQUEST_DELETE_RECORD)
                 .map(args -> ((ViewTypeDelegateAdapter.LongClick) args.data.getParcelableExtra(QuestionDialog.EXTRA_OBJECT)))
                 .flatMap(longClick -> mDataManager.removeRecord(longClick.mId), (longClick, o) -> longClick)
-                .flatMap(o -> mDataManager.getRecordsAndDates(), Pair::new)
+                .flatMap(o -> mDataManager.getAllRecords(), Pair::new)
                 .subscribe(pair -> mRecordsAdapter.setItemsAndNotifyRemoved(pair.second, pair.first.mPosition),
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
         mCompositeSubscription.add(subscription7);
 
         Subscription subscription3 = RxSwipeRefreshLayout.refreshes(mRefreshLayout)
-                .filter(aVoid -> {
-                    ConnectivityManager connectivityManager =
-                            (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
-                    boolean isInternetConnected = connectivityManager.getActiveNetworkInfo() != null
-                            && connectivityManager.getActiveNetworkInfo().isConnected();
-                    if (!isInternetConnected) {
-                        hideRefresh();
-                    }
-                    return isInternetConnected;
-                })
-                .flatMap(o -> mDataManager.getRecordsAndDates())
+//                .filter(aVoid -> {
+//                    ConnectivityManager connectivityManager =
+//                            (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
+//                    boolean isInternetConnected = connectivityManager.getActiveNetworkInfo() != null
+//                            && connectivityManager.getActiveNetworkInfo().isConnected();
+//                    if (!isInternetConnected) {
+//                        hideRefresh();
+//                    }
+//                    return isInternetConnected;
+//                })
+                .flatMap(o -> mDataManager.getAllRecords())
                 .subscribe(
                         items -> {
                             hideRefresh();
@@ -188,6 +186,21 @@ public class RecordsListFragment extends RxFragment {
         mCompositeSubscription.unsubscribe();
         mCompositeSubscription = new CompositeSubscription();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.records_list, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.show_local_changes) {
+            startActivity(new Intent(getActivity(), ChangesListActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showRefresh() {

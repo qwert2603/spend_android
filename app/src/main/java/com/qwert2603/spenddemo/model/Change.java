@@ -5,21 +5,13 @@ import io.realm.annotations.PrimaryKey;
 
 public class Change extends RealmObject {
 
-    @PrimaryKey
-    private int mId;
+    public static final String RECORD_ID = "mRecordId";
 
     @ChangeKind
     private int mKind;
 
+    @PrimaryKey
     private int mRecordId;
-
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
-    }
 
     @ChangeKind
     public int getKind() {
@@ -41,8 +33,7 @@ public class Change extends RealmObject {
     @Override
     public String toString() {
         return "Change{" +
-                "mId=" + mId +
-                ", mKind=" + mKind +
+                "mKind=" + mKind +
                 ", mRecordId=" + mRecordId +
                 '}';
     }

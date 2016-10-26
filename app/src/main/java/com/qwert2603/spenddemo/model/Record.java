@@ -12,6 +12,10 @@ import io.realm.annotations.PrimaryKey;
 
 public class Record extends RealmObject implements ViewType {
 
+    public static final String ID = "mId";
+    public static final String KIND = "mKind";
+    public static final String DATE = "mDate";
+
     @PrimaryKey
     private int mId;
 

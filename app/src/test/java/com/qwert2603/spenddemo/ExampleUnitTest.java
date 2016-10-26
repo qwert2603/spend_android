@@ -2,15 +2,31 @@ package com.qwert2603.spenddemo;
 
 import org.junit.Test;
 
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
+    private static void qq(Object o) {
+        System.out.println((System.currentTimeMillis()/1000) + " " + Thread.currentThread() + " " + o);
+    }
+
     @Test
     public void addition_isCorrect() throws Exception {
 
+        Observable.just(1, 2, 3, 4, 5)
+                .doOnSubscribe(() -> {
+                    throw new RuntimeException();
+                })
+                .doOnNext(ExampleUnitTest::qq)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.newThread())
+                .subscribe(ExampleUnitTest::qq, ExampleUnitTest::qq, () -> qq("all"));
 
 
 //        Observable
@@ -63,6 +79,6 @@ public class ExampleUnitTest {
 //                .subscribe(System.out::println);
 
 
-        Thread.sleep(100000);
+            Thread.sleep(1000000);
     }
 }
