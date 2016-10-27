@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -150,8 +149,8 @@ public class RecordsListFragment extends RxFragment {
                 .filter(args -> args.requestCode == REQUEST_DELETE_RECORD)
                 .map(args -> ((ViewTypeDelegateAdapter.LongClick) args.data.getParcelableExtra(QuestionDialog.EXTRA_OBJECT)))
                 .flatMap(longClick -> mDataManager.removeRecord(longClick.mId), (longClick, o) -> longClick)
-                .flatMap(o -> mDataManager.getAllRecords(), Pair::new)
-                .subscribe(pair -> mRecordsAdapter.setItemsAndNotifyRemoved(pair.second, pair.first.mPosition),
+                .flatMap(o -> mDataManager.getAllRecords())
+                .subscribe(records -> mRecordsAdapter.setItems(records),
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
         mCompositeSubscription.add(subscription7);
 

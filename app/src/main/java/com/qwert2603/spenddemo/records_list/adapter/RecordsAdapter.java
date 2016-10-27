@@ -64,12 +64,6 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void setItemsAndNotifyRemoved(List<ViewType> items, int position) {
-        mItems = items;
-        notifyItemRemoved(position);
-
-    }
-
     public Observable<Click> getClickObservable() {
         return mClickSubject.asObservable();
     }
