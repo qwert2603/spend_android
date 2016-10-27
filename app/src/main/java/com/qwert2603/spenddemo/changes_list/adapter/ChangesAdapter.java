@@ -31,7 +31,7 @@ public class ChangesAdapter extends RecyclerView.Adapter<ChangesAdapter.ChangeVi
     @Override
     public ChangeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        return new ChangeViewHolder(layoutInflater.inflate(R.layout.item_change, null));
+        return new ChangeViewHolder(layoutInflater.inflate(R.layout.item_change, parent, false));
     }
 
     @Override
