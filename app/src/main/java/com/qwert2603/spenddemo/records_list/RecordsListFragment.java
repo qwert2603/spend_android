@@ -76,6 +76,7 @@ public class RecordsListFragment extends RxFragment {
         Subscription subscription5 = mDataManager.getAllRecords()
                 .subscribe(
                         items -> {
+                            LogUtils.d("mDataManager.getAllRecords()_mRecordsAdapter.setItems(items);");
                             mRecordsAdapter.setItems(items);
                             hideRefresh();
                         },
@@ -150,7 +151,10 @@ public class RecordsListFragment extends RxFragment {
                 .map(args -> ((ViewTypeDelegateAdapter.LongClick) args.data.getParcelableExtra(QuestionDialog.EXTRA_OBJECT)))
                 .flatMap(longClick -> mDataManager.removeRecord(longClick.mId), (longClick, o) -> longClick)
                 .flatMap(o -> mDataManager.getAllRecords())
-                .subscribe(records -> mRecordsAdapter.setItems(records),
+                .subscribe(records -> {
+                            LogUtils.d("REQUEST_DELETE_RECORD_mRecordsAdapter.setItems(items);");
+                            mRecordsAdapter.setItems(records);
+                        },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
         mCompositeSubscription.add(subscription7);
 
@@ -169,6 +173,7 @@ public class RecordsListFragment extends RxFragment {
                 .subscribe(
                         items -> {
                             hideRefresh();
+                            LogUtils.d("RxSwipeRefreshLayout_mRecordsAdapter.setItems(items);");
                             mRecordsAdapter.setItems(items);
                         },
                         throwable -> {

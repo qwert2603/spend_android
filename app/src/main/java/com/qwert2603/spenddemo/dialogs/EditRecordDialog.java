@@ -141,7 +141,7 @@ public class EditRecordDialog extends DialogFragment {
                         intent.putExtra(EXTRA_RECORD_ID, id.getId());
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
                         dismissAllowingStateLoss();
-                    });
+                    }, LogUtils::e);
                 })
                 .setNegativeButton("cancel", null)
                 .create();

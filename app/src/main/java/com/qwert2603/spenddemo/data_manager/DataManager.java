@@ -1,5 +1,7 @@
 package com.qwert2603.spenddemo.data_manager;
 
+import android.support.v4.util.Pair;
+
 import com.qwert2603.retrobase.generated.SpendDBImpl;
 import com.qwert2603.retrobase.rx.generated.SpendDBRx;
 import com.qwert2603.spenddemo.base.ViewType;
@@ -11,15 +13,12 @@ import com.qwert2603.spenddemo.model.Record;
 import com.qwert2603.spenddemo.utils.DateUtils;
 import com.qwert2603.spenddemo.utils.LogUtils;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
@@ -53,24 +52,15 @@ public class DataManager {
 //                .toList()
 //                .compose(applySchedulers());
 
+
         return mSpendDBRx.getAllRecordsOrdered()
-                .doOnSubscribe(this::pushChangesOnServer)
+                .startWith(pushChangesToServer().ignoreElements().map(id -> ((Record) ((Object) id))))
                 .toList()
-                .doOnNext(records -> mRealmHelper.executeSyncTransaction(realm -> {
-                    LogUtils.d("saving records to realm");
-                    realm.delete(Record.class);
-                    realm.insert(records);
-                }))
+                .doOnNext(records -> mRealmHelper.replaceRecordsList(records))
                 .onErrorResumeNext(throwable -> {
                     LogUtils.e(throwable);
                     LogUtils.d("loading records from realm");
-                    Realm realm = Realm.getDefaultInstance();
-                    String[] sortFields = {Record.DATE, Record.ID};
-                    Sort[] sortOrders = {Sort.ASCENDING, Sort.ASCENDING};
-                    RealmResults<Record> realmResults = realm.where(Record.class).findAllSorted(sortFields, sortOrders);
-                    List<Record> records = realm.copyFromRealm(realmResults);
-                    realm.close();
-                    return Observable.just(records);
+                    return Observable.just(mRealmHelper.getAllRecords());
                 })
                 .flatMap(Observable::from)
                 .map(record -> ((ViewType) record))
@@ -79,190 +69,69 @@ public class DataManager {
     }
 
     public Observable<Id> insertRecord(Record record) {
-        return mSpendDBRx.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()))
-                .doOnSubscribe(this::pushChangesOnServer)
-                .doOnSubscribe(() -> mRealmHelper.executeSyncTransaction(realm -> realm.copyToRealm(record)))
-                .doOnNext(id -> mRealmHelper.executeSyncTransaction(realm -> {
-                    realm.where(Record.class).equalTo(Record.ID, record.getId()).findFirst().deleteFromRealm();
-                    record.setId(id.getId());
-                    realm.copyToRealm(record);
-                }))
-                .onErrorResumeNext(throwable -> {
-                    LogUtils.e(throwable);
-
-                    mRealmHelper.executeSyncTransaction(realm -> {
-                        Change change = new Change();
-                        change.setKind(ChangeKind.INSERT);
-                        change.setRecordId(record.getId());
-
-                        realm.copyToRealm(change);
-                    });
-
-                    return Observable.just(new Id(record.getId()));
-                })
-                .compose(applySchedulers());
+        return createObservableForChange(() -> mRealmHelper.insertRecord(record), record.getId());
     }
 
-    public Observable<Object> removeRecord(int recordId) {
-        return mSpendDBRx.deleteRecord(recordId)
-                .doOnSubscribe(this::pushChangesOnServer)
-                .doOnSubscribe(() -> mRealmHelper.executeSyncTransaction(realm -> realm.where(Record.class).equalTo(Record.ID, recordId).findFirst().deleteFromRealm()))
-                .onErrorResumeNext(throwable -> {
-                    LogUtils.e(throwable);
-                    mRealmHelper.executeSyncTransaction(realm -> {
-                        Change prevChange = realm.where(Change.class).equalTo(Change.RECORD_ID, recordId).findFirst();
-                        if (prevChange != null && prevChange.getKind() == ChangeKind.INSERT) {
-                            prevChange.deleteFromRealm();
-                        } else {
-                            Change change = new Change();
-                            change.setKind(ChangeKind.DELETE);
-                            change.setRecordId(recordId);
-                            realm.copyToRealmOrUpdate(change);
-                        }
-                    });
-                    return Observable.just(new Object());
-                })
-                .compose(applySchedulers());
+    public Observable<Id> removeRecord(int recordId) {
+        return createObservableForChange(() -> mRealmHelper.removeRecord(recordId), recordId);
     }
 
     public Observable<Id> updateRecord(Record record) {
-        return mSpendDBRx.updateRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()), record.getId())
-                .doOnSubscribe(this::pushChangesOnServer)
-                .doOnSubscribe(() -> mRealmHelper.executeSyncTransaction(realm -> {
-                    Record realmRecord = realm.where(Record.class).equalTo(Record.ID, record.getId()).findFirst();
-                    realmRecord.setKind(record.getKind());
-                    realmRecord.setValue(record.getValue());
-                    realmRecord.setDate(record.getDate());
-                    LogUtils.d("updated realm record " + realmRecord);
-                }))
-                // because if record was sent to server in "pushChangesOnServer()",
-                // its id was changed and nothing will be updated after "mSpendDBRx.updateRecord(...)"
-                // but we need element in observable.
-                .defaultIfEmpty(new Id(record.getId()))
-                .onErrorResumeNext(throwable -> {
-                    LogUtils.e(throwable);
+        return createObservableForChange(() -> mRealmHelper.updateRecord(record), record.getId());
+    }
 
-                    mRealmHelper.executeSyncTransaction(realm -> {
-                        if (realm.where(Change.class).equalTo(Change.RECORD_ID, record.getId()).findFirst() == null) {
-                            Change change = new Change();
-                            change.setKind(ChangeKind.UPDATE);
-                            change.setRecordId(record.getId());
-
-                            realm.copyToRealm(change);
-                        }
-                    });
-
-                    return Observable.just(new Id(record.getId()));
-                })
+    private Observable<Id> createObservableForChange(Action0 onSubscribe, int recordId) {
+        return pushChangesToServer()
+                .last()
+                .doOnSubscribe(onSubscribe)
+                .onErrorReturn(throwable -> new Id(recordId))
                 .compose(applySchedulers());
     }
 
-    private void pushChangesOnServer() {
-        try {
-            Realm realm = Realm.getDefaultInstance();
-            RealmResults<Change> realmResults = realm.where(Change.class).findAll();
-            List<Change> changes = realm.copyFromRealm(realmResults);
-            for (Change change : changes) {
-                int kind = change.getKind();
-                if (kind == ChangeKind.DELETE) {
-                    mSpendDB.deleteRecord(change.getRecordId());
-                } else {
-                    Record realmRecord = realm.where(Record.class).equalTo(Record.ID, change.getRecordId()).findFirst();
-                    Record record = realm.copyFromRealm(realmRecord);
-                    if (kind == ChangeKind.INSERT) {
-                        ResultSet resultSet = mSpendDB.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()));
-                        resultSet.next();
-                        int id = resultSet.getInt(1);
-                        record.setId(id);
-                        mRealmHelper.executeSyncTransaction(realm1 -> {
-                            realm1.where(Record.class).equalTo(Record.ID, change.getRecordId()).findFirst().deleteFromRealm();
-                            realm1.copyToRealm(record);
-                        });
-                    } else if (kind == ChangeKind.UPDATE) {
-                        mSpendDB.updateRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()), record.getId());
+    private Observable<Id> pushChangesToServer() {
+        return Observable.fromCallable(() -> mRealmHelper.getAllChanges())
+                .flatMap(Observable::from)
+                .flatMap(change -> {
+                    int kind = change.getKind();
+                    if (kind == ChangeKind.DELETE) {
+                        return mSpendDBRx.deleteRecord(change.getRecordId());
+                    } else {
+                        Record record = mRealmHelper.getRecordById(change.getRecordId());
+                        if (kind == ChangeKind.INSERT) {
+                            return mSpendDBRx.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()))
+                                    .doOnNext(id -> mRealmHelper.changeRecordId(change.getRecordId(), id.getId()));
+                        } else if (kind == ChangeKind.UPDATE) {
+                            return mSpendDBRx.updateRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()), record.getId());
+                        } else {
+                            return Observable.error(new RuntimeException("Unknown change kind!"));
+                        }
                     }
-                }
-
-                mRealmHelper.executeSyncTransaction(realm1 ->
-                        realm1.where(Change.class).equalTo(Change.RECORD_ID, change.getRecordId()).findFirst().deleteFromRealm());
-            }
-            realm.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                }, (change, o) -> {
+                    // pair <id_before, id_after>.
+                    // they are different only for "INSERT".
+                    Integer recordId = change.getRecordId();
+                    if (change.getKind() == ChangeKind.INSERT) {
+                        return new Pair<>(recordId, ((Id) o).getId());
+                    }
+                    return new Pair<>(recordId, recordId);
+                }, 1)
+                .doOnNext(pair -> mRealmHelper.deleteChange(pair.first))
+                .doOnNext(pair -> LogUtils.d("change for record #" + pair.first + "; #" + pair.second + " was pushed to server"))
+                .map(pair -> pair.second)
+                .map(Id::new);
     }
-
-//    private <T> Observable<T> pushChangesOnServer() {
-//        return Observable
-//                .defer(() -> {
-//                    Realm realm = Realm.getDefaultInstance();
-//                    RealmResults<Change> realmResults = realm.where(Change.class).findAll();
-//                    List<Change> changes = realm.copyFromRealm(realmResults);
-//                    realm.close();
-//                    return Observable.just(changes);
-//                })
-//                .flatMap(Observable::from)
-//                .flatMap(change -> {
-//                    int kind = change.getKind();
-//                    Integer recordId = change.getRecordId();
-//                    if (kind == ChangeKind.DELETE) {
-//                        return mSpendDBRx.deleteRecord(recordId);
-//                    }
-//                    Realm realm = Realm.getDefaultInstance();
-//                    Record record = realm.where(Record.class).equalTo(Record.ID, recordId).findFirst();
-//                    record = realm.copyFromRealm(record);
-//                    realm.close();
-//                    if (kind == ChangeKind.INSERT) {
-//                        Record finalRecord = record;
-//                        return mSpendDBRx.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()))
-//                                .doOnNext(id -> {
-//                                    finalRecord.setId(id.getId());
-//                                    mRealmHelper.executeSyncTransaction(realm1 -> {
-//                                        realm1.where(Record.class).equalTo(Record.ID, change.getRecordId()).findFirst().deleteFromRealm();
-//                                        realm1.copyToRealm(finalRecord);
-//                                    });
-//                                })
-//                                .doOnCompleted(() -> LogUtils.d("record inserted to server " + finalRecord));
-//                    } else if (kind == ChangeKind.UPDATE) {
-//                        return mSpendDBRx.updateRecord(record.getKind(), record.getValue(),
-//                                DateUtils.dateToSql(record.getDate()), record.getId());
-//                    } else {
-//                        return Observable.error(new Exception("Unknown change kind!"));
-//                    }
-//                }, (change, o) -> change, 1)
-//                .doOnNext(change -> mRealmHelper.executeSyncTransaction(realm ->
-//                        realm.where(Change.class).equalTo(Change.RECORD_ID, change.getRecordId()).findFirst().deleteFromRealm()))
-//                .ignoreElements()
-//                .map(change -> (T) change);
-//    }
 
     public Observable<List<String>> getDistinctKinds() {
         return mSpendDBRx.getDistinctKinds()
                 .map(Kind::getKind)
                 .toList()
-                .onErrorResumeNext(throwable -> {
-                    LogUtils.e(throwable);
-                    Realm realm = Realm.getDefaultInstance();
-                    RealmResults<Record> realmResults = realm.where(Record.class).distinct(Record.KIND);
-                    List<Record> records = realm.copyFromRealm(realmResults);
-                    realm.close();
-                    return Observable.just(records)
-                            .flatMap(Observable::from)
-                            .map(Record::getKind)
-                            .toList();
-                })
+                .onErrorResumeNext(throwable -> Observable.just(mRealmHelper.getDistinctKind()))
                 .compose(applySchedulers());
     }
 
     public Observable<List<Change>> getAllChanges() {
         return Observable
-                .fromCallable(() -> {
-                    Realm realm = Realm.getDefaultInstance();
-                    RealmResults<Change> realmResults = realm.where(Change.class).findAll();
-                    List<Change> changeList = realm.copyFromRealm(realmResults);
-                    realm.close();
-                    return changeList;
-                })
+                .just(mRealmHelper.getAllChanges())
                 .compose(applySchedulers());
     }
 
