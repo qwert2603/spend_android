@@ -57,7 +57,7 @@ public class DataManager {
 
 
         return mSpendDBRx.getAllRecordsOrdered()
-                .doOnSubscribe(disposable -> pushChangesToServer())
+                .startWith(Observable.fromCallable(this::pushChangesToServer).ignoreElements().toObservable())
                 .toList()
                 .doOnSuccess(records -> mRealmHelper.replaceRecordsList(records))
                 .onErrorResumeNext(throwable -> {

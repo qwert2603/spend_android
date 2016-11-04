@@ -165,7 +165,8 @@ public class RecordsListFragment extends RxFragment {
         mCompositeDisposable.add(disposable2);
 
 
-        Disposable disposable6 = RxJavaInterop.toV2Observable(RxSwipeRefreshLayout.refreshes(mRefreshLayout))
+        Disposable disposable6 = RxJavaInterop.toV2Observable(RxSwipeRefreshLayout.refreshes(mRefreshLayout)
+                .map(aVoid -> new Object()))
 //                .filter(aVoid -> {
 //                    ConnectivityManager connectivityManager =
 //                            (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
