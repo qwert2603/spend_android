@@ -14,10 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -26,8 +25,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @SuppressLint("UseSparseArrays")
     private Map<Integer, ViewTypeDelegateAdapter> mAdapters = new HashMap<>();
 
-    private Subject<Click, Click> mClickSubject = new SerializedSubject<>(PublishSubject.create());
-    private Subject<LongClick, LongClick> mLongClickSubject = new SerializedSubject<>(PublishSubject.create());
+    private Subject<Click> mClickSubject = PublishSubject.<Click>create().toSerialized();
+    private Subject<LongClick> mLongClickSubject = PublishSubject.<LongClick>create().toSerialized();
 
     public RecordsAdapter() {
         RecordDelegateAdapter recordDelegateAdapter = new RecordDelegateAdapter();
@@ -65,11 +64,11 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public Observable<Click> getClickObservable() {
-        return mClickSubject.asObservable();
+        return mClickSubject;
     }
 
     public Observable<LongClick> getLongClickObservable() {
-        return mLongClickSubject.asObservable();
+        return mLongClickSubject;
     }
 
     public List<ViewType> getItems() {

@@ -3,10 +3,9 @@ package com.qwert2603.spenddemo.base;
 import android.app.Fragment;
 import android.content.Intent;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class RxFragment extends Fragment {
 
@@ -15,17 +14,17 @@ public class RxFragment extends Fragment {
         public int resultCode;
         public Intent data;
 
-        public Args(int requestCode, int resultCode, Intent data) {
+        Args(int requestCode, int resultCode, Intent data) {
             this.requestCode = requestCode;
             this.resultCode = resultCode;
             this.data = data;
         }
     }
 
-    private Subject<Args, Args> mOnActivityResultSubject  = new SerializedSubject<>(PublishSubject.create());
+    private Subject<Args> mOnActivityResultSubject = PublishSubject.<Args>create().toSerialized();
 
     public Observable<Args> getOnActivityResultObservable() {
-        return mOnActivityResultSubject.asObservable();
+        return mOnActivityResultSubject;
     }
 
     @Override
@@ -35,7 +34,7 @@ public class RxFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        mOnActivityResultSubject.onCompleted();
+        mOnActivityResultSubject.onComplete();
         super.onDestroy();
     }
 }

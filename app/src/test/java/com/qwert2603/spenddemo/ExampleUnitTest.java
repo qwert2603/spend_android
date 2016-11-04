@@ -1,9 +1,19 @@
 package com.qwert2603.spenddemo;
 
+import com.qwert2603.retrobase.generated.SpendDBImpl;
+import com.qwert2603.retrobase.rx.generated.SpendDBRx;
+import com.qwert2603.spenddemo.model.Record;
+
 import org.junit.Test;
 
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.sql.Date;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -13,33 +23,19 @@ import rx.schedulers.Schedulers;
 public class ExampleUnitTest {
 
     private static void qq(Object o) {
-        System.out.println((System.currentTimeMillis()/1000) + " " + Thread.currentThread() + " " + o);
+        System.out.println((System.currentTimeMillis() / 1000) + " " + Thread.currentThread() + " " + o);
     }
 
     @Test
     public void addition_isCorrect() throws Exception {
 
-        Observable.just(1, 2, 3, 4, 5)
-                .doOnNext((i) -> {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    qq("b" + i);
-                })
-                .doOnNext((i) -> {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    qq("e" + i);
-                })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.newThread())
-                .subscribe(ExampleUnitTest::qq, ExampleUnitTest::qq, () -> qq("all"));
-
+        SpendDBRx spendDBRx = new SpendDBRx(new SpendDBImpl());
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\alex\\Downloads\\spend 2016-10-15.csv"));
+        String s;
+        while ((s=bufferedReader.readLine())!=null){
+            String[] split = s.split(",");
+            spendDBRx.insertRecord(split[1], Integer.parseInt(split[2]), Date.valueOf(split[3])).subscribe(id -> System.out.println(""+id.getId()));
+        }
 
 //        Observable
 //                .create(new SyncOnSubscribe<ResultSet, Record>() {
@@ -53,9 +49,6 @@ public class ExampleUnitTest {
 //                    @Override
 //                    protected ResultSet next(ResultSet state, Observer<? super Record> observer) {
 //                        try {
-//
-//
-//
 //                            if (!state.next()) {
 //                                observer.onCompleted();
 //                            }
@@ -73,10 +66,15 @@ public class ExampleUnitTest {
 //                .subscribe(System.out::println);
 
 
+//        SpendDBImpl spendDB = new SpendDBImpl();
+//        for (int i = 0; i < 14; i++) {
+//            spendDB.insertRecord("food", i * 3 + 1, new Date(System.currentTimeMillis()));
+//        }
+
 //        Observable
 //                .fromEmitter(objectEmitter -> {
 //                    try {
-//                        ResultSet resultSet = new SpendDBImpl().getAllRecords();
+//                        ResultSet resultSet = spendDB.getAllRecords();
 //                        while (resultSet.next()) {
 //                            objectEmitter.onNext(new com.qwert2603.spenddemo.model.Record(resultSet));
 //                        }
@@ -85,12 +83,12 @@ public class ExampleUnitTest {
 //                        objectEmitter.onError(e);
 //                    }
 //                }, Emitter.BackpressureMode.BUFFER)
-//                .zipWith(Observable.interval(1, TimeUnit.SECONDS), (dataBaseRecord, aLong) -> dataBaseRecord)
+//                .zipWith(Observable.interval(1, TimeUnit.NANOSECONDS), (dataBaseRecord, aLong) -> dataBaseRecord)
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(Schedulers.newThread())
 //                .subscribe(System.out::println);
 
 
-            Thread.sleep(1000000);
+        Thread.sleep(1000000);
     }
 }

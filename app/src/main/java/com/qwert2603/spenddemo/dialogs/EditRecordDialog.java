@@ -24,8 +24,8 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Single;
 import io.realm.Realm;
-import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -104,12 +104,13 @@ public class EditRecordDialog extends DialogFragment {
                 .subscribe(charSequence -> mRecord.setKind(charSequence.toString()));
         mCompositeSubscription.add(subscription);
 
-        RxView.longClicks(mKind)
+        Subscription subscription1 = RxView.longClicks(mKind)
                 .subscribe(aVoid -> {
                     ChooseKindDialog chooseKindDialog = ChooseKindDialog.newInstance();
                     chooseKindDialog.setTargetFragment(EditRecordDialog.this, 1);
                     chooseKindDialog.show(getFragmentManager(), chooseKindDialog.getClass().getName());
                 });
+        mCompositeSubscription.add(subscription1);
 
         Subscription subscription2 = RxTextView.textChanges(mValue)
                 .subscribe(charSequence -> mRecord
@@ -130,13 +131,13 @@ public class EditRecordDialog extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setPositiveButton("ok", (dialog, which) -> {
-                    Observable<Id> observable;
+                    Single<Id> single;
                     if (mIsInserting) {
-                        observable = new DataManager().insertRecord(mRecord);
+                        single = new DataManager().insertRecord(mRecord);
                     } else {
-                        observable = new DataManager().updateRecord(mRecord);
+                        single = new DataManager().updateRecord(mRecord);
                     }
-                    observable.subscribe(id -> {
+                    single.subscribe(id -> {
                         Intent intent = new Intent();
                         intent.putExtra(EXTRA_RECORD_ID, id.getId());
                         getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);

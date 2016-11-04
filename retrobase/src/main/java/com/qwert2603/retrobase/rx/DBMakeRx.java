@@ -5,7 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import rx.Observable;
+import io.reactivex.Observable;
+
 
 /**
  * Annotation to mark method for query to DataBase.

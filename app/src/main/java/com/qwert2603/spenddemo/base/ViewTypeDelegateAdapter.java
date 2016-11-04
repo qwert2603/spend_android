@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 public interface ViewTypeDelegateAdapter {
 
@@ -28,7 +28,7 @@ public interface ViewTypeDelegateAdapter {
             mPosition = position;
         }
 
-        protected LongClick(Parcel in) {
+        LongClick(Parcel in) {
             mId = in.readInt();
             mPosition = in.readInt();
         }

@@ -30,6 +30,9 @@ import com.qwert2603.spenddemo.utils.LogUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -52,6 +55,7 @@ public class RecordsListFragment extends RxFragment {
     SwipeRefreshLayout mRefreshLayout;
 
     private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     private RecordsAdapter mRecordsAdapter;
 
@@ -73,7 +77,7 @@ public class RecordsListFragment extends RxFragment {
         mRecyclerView.setAdapter(mRecordsAdapter);
 
         showRefresh();
-        Subscription subscription5 = mDataManager.getAllRecords()
+        Disposable disposable5 = mDataManager.getAllRecords()
                 .subscribe(
                         items -> {
                             LogUtils.d("mDataManager.getAllRecords()_mRecordsAdapter.setItems(items);");
@@ -88,7 +92,7 @@ public class RecordsListFragment extends RxFragment {
                             hideRefresh();
                         }
                 );
-        mCompositeSubscription.add(subscription5);
+        mCompositeDisposable.add(disposable5);
 
         Subscription subscription = RxView.clicks(mFloatingActionButton)
                 .subscribe(
@@ -101,7 +105,7 @@ public class RecordsListFragment extends RxFragment {
                 );
         mCompositeSubscription.add(subscription);
 
-        Subscription subscription4 = mRecordsAdapter.getClickObservable()
+        Disposable disposable4 = mRecordsAdapter.getClickObservable()
                 .map(click -> mRecordsAdapter.getItems().get(click.mPosition))
                 .filter(viewType -> viewType instanceof Record)
                 .map(viewType -> ((Record) viewType))
@@ -110,9 +114,9 @@ public class RecordsListFragment extends RxFragment {
                     editRecordDialog.setTargetFragment(RecordsListFragment.this, REQUEST_EDIT_RECORD);
                     editRecordDialog.show(getFragmentManager(), editRecordDialog.getClass().getName() + REQUEST_EDIT_RECORD);
                 });
-        mCompositeSubscription.add(subscription4);
+        mCompositeDisposable.add(disposable4);
 
-        Subscription subscription1 = mRecordsAdapter.getLongClickObservable()
+        Disposable disposable3 = mRecordsAdapter.getLongClickObservable()
                 .filter(longClick -> mRecordsAdapter.getItems().get(longClick.mPosition) instanceof Record)
                 .subscribe(longClick -> {
                     Record record = (Record) mRecordsAdapter.getItems().get(longClick.mPosition);
@@ -121,44 +125,47 @@ public class RecordsListFragment extends RxFragment {
                     questionDialog.setTargetFragment(RecordsListFragment.this, REQUEST_DELETE_RECORD);
                     questionDialog.show(getFragmentManager(), questionDialog.getClass().getName());
                 });
-        mCompositeSubscription.add(subscription1);
+        mCompositeDisposable.add(disposable3);
 
-        Subscription subscription2 = getOnActivityResultObservable()
+        Disposable disposable = getOnActivityResultObservable()
                 .filter(args -> args.resultCode == Activity.RESULT_OK)
                 .filter(args -> args.requestCode == REQUEST_INSERT_RECORD)
-                .flatMap(o -> mDataManager.getAllRecords())
+                .flatMap(o -> mDataManager.getAllRecords().toObservable())
                 .subscribe((items) -> {
                             LogUtils.d("REQUEST_INSERT_RECORD_mRecordsAdapter.setItems(items);");
                             mRecordsAdapter.setItems(items);
                         },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
-        mCompositeSubscription.add(subscription2);
+        mCompositeDisposable.add(disposable);
 
-        Subscription subscription6 = getOnActivityResultObservable()
+
+        Disposable disposable1 = getOnActivityResultObservable()
                 .filter(args -> args.resultCode == Activity.RESULT_OK)
                 .filter(args -> args.requestCode == REQUEST_EDIT_RECORD)
-                .flatMap(o -> mDataManager.getAllRecords())
+                .flatMap(o -> mDataManager.getAllRecords().toObservable())
                 .subscribe((items) -> {
                             LogUtils.d("REQUEST_EDIT_RECORD_mRecordsAdapter.setItems(items);");
                             mRecordsAdapter.setItems(items);
                         },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
-        mCompositeSubscription.add(subscription6);
+        mCompositeDisposable.add(disposable1);
 
-        Subscription subscription7 = getOnActivityResultObservable()
+
+        Disposable disposable2 = getOnActivityResultObservable()
                 .filter(args -> args.resultCode == Activity.RESULT_OK)
                 .filter(args -> args.requestCode == REQUEST_DELETE_RECORD)
                 .map(args -> ((ViewTypeDelegateAdapter.LongClick) args.data.getParcelableExtra(QuestionDialog.EXTRA_OBJECT)))
-                .flatMap(longClick -> mDataManager.removeRecord(longClick.mId), (longClick, o) -> longClick)
-                .flatMap(o -> mDataManager.getAllRecords())
+                .flatMap(longClick -> mDataManager.removeRecord(longClick.mId).toObservable(), (longClick, o) -> longClick)
+                .flatMap(o -> mDataManager.getAllRecords().toObservable())
                 .subscribe(records -> {
                             LogUtils.d("REQUEST_DELETE_RECORD_mRecordsAdapter.setItems(items);");
                             mRecordsAdapter.setItems(records);
                         },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show());
-        mCompositeSubscription.add(subscription7);
+        mCompositeDisposable.add(disposable2);
 
-        Subscription subscription3 = RxSwipeRefreshLayout.refreshes(mRefreshLayout)
+
+        Disposable disposable6 = RxJavaInterop.toV2Observable(RxSwipeRefreshLayout.refreshes(mRefreshLayout))
 //                .filter(aVoid -> {
 //                    ConnectivityManager connectivityManager =
 //                            (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
@@ -169,7 +176,7 @@ public class RecordsListFragment extends RxFragment {
 //                    }
 //                    return isInternetConnected;
 //                })
-                .flatMap(o -> mDataManager.getAllRecords())
+                .flatMap(o -> mDataManager.getAllRecords().toObservable())
                 .subscribe(
                         items -> {
                             hideRefresh();
@@ -180,7 +187,7 @@ public class RecordsListFragment extends RxFragment {
                             hideRefresh();
                             Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show();
                         });
-        mCompositeSubscription.add(subscription3);
+        mCompositeDisposable.add(disposable6);
 
         return view;
     }
@@ -189,6 +196,8 @@ public class RecordsListFragment extends RxFragment {
     public void onDestroyView() {
         mCompositeSubscription.unsubscribe();
         mCompositeSubscription = new CompositeSubscription();
+        mCompositeDisposable.dispose();
+        mCompositeDisposable = new CompositeDisposable();
         super.onDestroyView();
     }
 

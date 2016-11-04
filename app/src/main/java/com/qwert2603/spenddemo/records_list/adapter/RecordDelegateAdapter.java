@@ -15,15 +15,16 @@ import com.qwert2603.spenddemo.utils.DateUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
-public class RecordDelegateAdapter implements ViewTypeDelegateAdapter {
+class RecordDelegateAdapter implements ViewTypeDelegateAdapter {
 
-    private Subject<Click, Click> mClickSubject = new SerializedSubject<>(PublishSubject.create());
-    private Subject<LongClick, LongClick> mLongClickSubject = new SerializedSubject<>(PublishSubject.create());
+    private Subject<Click> mClickSubject = PublishSubject.<Click>create().toSerialized();
+    private Subject<LongClick> mLongClickSubject = PublishSubject.<LongClick>create().toSerialized();
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -71,12 +72,16 @@ public class RecordDelegateAdapter implements ViewTypeDelegateAdapter {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            RxView.clicks(itemView)
-                    .map(aVoid -> new Click(mModelId, getAdapterPosition()))
+            rx.Observable<Click> clickObservable = RxView.clicks(itemView)
+                    .map(aVoid -> new Click(mModelId, getAdapterPosition()));
+
+            RxJavaInterop.toV2Observable(clickObservable)
                     .subscribe(mClickSubject);
 
-            RxView.longClicks(itemView)
-                    .map(aVoid -> new LongClick(mModelId, getAdapterPosition()))
+            rx.Observable<LongClick> longClickObservable = RxView.longClicks(itemView)
+                    .map(aVoid -> new LongClick(mModelId, getAdapterPosition()));
+
+            RxJavaInterop.toV2Observable(longClickObservable)
                     .subscribe(mLongClickSubject);
         }
     }

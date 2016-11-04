@@ -1,7 +1,5 @@
 package com.qwert2603.spenddemo.data_manager;
 
-import android.support.v4.util.Pair;
-
 import com.qwert2603.retrobase.generated.SpendDBImpl;
 import com.qwert2603.retrobase.rx.generated.SpendDBRx;
 import com.qwert2603.spenddemo.base.ViewType;
@@ -13,15 +11,20 @@ import com.qwert2603.spenddemo.model.Record;
 import com.qwert2603.spenddemo.utils.DateUtils;
 import com.qwert2603.spenddemo.utils.LogUtils;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.Single;
+import io.reactivex.SingleTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class DataManager {
 
@@ -34,7 +37,7 @@ public class DataManager {
 
     private RealmHelper mRealmHelper = new RealmHelper();
 
-    public Observable<List<ViewType>> getAllRecords() {
+    public Single<List<ViewType>> getAllRecords() {
 //        return getAllRecordsFromDataBase()
 //                .compose(sortedGroupBy(Record::getDate))
 //                // каждый Observable будет обрабатываться целиком в #addAggregatedValue(),
@@ -54,110 +57,119 @@ public class DataManager {
 
 
         return mSpendDBRx.getAllRecordsOrdered()
-                .startWith(pushChangesToServer().ignoreElements().map(id -> ((Record) ((Object) id))))
+                .doOnSubscribe(disposable -> pushChangesToServer())
                 .toList()
-                .doOnNext(records -> mRealmHelper.replaceRecordsList(records))
+                .doOnSuccess(records -> mRealmHelper.replaceRecordsList(records))
                 .onErrorResumeNext(throwable -> {
                     LogUtils.e(throwable);
                     LogUtils.d("loading records from realm");
-                    return Observable.just(mRealmHelper.getAllRecords());
+                    return Single.just(mRealmHelper.getAllRecords());
                 })
-                .flatMap(Observable::from)
+                .toObservable()
+                .flatMap(Observable::fromIterable)
                 .map(record -> ((ViewType) record))
                 .toList()
-                .compose(applySchedulers());
+                .compose(applySchedulersSingle());
     }
 
-    public Observable<Id> insertRecord(Record record) {
-        return createObservableForChange(() -> mRealmHelper.insertRecord(record), record.getId());
+    public Single<Id> insertRecord(Record record) {
+        return createObservableForChange((disposable) -> mRealmHelper.insertRecord(record), record.getId());
     }
 
-    public Observable<Id> removeRecord(int recordId) {
-        return createObservableForChange(() -> mRealmHelper.removeRecord(recordId), recordId);
+    public Single<Id> removeRecord(int recordId) {
+        return createObservableForChange((disposable) -> mRealmHelper.removeRecord(recordId), recordId);
     }
 
-    public Observable<Id> updateRecord(Record record) {
-        return createObservableForChange(() -> mRealmHelper.updateRecord(record), record.getId());
+    public Single<Id> updateRecord(Record record) {
+        return createObservableForChange((disposable) -> mRealmHelper.updateRecord(record), record.getId());
     }
 
-    private Observable<Id> createObservableForChange(Action0 onSubscribe, int recordId) {
-        return pushChangesToServer()
-                .last()
+    private Single<Id> createObservableForChange(Consumer<? super Disposable> onSubscribe, int recordId) {
+        return Observable.fromCallable(this::pushChangesToServer)
                 .doOnSubscribe(onSubscribe)
+                .flatMap(Observable::fromIterable)
+                .last(new Id(recordId))
                 .onErrorReturn(throwable -> new Id(recordId))
-                .compose(applySchedulers());
+                .compose(applySchedulersSingle());
     }
 
-    private Observable<Id> pushChangesToServer() {
-        return Observable.fromCallable(() -> mRealmHelper.getAllChanges())
-                .flatMap(Observable::from)
-                .flatMap(change -> {
-                    int kind = change.getKind();
-                    if (kind == ChangeKind.DELETE) {
-                        return mSpendDBRx.deleteRecord(change.getRecordId());
-                    } else {
-                        Record record = mRealmHelper.getRecordById(change.getRecordId());
-                        if (kind == ChangeKind.INSERT) {
-                            return mSpendDBRx.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()))
-                                    .doOnNext(id -> mRealmHelper.changeRecordId(change.getRecordId(), id.getId()));
-                        } else if (kind == ChangeKind.UPDATE) {
-                            return mSpendDBRx.updateRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()), record.getId());
-                        } else {
-                            return Observable.error(new RuntimeException("Unknown change kind!"));
-                        }
+    private List<Id> pushChangesToServer() throws Exception {
+        List<Id> ids = new ArrayList<>();
+
+        List<Change> changes = mRealmHelper.getAllChanges();
+        for (Change change : changes) {
+            Integer recordId = change.getRecordId();
+            int kind = change.getKind();
+            if (kind == ChangeKind.DELETE) {
+                mSpendDB.deleteRecord(recordId);
+            } else {
+                Record record = mRealmHelper.getRecordById(recordId);
+                if (kind == ChangeKind.INSERT) {
+                    ResultSet resultSet = mSpendDB.insertRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()));
+                    if (resultSet.next()) {
+                        mRealmHelper.changeRecordId(recordId, new Id(resultSet).getId());
                     }
-                }, (change, o) -> {
-                    // pair <id_before, id_after>.
-                    // they are different only for "INSERT".
-                    Integer recordId = change.getRecordId();
-                    if (change.getKind() == ChangeKind.INSERT) {
-                        return new Pair<>(recordId, ((Id) o).getId());
-                    }
-                    return new Pair<>(recordId, recordId);
-                }, 1)
-                .doOnNext(pair -> mRealmHelper.deleteChange(pair.first))
-                .doOnNext(pair -> LogUtils.d("change for record #" + pair.first + "; #" + pair.second + " was pushed to server"))
-                .map(pair -> pair.second)
-                .map(Id::new);
+                    resultSet.close();
+                } else if (kind == ChangeKind.UPDATE) {
+                    ResultSet resultSet = mSpendDB.updateRecord(record.getKind(), record.getValue(), DateUtils.dateToSql(record.getDate()), record.getId());
+                    resultSet.close();
+                }
+            }
+            mRealmHelper.deleteChange(recordId);
+            ids.add(new Id(recordId));
+        }
+
+        return ids;
     }
 
-    public Observable<List<String>> getDistinctKinds() {
+    public Single<List<String>> getDistinctKinds() {
         return mSpendDBRx.getDistinctKinds()
                 .map(Kind::getKind)
                 .toList()
-                .onErrorResumeNext(throwable -> Observable.just(mRealmHelper.getDistinctKind()))
-                .compose(applySchedulers());
+                .onErrorResumeNext(throwable -> Single.just(mRealmHelper.getDistinctKind()))
+                .compose(applySchedulersSingle());
     }
 
-    public Observable<List<Change>> getAllChanges() {
-        return Observable
+    public Single<List<Change>> getAllChanges() {
+        return Single
                 .just(mRealmHelper.getAllChanges())
-                .compose(applySchedulers());
+                .compose(applySchedulersSingle());
     }
 
     @SuppressWarnings("all")    // redundant casting
-    private final Observable.Transformer mTransformer = observable -> ((Observable) observable)
+    private final ObservableTransformer mObservableTransformer = observable -> ((Observable) observable)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+    @SuppressWarnings(value = {"unchecked", "unused"})
+    private <T> ObservableTransformer<T, T> applySchedulersObservable() {
+        return (ObservableTransformer<T, T>) mObservableTransformer;
+    }
+
+    @SuppressWarnings("all")    // redundant casting
+    private final SingleTransformer mSingleTransformer = single -> ((Single) single)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
     @SuppressWarnings("unchecked")
-    private <T> Observable.Transformer<T, T> applySchedulers() {
-        return (Observable.Transformer<T, T>) mTransformer;
+    private <T> SingleTransformer<T, T> applySchedulersSingle() {
+        return (SingleTransformer<T, T>) mSingleTransformer;
     }
 
     @SuppressWarnings("unused")
-    private <T, K> Observable.Transformer<T, List<T>> sortedGroupBy(Func1<T, K> keySelector) {
+    private <T, K> ObservableTransformer<T, List<T>> sortedGroupBy(Function<T, K> keySelector) {
         return tObservable -> tObservable
                 .toList()
+                .toObservable()
                 .flatMap(ts -> Observable.create(subscriber -> {
                     K k = null;
                     List<T> list = new ArrayList<>();
                     for (T t : ts) {
                         if (k == null) {
-                            k = keySelector.call(t);
-                        } else if (!k.equals(keySelector.call(t))) {
+                            k = keySelector.apply(t);
+                        } else if (!k.equals(keySelector.apply(t))) {
                             subscriber.onNext(list);
-                            k = keySelector.call(t);
+                            k = keySelector.apply(t);
                             list = new ArrayList<>();
                         }
                         list.add(t);
@@ -165,7 +177,7 @@ public class DataManager {
                     if (!list.isEmpty()) {
                         subscriber.onNext(list);
                     }
-                    subscriber.onCompleted();
+                    subscriber.onComplete();
                 }));
     }
 
@@ -187,20 +199,20 @@ public class DataManager {
      * @return Observable для списка элементов типа T.
      */
     @SuppressWarnings("unused")
-    private <E, T, V> Observable.Transformer<Observable<List<E>>, List<T>> addAggregatedValue(Func1<E, T> itemsTransformer,
-                                                                                              Func1<E, V> valueSelector,
-                                                                                              V initialValue,
-                                                                                              Func2<V, V, V> valueAggregator,
-                                                                                              E ifListEmptyItem,
-                                                                                              Func2<V, E, T> aggregatedValueCreator) {
+    private <E, T, V> ObservableTransformer<Observable<List<E>>, List<T>> addAggregatedValue(Function<E, T> itemsTransformer,
+                                                                                             Function<E, V> valueSelector,
+                                                                                             V initialValue,
+                                                                                             BiFunction<V, V, V> valueAggregator,
+                                                                                             E ifListEmptyItem,
+                                                                                             BiFunction<V, E, T> aggregatedValueCreator) {
         return observable -> observable.flatMap(listObservable -> {
-            Observable<E> items = listObservable.flatMap(Observable::from);
+            Observable<E> items = listObservable.flatMap(Observable::fromIterable);
             Observable<T> transformedItems = items.map(itemsTransformer);
-            Observable<T> aggregatedValue = items
+            Single<T> aggregatedValue = items
                     .map(valueSelector)
                     .reduce(initialValue, valueAggregator)
-                    .zipWith(items.firstOrDefault(ifListEmptyItem), aggregatedValueCreator);
-            return Observable.concat(aggregatedValue, transformedItems).toList();
+                    .zipWith(items.first(ifListEmptyItem), aggregatedValueCreator);
+            return Observable.concat(aggregatedValue.toObservable(), transformedItems).toList().toObservable();
         });
     }
 

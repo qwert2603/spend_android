@@ -16,8 +16,8 @@ import com.qwert2603.spenddemo.data_manager.DataManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public class ChangesListFragment extends Fragment {
 
@@ -26,7 +26,7 @@ public class ChangesListFragment extends Fragment {
 
     private DataManager mDataManager = new DataManager();
 
-    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Nullable
     @Override
@@ -35,7 +35,7 @@ public class ChangesListFragment extends Fragment {
         ButterKnife.bind(ChangesListFragment.this, view);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Subscription subscription = mDataManager.getAllChanges()
+        Disposable disposable = mDataManager.getAllChanges()
                 .subscribe(changes -> {
                             if (changes.isEmpty()) {
                                 View view1 = getView();
@@ -52,15 +52,15 @@ public class ChangesListFragment extends Fragment {
                                 Snackbar.make(view1, throwable.toString(), Snackbar.LENGTH_LONG).show();
                             }
                         });
-        mCompositeSubscription.add(subscription);
+        mCompositeDisposable.add(disposable);
 
         return view;
     }
 
     @Override
     public void onDestroyView() {
-        mCompositeSubscription.unsubscribe();
-        mCompositeSubscription = new CompositeSubscription();
+        mCompositeDisposable.dispose();
+        mCompositeDisposable = new CompositeDisposable();
         super.onDestroyView();
     }
 }
