@@ -40,4 +40,12 @@ public interface SpendDB {
     @DBMakeRx(modelClassName = "com.qwert2603.spenddemo.model.Kind")
     @DBQuery("SELECT kind FROM test_spend GROUP BY kind ORDER BY count(*) DESC")
     ResultSet getDistinctKinds() throws SQLException;
+
+    @DBMakeRx
+    @DBQuery("INSERT INTO mother (kind, subkind, value, date) VALUES (?, ?, ?, ?)")
+    void insertMother(String kind, String subkind, double value, Date date) throws SQLException;
+
+    @DBMakeRx(modelClassName = "com.qwert2603.spenddemo.model.Record")
+    @DBQuery("SELECT * FROM mother ORDER BY date")
+    ResultSet getAllM();
 }

@@ -5,4 +5,5 @@ public interface ViewType {
     int RECORD = 2;
 
     int getViewType();
+    int getId();
 }

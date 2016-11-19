@@ -58,6 +58,11 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return mItems.get(position).getViewType();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return mItems.get(position).getId();
+    }
+
     public void setItems(List<ViewType> items) {
         mItems = items;
         notifyDataSetChanged();

@@ -33,8 +33,6 @@ import butterknife.ButterKnife;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
 public class RecordsListFragment extends RxFragment {
 
@@ -54,7 +52,6 @@ public class RecordsListFragment extends RxFragment {
     @BindView(R.id.refresh_layout)
     SwipeRefreshLayout mRefreshLayout;
 
-    private CompositeSubscription mCompositeSubscription = new CompositeSubscription();
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     private RecordsAdapter mRecordsAdapter;
@@ -74,6 +71,7 @@ public class RecordsListFragment extends RxFragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecordsAdapter = new RecordsAdapter();
+        mRecordsAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mRecordsAdapter);
 
         showRefresh();
@@ -94,7 +92,8 @@ public class RecordsListFragment extends RxFragment {
                 );
         mCompositeDisposable.add(disposable5);
 
-        Subscription subscription = RxView.clicks(mFloatingActionButton)
+        Disposable disposable7 = RxJavaInterop.toV2Observable(RxView.clicks(mFloatingActionButton))
+                .map(aVoid -> new Object())
                 .subscribe(
                         aVoid -> {
                             EditRecordDialog editRecordDialog = EditRecordDialog.createForInserting();
@@ -103,7 +102,7 @@ public class RecordsListFragment extends RxFragment {
                         },
                         throwable -> Snackbar.make(view, throwable.toString(), Snackbar.LENGTH_LONG).show()
                 );
-        mCompositeSubscription.add(subscription);
+        mCompositeDisposable.add(disposable7);
 
         Disposable disposable4 = mRecordsAdapter.getClickObservable()
                 .map(click -> mRecordsAdapter.getItems().get(click.mPosition))
@@ -195,10 +194,7 @@ public class RecordsListFragment extends RxFragment {
 
     @Override
     public void onDestroyView() {
-        mCompositeSubscription.unsubscribe();
-        mCompositeSubscription = new CompositeSubscription();
-        mCompositeDisposable.dispose();
-        mCompositeDisposable = new CompositeDisposable();
+        mCompositeDisposable.clear();
         super.onDestroyView();
     }
 

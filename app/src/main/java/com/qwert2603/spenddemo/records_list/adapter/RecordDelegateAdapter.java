@@ -16,7 +16,6 @@ import com.qwert2603.spenddemo.utils.DateUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;

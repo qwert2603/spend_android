@@ -2,18 +2,8 @@ package com.qwert2603.spenddemo;
 
 import com.qwert2603.retrobase.generated.SpendDBImpl;
 import com.qwert2603.retrobase.rx.generated.SpendDBRx;
-import com.qwert2603.spenddemo.model.Record;
 
 import org.junit.Test;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.sql.Date;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -23,19 +13,66 @@ import io.reactivex.schedulers.Schedulers;
 public class ExampleUnitTest {
 
     private static void qq(Object o) {
-        System.out.println((System.currentTimeMillis() / 1000) + " " + Thread.currentThread() + " " + o);
+        System.out.println((System.currentTimeMillis()) + " " + Thread.currentThread() + " " + o);
     }
 
     @Test
     public void addition_isCorrect() throws Exception {
 
+
         SpendDBRx spendDBRx = new SpendDBRx(new SpendDBImpl());
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\alex\\Downloads\\spend 2016-10-15.csv"));
-        String s;
-        while ((s=bufferedReader.readLine())!=null){
-            String[] split = s.split(",");
-            spendDBRx.insertRecord(split[1], Integer.parseInt(split[2]), Date.valueOf(split[3])).subscribe(id -> System.out.println(""+id.getId()));
-        }
+        spendDBRx.getAllM()
+                .test()
+                .assertNoErrors()
+                .assertComplete();
+
+//        Thread.sleep(100000);
+
+//        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\alex\\Downloads\\Новый текстовый документ.txt"));
+//        String s;
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+//        SpendDBImpl spendDB = new SpendDBImpl();
+//        boolean bb = false;
+//        Date date = null;
+//        while ((s = bufferedReader.readLine()) != null) {
+//            String[] split = s.split("\t");
+//
+//
+//            if (!bb) {
+//                bb = true;
+//                split[0] = split[0].substring(1);
+//            }
+//
+//            if (date == null || split[0].length() > 2) {
+//                date = new Date(dateFormat.parse(split[0]).getTime());
+//            }
+//
+//            //calendar.set(Calendar.MONTH, Calendar.AUGUST);
+//            //calendar.set(Calendar.DAY_OF_MONTH, (split[0].charAt(i) - '0') * 10 + (split[1].charAt(i + 1) - '0'));
+//            spendDB.insertMother(split[1], split[2], Double.valueOf(split[3].replace(",", ".")),
+//                    date);
+//            //    new Date(calendar.getTimeInMillis()));
+//        }
+
+
+//        SpendDBRx spendDBRx = new SpendDBRx(new SpendDBImpl());
+//        spendDBRx.deleteRecord(3896)
+//                .subscribe(new CompletableObserver() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//                        qq("onSubscribe " + d);
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        qq("onComplete");
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        qq("onError " + e);
+//                    }
+//                });
 
 //        Observable
 //                .create(new SyncOnSubscribe<ResultSet, Record>() {
@@ -89,6 +126,6 @@ public class ExampleUnitTest {
 //                .subscribe(System.out::println);
 
 
-        Thread.sleep(1000000);
+        //Thread.sleep(1000000);
     }
 }

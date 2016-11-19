@@ -46,6 +46,7 @@ public class Record extends RealmObject implements ViewType {
         return ViewType.RECORD;
     }
 
+    @Override
     public int getId() {
         return mId;
     }
