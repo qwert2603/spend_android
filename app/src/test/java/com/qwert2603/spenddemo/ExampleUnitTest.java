@@ -1,9 +1,14 @@
 package com.qwert2603.spenddemo;
 
 import com.qwert2603.retrobase.generated.SpendDBImpl;
-import com.qwert2603.retrobase.rx.generated.SpendDBRx;
 
 import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -20,39 +25,26 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws Exception {
 
 
-        SpendDBRx spendDBRx = new SpendDBRx(new SpendDBImpl());
-        spendDBRx.getAllM()
-                .test()
-                .assertNoErrors()
-                .assertComplete();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\alex\\Downloads\\r.txt"));
+        String s;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        SpendDBImpl spendDB = new SpendDBImpl();
+        boolean bb = false;
+        Date date = null;
+        while ((s = bufferedReader.readLine()) != null) {
+            String[] split = s.split("\t");
 
-//        Thread.sleep(100000);
+            if (!bb) {
+                bb = true;
+                split[0] = split[0].substring(1);
+            }
 
-//        BufferedReader bufferedReader = new BufferedReader(new FileReader("C:\\Users\\alex\\Downloads\\Новый текстовый документ.txt"));
-//        String s;
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-//        SpendDBImpl spendDB = new SpendDBImpl();
-//        boolean bb = false;
-//        Date date = null;
-//        while ((s = bufferedReader.readLine()) != null) {
-//            String[] split = s.split("\t");
-//
-//
-//            if (!bb) {
-//                bb = true;
-//                split[0] = split[0].substring(1);
-//            }
-//
-//            if (date == null || split[0].length() > 2) {
-//                date = new Date(dateFormat.parse(split[0]).getTime());
-//            }
-//
-//            //calendar.set(Calendar.MONTH, Calendar.AUGUST);
-//            //calendar.set(Calendar.DAY_OF_MONTH, (split[0].charAt(i) - '0') * 10 + (split[1].charAt(i + 1) - '0'));
-//            spendDB.insertMother(split[1], split[2], Double.valueOf(split[3].replace(",", ".")),
-//                    date);
-//            //    new Date(calendar.getTimeInMillis()));
-//        }
+            if (date == null || split[0].length() > 2) {
+                date = new Date(dateFormat.parse(split[0]).getTime());
+            }
+
+            spendDB.insertMother(split[1], split[2], Double.valueOf(split[3].replace(",", ".")), date);
+        }
 
 
 //        SpendDBRx spendDBRx = new SpendDBRx(new SpendDBImpl());
