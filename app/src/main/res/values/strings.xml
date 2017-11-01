@@ -1,15 +1,25 @@
 <resources>
-    <string name="app_name">Spend Demo</string>
-    <string name="kind">Kind</string>
-    <string name="value">Value</string>
-    <string name="date">Date</string>
-    <string name="show_local_changes">Show local changes</string>
-    <string name="local_changes">Local changes</string>
-    <string name="no_local_changes">No local changes</string>
+    <string name="app_name">spend</string>
+    <string name="kind">kind</string>
+    <string name="value">value</string>
+    <string name="date">date</string>
+    <string name="show_local_changes">show local changes</string>
+    <string name="local_changes">local changes</string>
+    <string name="no_local_changes">no local changes</string>
 
-    <string-array name="change_kinds">
-        <item>INSERT</item>
-        <item>UPDATE</item>
-        <item>DELETE</item>
-    </string-array>
+    <string name="delete_record_text">delete record?</string>
+    <string name="create_record_text">create record</string>
+    <string name="edit_record_text">edit record</string>
+    <string name="choose_kind_text">select kind</string>
+
+    <string name="text_confirm">confirm</string>
+    <string name="text_cancel">cancel</string>
+    <string name="text_save">save</string>
+
+    <string name="error_text">error</string>
+    <string name="loading_error_text">loading error</string>
+    <string name="refreshing_error_text">refresh error</string>
+    <string name="retry_text">retry</string>
+    <string name="empty_list_text">list is empty</string>
+    <string name="list_loaded_completely">list loaded completely</string>
 </resources>

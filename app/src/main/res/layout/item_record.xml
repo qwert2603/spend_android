@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-    android:layout_margin="6dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="6dp">
 
-    <TextView
-        android:id="@+id/id_text_view"
+    <ImageView
+        android:id="@+id/local_ImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1918"
-        android:textSize="14sp"
-        android:layout_gravity="center_vertical"
-        android:textColor="#444"/>
+        android:src="@drawable/ic_local" />
 
     <TextView
-        android:id="@+id/date_text_view"
+        android:id="@+id/id_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2016-05-12"
+        android:textColor="#444444"
         android:textSize="14sp"
-        android:layout_margin="2dp"
+        tools:text="1918" />
+
+    <TextView
+        android:id="@+id/date_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:textColor="@color/colorAccent"
-        android:layout_gravity="center_vertical"/>
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="2016-05-12" />
 
     <TextView
-        android:id="@+id/kind"
+        android:id="@+id/kind_TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="food food food food food food food food"
-        android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1"
+        android:textColor="#444444"
         android:textSize="18sp"
-        android:layout_gravity="center_vertical"
-        android:textColor="#444"/>
+        tools:text="food food food food food food food food" />
 
     <TextView
-        android:id="@+id/value"
+        android:id="@+id/value_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="175"
+        android:textColor="#444444"
         android:textSize="18sp"
-        android:layout_gravity="center_vertical"
-        android:textColor="#444"/>
+        tools:text="175" />
 
 </LinearLayout>

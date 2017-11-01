@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -12,12 +13,12 @@
         app:hintTextAppearance="@color/anth">
 
         <EditText
-            android:id="@+id/kind"
+            android:id="@+id/kind_EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/kind"
             android:selectAllOnFocus="true"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -28,13 +29,12 @@
         app:hintTextAppearance="@color/anth">
 
         <EditText
-            android:id="@+id/value"
+            android:id="@+id/value_EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/value"
             android:inputType="number"
-            android:singleLine="true"/>
-
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -46,14 +46,14 @@
         app:hintTextAppearance="@color/anth">
 
         <EditText
-            android:id="@+id/date"
+            android:id="@+id/date_EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:hint="@string/date"
-            android:inputType="date"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            tools:ignore="TextFields" />
 
     </android.support.design.widget.TextInputLayout>
-
 
 </LinearLayout>

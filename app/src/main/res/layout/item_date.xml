@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="4"
         android:gravity="end"
-        android:layout_gravity="center_vertical"
         android:padding="4dp"
-        android:textSize="18sp"
         android:textColor="#b83"
-        android:text="26.03.1995"/>
+        android:textSize="18sp"
+        tools:text="26.03.1995" />
 
     <TextView
         android:id="@+id/sum"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="3"
         android:gravity="start"
-        android:layout_gravity="center_vertical"
         android:padding="4dp"
         android:textColor="#349"
         android:textSize="18sp"
-        android:text="14782"/>
+        tools:text="14782" />
 
 </LinearLayout>

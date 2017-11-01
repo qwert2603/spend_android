@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="anth">#FF4400</color>
+    <color name="colorPrimary">#dd5533</color>
+    <color name="colorPrimaryDark">#bd4533</color>
+    <color name="colorAccent">#444444</color>
+    <color name="colorAccentDark">#333333</color>
+
+    <color name="anth">#ff7443</color>
+    <color name="button_disabled">#999999</color>
+
+    <color name="local_change_create">#20CF20</color>
+    <color name="local_change_edit">#2020DF</color>
+    <color name="local_change_delete">#DF2020</color>
 </resources>
