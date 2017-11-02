@@ -12,7 +12,10 @@ data class RecordUI(
         val date: Date,
         val syncStatus: SyncStatus,
         val changeKind: ChangeKind?
-) : RecordsListItem
+) : RecordsListItem {
+    val canEdit = changeKind != ChangeKind.DELETE && syncStatus != SyncStatus.SYNCING
+    val canDelete = changeKind != ChangeKind.DELETE && syncStatus != SyncStatus.SYNCING
+}
 
 fun Record.toRecordUI(syncStatus: SyncStatus, changeKind: ChangeKind?) = RecordUI(id, kind, value, date, syncStatus, changeKind)
 fun RecordUI.toRecord() = Record(id, kind, value, date)

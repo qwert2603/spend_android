@@ -85,10 +85,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun recordClicks(): Observable<RecordUI> = adapter.modelItemClicks
+    override fun editRecordClicks(): Observable<RecordUI> = adapter.modelItemClicks
             .castAndFilter(RecordUI::class.java)
 
-    override fun recordLongClicks(): Observable<RecordUI> = adapter.modelItemLongClicks
+    override fun deleteRecordClicks(): Observable<RecordUI> = adapter.modelItemLongClicks
             .castAndFilter(RecordUI::class.java)
 
     override fun showChangesClicks(): Observable<Any> = showChangesClicks

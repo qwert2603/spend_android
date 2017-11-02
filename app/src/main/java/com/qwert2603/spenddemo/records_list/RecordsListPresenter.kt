@@ -20,10 +20,12 @@ class RecordsListPresenter @Inject constructor(
         intent { it.showChangesClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen()) }
                 .subscribeToView()
-        intent { it.recordClicks() }
+        intent { it.editRecordClicks() }
+                .filter { it.canEdit }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it)) }
                 .subscribeToView()
-        intent { it.recordLongClicks() }
+        intent { it.deleteRecordClicks() }
+                .filter { it.canDelete }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id, it.toString())) }
                 .subscribeToView()
         intent { it.deleteRecordConfirmed() }

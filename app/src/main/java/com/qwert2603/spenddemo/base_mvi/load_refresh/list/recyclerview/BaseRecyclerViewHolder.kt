@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.qwert2603.spenddemo.model.entity.IdentifiableLong
+import com.qwert2603.spenddemo.utils.LogUtils
 import com.qwert2603.spenddemo.utils.inflate
 
 abstract class BaseRecyclerViewHolder<M : IdentifiableLong>(parent: ViewGroup, @LayoutRes layoutRes: Int) : RecyclerView.ViewHolder(parent.inflate(layoutRes)) {
@@ -30,9 +31,13 @@ abstract class BaseRecyclerViewHolder<M : IdentifiableLong>(parent: ViewGroup, @
                 if (adapterPosition == RecyclerView.NO_POSITION) return@OnLongClickListener false
                 if (adapterPosition < it.adapterList.modelList.size) {
                     it.modelItemLongClicks.onNext(it.adapterList.getModelItem(adapterPosition))
-                    return@OnLongClickListener it.modelItemLongClicks.hasObservers()
+                    return@OnLongClickListener it.modelItemLongClicks.hasObservers().also {
+                        //todo:check
+                        LogUtils.d("BaseRecyclerViewHolder OnLongClickListener $it")
+                    }
                 } else {
                     it.pageIndicatorLongClicks.onNext(it.adapterList.pageIndicator!!)
+                    return@OnLongClickListener it.pageIndicatorLongClicks.hasObservers()
                 }
             }
             return@OnLongClickListener false

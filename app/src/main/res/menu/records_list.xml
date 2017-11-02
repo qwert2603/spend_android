@@ -4,6 +4,6 @@
 
     <item android:id="@+id/show_local_changes"
         android:title="@string/show_local_changes"
-        android:icon="@drawable/show_local_changes"
+        android:icon="@drawable/ic_local"
         app:showAsAction="ifRoom"/>
 </menu>

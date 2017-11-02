@@ -67,6 +67,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
         kindEditText.setText(vs.kind)
         valueEditText.setText(vs.value.let { if (it != 0) it.toString() else "" })
         dateEditText.setText(Const.DATE_FORMAT.format(vs.date))
+        save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(ResourcesCompat.getColor(
                 resources,
                 if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled,

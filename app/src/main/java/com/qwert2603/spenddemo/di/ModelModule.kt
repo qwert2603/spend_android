@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.di
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
@@ -24,4 +25,8 @@ class ModelModule {
             "postgres",
             "1234"
     )
+
+    @Provides
+    @RemoteTableName
+    fun remoteTableName(): String = BuildConfig.REMOTE_TABLE_NAME
 }

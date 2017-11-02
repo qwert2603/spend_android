@@ -69,6 +69,6 @@
         android:layout_height="match_parent"
         android:layout_marginStart="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_save" />
+        android:src="@drawable/ic_syncing" />
 
 </LinearLayout>

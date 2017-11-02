@@ -15,7 +15,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.utils.Const
-import kotlinx.android.synthetic.main.dialog_insert.view.*
+import kotlinx.android.synthetic.main.dialog_edit_record.view.*
 import java.util.*
 
 @FragmentWithArgs
@@ -47,7 +47,7 @@ class EditRecordDialogFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_insert, null)
+        dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
         dialogView.apply {
             kind_EditText.setText(kind)
             date_EditText.setText(Const.DATE_FORMAT.format(Date(date)))
