@@ -41,7 +41,7 @@
         android:layout_weight="1"
         android:textColor="#444444"
         android:textSize="18sp"
-        tools:text="food food food food food food food food" />
+        tools:text="food" />
 
     <TextView
         android:id="@+id/value_TextView"

@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.utils
 
 import android.util.Log
+import java.util.*
 
 object LogUtils {
 
@@ -13,7 +14,7 @@ object LogUtils {
     }
 
     fun d(tag: String, msg: String) {
-        if (ANDROID_LOGGING) Log.d(tag, msg) else println("$tag $msg")
+        if (ANDROID_LOGGING) Log.d(tag, msg) else println("${Date()} $tag $msg")
     }
 
     fun d(msg: () -> String) {
@@ -21,16 +22,20 @@ object LogUtils {
     }
 
     fun d(tag: String, msg: () -> String) {
-        if (ANDROID_LOGGING) Log.d(tag, msg()) else println("$tag ${msg()}")
+        if (ANDROID_LOGGING) Log.d(tag, msg()) else println("${Date()} $tag ${msg()}")
     }
 
     @JvmOverloads
     fun e(msg: String = ERROR_MSG, t: Throwable? = null) {
-        if (ANDROID_LOGGING) Log.e(APP_TAG, "$msg $t", t) else println("$APP_TAG $msg $t\n${t?.printStackTrace()}")
+        if (ANDROID_LOGGING) Log.e(APP_TAG, "$msg $t", t) else println("${Date()} $APP_TAG $msg $t\n${t?.printStackTrace()}")
+    }
+
+    fun e(tag: String = APP_TAG, msg: String = ERROR_MSG, t: Throwable? = null) {
+        if (ANDROID_LOGGING) Log.e(tag, "$msg $t", t) else println("${Date()} $tag $msg $t\n${t?.printStackTrace()}")
     }
 
     fun printCurrentStack() {
-        if (ANDROID_LOGGING) Log.v(APP_TAG, "", Exception()) else println("$APP_TAG, ${Exception().printStackTrace()}")
+        if (ANDROID_LOGGING) Log.v(APP_TAG, "", Exception()) else println("${Date()} $APP_TAG, ${Exception().printStackTrace()}")
     }
 
 }
