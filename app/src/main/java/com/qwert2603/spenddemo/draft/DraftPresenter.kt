@@ -21,7 +21,7 @@ class DraftPresenter @Inject constructor(
     override fun bindIntents() {
 
         val draftLoaded = intent { it.viewCreated() }
-                .flatMap { draftInteractor.getDraft().toObservable() }
+                .flatMap { draftInteractor.getDraft() }
                 .map { DraftPartialChange.DraftLoaded(it) }
                 .share()
 
@@ -50,19 +50,28 @@ class DraftPresenter @Inject constructor(
                 .share()
 
         val draftChanges = draftIntents
-                .scan(CreatingRecord("", 0, Date(0)), { creatingRecord, change ->
+                .scan(DraftInteractor.EmptyCreatingRecord, { creatingRecord, change ->
                     LogUtils.d("DraftPresenter draftChanges $change")
                     when (change) {
                         is DraftPartialChange.DraftLoaded -> change.creatingRecord
                         is DraftPartialChange.KindChanged -> creatingRecord.copy(kind = change.kind)
                         is DraftPartialChange.ValueChanged -> creatingRecord.copy(value = change.value)
                         is DraftPartialChange.DateChanged -> creatingRecord.copy(date = change.date)
-                        is DraftPartialChange.DraftCleared -> DraftInteractor.createEmptyCreatingRecord()
+                        is DraftPartialChange.DraftCleared -> DraftInteractor.EmptyCreatingRecord
                         else -> null!!
                     }
                 })
                 .skip(1)
                 .share()
+
+        intent { it.selectDateClicks() }
+                .withLatestFrom(draftChanges, BiFunction { _: Any, creatingRecord: CreatingRecord -> creatingRecord })
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.date.time)) }
+                .subscribeToView()
+
+        intent { it.selectKindClicks() }
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectKind()) }
+                .subscribeToView()
 
         val observable = Observable.merge(listOf(
                 draftIntents,

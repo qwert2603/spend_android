@@ -10,6 +10,7 @@ import javax.inject.Singleton
         SchedulersModule::class,
         NavigationModule::class,
         BindReposModule::class,
+        BindSyncDataSourcesModule::class,
         ModelModule::class
 ))
 interface AppComponent {

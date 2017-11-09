@@ -9,12 +9,6 @@ abstract class RecordsDao {
     @Query("SELECT * FROM RecordTable ORDER BY date DESC, id DESC")
     abstract fun getAllRecords(): Single<List<RecordTable>>
 
-    @Transaction
-    open fun rewriteAll(records: List<RecordTable>) {
-        removeAll()
-        addAll(records)
-    }
-
     @Insert
     abstract fun addRecord(record: RecordTable): Long
 
@@ -31,8 +25,11 @@ abstract class RecordsDao {
     abstract fun removeRecord(recordId: Long)
 
     @Insert
-    abstract fun addAll(records: List<RecordTable>)
+    abstract fun addRecords(records: List<RecordTable>)
 
-    @Query("DELETE FROM RecordTable")
-    abstract fun removeAll()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract fun editRecords(records: List<RecordTable>)
+
+    @Query("DELETE FROM RecordTable WHERE id IN (:ids)")
+    abstract fun removeRecords(ids: List<Long>)
 }

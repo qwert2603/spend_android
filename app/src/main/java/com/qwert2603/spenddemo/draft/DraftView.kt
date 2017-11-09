@@ -10,4 +10,6 @@ interface DraftView : BaseView<DraftViewState> {
     fun valueChanges(): Observable<Int>
     fun dateChanges(): Observable<Date>
     fun saveClicks(): Observable<Any>
+    fun selectDateClicks():Observable<Any>
+    fun selectKindClicks():Observable<Any>
 }

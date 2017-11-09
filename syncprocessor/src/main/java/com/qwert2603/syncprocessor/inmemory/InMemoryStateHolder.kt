@@ -3,17 +3,27 @@ package com.qwert2603.syncprocessor.inmemory
 import com.qwert2603.syncprocessor.entity.ChangeKind
 import com.qwert2603.syncprocessor.entity.Identifiable
 import com.qwert2603.syncprocessor.entity.ItemsState
+import com.qwert2603.syncprocessor.entity.TimedChange
+import com.qwert2603.syncprocessor.logger.Logger
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.Executors
 
-internal class InMemoryStateHolder<I, T : Identifiable<I>> {
+internal class InMemoryStateHolder<I : Any, T : Identifiable<I>>(
+        logger: Logger,
+        sortFun: (List<T>) -> List<T>
+) {
 
     val state: BehaviorSubject<ItemsState<I, T>> = BehaviorSubject.create()
     private val stateChanges: PublishSubject<ItemsStatePartialChange> = PublishSubject.create()
 
     init {
         stateChanges
+                .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
                 .scan(ItemsState(emptyList<T>(), emptyMap(), emptySet()), { state, change ->
+                    val b = System.currentTimeMillis()
+                    logger.d("InMemoryStateHolder", "change $change")
                     @Suppress("UNCHECKED_CAST")
                     when (change) {
                         is ItemsStatePartialChange.InitLoaded<*, *> -> change.itemsState as ItemsState<I, T>
@@ -23,7 +33,7 @@ internal class InMemoryStateHolder<I, T : Identifiable<I>> {
                                     items = state.items
                                             .addWithId(change.item),
                                     changes = state.changes
-                                            .plus(Pair(change.item.id, ChangeKind.CREATE))
+                                            .plus(Pair(change.item.id, TimedChange(ChangeKind.CREATE, change.millis)))
                             )
                         }
                         is ItemsStatePartialChange.ItemCreatedRemotely<*, *> -> {
@@ -43,7 +53,7 @@ internal class InMemoryStateHolder<I, T : Identifiable<I>> {
                             change.item as T
                             state.copy(
                                     items = state.items.addWithId(change.item),
-                                    changes = state.changes.putOrRemove(change.item.id, ChangeKind.EDIT),
+                                    changes = state.changes.putOrRemove(change.item.id, TimedChange(ChangeKind.EDIT, change.millis)),
                                     syncingItems = state.syncingItems.minus(change.item.id)
                             )
                         }
@@ -63,19 +73,21 @@ internal class InMemoryStateHolder<I, T : Identifiable<I>> {
                             )
                         }
                         is ItemsStatePartialChange.MakeLikeOnRemote<*, *> -> {
-                            change.newItems as List<T>
-                            change.editedItems as List<T>
+                            change.updatedItems as List<T>
                             change.removedItemIds as List<I>
-                            val editedItems = change.editedItems.associateBy { it.id }
                             state.copy(
                                     items = state.items
                                             .filter { it.id !in change.removedItemIds }
-                                            .map { editedItems[it.id] ?: it }
-                                            .plus(change.newItems),
+                                            .addWithIds(change.updatedItems),
                                     changes = state.changes - change.removedItemIds
                             )
                         }
                     }
+                            .let { it.copy(items = sortFun(it.items)) }
+                            .also {
+                                val e = System.currentTimeMillis()
+                                logger.d("InMemoryStateHolder", "state ${e - b} ms $it")
+                            }
                 })
                 .subscribeWith(state)
     }

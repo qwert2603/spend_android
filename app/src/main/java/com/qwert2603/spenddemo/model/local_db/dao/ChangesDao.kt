@@ -17,4 +17,7 @@ interface ChangesDao {
 
     @Query("DELETE FROM ChangeTable WHERE recordId = :recordId")
     fun removeChange(recordId: Long)
+
+    @Query("DELETE FROM ChangeTable WHERE recordId IN (:recordIds)")
+    fun removeChanges(recordIds: List<Long>)
 }

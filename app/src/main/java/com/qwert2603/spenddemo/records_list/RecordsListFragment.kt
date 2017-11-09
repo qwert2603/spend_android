@@ -18,6 +18,7 @@ import com.qwert2603.spenddemo.dialogs.DeleteRecordDialogFragmentBuilder
 import com.qwert2603.spenddemo.dialogs.EditRecordDialogFragment
 import com.qwert2603.spenddemo.dialogs.EditRecordDialogFragmentBuilder
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
@@ -67,6 +68,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
+        // todo: hide when no changes.
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
     }
 
@@ -108,6 +110,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id, va.text)
                     .also { it.setTargetFragment(this, REQUEST_DELETE_RECORD) }
                     .show(fragmentManager, "delete_record")
+                    .also { (context as KeyboardManager).hideKeyboard() }
             is RecordsListViewAction.AskToEditRecord -> EditRecordDialogFragmentBuilder()
                     .id(va.record.id)
                     .kind(va.record.kind)
@@ -116,6 +119,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .build()
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
+                    .also { (context as KeyboardManager).hideKeyboard() }
         }
     }
 }

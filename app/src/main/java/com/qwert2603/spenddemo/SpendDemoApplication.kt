@@ -16,12 +16,6 @@ class SpendDemoApplication : Application() {
 
         DIHolder.diManager = DIManager(this)
 
-        try {
-            Class.forName(org.postgresql.Driver::class.java.name)
-        } catch (e: ClassNotFoundException) {
-            LogUtils.e("postgresql", e)
-        }
-
         RxJavaPlugins.setErrorHandler {
             LogUtils.e("RxJavaPlugins.setErrorHandler", it)
             var cause = it.cause

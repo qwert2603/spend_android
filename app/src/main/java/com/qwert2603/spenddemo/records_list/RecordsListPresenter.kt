@@ -29,18 +29,10 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id, it.toString())) }
                 .subscribeToView()
         intent { it.deleteRecordConfirmed() }
-                .flatMap {
-                    recordsListInteractor.deleteRecord(it)
-                            .onErrorComplete()
-                            .toObservable<Any>()
-                }
+                .doOnNext { recordsListInteractor.deleteRecord(it) }
                 .subscribeToView()
         intent { it.editRecordConfirmed() }
-                .flatMap {
-                    recordsListInteractor.editRecord(it)
-                            .onErrorComplete()
-                            .toObservable<Any>()
-                }
+                .doOnNext { recordsListInteractor.editRecord(it) }
                 .subscribeToView()
 
         val observable = recordsListInteractor.recordsState()

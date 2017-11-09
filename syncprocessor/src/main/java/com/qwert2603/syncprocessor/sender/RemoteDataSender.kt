@@ -1,37 +1,40 @@
 package com.qwert2603.syncprocessor.sender
 
+import com.qwert2603.syncprocessor.logger.Logger
 import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
-class RemoteDataSender<in I>(
-        private val scheduler: Scheduler
+class RemoteDataSender(
+        private val logger: Logger
 ) {
+    private val scheduler = Schedulers.from(Executors.newSingleThreadExecutor())
 
-    private val disposables = ConcurrentHashMap<I, Disposable>()
-    private val tasks = ConcurrentHashMap<I, Completable>()
+    private var disposable: Disposable? = null
+    private val tasks = ConcurrentHashMap<Any, Completable>()
 
-    fun send(id: I, completable: Completable, force: Boolean) {
-        val currentDisposable = disposables[id]
-        if (currentDisposable != null) {
+    fun send(taskId: Any, completable: Completable, force: Boolean) {
+        val localDisposable = disposable
+        if (localDisposable != null) {
             if (force) {
-                tasks.put(id, completable)
-                currentDisposable.dispose()
+                tasks.put(taskId, completable)
+                localDisposable.dispose()
             }
             return
         }
-        val disposable = completable
-                .doOnDispose { onCompletableFinished(id) }
-                .doOnTerminate { onCompletableFinished(id) }
+        disposable = completable
+                .doOnDispose { onCompletableFinished(taskId) }
+                .doOnTerminate { onCompletableFinished(taskId) }
+                .doOnError { logger.e("RemoteDataSender", "error sending change to remote!", it) }
                 .onErrorComplete()
                 .subscribeOn(scheduler)
                 .subscribe()
-        disposables.put(id, disposable)
     }
 
-    private fun onCompletableFinished(id: I) {
-        disposables.remove(id)
-        tasks.remove(id)?.also { send(id, it, true) }
+    private fun onCompletableFinished(taskId: Any) {
+        disposable = null
+        tasks.remove(taskId)?.also { send(taskId, it, true) }
     }
 }

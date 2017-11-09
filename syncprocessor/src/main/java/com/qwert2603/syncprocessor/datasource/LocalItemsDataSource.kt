@@ -4,7 +4,7 @@ import com.qwert2603.syncprocessor.entity.Identifiable
 import io.reactivex.Completable
 import io.reactivex.Single
 
-interface LocalItemsDataSource<I, T : Identifiable<I>> {
+interface LocalItemsDataSource<I : Any, T : Identifiable<I>> {
     fun getAll(): Single<List<T>>
     fun changeId(oldId: I, newItem: T): Completable
     fun save(t: T): Completable

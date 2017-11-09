@@ -6,6 +6,8 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
+import java.lang.NumberFormatException
+import java.util.*
 
 fun <T, U> Single<List<T>>.mapList(mapper: (T) -> U): Single<List<U>> = this
         .map { it.map(mapper) }
@@ -39,6 +41,14 @@ fun <T> Observable<T>.switchToUiIfNotYet(uiSchedulerProvider: UiSchedulerProvide
 fun <T : Any, R> Observable<T>.castAndFilter(toClass: Class<R>): Observable<R> = this
         .filter { it.javaClass.isAssignableFrom(toClass) }
         .cast(toClass)
+
+fun Observable<String>.mapToInt(): Observable<Int> = this.map {
+    try {
+        it.toInt()
+    } catch (e: NumberFormatException) {
+        0
+    }
+}
 
 fun <T> Observable<T>.pausable(isOn: Observable<Boolean>): Observable<T> {
     abstract class Message

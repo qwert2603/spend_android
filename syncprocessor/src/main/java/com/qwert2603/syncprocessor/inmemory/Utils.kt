@@ -44,3 +44,10 @@ internal fun <I, T : Identifiable<I>> List<T>.addWithId(item: T): List<T> {
             }
             .let { if (replaced) it else it + item }
 }
+
+internal fun <I, T : Identifiable<I>> List<T>.addWithIds(items: List<T>): List<T> {
+    val mutableMap = items.associateBy { it.id }.toMutableMap()
+    return this
+            .map { mutableMap.remove(it.id) ?: it }
+            .let { it + mutableMap.values }
+}

@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.draft
 
 import android.content.Context
+import android.support.v4.app.FragmentActivity
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
@@ -9,11 +10,10 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.base_mvi.ViewAction
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
+import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.utils.Const
-import com.qwert2603.spenddemo.utils.LogUtils
-import com.qwert2603.spenddemo.utils.QEditText
-import com.qwert2603.spenddemo.utils.inflate
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_draft.view.*
 import java.util.*
@@ -25,9 +25,9 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
             .build()
             .createRecordsListPresenter()
 
-    private val kindEditText by lazy { QEditText(kind_EditText) }
-    private val valueEditText by lazy { QEditText(value_EditText) }
-    private val dateEditText by lazy { QEditText(date_EditText) }
+    private val kindEditText by lazy { UserInputEditText(kind_EditText) }
+    private val valueEditText by lazy { UserInputEditText(value_EditText) }
+    private val dateEditText by lazy { UserInputEditText(date_EditText) }
 
     init {
         inflate(R.layout.view_draft, attachToRoot = true)
@@ -38,14 +38,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun kingChanges(): Observable<String> = kindEditText.userInputs()
 
     override fun valueChanges(): Observable<Int> = valueEditText.userInputs()
-            .map {
-                try {
-                    it.toInt()
-                } catch (e: Exception) {
-                    LogUtils.e("toInt error!", e)
-                    0
-                }
-            }
+            .mapToInt()
 
     override fun dateChanges(): Observable<Date> = dateEditText.userInputs()
             .map {
@@ -62,11 +55,15 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
             RxTextView.editorActions(value_EditText)
     )
 
+    override fun selectDateClicks(): Observable<Any> = RxView.clicks(date_EditText)
+
+    override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
+
     override fun render(vs: DraftViewState) {
         LogUtils.d("DraftViewImpl render $vs")
         kindEditText.setText(vs.kind)
-        valueEditText.setText(vs.value.let { if (it != 0) it.toString() else "" })
-        dateEditText.setText(Const.DATE_FORMAT.format(vs.date))
+        valueEditText.setText(vs.valueString)
+        dateEditText.setText(vs.dateString)
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(ResourcesCompat.getColor(
                 resources,
@@ -78,7 +75,17 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun executeAction(va: ViewAction) {
         if (va !is DraftViewAction) return
         when (va) {
-            is DraftViewAction.FocusOnKindInput -> (context as? KeyboardManager)?.showKeyboard(kind_EditText)
+            is DraftViewAction.FocusOnKindInput -> {
+                if (kind_EditText.isFocused || value_EditText.isFocused) {
+                    (context as KeyboardManager).showKeyboard(kind_EditText)
+                }
+            }
+            is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
+                    .show((context as FragmentActivity).supportFragmentManager, "date")
+                    .also { (context as KeyboardManager).hideKeyboard() }
+            is DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
+                    .show((context as FragmentActivity).supportFragmentManager, "choose_kind")
+                    .also { (context as KeyboardManager).hideKeyboard() }
         }
     }
 }

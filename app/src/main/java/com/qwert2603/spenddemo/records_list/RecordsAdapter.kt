@@ -3,6 +3,8 @@ package com.qwert2603.spenddemo.records_list
 import android.view.ViewGroup
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewHolder
+import com.qwert2603.spenddemo.model.entity.IdentifiableLong
+import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.entity.AddRecordItem
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
@@ -25,4 +27,11 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
         VIEW_TYPE_RECORD -> RecordViewHolder(parent)
         else -> null!!
     } as BaseRecyclerViewHolder<RecordsListItem>
+
+    override fun onViewDetachedFromWindow(holder: BaseRecyclerViewHolder<IdentifiableLong>) {
+        if (holder as? AddRecordViewHolder != null) {
+            (holder.itemView.context as KeyboardManager).hideKeyboard()
+        }
+        super.onViewDetachedFromWindow(holder)
+    }
 }

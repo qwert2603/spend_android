@@ -10,8 +10,8 @@ import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.SourceType
+import com.qwert2603.spenddemo.model.repo.DraftRepo
 import com.qwert2603.spenddemo.model.repo.KindsRepo
-import com.qwert2603.spenddemo.model.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.utils.mapList
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ class ChooseKindDialogFragment : DialogFragment() {
     }
 
     @Inject lateinit var kindsRepo: KindsRepo
-    @Inject lateinit var uiSchedulerProvider: UiSchedulerProvider
+    @Inject lateinit var draftRepo: DraftRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -37,11 +37,16 @@ class ChooseKindDialogFragment : DialogFragment() {
         return AlertDialog.Builder(context!!)
                 .setTitle(R.string.choose_kind_text)
                 .setItems(kinds.toTypedArray(), { _, which ->
-                    targetFragment?.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent().putExtra(KIND_KEY, kinds[which])
-                    )
+                    val targetFragment = targetFragment
+                    if (targetFragment != null) {
+                        targetFragment.onActivityResult(
+                                targetRequestCode,
+                                Activity.RESULT_OK,
+                                Intent().putExtra(KIND_KEY, kinds[which])
+                        )
+                    } else {
+                        draftRepo.onKindSelected(kinds[which])
+                    }
                 })
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()

@@ -10,7 +10,10 @@ import com.hannesdorfmann.fragmentargs.FragmentArgs
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
+import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.model.repo.DraftRepo
 import java.util.*
+import javax.inject.Inject
 
 @FragmentWithArgs
 class DatePickerDialogFragment : DialogFragment() {
@@ -22,7 +25,10 @@ class DatePickerDialogFragment : DialogFragment() {
     @Arg
     var millis: Long = 0
 
+    @Inject lateinit var draftRepo: DraftRepo
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
         FragmentArgs.inject(this)
     }
@@ -35,11 +41,16 @@ class DatePickerDialogFragment : DialogFragment() {
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, month)
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-                    targetFragment.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
-                    )
+                    val targetFragment = targetFragment
+                    if (targetFragment != null) {
+                        targetFragment.onActivityResult(
+                                targetRequestCode,
+                                Activity.RESULT_OK,
+                                Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
+                        )
+                    } else {
+                        draftRepo.onDateSelected(calendar.time)
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
