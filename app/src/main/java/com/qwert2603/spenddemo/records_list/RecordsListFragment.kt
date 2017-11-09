@@ -61,7 +61,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        records_RecyclerView.layoutManager = LinearLayoutManager(context)
+        records_RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
         records_RecyclerView.adapter = adapter
     }
 

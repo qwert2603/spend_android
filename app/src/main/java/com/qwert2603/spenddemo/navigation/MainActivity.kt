@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -90,5 +91,10 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     override fun showKeyboard(editText: EditText) {
         editText.requestFocus()
         (getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(editText, 0)
+    }
+
+    override fun isKeyBoardShown(): Boolean {
+        return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels -
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30f, resources.displayMetrics)
     }
 }

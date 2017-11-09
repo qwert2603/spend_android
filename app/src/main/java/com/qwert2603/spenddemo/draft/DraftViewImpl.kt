@@ -74,18 +74,19 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     override fun executeAction(va: ViewAction) {
         if (va !is DraftViewAction) return
+        val keyboardManager = context as KeyboardManager
         when (va) {
             is DraftViewAction.FocusOnKindInput -> {
-                if (kind_EditText.isFocused || value_EditText.isFocused) {
-                    (context as KeyboardManager).showKeyboard(kind_EditText)
+                if (keyboardManager.isKeyBoardShown()) {
+                    keyboardManager.showKeyboard(kind_EditText)
                 }
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
                     .show((context as FragmentActivity).supportFragmentManager, "date")
-                    .also { (context as KeyboardManager).hideKeyboard() }
+                    .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
                     .show((context as FragmentActivity).supportFragmentManager, "choose_kind")
-                    .also { (context as KeyboardManager).hideKeyboard() }
+                    .also { keyboardManager.hideKeyboard() }
         }
     }
 }
