@@ -22,8 +22,10 @@ import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
+import kotlinx.android.synthetic.main.toolbar_default.*
 import ru.terrakok.cicerone.Router
 import java.sql.Date
 import javax.inject.Inject
@@ -50,6 +52,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val deleteRecordConfirmed = PublishSubject.create<Long>()
     private val editRecordConfirmed = PublishSubject.create<Record>()
 
+    private val changesCount: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -63,12 +67,15 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onViewCreated(view, savedInstanceState)
         records_RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
         records_RecyclerView.adapter = adapter
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
-        // todo: hide when no changes.
+        changesCount
+                .map { it > 0 }
+                .subscribe(RxMenuItem.visible(menu.findItem(R.id.show_local_changes)))
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
     }
 
@@ -102,6 +109,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
+        toolbar.title = getString(R.string.app_name) + if (vs.changesCount > 0) " (${vs.changesCount})" else ""
+        // todo: show changesCount on menuItem's icon.
+        changesCount.onNext(vs.changesCount)
     }
 
     override fun executeAction(va: ViewAction) {
@@ -120,6 +130,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
+            is RecordsListViewAction.ScrollToPosition -> records_RecyclerView.scrollToPosition(va.position)
         }
     }
 }

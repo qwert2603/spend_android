@@ -70,6 +70,11 @@ class EditRecordDialogFragment : DialogFragment() {
                         .also { it.setTargetFragment(this@EditRecordDialogFragment, REQUEST_DATE) }
                         .show(fragmentManager, "date")
             }
+            value_EditText.setOnEditorActionListener { _, _, _ ->
+                sendResult()
+                dismiss()
+                true
+            }
 
             val userInputValueEditText = UserInputEditText(value_EditText)
             userInputValueEditText
@@ -100,17 +105,7 @@ class EditRecordDialogFragment : DialogFragment() {
         return AlertDialog.Builder(context!!)
                 .setTitle(R.string.edit_record_text)
                 .setView(dialogView)
-                .setPositiveButton(R.string.text_confirm, { _, _ ->
-                    targetFragment?.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent()
-                                    .putExtra(ID_KEY, id)
-                                    .putExtra(KIND_KEY, dialogView.kind_EditText.text.toString())
-                                    .putExtra(DATE_KEY, Const.DATE_FORMAT.parse(dialogView.date_EditText.text.toString()).time)
-                                    .putExtra(VALUE_KEY, dialogView.value_EditText.text.toString().toInt())
-                    )
-                })
+                .setPositiveButton(R.string.text_confirm, { _, _ -> sendResult() })
                 .setNegativeButton(R.string.text_cancel, null)
                 .setOnDismissListener {
                     LogUtils.d("compositeDisposable.dispose()")
@@ -132,5 +127,17 @@ class EditRecordDialogFragment : DialogFragment() {
             dialogView.date_EditText.setSelection(dateString.length)
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun sendResult() {
+        targetFragment?.onActivityResult(
+                targetRequestCode,
+                Activity.RESULT_OK,
+                Intent()
+                        .putExtra(ID_KEY, id)
+                        .putExtra(KIND_KEY, dialogView.kind_EditText.text.toString())
+                        .putExtra(DATE_KEY, Const.DATE_FORMAT.parse(dialogView.date_EditText.text.toString()).time)
+                        .putExtra(VALUE_KEY, dialogView.value_EditText.text.toString().toInt())
+        )
     }
 }

@@ -92,6 +92,8 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
 
     fun itemsState(): Observable<ItemsState<I, T>> = inMemoryStateHolder.state
 
+    fun itemCreatedEvents(): Observable<T> = inMemoryStateHolder.itemCreatedEvents
+
     fun addItem(item: T) {
         val millis = System.currentTimeMillis()
         val timedChange = TimedChange(ChangeKind.CREATE, millis)
@@ -131,7 +133,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
                         localChangesDataSource.save(Change(item.id, ChangeKind.EDIT))
                 )))
 
-                val timedChange = TimedChange(ChangeKind.DELETE, millis)
+                val timedChange = TimedChange(ChangeKind.EDIT, millis)
                 remoteDataSender.send(
                         item.id,
                         remoteItemsDataSource.edit(item)

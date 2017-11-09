@@ -48,6 +48,7 @@ class RemoteDBImpl(
 
     private fun getPreparedStatement(sql: String): PreparedStatement {
         val connection = connection ?: DriverManager.getConnection(url, user, password)
+        DriverManager.setLoginTimeout(3)// todo: check
         val preparedStatement = preparedStatements[sql] ?: connection.prepareStatement(sql)
         preparedStatement.queryTimeout = 4 // todo: check
         this.connection = connection

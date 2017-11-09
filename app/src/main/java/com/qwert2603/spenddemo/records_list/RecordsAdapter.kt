@@ -11,8 +11,8 @@ import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
 
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {
-        private const val VIEW_TYPE_ADD_RECORD = 1
-        private const val VIEW_TYPE_RECORD = 2
+        const val VIEW_TYPE_ADD_RECORD = 1
+        const val VIEW_TYPE_RECORD = 2
     }
 
     override fun getItemViewTypeModel(m: RecordsListItem) = when (m) {

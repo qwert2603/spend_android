@@ -11,5 +11,6 @@ interface RecordsRepo {
     fun removeRecord(recordId: Long)
 
     fun recordsState(): Observable<RecordsState>
+    fun recordCreatedEvents():Observable<Record>
 }
 

@@ -49,9 +49,9 @@
         <EditText
             android:id="@+id/value_EditText"
             android:layout_width="match_parent"
-            android:imeOptions="actionDone|flagNoFullscreen"
             android:layout_height="wrap_content"
             android:hint="@string/value"
+            android:imeOptions="actionDone|flagNoFullscreen"
             android:inputType="number"
             android:singleLine="true" />
 

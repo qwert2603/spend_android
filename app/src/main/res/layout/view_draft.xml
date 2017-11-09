@@ -1,68 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="false"
+    android:orientation="horizontal"
     android:padding="6dp">
 
-    <android.support.design.widget.TextInputLayout
+    <EditText
+        android:id="@+id/date_EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:textColorHint="@color/anth"
-        app:hintTextAppearance="@color/anth">
+        android:focusable="false"
+        android:hint="@string/date"
+        android:singleLine="true"
+        tools:ignore="TextFields" />
 
-        <EditText
-            android:id="@+id/date_EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:hint="@string/date"
-            android:singleLine="true"
-            tools:ignore="TextFields" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
+    <EditText
+        android:id="@+id/kind_EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_weight="3"
-        android:textColorHint="@color/anth"
-        app:hintTextAppearance="@color/anth">
+        android:hint="@string/kind"
+        android:imeOptions="actionNext|flagNoFullscreen"
+        android:selectAllOnFocus="true"
+        android:singleLine="true" />
 
-        <EditText
-            android:id="@+id/kind_EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/kind"
-            android:imeOptions="actionNext|flagNoFullscreen"
-            android:selectAllOnFocus="true"
-            android:singleLine="true" />
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
+    <EditText
+        android:id="@+id/value_EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_weight="1.5"
-        android:textColorHint="@color/anth"
-        app:hintTextAppearance="@color/anth">
-
-        <EditText
-            android:id="@+id/value_EditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/value"
-            android:imeActionLabel="@string/text_save"
-            android:imeOptions="actionDone|flagNoFullscreen"
-            android:inputType="number"
-            android:singleLine="true" />
-
-    </android.support.design.widget.TextInputLayout>
+        android:hint="@string/value"
+        android:imeActionLabel="@string/text_save"
+        android:imeOptions="actionDone|flagNoFullscreen"
+        android:inputType="number"
+        android:singleLine="true" />
 
     <ImageView
         android:id="@+id/save_Button"

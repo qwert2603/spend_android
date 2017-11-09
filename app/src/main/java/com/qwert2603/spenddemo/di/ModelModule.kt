@@ -54,6 +54,12 @@ class ModelModule {
             lastUpdateRepo = lastUpdateRepo,
             logger = logger,
             r2t = RemoteRecord::toSyncingRecord,
-            sortFun = { it.sortedByDescending { it.date } }//todo: sort by id when day is same.
+            sortFun = {
+                it.sortedWith(kotlin.Comparator { r1, r2 ->
+                    r2.date.compareTo(r1.date)
+                            .takeIf { it != 0 }
+                            ?: r2.id.compareTo(r1.id)
+                })
+            }
     )
 }

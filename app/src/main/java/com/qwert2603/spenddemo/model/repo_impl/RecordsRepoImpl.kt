@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
-import com.qwert2603.spenddemo.model.entity.RecordsState
 import com.qwert2603.spenddemo.model.syncprocessor.RemoteRecord
 import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toRecord
@@ -46,4 +45,7 @@ class RecordsRepoImpl @Inject constructor(
                         itemsState.changes.mapValues { it.value.changeKind.toChangeKind() }
                 )
             }
+
+    override fun recordCreatedEvents(): Observable<Record> = syncProcessor.itemCreatedEvents()
+            .map { it.toRecord() }
 }

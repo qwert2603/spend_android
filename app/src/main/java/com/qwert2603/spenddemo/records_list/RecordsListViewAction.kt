@@ -7,4 +7,5 @@ sealed class RecordsListViewAction : ViewAction {
     data class MoveToChangesScreen(private val ignored: Unit = Unit) : RecordsListViewAction()
     data class AskToDeleteRecord(val id: Long, val text: String) : RecordsListViewAction()
     data class AskToEditRecord(val record: RecordUI) : RecordsListViewAction()
+    data class ScrollToPosition(val position: Int) : RecordsListViewAction()
 }

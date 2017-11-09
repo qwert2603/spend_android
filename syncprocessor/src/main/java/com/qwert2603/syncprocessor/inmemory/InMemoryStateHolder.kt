@@ -18,9 +18,17 @@ internal class InMemoryStateHolder<I : Any, T : Identifiable<I>>(
     val state: BehaviorSubject<ItemsState<I, T>> = BehaviorSubject.create()
     private val stateChanges: PublishSubject<ItemsStatePartialChange> = PublishSubject.create()
 
+    val itemCreatedEvents: PublishSubject<T> = PublishSubject.create()
+
     init {
         stateChanges
                 .observeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+                .doAfterNext {
+                    if (it is ItemsStatePartialChange.ItemCreatedLocally<*, *>) {
+                        @Suppress("UNCHECKED_CAST")
+                        itemCreatedEvents.onNext(it.item as T)
+                    }
+                }
                 .scan(ItemsState(emptyList<T>(), emptyMap(), emptySet()), { state, change ->
                     val b = System.currentTimeMillis()
                     logger.d("InMemoryStateHolder", "change $change")
