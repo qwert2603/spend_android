@@ -13,11 +13,7 @@ class RemoteDBImpl(
         private val password: String
 ) : RemoteDB {
     init {
-        try {
-            Class.forName(org.postgresql.Driver::class.java.name)
-        } catch (e: ClassNotFoundException) {
-            LogUtils.e("postgresql", e)
-        }
+        Class.forName(org.postgresql.Driver::class.java.name)
     }
 
     private var connection: Connection? = null
