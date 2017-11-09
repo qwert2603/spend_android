@@ -61,7 +61,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     override fun render(vs: DraftViewState) {
         LogUtils.d("DraftViewImpl render $vs")
-        kindEditText.setText(vs.kind)
+        kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
         dateEditText.setText(vs.dateString)
         save_Button.isEnabled = vs.createEnable

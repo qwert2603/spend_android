@@ -1,14 +1,12 @@
 package com.qwert2603.spenddemo.draft
 
+import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import com.qwert2603.spenddemo.utils.Const
-import java.util.*
 
 data class DraftViewState(
-        val kind: String,
-        val value: Int,
-        val date: Date,
+        val creatingRecord: CreatingRecord,
         val createEnable: Boolean
 ) {
-    val valueString: String = value.takeIf { it != 0 }?.toString() ?: ""
-    val dateString: String = Const.DATE_FORMAT.format(date)
+    val valueString: String = creatingRecord.value.takeIf { it != 0 }?.toString() ?: ""
+    val dateString: String = Const.DATE_FORMAT.format(creatingRecord.date)
 }

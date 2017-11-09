@@ -62,7 +62,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
                                     .delaySubscription(inMemoryStateHolder.state)
                                     .filter { it.isNotEmpty() }
                                     .doOnSuccess { serverUpdates ->
-                                        val removedItemIds = serverUpdates.filter { it.deleted }
+                                        val removedItemIds = serverUpdates.filter { it.deleted }.map { it.id }
                                         val updatedItems = serverUpdates.filter { !it.deleted }.map(r2t)
 
                                         inMemoryStateHolder.changeState(ItemsStatePartialChange.MakeLikeOnRemote(
@@ -76,10 +76,10 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
                                                         .map { localItemsDataSource.save(it) }
                                                         .let { Completable.concat(it) },
                                                 removedItemIds
-                                                        .map { localItemsDataSource.remove(it.id) }
+                                                        .map { localItemsDataSource.remove(it) }
                                                         .let { Completable.concat(it) },
                                                 Completable.fromAction {
-                                                    lastUpdateRepo.saveLastUpdate(serverUpdates.last().updated)
+                                                    lastUpdateRepo.saveLastUpdate(serverUpdates.first().updated)
                                                 }
                                         )))
                                     }
@@ -200,5 +200,5 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
     private fun isExistingItem(id: I) = id in inMemoryStateHolder.state.value.items.map { it.id }
 
     private fun isChangeActual(id: I, timedChange: TimedChange)
-            = inMemoryStateHolder.state.value.changes[id] == timedChange
+            = true// inMemoryStateHolder.state.value.changes[id] == timedChange
 }

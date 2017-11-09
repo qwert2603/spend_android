@@ -20,7 +20,7 @@ class RemoteDBFacade @Inject constructor(
         @RemoteTableName private val REMOTE_TABLE_NAME: String
 ) {
     fun getAllRecords(lastUpdateMillis: Long = 0): List<RemoteRecord> = remoteDB.query(
-            "SELECT * FROM $REMOTE_TABLE_NAME ORDER BY date DESC, id DESC WHERE updated >= ?",
+            "SELECT * FROM $REMOTE_TABLE_NAME WHERE updated > ? ORDER BY updated DESC",
             { RemoteRecordSqlWrapper(it).record },
             listOf(Timestamp(lastUpdateMillis))
     )
@@ -38,7 +38,7 @@ class RemoteDBFacade @Inject constructor(
 
     fun updateRecord(record: Record) {
         remoteDB.execute(
-                "UPDATE $REMOTE_TABLE_NAME SET kind=?, value=?, date=? updated=NOW() WHERE id=?",
+                "UPDATE $REMOTE_TABLE_NAME SET kind=?, value=?, date=?, updated=NOW() WHERE id=?",
                 listOf(record.kind, record.value, record.date.toSqlDate(), record.id)
         )
     }
