@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
     <string name="kind">kind</string>
     <string name="value">value</string>
@@ -13,8 +13,7 @@
     <string name="choose_kind_text">select kind</string>
 
     <string name="text_confirm">confirm</string>
-    <string name="text_cancel">cancel</string>
-    <string name="text_save">save</string>
+    <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
 
     <string name="error_text">error</string>
     <string name="loading_error_text">loading error</string>

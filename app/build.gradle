@@ -72,7 +72,7 @@ dependencies {
     ext.mosby_version = '3.0.4'
     ext.fragmentargs_version = '3.0.2'
     ext.cicerone_version = '2.1.0'
-    ext.postgresql_version = '42.1.4'
+    ext.postgresql_version = '42.1.4.jre7'
     ext.arch_components_version = '1.0.0'
     ext.dagger_version = '2.13'
     ext.junit_version = '4.12'

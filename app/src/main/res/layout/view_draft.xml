@@ -9,13 +9,13 @@
 
     <EditText
         android:id="@+id/date_EditText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
         android:focusable="false"
         android:hint="@string/date"
         android:singleLine="true"
-        tools:ignore="TextFields" />
+        tools:ignore="TextFields"
+        tools:text="2017-11-09" />
 
     <EditText
         android:id="@+id/kind_EditText"
@@ -35,7 +35,6 @@
         android:layout_marginStart="4dp"
         android:layout_weight="1.5"
         android:hint="@string/value"
-        android:imeActionLabel="@string/text_save"
         android:imeOptions="actionDone|flagNoFullscreen"
         android:inputType="number"
         android:singleLine="true" />
