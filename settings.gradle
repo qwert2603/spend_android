@@ -1,1 +1,1 @@
-include ':app', ':syncprocessor'
+include ':spend', ':syncprocessor'
