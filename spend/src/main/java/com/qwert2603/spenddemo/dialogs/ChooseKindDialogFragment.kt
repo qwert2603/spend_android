@@ -45,7 +45,7 @@ class ChooseKindDialogFragment : DialogFragment() {
                                 Intent().putExtra(KIND_KEY, kinds[which])
                         )
                     } else {
-                        draftRepo.onKindSelected(kinds[which])
+                        draftRepo.kindSelected.onNext(kinds[which])
                     }
                 })
                 .setNegativeButton(R.string.text_cancel, null)

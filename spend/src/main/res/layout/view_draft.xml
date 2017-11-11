@@ -43,6 +43,7 @@
         android:imeOptions="actionDone|flagNoFullscreen"
         android:inputType="number"
         android:minWidth="54dp"
+        android:selectAllOnFocus="true"
         android:singleLine="true"
         tools:text="1234" />
 
@@ -50,7 +51,8 @@
         android:id="@+id/save_Button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_syncing" />
 

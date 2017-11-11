@@ -49,7 +49,7 @@ class DatePickerDialogFragment : DialogFragment() {
                                 Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
                         )
                     } else {
-                        draftRepo.onDateSelected(calendar.time)
+                        draftRepo.dateSelected.onNext(calendar.time)
                     }
                 },
                 calendar.get(Calendar.YEAR),

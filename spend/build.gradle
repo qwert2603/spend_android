@@ -67,7 +67,7 @@ dependencies {
 
     implementation project(path: ':syncprocessor')
 
-    ext.support_version = '27.0.0'
+    ext.support_version = '27.0.1'
     ext.rxjava_version = '2.1.6'
     ext.rxandroid_version = '2.0.1'
     ext.rxbinding_version = '2.0.0'
@@ -82,6 +82,7 @@ dependencies {
 
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
+    implementation "com.android.support:cardview-v7:$support_version"
 
     implementation "android.arch.persistence.room:runtime:$arch_components_version"
     implementation "android.arch.persistence.room:rxjava2:$arch_components_version"

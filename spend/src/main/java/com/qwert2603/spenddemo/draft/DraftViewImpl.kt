@@ -6,6 +6,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.base_mvi.ViewAction
@@ -29,16 +30,10 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
     private val valueEditText by lazy { UserInputEditText(value_EditText) }
     private val dateEditText by lazy { UserInputEditText(date_EditText) }
 
-    private val keyboardManager = context as KeyboardManager
+    private val keyboardManager by lazy { context as KeyboardManager }
 
     init {
         inflate(R.layout.view_draft, attachToRoot = true)
-        //todo: viewAction
-        kind_EditText.setOnItemClickListener { _, _, _, _ ->
-            if (keyboardManager.isKeyBoardShown()) {
-                keyboardManager.showKeyboard(value_EditText)
-            }
-        }
     }
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
@@ -67,6 +62,10 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
 
+    override fun suggestionSelected(): Observable<String> = RxAutoCompleteTextView
+            .itemClickEvents(kind_EditText)
+            .map { it.view().adapter.getItem(it.position()).toString() }
+
     override fun render(vs: DraftViewState) {
         LogUtils.d("DraftViewImpl render $vs")
         kindEditText.setText(vs.creatingRecord.kind)
@@ -87,6 +86,11 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
             is DraftViewAction.FocusOnKindInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(kind_EditText)
+                }
+            }
+            is DraftViewAction.FocusOnValueInput -> {
+                if (keyboardManager.isKeyBoardShown()) {
+                    keyboardManager.showKeyboard(value_EditText)
                 }
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)

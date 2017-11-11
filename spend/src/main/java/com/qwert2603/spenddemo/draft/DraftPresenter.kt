@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.draft
 
 import com.qwert2603.spenddemo.base_mvi.BasePresenter
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
+import com.qwert2603.spenddemo.model.entity.Kind
 import com.qwert2603.spenddemo.model.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.utils.LogUtils
 import com.qwert2603.spenddemo.utils.switchToUiIfNotYet
@@ -27,7 +28,18 @@ class DraftPresenter @Inject constructor(
         val kindChanges = kindIntent
                 .map { DraftPartialChange.KindChanged(it) }
                 .skipUntil(draftLoaded)
-        val valueChanges = intent { it.valueChanges() }
+        val valueChanges = Observable
+                .merge(
+                        intent { it.valueChanges() },
+                        draftInteractor.kindSelected()
+                                .map { it.lastPrice }
+                                .doAfterNext { viewActions.onNext(DraftViewAction.FocusOnValueInput()) },
+                        intent { it.suggestionSelected() }
+                                .withLatestFrom(draftInteractor.getAllKinds(), BiFunction { selectedKind: String, kinds: List<Kind> ->
+                                    kinds.find { it.kind == selectedKind }?.lastPrice ?: 0
+                                })
+                                .doAfterNext { viewActions.onNext(DraftViewAction.FocusOnValueInput()) }
+                )
                 .map { DraftPartialChange.ValueChanged(it) }
                 .skipUntil(draftLoaded)
         val dateChanges = intent { it.dateChanges() }

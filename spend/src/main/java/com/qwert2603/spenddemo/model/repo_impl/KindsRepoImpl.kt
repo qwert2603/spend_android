@@ -18,11 +18,16 @@ class KindsRepoImpl @Inject constructor(
     private val localKinds: BehaviorSubject<List<Kind>> = localDB.kindsDao()
             .getAllKings()
             .toObservable()
-            .map { it.map { Kind(it) } }
+            .map {
+                it
+                        .groupBy { it.kind }
+                        .map { it.value }
+                        .sortedByDescending { it.size }
+                        .map {  it.maxBy { it.date }!! }
+                        .map { Kind(it.kind, it.value, it.date) }
+            }
             .subscribeOn(modelSchedulersProvider.io)
             .subscribeWith(BehaviorSubject.create())
 
     override fun getAllKinds(): Observable<List<Kind>> = localKinds
-
-
 }

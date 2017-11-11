@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.model.repo
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 interface DraftRepo {
@@ -10,6 +11,6 @@ interface DraftRepo {
     fun getDraft(): Observable<CreatingRecord>
     fun removeDraft(): Completable
 
-    fun onDateSelected(date: Date)
-    fun onKindSelected(kind: String)
+    val dateSelected: PublishSubject<Date>
+    val kindSelected: PublishSubject<String>
 }

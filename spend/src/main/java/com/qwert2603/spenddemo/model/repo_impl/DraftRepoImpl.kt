@@ -49,23 +49,32 @@ class DraftRepoImpl @Inject constructor(
             prefs.saveDraft(value)
         }
 
-    private val draftChanges: PublishSubject<CreatingRecord> = PublishSubject.create()
+    private val draftChangesAfterSelect: PublishSubject<CreatingRecord> = PublishSubject.create()
+
+    override val dateSelected: PublishSubject<Date> = PublishSubject.create()
+
+    override val kindSelected: PublishSubject<String> = PublishSubject.create()
+
+    init {
+        dateSelected
+                .doOnNext {
+                    draft = draft.copy(date = it)
+                    draftChangesAfterSelect.onNext(draft)
+                }
+                .subscribe()
+        kindSelected
+                .doOnNext {
+                    draft = draft.copy(kind = it)
+                    draftChangesAfterSelect.onNext(draft)
+                }
+                .subscribe()
+    }
 
     override fun saveDraft(creatingRecord: CreatingRecord): Completable = Completable
             .fromAction { draft = creatingRecord }
 
-    override fun getDraft(): Observable<CreatingRecord> = draftChanges
+    override fun getDraft(): Observable<CreatingRecord> = draftChangesAfterSelect
             .startWith(draft)
 
     override fun removeDraft(): Completable = Completable.fromAction { draft = DraftInteractor.EmptyCreatingRecord }
-
-    override fun onDateSelected(date: Date) {
-        draft = draft.copy(date = date)
-        draftChanges.onNext(draft)
-    }
-
-    override fun onKindSelected(kind: String) {
-        draft = draft.copy(kind = kind)
-        draftChanges.onNext(draft)
-    }
 }

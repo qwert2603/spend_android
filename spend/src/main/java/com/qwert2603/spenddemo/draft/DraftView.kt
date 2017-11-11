@@ -5,11 +5,12 @@ import io.reactivex.Observable
 import java.util.*
 
 interface DraftView : BaseView<DraftViewState> {
-    fun viewCreated():Observable<Any>
+    fun viewCreated(): Observable<Any>
     fun kingChanges(): Observable<String>
     fun valueChanges(): Observable<Int>
     fun dateChanges(): Observable<Date>
     fun saveClicks(): Observable<Any>
-    fun selectDateClicks():Observable<Any>
-    fun selectKindClicks():Observable<Any>
+    fun selectDateClicks(): Observable<Any>
+    fun selectKindClicks(): Observable<Any>
+    fun suggestionSelected(): Observable<String>
 }
