@@ -4,7 +4,6 @@
     android:id="@+id/draft_LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="false"
     android:orientation="horizontal"
     android:padding="6dp">
 
@@ -37,14 +36,15 @@
 
     <EditText
         android:id="@+id/value_EditText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_weight="1.5"
         android:hint="@string/value"
         android:imeOptions="actionDone|flagNoFullscreen"
         android:inputType="number"
-        android:singleLine="true" />
+        android:minWidth="54dp"
+        android:singleLine="true"
+        tools:text="1234" />
 
     <ImageView
         android:id="@+id/save_Button"

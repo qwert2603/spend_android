@@ -4,17 +4,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.qwert2603.spenddemo"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 2
-        versionName "2.0"
+        versionName "2.0-alpha1"
+        buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
 
         resConfigs "en"
-        resConfigs "hdpi"
         resConfigs "ldltr"
 
         javaCompileOptions {
@@ -36,40 +35,29 @@ android {
         }
     }
 
-    flavorDimensions "server", "minApi"
+    flavorDimensions "server"
 
-    def REMOTE_TABLE_NAME_TYPE = "String"
-    def REMOTE_TABLE_NAME = "REMOTE_TABLE_NAME"
+    def SERVER_TYPE_TYPE = "com.qwert2603.spenddemo.model.ServerType"
+    def SERVER_TYPE = "SERVER_TYPE"
 
     productFlavors {
-        woServer {
+        noServer {
             dimension "server"
-            buildConfigField REMOTE_TABLE_NAME_TYPE, REMOTE_TABLE_NAME, "\"nth\""
-            applicationIdSuffix ".woServer"
-            versionNameSuffix "-woServer"
+            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.NO_SERVER"
+            applicationIdSuffix ".noServer"
+            versionNameSuffix "-noServer"
         }
         serverTest {
             dimension "server"
-            buildConfigField REMOTE_TABLE_NAME_TYPE, REMOTE_TABLE_NAME, "\"test_spend\""
+            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.SERVER_TEST"
             applicationIdSuffix ".serverTest"
             versionNameSuffix "-serverTest"
         }
         serverProd {
             dimension "server"
-            buildConfigField REMOTE_TABLE_NAME_TYPE, REMOTE_TABLE_NAME, "\"spend\""
+            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.SERVER_PROD"
             applicationIdSuffix ".serverProd"
             versionNameSuffix "-serverProd"
-        }
-        api19 {
-            dimension "minApi"
-            applicationIdSuffix ".api19"
-            versionNameSuffix "-api19"
-        }
-        api23 {
-            dimension "minApi"
-            minSdkVersion 23
-            applicationIdSuffix ".api23"
-            versionNameSuffix "-api23"
         }
     }
 }
@@ -79,7 +67,7 @@ dependencies {
 
     implementation project(path: ':syncprocessor')
 
-    ext.support_version = '26.1.0'
+    ext.support_version = '27.0.0'
     ext.rxjava_version = '2.1.6'
     ext.rxandroid_version = '2.0.1'
     ext.rxbinding_version = '2.0.0'

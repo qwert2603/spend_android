@@ -7,16 +7,14 @@ import com.qwert2603.spenddemo.utils.LogUtils
 import com.qwert2603.syncprocessor.datasource.LastUpdateRepo
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class LastUpdateRepoImpl @Inject constructor(
+class LastUpdateRepoImpl(
         appContext: Context
 ) : LastUpdateRepo {
 
     companion object {
         private const val LAST_UPDATE_KEY = "${BuildConfig.APPLICATION_ID}.LAST_UPDATE_KEY"
+        private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd kk:mm:ss.SSS", Locale.getDefault())
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(appContext)
@@ -24,8 +22,7 @@ class LastUpdateRepoImpl @Inject constructor(
     override fun getLastUpdate(): Long = prefs.getLong(LAST_UPDATE_KEY, 0L)
 
     override fun saveLastUpdate(millis: Long) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd kk:mm:ss.SSS", Locale.getDefault())
-        LogUtils.d("LastUpdateRepoImpl saveLastUpdate ${dateFormat.format(Date(millis))}")
+        LogUtils.d("LastUpdateRepoImpl saveLastUpdate ${DATE_FORMAT.format(Date(millis))}")
         prefs.edit()
                 .putLong(LAST_UPDATE_KEY, millis)
                 .apply()

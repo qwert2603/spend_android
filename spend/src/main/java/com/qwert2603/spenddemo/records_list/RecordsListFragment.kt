@@ -13,15 +13,13 @@ import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyc
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.page_list_item.AllItemsLoaded
 import com.qwert2603.spenddemo.changes_list.ChangesListFragment
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.dialogs.DeleteRecordDialogFragment
-import com.qwert2603.spenddemo.dialogs.DeleteRecordDialogFragmentBuilder
-import com.qwert2603.spenddemo.dialogs.EditRecordDialogFragment
-import com.qwert2603.spenddemo.dialogs.EditRecordDialogFragmentBuilder
+import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
@@ -48,10 +46,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             .createRecordsListPresenter()
 
     private val showChangesClicks = PublishSubject.create<Any>()
+    private val sendRecordsClicks = PublishSubject.create<Any>()
+    private val showAboutClicks = PublishSubject.create<Any>()
 
     private val deleteRecordConfirmed = PublishSubject.create<Long>()
     private val editRecordConfirmed = PublishSubject.create<Record>()
 
+    private val showChangeKinds: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     private val changesCount: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +67,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         records_RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+                .also { it.initialPrefetchItemCount = 10 }
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
     }
@@ -73,10 +75,16 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
-        changesCount
-                .map { it > 0 }
+        Observable
+                .combineLatest(
+                        changesCount.map { it > 0 },
+                        showChangeKinds,
+                        BiFunction { notZero: Boolean, show: Boolean -> notZero && show }
+                )
                 .subscribe(RxMenuItem.visible(menu.findItem(R.id.show_local_changes)))
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.send)).subscribeWith(sendRecordsClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -106,11 +114,20 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun editRecordConfirmed(): Observable<Record> = editRecordConfirmed
 
+    override fun sendRecordsClicks(): Observable<Any> = sendRecordsClicks
+
+    override fun showAboutClicks(): Observable<Any> = showAboutClicks
+
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
+        adapter.showIds = vs.showIds
+        adapter.showChangeKinds = vs.showChangeKinds
+        if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
-        toolbar.title = getString(R.string.app_name) + if (vs.changesCount > 0) " (${vs.changesCount})" else ""
+        toolbar.title = getString(R.string.app_name) +
+                if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
         // todo: show changesCount on menuItem's icon.
+        showChangeKinds.onNext(vs.showChangeKinds)
         changesCount.onNext(vs.changesCount)
     }
 
@@ -130,7 +147,18 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            is RecordsListViewAction.ScrollToPosition -> records_RecyclerView.scrollToPosition(va.position)
+        // todo: highlight created item.
+            is RecordsListViewAction.ScrollToPosition -> records_RecyclerView.smoothScrollToPosition(va.position)
+            is RecordsListViewAction.SendRecords -> {
+                Intent(Intent.ACTION_SEND)
+                        .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }
+                        .also { it.type = "text/plain" }
+                        .let { Intent.createChooser(it, context?.getString(R.string.send_title)) }
+                        .apply { context?.startActivity(this) }
+            }
+            is RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
+                    .show(fragmentManager, "app_info")
+                    .also { (context as KeyboardManager).hideKeyboard() }
         }
     }
 }

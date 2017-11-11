@@ -12,7 +12,8 @@
         android:id="@+id/local_ImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_local" />
+        tools:src="@drawable/ic_local"
+        tools:tint="@color/local_change_edit" />
 
     <TextView
         android:id="@+id/id_TextView"
@@ -28,8 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:textColor="@color/colorAccent"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        android:textSize="16sp"
         tools:text="2016-05-12" />
 
     <TextView
@@ -39,15 +39,16 @@
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
         android:layout_weight="1"
-        android:textColor="#444444"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="food" />
 
     <TextView
         android:id="@+id/value_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#444444"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         tools:text="175" />
 

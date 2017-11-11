@@ -36,6 +36,8 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
     private val remoteDataSender = RemoteDataSender(logger)
 
     init {
+        logger.d("SyncProcessor","${logger::javaClass} ${logger.javaClass}")
+
         Single
                 .zip(
                         localItemsDataSource.getAll(),

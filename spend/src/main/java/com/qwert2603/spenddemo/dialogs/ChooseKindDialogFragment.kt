@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.entity.SourceType
 import com.qwert2603.spenddemo.model.repo.DraftRepo
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import com.qwert2603.spenddemo.utils.mapList
@@ -30,7 +29,7 @@ class ChooseKindDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val kinds = kindsRepo.getAllKinds(SourceType.LOCAL)
+        val kinds = kindsRepo.getAllKinds()
                 .firstOrError()
                 .mapList { it.kind }
                 .blockingGet()

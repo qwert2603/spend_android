@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/show_local_changes"
-        android:title="@string/show_local_changes"
+    <item
+        android:id="@+id/show_local_changes"
         android:icon="@drawable/ic_local"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/show_local_changes"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/ic_about"
+        android:title="@string/about_text"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/send"
+        android:icon="@drawable/ic_send_black_24dp"
+        android:title="@string/send_text"
+        app:showAsAction="always" />
+
 </menu>

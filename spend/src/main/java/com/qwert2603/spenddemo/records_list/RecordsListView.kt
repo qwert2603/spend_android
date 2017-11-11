@@ -13,4 +13,7 @@ interface RecordsListView : BaseView<RecordsListViewState> {
 
     fun deleteRecordConfirmed(): Observable<Long>
     fun editRecordConfirmed(): Observable<Record>
+
+    fun sendRecordsClicks(): Observable<Any>
+    fun showAboutClicks(): Observable<Any>
 }

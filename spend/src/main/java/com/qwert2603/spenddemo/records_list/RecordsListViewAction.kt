@@ -8,4 +8,6 @@ sealed class RecordsListViewAction : ViewAction {
     data class AskToDeleteRecord(val id: Long, val text: String) : RecordsListViewAction()
     data class AskToEditRecord(val record: RecordUI) : RecordsListViewAction()
     data class ScrollToPosition(val position: Int) : RecordsListViewAction()
+    data class SendRecords(val text: String) : RecordsListViewAction()
+    data class ShowAbout(private val ignored: Unit = Unit) : RecordsListViewAction()
 }

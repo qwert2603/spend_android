@@ -118,7 +118,7 @@ abstract class BaseRecyclerViewAdapter<M : IdentifiableLong> : RecyclerView.Adap
         return super.onFailedToRecycleView(holder)
     }
 
-    override fun getItemCount() = adapterList.size
+    override final fun getItemCount() = adapterList.size
 
-    override fun getItemId(position: Int) = adapterList[position].id
+    override final fun getItemId(position: Int) = adapterList[position].id
 }

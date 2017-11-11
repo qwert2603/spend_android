@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.draft
 
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
-import com.qwert2603.spenddemo.model.entity.SourceType
 import com.qwert2603.spenddemo.model.repo.DraftRepo
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
@@ -42,7 +41,7 @@ class DraftInteractor @Inject constructor(
     fun getMatchingKinds(inputKind: String): Single<List<String>> {
         if (inputKind.isBlank()) return Single.just(emptyList())
         return kindsRepo
-                .getAllKinds(SourceType.LOCAL)
+                .getAllKinds()
                 .firstOrError()
                 .mapList { it.kind }
                 .map {

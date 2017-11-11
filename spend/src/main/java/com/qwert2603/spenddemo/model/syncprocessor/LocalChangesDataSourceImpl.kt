@@ -9,11 +9,8 @@ import com.qwert2603.syncprocessor.datasource.LocalChangesDataSource
 import com.qwert2603.syncprocessor.entity.Change
 import io.reactivex.Completable
 import io.reactivex.Single
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class LocalChangesDataSourceImpl @Inject constructor(
+class LocalChangesDataSourceImpl(
         private val localDB: LocalDB
 ) : LocalChangesDataSource<Long> {
     override fun getAll(): Single<List<Change<Long>>> = localDB.changesDao()

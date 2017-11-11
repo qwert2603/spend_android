@@ -12,6 +12,7 @@
     <string name="edit_record_text">edit record</string>
     <string name="choose_kind_text">select kind</string>
 
+    <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
     <string name="text_confirm">confirm</string>
     <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
 
@@ -21,4 +22,16 @@
     <string name="retry_text">retry</string>
     <string name="empty_list_text">list is empty</string>
     <string name="list_loaded_completely">list loaded completely</string>
+    <string name="send_text">send</string>
+    <string name="send_title">send records</string>
+    <string name="about_text">about</string>
+
+    <string name="app_info_text_format">
+        <![CDATA[
+        приложение <b>spend</b><br/>
+        версия: <b>%1$s</b><br/>
+        код версии: <b>%2$d</b><br/>
+        собрано: <b>%3$s года</b> в <b>%4$s</b><br/>
+        ]]>
+    </string>
 </resources>

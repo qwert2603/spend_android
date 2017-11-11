@@ -4,8 +4,6 @@ import android.content.Context
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
-import com.hannesdorfmann.mosby3.ViewGroupMviDelegate
-import com.hannesdorfmann.mosby3.ViewGroupMviDelegateImpl
 import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -35,22 +33,12 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     init {
         inflate(R.layout.view_draft, attachToRoot = true)
+        //todo: viewAction
         kind_EditText.setOnItemClickListener { _, _, _, _ ->
             if (keyboardManager.isKeyBoardShown()) {
                 keyboardManager.showKeyboard(value_EditText)
             }
         }
-    }
-
-    override fun getMviDelegate(): ViewGroupMviDelegate<DraftView, DraftPresenter> {
-        if (mvpDelegate == null) {
-            mvpDelegate = ViewGroupMviDelegateImpl(
-                    this,
-                    this,
-                    false
-            )
-        }
-        return mvpDelegate
     }
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
