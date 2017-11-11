@@ -6,10 +6,10 @@
     android:viewportWidth="24">
 
     <path
-        android:pathData="M3 3
+        android:pathData="M3 7
             C 30 -5 -12 32 22 14
-            L3 3"
-        android:strokeColor="#101010"
+            L3 11"
+        android:strokeColor="#4c2c90"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:strokeWidth="1.0" />
