@@ -119,6 +119,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun showAboutClicks(): Observable<Any> = showAboutClicks
 
     override fun render(vs: RecordsListViewState) {
+        // todo: on api19 records are not shown when app starts, but they are showing if create new record.
         super.render(vs)
         adapter.showIds = vs.showIds
         adapter.showChangeKinds = vs.showChangeKinds
