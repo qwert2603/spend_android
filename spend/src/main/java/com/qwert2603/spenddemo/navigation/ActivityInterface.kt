@@ -5,7 +5,7 @@ import android.view.View
 
 interface ActivityInterface {
     val supportFragmentManager: FragmentManager
-    val fragmentContainer:Int
+    val fragmentContainer: Int
     fun finish()
     fun hideKeyboard()
     fun viewForSnackbars(): View

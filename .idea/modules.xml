@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SpendDemo.iml" filepath="$PROJECT_DIR$/SpendDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spend/app.iml" filepath="$PROJECT_DIR$/spend/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/spend/spend.iml" filepath="$PROJECT_DIR$/spend/spend.iml" />
       <module fileurl="file://$PROJECT_DIR$/syncprocessor/syncprocessor.iml" filepath="$PROJECT_DIR$/syncprocessor/syncprocessor.iml" />
     </modules>
