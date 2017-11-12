@@ -31,6 +31,7 @@ class DraftPresenter @Inject constructor(
         val valueChanges = Observable
                 .merge(
                         intent { it.valueChanges() },
+                        // todo: set value only value was == 0 before.
                         draftInteractor.kindSelected()
                                 .map { it.lastPrice }
                                 .doAfterNext { viewActions.onNext(DraftViewAction.FocusOnValueInput()) },

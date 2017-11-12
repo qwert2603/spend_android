@@ -29,6 +29,12 @@ class DraftInteractor @Inject constructor(
 
     fun onDraftChanged(creatingRecord: CreatingRecord): Completable = draftRepo.saveDraft(creatingRecord)
 
+    // todo: set today date if date is not set.
+//    fun onKindChanged(kind:String)
+//    fun onValueChanged(value:Int)
+//    fun onDateChanged(date: Date)
+//    fun createRecord()
+
     fun createRecord(creatingRecord: CreatingRecord): Completable {
         if (!isValid(creatingRecord)) return Completable.error(IllegalArgumentException())
         clearEvents.onNext(Unit)
