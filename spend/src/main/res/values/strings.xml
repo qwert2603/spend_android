@@ -25,6 +25,7 @@
     <string name="send_title">send records</string>
     <string name="about_text">about</string>
 
+    <!--todo: english-->
     <string name="app_info_text_format">
         <![CDATA[
         приложение <b>spend</b><br/>
