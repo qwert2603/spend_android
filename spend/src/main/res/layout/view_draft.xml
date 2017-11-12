@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="6dp">
+    android:padding="4dp">
 
     <EditText
         android:id="@+id/date_EditText"
@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:focusable="false"
         android:hint="@string/date"
+        android:longClickable="false"
         android:singleLine="true"
         tools:ignore="TextFields"
         tools:text="2017-11-09" />
@@ -51,9 +52,9 @@
         android:id="@+id/save_Button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
         android:src="@drawable/ic_syncing" />
 
 </LinearLayout>
