@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.di
+package com.qwert2603.spenddemo.di.qualifiers
 
 import javax.inject.Qualifier
 

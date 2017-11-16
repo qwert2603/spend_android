@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.di
 import android.arch.persistence.room.Room
 import android.content.Context
 import com.qwert2603.spenddemo.BuildConfig
+import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
 import com.qwert2603.spenddemo.model.ServerType
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDB

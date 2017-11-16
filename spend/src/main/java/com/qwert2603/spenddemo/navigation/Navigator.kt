@@ -1,7 +1,5 @@
 package com.qwert2603.spenddemo.navigation
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
@@ -38,14 +36,11 @@ class Navigator(private val activity: ActivityInterface)
         }, 300)
     }
 
-    @SuppressLint("RtlHardcoded")
     override fun setupFragmentTransactionAnimation(command: Command, currentFragment: Fragment?, nextFragment: Fragment, fragmentTransaction: FragmentTransaction) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            currentFragment?.exitTransition = Slide(Gravity.LEFT)
-                    .also { it.duration = 230 }
-            nextFragment.enterTransition = Slide(if (command is Forward) Gravity.RIGHT else Gravity.LEFT)
-                    .also { it.duration = 230 }
-        }
+        currentFragment?.exitTransition = Slide(Gravity.START)
+                .also { it.duration = 230 }
+        nextFragment.enterTransition = Slide(if (command is Forward) Gravity.END else Gravity.START)
+                .also { it.duration = 230 }
     }
 
     override fun applyCommand(command: Command?) {

@@ -7,7 +7,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.qwert2603.spenddemo"
-        minSdkVersion 19
+        minSdkVersion 22
         targetSdkVersion 27
         versionCode 6
         versionName "2.0-alpha4"

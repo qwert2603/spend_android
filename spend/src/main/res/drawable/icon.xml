@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/icon_base" />
-    <item android:drawable="@drawable/icon_overlay" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24">
+
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:scaleX="0.9"
+        android:scaleY="0.9">
+
+        <path
+            android:fillColor="@color/icon_fill"
+            android:pathData="M12 0C -10 6 34 18 12 24"
+            android:strokeColor="@color/icon_stroke"
+            android:strokeLineCap="round"
+            android:strokeWidth="1" />
+
+    </group>
+
+</vector>

@@ -1,6 +1,8 @@
 package com.qwert2603.spenddemo.di
 
 import com.qwert2603.spenddemo.BuildConfig
+import com.qwert2603.spenddemo.di.qualifiers.ShowChangeKinds
+import com.qwert2603.spenddemo.di.qualifiers.ShowIds
 import com.qwert2603.spenddemo.model.ServerType
 import dagger.Module
 import dagger.Provides
