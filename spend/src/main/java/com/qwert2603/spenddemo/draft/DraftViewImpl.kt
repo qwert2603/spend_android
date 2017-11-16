@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.draft
 
 import android.content.Context
 import android.support.v4.app.FragmentActivity
-import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
@@ -72,11 +71,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
         valueEditText.setText(vs.valueString)
         dateEditText.setText(vs.dateString)
         save_Button.isEnabled = vs.createEnable
-        save_Button.setColorFilter(ResourcesCompat.getColor(
-                resources,
-                if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled,
-                null
-        ))
+        save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }
 
     override fun executeAction(va: ViewAction) {
