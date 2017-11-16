@@ -64,13 +64,6 @@ class RecordsListPresenter @Inject constructor(
         intent { it.showAboutClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout()) }
                 .subscribeToView()
-//        recordsStateChanges
-//                .filter { it.records.isNotEmpty() }
-//                .firstOrError()
-//                .delay(300, TimeUnit.MILLISECONDS)
-//                .doAfterSuccess { viewActions.onNext(RecordsListViewAction.ScrollToPosition(0)) }
-//                .toObservable()
-//                .subscribeToView()
 
         val observable = Observable.merge(
                 recordsStateChanges

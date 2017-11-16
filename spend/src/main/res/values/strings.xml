@@ -25,13 +25,12 @@
     <string name="send_title">send records</string>
     <string name="about_text">about</string>
 
-    <!--todo: english-->
     <string name="app_info_text_format">
         <![CDATA[
-        приложение <b>spend</b><br/>
-        версия: <b>%1$s</b><br/>
-        код версии: <b>%2$d</b><br/>
-        собрано: <b>%3$s года</b> в <b>%4$s</b><br/>
+        <b>spend</b> application<br/>
+        version: <b>%1$s</b><br/>
+        version code: <b>%2$d</b><br/>
+        built: <b>%3$s года</b> в <b>%4$s</b><br/>
         ]]>
     </string>
 </resources>

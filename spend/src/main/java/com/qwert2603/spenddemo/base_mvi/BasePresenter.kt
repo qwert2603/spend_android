@@ -26,11 +26,8 @@ abstract class BasePresenter<V : BaseView<VS>, VS>(protected val uiSchedulerProv
 
     private val disposableView = CompositeDisposable()
 
-    protected var isViewAttached = false
-
     override fun attachView(view: V) {
         LogUtils.d("attachView ${hashCode()} $javaClass $view")
-        isViewAttached = true
         super.attachView(view)
         actionsObservable
                 .switchToUiIfNotYet(uiSchedulerProvider)
@@ -44,7 +41,6 @@ abstract class BasePresenter<V : BaseView<VS>, VS>(protected val uiSchedulerProv
 
     override fun detachView(retainInstance: Boolean) {
         LogUtils.d("detachView $retainInstance ${hashCode()} $javaClass ")
-        isViewAttached = false
         super.detachView(retainInstance)
         viewAttached.onNext(false)
         actionsDisposable.clear()

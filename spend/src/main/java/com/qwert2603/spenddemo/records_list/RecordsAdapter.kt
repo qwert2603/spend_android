@@ -5,8 +5,6 @@ import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyc
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
-import com.qwert2603.spenddemo.utils.setVisible
-import kotlinx.android.synthetic.main.item_record.view.*
 
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {
@@ -26,12 +24,4 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
         VIEW_TYPE_RECORD -> RecordViewHolder(parent)
         else -> null!!
     } as BaseRecyclerViewHolder<RecordsListItem>
-
-    override fun onBindViewHolderModel(holder: BaseRecyclerViewHolder<RecordsListItem>, position: Int) {
-        (holder as? RecordViewHolder)?.itemView?.apply {
-            local_ImageView.setVisible(showChangeKinds)
-            id_TextView.setVisible(showIds)
-        }
-        super.onBindViewHolderModel(holder, position)
-    }
 }

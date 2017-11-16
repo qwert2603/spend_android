@@ -9,11 +9,18 @@ import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.setStrike
+import com.qwert2603.spenddemo.utils.setVisible
 import kotlinx.android.synthetic.main.item_record.view.*
 
 class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(parent, R.layout.item_record) {
     override fun bind(m: RecordUI) = with(itemView) {
         super.bind(m)
+
+        val showIds = (adapter as? RecordsAdapter)?.showIds ?: true
+        val showChangeKinds = (adapter as? RecordsAdapter)?.showChangeKinds ?: true
+
+        local_ImageView.setVisible(showChangeKinds)
+        id_TextView.setVisible(showIds)
 
         local_ImageView.setImageResource(when (m.syncStatus) {
             SyncStatus.LOCAL -> R.drawable.ic_local
@@ -37,9 +44,10 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
         isClickable = m.canEdit
         isLongClickable = m.canDelete
 
-        id_TextView.setStrike(m.changeKind == ChangeKind.DELETE)
-        date_TextView.setStrike(m.changeKind == ChangeKind.DELETE)
-        kind_TextView.setStrike(m.changeKind == ChangeKind.DELETE)
-        value_TextView.setStrike(m.changeKind == ChangeKind.DELETE)
+        val strike = showChangeKinds && m.changeKind == ChangeKind.DELETE
+        id_TextView.setStrike(strike)
+        date_TextView.setStrike(strike)
+        kind_TextView.setStrike(strike)
+        value_TextView.setStrike(strike)
     }
 }

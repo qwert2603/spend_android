@@ -14,7 +14,8 @@ import ru.terrakok.cicerone.android.SupportFragmentNavigator
 import ru.terrakok.cicerone.commands.Command
 import ru.terrakok.cicerone.commands.Forward
 
-class Navigator(private val activity: ActivityInterface) : SupportFragmentNavigator(activity.supportFragmentManager, activity.fragmentContainer) {
+class Navigator(private val activity: ActivityInterface)
+    : SupportFragmentNavigator(activity.supportFragmentManager, activity.fragmentContainer) {
 
     override fun createFragment(screenKey: String, data: Any?) = when (screenKey) {
         RecordsListFragment.TAG -> RecordsListFragment()
