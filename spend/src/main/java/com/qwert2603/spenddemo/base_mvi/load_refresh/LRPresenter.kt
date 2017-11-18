@@ -55,9 +55,7 @@ abstract class LRPresenter<A, I, M : InitialModelHolder<I>, V : LRView<M>>(uiSch
             refreshIntent
     )
 
-    /**
-     * [additionalKey] additional key that can be used for loading initial model.
-     */
+    /** [additionalKey] is additional key that can be used for loading initial model. */
     @Suppress("UNCHECKED_CAST")
     protected fun loadRefreshPartialChanges(additionalKey: Observable<A> = Observable.just(Any() as A)): Observable<LRPartialChange> = Observable.merge(
             Observable

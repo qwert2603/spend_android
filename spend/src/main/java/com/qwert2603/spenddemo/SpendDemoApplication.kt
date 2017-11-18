@@ -12,7 +12,7 @@ class SpendDemoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Stetho.initializeWithDefaults(this)
+        if (BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
 
         DIHolder.diManager = DIManager(this)
 
