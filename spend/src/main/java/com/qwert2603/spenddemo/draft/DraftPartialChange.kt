@@ -10,5 +10,4 @@ sealed class DraftPartialChange : PartialChange {
     data class ValueChanged(val value: Int) : DraftPartialChange()
     data class DateChanged(val date: Date) : DraftPartialChange()
     data class DraftCleared(private val ignored: Unit = Unit) : DraftPartialChange()
-    data class CreateEnableChanged(val canCreated: Boolean) : DraftPartialChange()
 }

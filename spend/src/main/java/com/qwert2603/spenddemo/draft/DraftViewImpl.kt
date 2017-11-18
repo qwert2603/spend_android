@@ -70,6 +70,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
         kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
         dateEditText.setText(vs.dateString)
+        date_EditText.setTextColor(resources.color(if (vs.creatingRecord.dateSet) android.R.color.black else R.color.date_default))
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }

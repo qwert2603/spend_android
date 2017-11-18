@@ -15,10 +15,6 @@ import kotlinx.android.synthetic.main.toolbar_default.*
 
 class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, ChangesListPresenter, Change>(), ChangesListView {
 
-    companion object {
-        const val TAG = "changes_list"
-    }
-
     override fun loadRefreshPanel(): LoadRefreshPanel = changesList_LRPanelImpl
 
     override val adapter = ChangesAdapter()

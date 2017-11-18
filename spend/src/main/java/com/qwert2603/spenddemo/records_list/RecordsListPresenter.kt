@@ -1,8 +1,8 @@
 package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.spenddemo.base_mvi.BasePresenter
-import com.qwert2603.spenddemo.di.ShowChangeKinds
-import com.qwert2603.spenddemo.di.ShowIds
+import com.qwert2603.spenddemo.di.qualifiers.ShowChangeKinds
+import com.qwert2603.spenddemo.di.qualifiers.ShowIds
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordsState
 import com.qwert2603.spenddemo.model.schedulers.UiSchedulerProvider

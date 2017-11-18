@@ -6,45 +6,85 @@ import com.qwert2603.spenddemo.model.repo.DraftRepo
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.utils.mapList
-import io.reactivex.Completable
+import com.qwert2603.spenddemo.utils.onlyDate
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DraftInteractor @Inject constructor(
         private val draftRepo: DraftRepo,
         private val recordsRepo: RecordsRepo,
         private val kindsRepo: KindsRepo
 ) {
     companion object {
-        val EmptyCreatingRecord = CreatingRecord("", 0, Date())
+        private val EmptyCreatingRecord = CreatingRecord("", 0, Date().onlyDate(), false)
     }
 
-    private val clearEvents = PublishSubject.create<Unit>()
+    private val draftChanges = BehaviorSubject.create<CreatingRecord>()
+    private val focusOnValue = PublishSubject.create<Any>()
 
-    fun getDraft(): Observable<CreatingRecord> = draftRepo.getDraft()
+    private var draft = EmptyCreatingRecord
+    private val changeDraftLock = Any()
 
-    fun onDraftChanged(creatingRecord: CreatingRecord): Completable = draftRepo.saveDraft(creatingRecord)
+    private val allKinds: BehaviorSubject<List<Kind>> = kindsRepo.getAllKinds().subscribeWith(BehaviorSubject.create())
 
-    // todo: set today date if date is not set.
-//    fun onKindChanged(kind:String)
-//    fun onValueChanged(value:Int)
-//    fun onDateChanged(date: Date)
-//    fun createRecord()
+    private fun changeDraft(change: (CreatingRecord) -> CreatingRecord) {
+        synchronized(changeDraftLock) {
+            draft = change(draft)
+            draftChanges.onNext(draft)
+        }
+    }
 
-    fun createRecord(creatingRecord: CreatingRecord): Completable {
-        if (!isValid(creatingRecord)) return Completable.error(IllegalArgumentException())
-        clearEvents.onNext(Unit)
-        recordsRepo.addRecord(creatingRecord)
-        return draftRepo.removeDraft()
+    init {
+        draftRepo.getDraft()
+                .subscribe { draft ->
+                    changeDraft {
+                        draft.copy(date = if (it.dateSet) it.date else Date().onlyDate())
+                    }
+                }
+        draftChanges
+                .switchMap { draftRepo.saveDraft(it).toObservable<Any>() }
+                .subscribe()
+    }
+
+    fun getDraft(): Observable<CreatingRecord> = draftChanges
+    fun focusOnValue(): Observable<Any> = focusOnValue
+
+    fun onKindChanged(kind: String, fromSuggestion: Boolean) {
+        if (fromSuggestion) {
+            changeDraft {
+                it.copy(
+                        kind = kind,
+                        value = allKinds.value.find { it.kind == kind }?.lastPrice ?: it.value
+                )
+            }
+            focusOnValue.onNext(Any())
+        } else {
+            changeDraft { it.copy(kind = kind) }
+        }
+    }
+
+    fun onValueChanged(value: Int) {
+        changeDraft { it.copy(value = value) }
+    }
+
+    fun onDateChanged(date: Date) {
+        changeDraft { it.copy(date = date, dateSet = true) }
+    }
+
+    fun createRecord() {
+        val draft = draft
+        if (!isValid(draft)) return
+        changeDraft { EmptyCreatingRecord }
+        recordsRepo.addRecord(draft)
     }
 
     fun isValid(creatingRecord: CreatingRecord) = creatingRecord.kind.isNotBlank() && creatingRecord.value > 0
-
-    fun clearEvents(): Observable<Unit> = clearEvents
 
     fun getMatchingKinds(inputKind: String): Single<List<String>> {
         if (inputKind.isBlank()) return Single.just(emptyList())
@@ -60,11 +100,4 @@ class DraftInteractor @Inject constructor(
                 }
                 .map { if (it.isNotEmpty()) it else listOf("don't know") }
     }
-
-    fun kindSelected(): Observable<Kind> = draftRepo.kindSelected
-            .withLatestFrom(kindsRepo.getAllKinds(), BiFunction { selectedKind: String, kinds: List<Kind> ->
-                kinds.find { it.kind == selectedKind } ?: Kind(selectedKind, 0, Date(0))
-            })
-
-    fun getAllKinds(): Observable<List<Kind>> = kindsRepo.getAllKinds()
 }

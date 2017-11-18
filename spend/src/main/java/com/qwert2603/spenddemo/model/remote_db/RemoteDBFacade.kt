@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.model.remote_db
 
-import com.qwert2603.spenddemo.di.RemoteTableName
+import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.IdSqlWrapper
@@ -26,7 +26,7 @@ class RemoteDBFacade @Inject constructor(
     fun insertRecord(creatingRecord: CreatingRecord): Long = remoteDB.query(
             "INSERT INTO $REMOTE_TABLE_NAME (kind, value, date) VALUES (?, ?, ?) returning id",
             { IdSqlWrapper(it).id },
-            listOf(creatingRecord.kind, creatingRecord.value, creatingRecord.date.toSqlDate())
+            listOf(creatingRecord.kind, creatingRecord.value, creatingRecord.date!!.toSqlDate())
     ).single()
 
     fun updateRecord(record: Record) {

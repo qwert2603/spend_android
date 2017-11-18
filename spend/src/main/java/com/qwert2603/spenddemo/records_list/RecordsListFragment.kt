@@ -11,11 +11,11 @@ import com.qwert2603.spenddemo.base_mvi.BaseFragment
 import com.qwert2603.spenddemo.base_mvi.ViewAction
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.page_list_item.AllItemsLoaded
-import com.qwert2603.spenddemo.changes_list.ChangesListFragment
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
+import com.qwert2603.spenddemo.navigation.ScreenKeys
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
@@ -31,7 +31,6 @@ import javax.inject.Inject
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
 
     companion object {
-        const val TAG = "records_list"
         private const val REQUEST_DELETE_RECORD = 1
         private const val REQUEST_EDIT_RECORD = 2
     }
@@ -134,7 +133,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun executeAction(va: ViewAction) {
         when (va) {
-            is RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ChangesListFragment.TAG)
+            is RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKeys.CHANGES_LIST)
             is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id, va.text)
                     .also { it.setTargetFragment(this, REQUEST_DELETE_RECORD) }
                     .show(fragmentManager, "delete_record")

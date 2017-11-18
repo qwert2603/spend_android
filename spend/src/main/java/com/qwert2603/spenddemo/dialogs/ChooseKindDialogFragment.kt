@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.repo.DraftRepo
+import com.qwert2603.spenddemo.draft.DraftInteractor
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import com.qwert2603.spenddemo.utils.mapList
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class ChooseKindDialogFragment : DialogFragment() {
     }
 
     @Inject lateinit var kindsRepo: KindsRepo
-    @Inject lateinit var draftRepo: DraftRepo
+    @Inject lateinit var draftInteractor: DraftInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -45,7 +45,7 @@ class ChooseKindDialogFragment : DialogFragment() {
                                 Intent().putExtra(KIND_KEY, kinds[which])
                         )
                     } else {
-                        draftRepo.kindSelected.onNext(kinds[which])
+                        draftInteractor.onKindChanged(kinds[which], true)
                     }
                 })
                 .setNegativeButton(R.string.text_cancel, null)

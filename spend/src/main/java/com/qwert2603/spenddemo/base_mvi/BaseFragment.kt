@@ -1,10 +1,13 @@
 package com.qwert2603.spenddemo.base_mvi
 
 import android.support.annotation.CallSuper
-import com.qwert2603.spenddemo.navigation.MviBackStackFragment
+import android.view.View
+import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.qwert2603.spenddemo.utils.LogUtils
 
-abstract class BaseFragment<VS : Any, V : BaseView<VS>, P : BasePresenter<V, VS>> : MviBackStackFragment<V, P>(), BaseView<VS> {
+abstract class BaseFragment<VS : Any, V : BaseView<VS>, P : BasePresenter<V, VS>> : MviFragment<V, P>(), BaseView<VS> {
+
+    open fun viewForSnackbar(): View? = view
 
     private var everRendered = false
     protected var prevViewState: VS? = null

@@ -11,7 +11,7 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.repo.DraftRepo
+import com.qwert2603.spenddemo.draft.DraftInteractor
 import java.util.*
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class DatePickerDialogFragment : DialogFragment() {
     @Arg
     var millis: Long = 0
 
-    @Inject lateinit var draftRepo: DraftRepo
+    @Inject lateinit var draftInteractor: DraftInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -49,7 +49,7 @@ class DatePickerDialogFragment : DialogFragment() {
                                 Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
                         )
                     } else {
-                        draftRepo.dateSelected.onNext(calendar.time)
+                        draftInteractor.onDateChanged(calendar.time)
                     }
                 },
                 calendar.get(Calendar.YEAR),

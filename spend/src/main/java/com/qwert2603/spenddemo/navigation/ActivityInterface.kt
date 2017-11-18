@@ -9,4 +9,5 @@ interface ActivityInterface {
     fun finish()
     fun hideKeyboard()
     fun viewForSnackbars(): View
+    val navigationActivity: NavigationActivity
 }

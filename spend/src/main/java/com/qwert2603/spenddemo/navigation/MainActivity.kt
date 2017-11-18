@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.navigation
 import android.app.Service
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -11,8 +12,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.base_mvi.BaseFragment
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.records_list.RecordsListFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
@@ -23,14 +24,15 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     @Inject lateinit var router: Router
     @Inject lateinit var navigatorHolder: NavigatorHolder
 
-    var resumedFragment: MviBackStackFragment<*, *>? = null
+    var resumedFragment: Fragment? = null
 
     private val navigator = Navigator(object : ActivityInterface {
         override val supportFragmentManager = this@MainActivity.supportFragmentManager
         override val fragmentContainer = R.id.fragment_container
         override fun finish() = this@MainActivity.finish()
         override fun hideKeyboard() = this@MainActivity.hideKeyboard()
-        override fun viewForSnackbars(): View = resumedFragment?.viewForSnackbars() ?: activity_root_FrameLayout
+        override fun viewForSnackbars(): View = (resumedFragment as? BaseFragment<*, *, *>)?.viewForSnackbar() ?: activity_root_FrameLayout
+        override val navigationActivity = this@MainActivity
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(RecordsListFragment.TAG)
+            router.newRootScreen(ScreenKeys.RECORDS_LIST)
         }
     }
 
@@ -56,13 +58,18 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun onBackPressed() {
+        if ((resumedFragment as? BackPressListener)?.onBackPressed() == true) {
+            return
+        }
         router.exit()
     }
 
-    override fun onFragmentResumed(backStackFragment: MviBackStackFragment<*, *>) {
+    override fun onFragmentResumed(fragment: Fragment) {
+        if (fragment !in supportFragmentManager.fragments) return
+
         val isRoot = supportFragmentManager.backStackEntryCount == 0
 
-        backStackFragment.getView()
+        fragment.view
                 ?.findViewById<Toolbar>(R.id.toolbar)
                 ?.apply {
                     setSupportActionBar(this)
@@ -71,12 +78,12 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
                         router.exit()
                     }
                 }
-        resumedFragment = backStackFragment
+        resumedFragment = fragment
     }
 
-    override fun onFragmentPaused(backStackFragment: MviBackStackFragment<*, *>) {
-        if (resumedFragment === backStackFragment) resumedFragment = null
-        backStackFragment.getView()
+    override fun onFragmentPaused(fragment: Fragment) {
+        if (resumedFragment === fragment) resumedFragment = null
+        fragment.view
                 ?.findViewById<Toolbar>(R.id.toolbar)
                 ?.setNavigationOnClickListener(null)
     }
