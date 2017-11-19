@@ -5,7 +5,7 @@ import dagger.Subcomponent
 
 @Subcomponent
 interface DraftPresenterCreatorComponent {
-    fun createRecordsListPresenter(): DraftPresenter
+    fun createDraftPresenter(): DraftPresenter
 
     @Subcomponent.Builder
     interface Builder {

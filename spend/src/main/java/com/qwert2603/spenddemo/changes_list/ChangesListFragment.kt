@@ -22,7 +22,7 @@ class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, Chan
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .changesListPresenterComponentBuilder()
             .build()
-            .createRecordsListPresenter()
+            .createChangesListPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
             = inflater.inflate(R.layout.fragment_changes_list, container, false)

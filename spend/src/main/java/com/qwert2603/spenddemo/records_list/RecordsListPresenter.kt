@@ -25,7 +25,9 @@ class RecordsListPresenter @Inject constructor(
     }
 
     override fun bindIntents() {
-        val recordsStateChanges = recordsListInteractor.recordsState().share()
+        val recordsStateChanges = recordsListInteractor.recordsState()
+                .delaySubscription(intent { it.viewCreated() })
+                .share()
 
         intent { it.showChangesClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen()) }

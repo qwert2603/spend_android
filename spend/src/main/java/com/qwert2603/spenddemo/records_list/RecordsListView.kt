@@ -6,6 +6,8 @@ import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import io.reactivex.Observable
 
 interface RecordsListView : BaseView<RecordsListViewState> {
+    fun viewCreated(): Observable<Any>
+
     fun editRecordClicks(): Observable<RecordUI>
     fun deleteRecordClicks(): Observable<RecordUI>
 

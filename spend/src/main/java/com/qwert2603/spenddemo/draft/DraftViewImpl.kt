@@ -23,7 +23,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .draftPresenterComponentBuilder()
             .build()
-            .createRecordsListPresenter()
+            .createDraftPresenter()
 
     private val kindEditText by lazy { UserInputEditText(kind_EditText) }
     private val valueEditText by lazy { UserInputEditText(value_EditText) }

@@ -101,6 +101,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun viewCreated(): Observable<Any> = Observable.just(Any())
+
     override fun editRecordClicks(): Observable<RecordUI> = adapter.modelItemClicks
             .castAndFilter(RecordUI::class.java)
 
@@ -118,7 +120,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun showAboutClicks(): Observable<Any> = showAboutClicks
 
     override fun render(vs: RecordsListViewState) {
-        // todo: on api19 records are not shown when app starts, but they are showing if create new record.
+        // todo: TEST
+        // on api19 records are not shown when app starts, but they are showing if create new record.
         super.render(vs)
         adapter.showIds = vs.showIds
         adapter.showChangeKinds = vs.showChangeKinds
