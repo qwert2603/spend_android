@@ -17,7 +17,7 @@ class AppInfoDialogFragment : DialogFragment() {
         val message = Html.fromHtml(getString(R.string.app_info_text_format,
                 BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE,
-                SimpleDateFormat("d MMMM yyyy", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
+                SimpleDateFormat("d.MM.yyyy", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
                 SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME))
         ))
         return AlertDialog.Builder(context!!)

@@ -9,7 +9,6 @@ interface DraftView : BaseView<DraftViewState> {
 
     fun kingChanges(): Observable<String>
     fun valueChanges(): Observable<Int>
-    fun dateChanges(): Observable<Date>
 
     fun saveClicks(): Observable<Any>
 

@@ -137,16 +137,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun executeAction(va: ViewAction) {
         when (va) {
             is RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKeys.CHANGES_LIST)
-            is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id, va.text)
+            is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id)
                     .also { it.setTargetFragment(this, REQUEST_DELETE_RECORD) }
                     .show(fragmentManager, "delete_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            is RecordsListViewAction.AskToEditRecord -> EditRecordDialogFragmentBuilder()
-                    .id(va.record.id)
-                    .kind(va.record.kind)
-                    .date(va.record.date.time)
-                    .value(va.record.value)
-                    .build()
+            is RecordsListViewAction.AskToEditRecord -> EditRecordDialogFragmentBuilder
+                    .newEditRecordDialogFragment(va.record.date.time, va.record.id, va.record.kind, va.record.value)
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }

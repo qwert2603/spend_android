@@ -12,7 +12,8 @@
     <string name="choose_kind_text">select kind</string>
 
     <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
-    <string name="text_confirm">confirm</string>
+    <string name="text_edit">edit</string>
+    <string name="text_delete">delete</string>
     <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
 
     <string name="error_text">error</string>
@@ -25,12 +26,16 @@
     <string name="send_title">send records</string>
     <string name="about_text">about</string>
 
+    <string name="today_text">today</string>
+    <string name="yesterday_text">yesterday</string>
+    <string name="tomorrow_text">tomorrow</string>
+
     <string name="app_info_text_format">
         <![CDATA[
         <b>spend</b> application<br/>
         version: <b>%1$s</b><br/>
         version code: <b>%2$d</b><br/>
-        built: <b>%3$s года</b> в <b>%4$s</b><br/>
+        built: <b>%3$s</b> at <b>%4$s</b><br/>
         ]]>
     </string>
 </resources>

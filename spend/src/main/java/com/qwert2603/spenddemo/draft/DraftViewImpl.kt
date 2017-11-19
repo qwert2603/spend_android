@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.draft
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.support.v4.app.FragmentActivity
 import android.util.AttributeSet
@@ -16,7 +17,6 @@ import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_draft.view.*
-import java.util.*
 
 class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null)
     : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView {
@@ -33,6 +33,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     init {
         inflate(R.layout.view_draft, attachToRoot = true)
+        draft_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
@@ -41,16 +42,6 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
 
     override fun valueChanges(): Observable<Int> = valueEditText.userInputs()
             .mapToInt()
-
-    override fun dateChanges(): Observable<Date> = dateEditText.userInputs()
-            .map {
-                try {
-                    Const.DATE_FORMAT.parse(it)
-                } catch (e: Exception) {
-                    LogUtils.e("parse error!", e)
-                    Date(0)
-                }
-            }
 
     override fun saveClicks(): Observable<Any> = Observable.merge(
             RxView.clicks(save_Button),
@@ -69,7 +60,7 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
         LogUtils.d("DraftViewImpl render $vs")
         kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
-        dateEditText.setText(vs.dateString)
+        dateEditText.setText(vs.creatingRecord.date.toFormattedString(resources))
         date_EditText.setTextColor(resources.color(if (vs.creatingRecord.dateSet) android.R.color.black else R.color.date_default))
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))

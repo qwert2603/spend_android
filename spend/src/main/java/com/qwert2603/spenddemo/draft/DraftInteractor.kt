@@ -26,7 +26,7 @@ class DraftInteractor @Inject constructor(
     }
 
     private val draftChanges = BehaviorSubject.create<CreatingRecord>()
-    private val focusOnValue = PublishSubject.create<Any>()
+    private val kindSelected = PublishSubject.create<Any>()
 
     private var draft = EmptyCreatingRecord
     private val changeDraftLock = Any()
@@ -53,7 +53,7 @@ class DraftInteractor @Inject constructor(
     }
 
     fun getDraft(): Observable<CreatingRecord> = draftChanges
-    fun focusOnValue(): Observable<Any> = focusOnValue
+    fun kindSelected(): Observable<Any> = kindSelected
 
     fun onKindChanged(kind: String, fromSuggestion: Boolean) {
         if (fromSuggestion) {
@@ -63,7 +63,7 @@ class DraftInteractor @Inject constructor(
                         value = allKinds.value.find { it.kind == kind }?.lastPrice ?: it.value
                 )
             }
-            focusOnValue.onNext(Any())
+            kindSelected.onNext(Any())
         } else {
             changeDraft { it.copy(kind = kind) }
         }

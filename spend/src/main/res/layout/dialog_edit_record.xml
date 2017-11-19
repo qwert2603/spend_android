@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/kind"
             android:imeOptions="actionNext|flagNoFullscreen"
+            android:inputType="textNoSuggestions"
             android:selectAllOnFocus="true"
             android:singleLine="true" />
 

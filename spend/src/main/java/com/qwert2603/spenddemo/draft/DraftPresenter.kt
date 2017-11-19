@@ -29,9 +29,6 @@ class DraftPresenter @Inject constructor(
         intent { it.valueChanges() }
                 .doOnNext { draftInteractor.onValueChanged(it) }
                 .subscribeToView()
-        intent { it.dateChanges() }
-                .doOnNext { draftInteractor.onDateChanged(it) }
-                .subscribeToView()
 
         kindIntent
                 .debounce(100, TimeUnit.MILLISECONDS)
@@ -62,7 +59,7 @@ class DraftPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput()) }
                 .subscribeToView()
 
-        draftInteractor.focusOnValue()
+        draftInteractor.kindSelected()
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput()) }
                 .subscribeToView()
 

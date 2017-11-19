@@ -8,7 +8,6 @@ import com.qwert2603.spenddemo.model.entity.RecordsState
 import com.qwert2603.spenddemo.model.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.toRecordUI
-import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.switchToUiIfNotYet
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -38,10 +37,7 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
         intent { it.deleteRecordClicks() }
                 .filter { it.canDelete }
-                .doOnNext {
-                    val text = "${Const.DATE_FORMAT.format(it.date)}\n${it.kind}\n${it.value}"
-                    viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id, text))
-                }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id)) }
                 .subscribeToView()
         intent { it.deleteRecordConfirmed() }
                 .doOnNext { recordsListInteractor.deleteRecord(it) }

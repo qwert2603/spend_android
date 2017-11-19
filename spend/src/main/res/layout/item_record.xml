@@ -23,14 +23,32 @@
         android:textSize="14sp"
         tools:text="1918" />
 
-    <TextView
-        android:id="@+id/date_TextView"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textColor="@color/colorAccent"
-        android:textSize="16sp"
-        tools:text="2016-05-12" />
+        android:layout_marginStart="4dp">
+
+        <TextView
+            android:id="@+id/date_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp"
+            tools:text="today" />
+
+        <!--
+        invisible text to make all date_TextViews same width.
+        because "today" is thinner than "0000-00-00".
+        -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0000-00-00"
+            android:textSize="16sp"
+            android:visibility="invisible"
+            tools:ignore="HardcodedText" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/kind_TextView"

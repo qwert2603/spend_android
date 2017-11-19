@@ -7,9 +7,9 @@ import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyc
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
-import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.setVisible
+import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_record.view.*
 
 class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(parent, R.layout.item_record) {
@@ -37,7 +37,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
             local_ImageView.setColorFilter(ResourcesCompat.getColor(resources, R.color.anth, null))
         }
         id_TextView.text = m.id.toString()
-        date_TextView.text = Const.DATE_FORMAT.format(m.date)
+        date_TextView.text = m.date.toFormattedString(resources)
         kind_TextView.text = m.kind
         value_TextView.text = m.value.toString()
 

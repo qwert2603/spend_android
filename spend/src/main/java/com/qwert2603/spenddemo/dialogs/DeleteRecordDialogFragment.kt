@@ -11,6 +11,10 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.model.repo.RecordsRepo
+import com.qwert2603.spenddemo.utils.toFormattedString
+import javax.inject.Inject
 
 @FragmentWithArgs
 class DeleteRecordDialogFragment : DialogFragment() {
@@ -19,19 +23,27 @@ class DeleteRecordDialogFragment : DialogFragment() {
         const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
     }
 
-    @Arg lateinit var text: String
-    @Arg var id: Long = 0
+    @Arg
+    var id: Long = 0
+
+    @Inject lateinit var recordsRepo: RecordsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
         FragmentArgs.inject(this)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val text = recordsRepo.recordsState()
+                .blockingFirst()
+                .records
+                .first { it.id == id }
+                .let { "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}" }
         return AlertDialog.Builder(context!!)
                 .setTitle(R.string.delete_record_text)
                 .setMessage(text)
-                .setPositiveButton(R.string.text_confirm, { _, _ ->
+                .setPositiveButton(R.string.text_delete, { _, _ ->
                     targetFragment?.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,

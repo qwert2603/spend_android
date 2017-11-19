@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.ViewAnimator
 
@@ -44,4 +45,8 @@ fun View.setSelectableItemBackground() {
     val typedValue = TypedValue()
     context.theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)
     setBackgroundResource(typedValue.resourceId)
+}
+
+fun EditText.selectEnd() {
+    setSelection(text.length)
 }
