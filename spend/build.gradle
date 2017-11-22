@@ -9,8 +9,8 @@ android {
         applicationId "com.qwert2603.spenddemo"
         minSdkVersion 22
         targetSdkVersion 27
-        versionCode 6
-        versionName "2.0-alpha4"
+        versionCode 7
+        versionName "2.0-alpha5"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
 
         resConfigs "en"
