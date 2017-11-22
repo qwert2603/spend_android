@@ -7,7 +7,6 @@ interface InitialModelHolder<in I> {
     /**
      * @param i initial model from [LRPartialChange.InitialModelLoaded].
      * @return new view state with changed initial model.
-     * todo: this should be presenter's method.
      */
     fun changeInitialModel(i: I): InitialModelHolder<I>
 }
