@@ -43,11 +43,12 @@ class DraftInteractor @Inject constructor(
     init {
         draftRepo.getDraft()
                 .subscribe { draft ->
-                    changeDraft {
-                        draft.copy(date = if (it.dateSet) it.date else Date().onlyDate())
+                    changeDraft { _ ->
+                        draft.copy(date = if (draft.dateSet) draft.date else Date().onlyDate())
                     }
                 }
         draftChanges
+                .skip(1) // skip loaded from draftRepo.getDraft()
                 .switchMap { draftRepo.saveDraft(it).toObservable<Any>() }
                 .subscribe()
     }
