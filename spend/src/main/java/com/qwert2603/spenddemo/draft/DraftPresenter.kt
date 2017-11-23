@@ -55,6 +55,8 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.saveClicks() }
+                .withLatestFrom(draftChanges, BiFunction { _: Any, creatingRecord: CreatingRecord -> creatingRecord })
+                .filter { draftInteractor.isValid(it) }
                 .doOnNext { draftInteractor.createRecord() }
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput()) }
                 .subscribeToView()
