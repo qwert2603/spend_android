@@ -12,4 +12,6 @@
     <color name="local_change_create">#20CF20</color>
     <color name="local_change_edit">#2020DF</color>
     <color name="local_change_delete">#DF2020</color>
+
+    <color name="highlight_created_record">#4CAF50</color>
 </resources>

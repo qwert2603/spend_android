@@ -69,6 +69,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 .also { it.initialPrefetchItemCount = 10 }
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
+        records_RecyclerView.itemAnimator = RecordsListAnimator()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -144,8 +145,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-        // todo: highlight created item.
-            is RecordsListViewAction.ScrollToPosition -> records_RecyclerView.smoothScrollToPosition(va.position)
+            is RecordsListViewAction.ScrollToPosition -> {
+                records_RecyclerView.scrollToPosition(va.position)
+                records_RecyclerView.postDelayed({ adapter.notifyItemChanged(va.position, RecordsListAnimator.PAYLOAD_HIGHLIGHT) }, 100)
+            }
             is RecordsListViewAction.SendRecords -> {
                 Intent(Intent.ACTION_SEND)
                         .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }

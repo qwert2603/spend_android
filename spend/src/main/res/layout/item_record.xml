@@ -1,73 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- FrameLayout is for highlight animation -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="6dp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/local_ImageView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:src="@drawable/ic_local"
-        tools:tint="@color/local_change_edit" />
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="6dp"
+        tools:ignore="UselessParent">
 
-    <TextView
-        android:id="@+id/id_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#444444"
-        android:textSize="14sp"
-        tools:text="1918" />
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp">
+        <ImageView
+            android:id="@+id/local_ImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_local"
+            tools:tint="@color/local_change_edit" />
 
         <TextView
-            android:id="@+id/date_TextView"
+            android:id="@+id/id_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#444444"
+            android:textSize="14sp"
+            tools:text="1918" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp">
+
+            <TextView
+                android:id="@+id/date_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                tools:text="today" />
+
+            <!--
+            invisible text to make all date_TextViews same width.
+            because "today" is thinner than "0000-00-00".
+            -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0000-00-00"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                tools:ignore="HardcodedText" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/kind_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="food" />
+
+        <TextView
+            android:id="@+id/value_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            tools:text="today" />
+            android:textSize="18sp"
+            tools:text="175" />
 
-        <!--
-        invisible text to make all date_TextViews same width.
-        because "today" is thinner than "0000-00-00".
-        -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0000-00-00"
-            android:textSize="16sp"
-            android:visibility="invisible"
-            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/kind_TextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginStart="4dp"
-        android:layout_weight="1"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:text="food" />
-
-    <TextView
-        android:id="@+id/value_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        tools:text="175" />
-
-</LinearLayout>
+</FrameLayout>
