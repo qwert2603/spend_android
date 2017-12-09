@@ -11,7 +11,7 @@ import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.tables.ChangeTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 
-@Database(version = 1, exportSchema = true, entities = arrayOf(RecordTable::class, ChangeTable::class))
+@Database(version = 1, exportSchema = true, entities = [RecordTable::class, ChangeTable::class])
 @TypeConverters(DateConverter::class, ChangeKindConverter::class)
 abstract class LocalDB : RoomDatabase() {
     abstract fun recordsDao(): RecordsDao
