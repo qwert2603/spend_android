@@ -67,11 +67,11 @@ dependencies {
 
     implementation project(path: ':syncprocessor')
 
-    ext.support_version = '27.0.1'
-    ext.rxjava_version = '2.1.6'
+    ext.support_version = '27.0.2'
+    ext.rxjava_version = '2.1.7'
     ext.rxandroid_version = '2.0.1'
     ext.rxbinding_version = '2.0.0'
-    ext.mosby_version = '3.0.4'
+    ext.mosby_version = '3.1.0'
     ext.fragmentargs_version = '3.0.2'
     ext.cicerone_version = '2.1.0'
     ext.postgresql_version = '42.1.4.jre7'

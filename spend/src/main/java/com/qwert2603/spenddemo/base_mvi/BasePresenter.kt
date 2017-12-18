@@ -39,15 +39,19 @@ abstract class BasePresenter<V : BaseView<VS>, VS>(protected val uiSchedulerProv
         viewAttached.onNext(true)
     }
 
-    override fun detachView(retainInstance: Boolean) {
-        LogUtils.d("detachView $retainInstance ${hashCode()} $javaClass ")
-        super.detachView(retainInstance)
+    override fun detachView() {
+        LogUtils.d("BasePresenter#detachView ${hashCode()} $javaClass")
         viewAttached.onNext(false)
         actionsDisposable.clear()
-        if (!retainInstance) {
-            relayDisposable?.dispose()
-            disposableView.dispose()
-        }
+        super.detachView()
+    }
+
+    override fun destroy() {
+        LogUtils.d("BasePresenter#destroy ${hashCode()} $javaClass")
+        actionsDisposable.dispose()
+        relayDisposable?.dispose()
+        disposableView.dispose()
+        super.destroy()
     }
 
     protected fun <T> Observable<T>.subscribeToView() = this
