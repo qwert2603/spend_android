@@ -30,7 +30,13 @@ class RecordsListInteractor @Inject constructor(
                 if (it.records.isEmpty()) return@map ""
                 it.records
                         .reversed()
-                        .map { "${Const.DATE_FORMAT.format(it.date)}\t${it.kind}\t${it.value}" }
+                        .map {
+                            listOf(
+                                    it.kind,
+                                    Const.DATE_FORMAT.format(it.date),
+                                    it.value.toString()
+                            ).reduce { s1, s2 -> "$s1,$s2" }
+                        }
                         .reduce { s1, s2 -> "$s1\n$s2" }
             }
 
