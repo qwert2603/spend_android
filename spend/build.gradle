@@ -37,7 +37,7 @@ android {
 
     flavorDimensions "server"
 
-    def SERVER_TYPE_TYPE = "com.qwert2603.spenddemo.model.ServerType"
+    def SERVER_TYPE_TYPE = "@android.support.annotation.NonNull com.qwert2603.spenddemo.model.ServerType"
     def SERVER_TYPE = "SERVER_TYPE"
 
     productFlavors {

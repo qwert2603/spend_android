@@ -45,7 +45,6 @@ class ModelModule {
         ServerType.NO_SERVER -> "nth"
         ServerType.SERVER_TEST -> "test_spend"
         ServerType.SERVER_PROD -> "spend"
-        else -> null!!
     }
 
     @Provides
@@ -56,7 +55,6 @@ class ModelModule {
                 ServerType.NO_SERVER -> StubRemoteItemsDataSource()
                 ServerType.SERVER_TEST -> RemoteItemsDataSourceImpl(remoteDBFacade)
                 ServerType.SERVER_PROD -> RemoteItemsDataSourceImpl(remoteDBFacade)
-                else -> null!!
             }
 
     @Provides
@@ -67,7 +65,6 @@ class ModelModule {
                 ServerType.NO_SERVER -> StubLocalChangesDataSource()
                 ServerType.SERVER_TEST -> LocalChangesDataSourceImpl(localDB)
                 ServerType.SERVER_PROD -> LocalChangesDataSourceImpl(localDB)
-                else -> null!!
             }
 
     @Provides
@@ -78,7 +75,6 @@ class ModelModule {
                 ServerType.NO_SERVER -> StubLastUpdateRepo()
                 ServerType.SERVER_TEST -> LastUpdateRepoImpl(appContext)
                 ServerType.SERVER_PROD -> LastUpdateRepoImpl(appContext)
-                else -> null!!
             }
 
     @Provides
