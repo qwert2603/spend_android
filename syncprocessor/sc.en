@@ -1,15 +1,16 @@
 * создается новая запись с локальным id=1_000_001.
-	id=1_000_001; s="a"; changeKind=CREATE; isSyncing=false;
 * эта запись добавляется в inMemoryState и сохраняется локально.
-* начинается отправка этой записи на сервер.
+	id=1_000_001; s="a"; changeKind=CREATE; isSyncing=false;
+* начинается отправка этой записи на сервер. (запрос sql create)
 	id=1_000_001; s="a"; changeKind=CREATE; isSyncing=true;
 * в запись вносится локальное изменение, которое сохраняется в inMemoryState и в локальной БД.
-	id=1_000_001; s="b"; changeKind=CREATE; isSyncing=false;
-* завершается отправка изначальной записи на сервер, на сервера был присвоен id=1918.
+	id=1_000_001; s="b"; changeKind=CREATE; isSyncing=false; // isSyncing присваивается false.
+* завершается отправка изначальной записи на сервер, на сервере был присвоен id=1918.
 * в inMemoryState и в локальной БД изменяется id этой записи с 1_000_001 на 1918.
-	id=1918; s="b"; changeKind=CREATE; isSyncing=false;
-* измененная запись (из п.4) отправляется на сервер.
-	id=1918; s="b"; changeKind=CREATE; isSyncing=true;
+* changeKind становится EDIT, потому что запись уже существует на сервере.
+	id=1918; s="b"; changeKind=EDIT; isSyncing=false;
+* измененная запись (из п.4) отправляется на сервер. (запрос sql update)
+	id=1918; s="b"; changeKind=EDIT; isSyncing=true;
 * измененная запись (из п.4) отправилась на сервер.
 * в inMemoryState и в локальной БД удаляются данные о локальном изменении.
 	id=1918; s="b"; changeKind=null; isSyncing=false;
