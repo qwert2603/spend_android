@@ -7,6 +7,7 @@ import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toSyncingRecord
 import com.qwert2603.syncprocessor.SyncProcessor
+import com.qwert2603.syncprocessor.entity.ItemEvent
 import io.reactivex.Observable
 import java.util.*
 import javax.inject.Inject
@@ -46,6 +47,7 @@ class RecordsRepoImpl @Inject constructor(
                 )
             }
 
-    override fun recordCreatedEvents(): Observable<Record> = syncProcessor.itemCreatedEvents()
-            .map { it.toRecord() }
+    override fun recordCreatedEvents(): Observable<Record> = syncProcessor.itemEvents()
+            .filter { it.second == ItemEvent.CREATED_LOCALLY }
+            .map { it.first.toRecord() }
 }

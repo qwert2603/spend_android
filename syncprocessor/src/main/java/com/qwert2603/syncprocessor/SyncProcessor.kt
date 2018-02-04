@@ -27,7 +27,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
         lastUpdateRepo: LastUpdateRepo,
         logger: Logger = DefaultLogger(),
         sortFun: (List<T>) -> List<T> = { it }
-) where R : Identifiable<I>, R : RemoteItem {
+) : ISyncProcessor<I, T> where R : Identifiable<I>, R : RemoteItem {
 
     private object LoadServerUpdates
 
@@ -36,7 +36,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
     private val remoteDataSender = RemoteDataSender(logger)
 
     init {
-        logger.d("SyncProcessor","${logger::javaClass} ${logger.javaClass}")
+        logger.d("SyncProcessor", "${logger::javaClass} ${logger.javaClass}")
 
         Single
                 .zip(
@@ -92,11 +92,13 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
                 .subscribe()
     }
 
-    fun itemsState(): Observable<ItemsState<I, T>> = inMemoryStateHolder.state
+    override fun itemsState(): Observable<ItemsState<I, T>> = inMemoryStateHolder.state
 
-    fun itemCreatedEvents(): Observable<T> = inMemoryStateHolder.itemCreatedEvents
+    // todo: ItemEvent.EDITED_LOCALLY
+    override fun itemEvents(): Observable<Pair<T, ItemEvent>> = inMemoryStateHolder.itemCreatedEvents
+            .map { Pair(it, ItemEvent.CREATED_LOCALLY) }
 
-    fun addItem(item: T) {
+    override fun addItem(item: T) {
         val millis = System.currentTimeMillis()
         val timedChange = TimedChange(ChangeKind.CREATE, millis)
         inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemCreatedLocally(item, millis))
@@ -121,7 +123,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
         )
     }
 
-    fun editItem(item: T) {
+    override fun editItem(item: T) {
         //todo: keep Set<item#id> in ItemsState.
         if (!isExistingItem(item.id)) return
         when (inMemoryStateHolder.state.value.changes[item.id]?.changeKind) {
@@ -151,47 +153,47 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
         }
     }
 
-    fun removeItem(id: I) {
-        if (!isExistingItem(id)) return
-        when (inMemoryStateHolder.state.value.changes[id]?.changeKind) {
+    override fun removeItem(itemId: I) {
+        if (!isExistingItem(itemId)) return
+        when (inMemoryStateHolder.state.value.changes[itemId]?.changeKind) {
             ChangeKind.DELETE -> return
             ChangeKind.CREATE -> {
-                inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemDeletedCompletely(id))
+                inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemDeletedCompletely(itemId))
                 localDataSender.send(Completable.concat(listOf(
-                        localChangesDataSource.remove(id),
-                        localItemsDataSource.remove(id)
+                        localChangesDataSource.remove(itemId),
+                        localItemsDataSource.remove(itemId)
                 )))
             }
             else -> {
                 val timedChange = TimedChange(ChangeKind.DELETE, System.currentTimeMillis())
-                inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(id, timedChange, false))
-                localDataSender.send(localChangesDataSource.save(Change(id, ChangeKind.DELETE)))
+                inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(itemId, timedChange, false))
+                localDataSender.send(localChangesDataSource.save(Change(itemId, ChangeKind.DELETE)))
 
                 remoteDataSender.send(
-                        id,
-                        remoteItemsDataSource.remove(id)
+                        itemId,
+                        remoteItemsDataSource.remove(itemId)
                                 .doOnSubscribe {
-                                    if (isChangeActual(id, timedChange)) {
-                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(id, timedChange, true))
+                                    if (isChangeActual(itemId, timedChange)) {
+                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(itemId, timedChange, true))
                                     } else {
                                         it.dispose()
                                     }
                                 }
                                 .doOnComplete {
-                                    if (isChangeActual(id, timedChange)) {
-                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemDeletedCompletely(id))
+                                    if (isChangeActual(itemId, timedChange)) {
+                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemDeletedCompletely(itemId))
                                     }
                                 }
                                 .doOnError {
-                                    if (isChangeActual(id, timedChange)) {
-                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(id, timedChange, false))
+                                    if (isChangeActual(itemId, timedChange)) {
+                                        inMemoryStateHolder.changeState(ItemsStatePartialChange.SyncStatusChanged(itemId, timedChange, false))
                                     }
                                 }
                                 .doOnComplete {
-                                    if (isChangeActual(id, timedChange)) {
+                                    if (isChangeActual(itemId, timedChange)) {
                                         localDataSender.send(Completable.concat(listOf(
-                                                localItemsDataSource.remove(id),
-                                                localChangesDataSource.remove(id)
+                                                localItemsDataSource.remove(itemId),
+                                                localChangesDataSource.remove(itemId)
                                         )))
                                     }
                                 },

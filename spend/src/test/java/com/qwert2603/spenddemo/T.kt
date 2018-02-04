@@ -12,7 +12,7 @@ import java.util.*
 class T {
     @Test
     fun t() {
-        val bufferedReader = BufferedReader(FileReader("/home/alex/android_projects/SpendDemo/spend/src/test/r.txt"))
+        val bufferedReader = BufferedReader(FileReader("/home/alex/StudioProjects/SpendDemo/spend/src/test/r.txt"))
         var s: String?
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(
