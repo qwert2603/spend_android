@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.jakewharton.rxbinding2.view.RxMenuItem
+import com.qwert2603.andrlib.base.mvi.BaseFragment
+import com.qwert2603.andrlib.base.mvi.ViewAction
+import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
+import com.qwert2603.andrlib.base.recyclerview.page_list_item.AllItemsLoaded
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.BaseFragment
-import com.qwert2603.spenddemo.base_mvi.ViewAction
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewAdapter
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.page_list_item.AllItemsLoaded
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.Record
@@ -37,7 +37,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private val adapter = RecordsAdapter()
 
-    @Inject lateinit var router: Router
+    @Inject
+    lateinit var router: Router
+
+    override fun viewForSnackbar(): View? = coordinator
 
     override fun createPresenter(): RecordsListPresenter = DIHolder.diManager.presentersCreatorComponent
             .recordsListPresenterComponentBuilder()
@@ -60,8 +63,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         DIHolder.diManager.viewsComponent.inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
-            = inflater.inflate(R.layout.fragment_records_list, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -134,6 +137,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     }
 
     override fun executeAction(va: ViewAction) {
+        if (va !is RecordsListViewAction) return
+        @Suppress("IMPLICIT_CAST_TO_ANY")
         when (va) {
             is RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKeys.CHANGES_LIST)
             is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id)
@@ -159,6 +164,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")
                     .also { (context as KeyboardManager).hideKeyboard() }
-        }
+        }.also { }
     }
 }

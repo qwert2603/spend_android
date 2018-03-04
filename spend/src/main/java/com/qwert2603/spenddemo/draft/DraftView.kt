@@ -1,8 +1,7 @@
 package com.qwert2603.spenddemo.draft
 
-import com.qwert2603.spenddemo.base_mvi.BaseView
+import com.qwert2603.andrlib.base.mvi.BaseView
 import io.reactivex.Observable
-import java.util.*
 
 interface DraftView : BaseView<DraftViewState> {
     fun viewCreated(): Observable<Any>

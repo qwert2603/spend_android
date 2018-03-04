@@ -6,12 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.draft.DraftInteractor
 import com.qwert2603.spenddemo.model.repo.KindsRepo
-import com.qwert2603.spenddemo.utils.mapList
 import javax.inject.Inject
 
 class ChooseKindDialogFragment : DialogFragment() {

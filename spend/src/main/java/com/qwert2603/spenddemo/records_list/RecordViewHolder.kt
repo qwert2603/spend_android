@@ -2,8 +2,8 @@ package com.qwert2603.spenddemo.records_list
 
 import android.support.v4.content.res.ResourcesCompat
 import android.view.ViewGroup
+import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list.entity.RecordUI

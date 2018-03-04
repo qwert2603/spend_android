@@ -1,12 +1,11 @@
 package com.qwert2603.spenddemo.records_list
 
 import android.view.ViewGroup
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewAdapter
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewHolder
-import com.qwert2603.spenddemo.model.entity.IdentifiableLong
+import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
+import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
+import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
-import com.qwert2603.spenddemo.utils.LogUtils
 
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {

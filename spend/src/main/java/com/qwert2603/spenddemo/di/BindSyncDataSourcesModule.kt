@@ -10,7 +10,7 @@ import dagger.Module
 
 @Module
 @Suppress("UNUSED")
-interface  BindSyncDataSourcesModule {
+interface BindSyncDataSourcesModule {
     @Binds fun bind0(localItemsDataSourceImpl: LocalItemsDataSourceImpl): LocalItemsDataSource<Long, SyncingRecord>
     @Binds fun bind1(loggerImpl: LoggerImpl): Logger
 }

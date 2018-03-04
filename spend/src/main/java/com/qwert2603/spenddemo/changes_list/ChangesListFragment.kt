@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.qwert2603.andrlib.base.mvi.load_refresh.LoadRefreshPanel
+import com.qwert2603.andrlib.base.mvi.load_refresh.list.ListFragment
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.load_refresh.LoadRefreshPanel
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.ListFragment
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.Change
 import kotlinx.android.synthetic.main.fragment_changes_list.*
@@ -17,6 +17,8 @@ class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, Chan
 
     override fun loadRefreshPanel(): LoadRefreshPanel = changesList_LRPanelImpl
 
+    override fun viewForSnackbar(): View? = coordinator
+
     override val adapter = ChangesAdapter()
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
@@ -24,8 +26,8 @@ class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, Chan
             .build()
             .createChangesListPresenter()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
-            = inflater.inflate(R.layout.fragment_changes_list, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_changes_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -14,7 +14,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
         const val PAYLOAD_HIGHLIGHT = "PAYLOAD_HIGHLIGHT"
     }
 
-    class Q : RecyclerView.ItemAnimator.ItemHolderInfo()
+    private class Q : RecyclerView.ItemAnimator.ItemHolderInfo()
 
     private val highlightAnimators = mutableMapOf<RecyclerView.ViewHolder, Animator>()
 

@@ -6,13 +6,13 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(
-        SchedulersModule::class,
-        NavigationModule::class,
-        BindReposModule::class,
-        BindSyncDataSourcesModule::class,
-        ModelModule::class
-))
+@Component(modules = [
+    NavigationModule::class,
+    BindReposModule::class,
+    BindSyncDataSourcesModule::class,
+    ModelModule::class,
+    BindSchedulersModule::class
+])
 interface AppComponent {
 
     fun viewsComponent(): ViewsComponent

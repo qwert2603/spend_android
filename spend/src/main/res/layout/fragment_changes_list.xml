@@ -7,7 +7,7 @@
 
     <include layout="@layout/toolbar_default" />
 
-    <com.qwert2603.spenddemo.base_mvi.load_refresh.LRPanelImpl
+    <com.qwert2603.andrlib.base.mvi.load_refresh.LRPanelImpl
         android:id="@+id/changesList_LRPanelImpl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,6 +15,6 @@
 
         <include layout="@layout/include_list" />
 
-    </com.qwert2603.spenddemo.base_mvi.load_refresh.LRPanelImpl>
+    </com.qwert2603.andrlib.base.mvi.load_refresh.LRPanelImpl>
 
 </android.support.design.widget.CoordinatorLayout>

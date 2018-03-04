@@ -11,8 +11,8 @@ import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.BaseFragment
 import com.qwert2603.spenddemo.di.DIHolder
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.terrakok.cicerone.NavigatorHolder

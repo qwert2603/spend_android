@@ -2,8 +2,8 @@ package com.qwert2603.spenddemo.changes_list
 
 import android.support.v4.content.res.ResourcesCompat
 import android.view.ViewGroup
+import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.load_refresh.list.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.spenddemo.model.entity.Change
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import kotlinx.android.synthetic.main.item_change.view.*

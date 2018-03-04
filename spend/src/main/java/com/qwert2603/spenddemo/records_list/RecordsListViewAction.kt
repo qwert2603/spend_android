@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.records_list
 
-import com.qwert2603.spenddemo.base_mvi.ViewAction
+import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 
 sealed class RecordsListViewAction : ViewAction {

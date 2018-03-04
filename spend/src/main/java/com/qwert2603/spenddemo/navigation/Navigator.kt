@@ -11,7 +11,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import com.hannesdorfmann.fragmentargs.FragmentArgs
-import com.qwert2603.spenddemo.base_mvi.BaseFragment
+import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.spenddemo.changes_list.ChangesListFragment
 import com.qwert2603.spenddemo.records_list.RecordsListFragment
 import ru.terrakok.cicerone.android.SupportFragmentNavigator

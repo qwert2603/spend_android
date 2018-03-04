@@ -1,14 +1,14 @@
 package com.qwert2603.spenddemo.records_list
 
-import com.qwert2603.spenddemo.base_mvi.BasePresenter
+import com.qwert2603.andrlib.base.mvi.BasePresenter
+import com.qwert2603.andrlib.base.mvi.PartialChange
+import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.di.qualifiers.ShowChangeKinds
 import com.qwert2603.spenddemo.di.qualifiers.ShowIds
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordsState
-import com.qwert2603.spenddemo.model.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.toRecordUI
-import com.qwert2603.spenddemo.utils.switchToUiIfNotYet
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import javax.inject.Inject
@@ -19,14 +19,42 @@ class RecordsListPresenter @Inject constructor(
         @ShowChangeKinds private val showChangeKinds: Boolean,
         @ShowIds private val showIds: Boolean
 ) : BasePresenter<RecordsListView, RecordsListViewState>(uiSchedulerProvider) {
-    companion object {
-        val INITIAL_STATE = RecordsListViewState(emptyList(), 0, 0, false, false)
+
+    override val initialState = RecordsListViewState(emptyList(), 0, 0, false, false)
+
+    private val recordsStateChanges = recordsListInteractor.recordsState()
+            .delaySubscription(intent { it.viewCreated() })
+            .share()
+
+    override val partialChanges: Observable<PartialChange> = Observable.merge(
+            recordsStateChanges
+                    .map { recordsState ->
+                        recordsState.records.map {
+                            it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
+                        }
+                    }
+                    .map { RecordsListPartialChange.RecordsListUpdated(it) },
+            Observable.just(showChangeKinds)
+                    .map { RecordsListPartialChange.ShowChangeKinds(it) },
+            Observable.just(showIds)
+                    .map { RecordsListPartialChange.ShowIds(it) }
+    )
+
+    override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
+        if (change !is RecordsListPartialChange) throw Exception()
+        return when (change) {
+            is RecordsListPartialChange.RecordsListUpdated -> vs.copy(
+                    records = change.records,
+                    recordsCount = change.records.count { it is RecordUI },
+                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null }
+            )
+            is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
+            is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
+        }
     }
 
     override fun bindIntents() {
-        val recordsStateChanges = recordsListInteractor.recordsState()
-                .delaySubscription(intent { it.viewCreated() })
-                .share()
+        super.bindIntents()
 
         intent { it.showChangesClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen()) }
@@ -62,33 +90,5 @@ class RecordsListPresenter @Inject constructor(
         intent { it.showAboutClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout()) }
                 .subscribeToView()
-
-        val observable = Observable.merge(
-                recordsStateChanges
-                        .map { recordsState ->
-                            recordsState.records.map {
-                                it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
-                            }
-                        }
-                        .map { RecordsListPartialChange.RecordsListUpdated(it) },
-                Observable.just(showChangeKinds)
-                        .map { RecordsListPartialChange.ShowChangeKinds(it) },
-                Observable.just(showIds)
-                        .map { RecordsListPartialChange.ShowIds(it) }
-        )
-
-        subscribeViewState(observable.switchToUiIfNotYet(uiSchedulerProvider).scan(INITIAL_STATE, this::stateReducer).skip(1), RecordsListView::render)
-    }
-
-    private fun stateReducer(viewState: RecordsListViewState, change: RecordsListPartialChange): RecordsListViewState {
-        return when (change) {
-            is RecordsListPartialChange.RecordsListUpdated -> viewState.copy(
-                    records = change.records,
-                    recordsCount = change.records.count { it is RecordUI },
-                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null }
-            )
-            is RecordsListPartialChange.ShowChangeKinds -> viewState.copy(showChangeKinds = change.show)
-            is RecordsListPartialChange.ShowIds -> viewState.copy(showIds = change.show)
-        }
     }
 }

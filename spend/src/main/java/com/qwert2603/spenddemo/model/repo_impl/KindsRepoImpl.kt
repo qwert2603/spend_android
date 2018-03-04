@@ -3,7 +3,6 @@ package com.qwert2603.spenddemo.model.repo_impl
 import com.qwert2603.spenddemo.model.entity.Kind
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.repo.KindsRepo
-import com.qwert2603.spenddemo.model.schedulers.ModelSchedulersProvider
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject

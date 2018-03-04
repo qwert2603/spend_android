@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.records_list
 
-import com.qwert2603.spenddemo.base_mvi.PartialChange
+import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
 
 sealed class RecordsListPartialChange : PartialChange {

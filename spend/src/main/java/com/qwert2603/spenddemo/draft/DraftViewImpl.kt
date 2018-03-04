@@ -8,8 +8,8 @@ import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.base_mvi.ViewAction
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder

@@ -15,7 +15,7 @@ class PresenterModule {
         ServerType.NO_SERVER -> false
         ServerType.SERVER_TEST -> true
         ServerType.SERVER_PROD -> true
-        else -> null!!
+        else -> null!!//todo
     }
 
     @Provides
