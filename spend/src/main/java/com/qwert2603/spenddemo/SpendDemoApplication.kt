@@ -2,9 +2,9 @@ package com.qwert2603.spenddemo
 
 import android.app.Application
 import com.facebook.stetho.Stetho
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.di.DIManager
-import com.qwert2603.spenddemo.utils.LogUtils
 import io.reactivex.plugins.RxJavaPlugins
 
 class SpendDemoApplication : Application() {
@@ -24,5 +24,7 @@ class SpendDemoApplication : Application() {
                 cause = cause.cause
             }
         }
+
+        LogUtils.logType = LogUtils.LogType.ANDROID
     }
 }

@@ -31,26 +31,26 @@ class Navigator(private val activity: ActivityInterface)
                     override fun onFragmentPaused(fm: FragmentManager?, f: Fragment) {
                         activity.navigationActivity.onFragmentPaused(f)
                     }
+                }, false
+        )
 
-                    override fun onFragmentCreated(fm: FragmentManager?, f: Fragment, savedInstanceState: Bundle?) {
-                        super.onFragmentCreated(fm, f, savedInstanceState)
+        activity.supportFragmentManager.registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentPreCreated(fm: FragmentManager?, f: Fragment, savedInstanceState: Bundle?) {
                         FragmentArgs.inject(f)
                     }
 
                     override fun onFragmentViewCreated(fm: FragmentManager?, f: Fragment?, v: View?, savedInstanceState: Bundle?) {
                         (v as? ViewGroup)?.let { ViewGroupCompat.setTransitionGroup(it, true) }
                     }
-                }, false
+                }, true
         )
     }
 
-    override fun createFragment(screenKey: String, data: Any?) = when (screenKey) {
-        ScreenKeys.RECORDS_LIST -> RecordsListFragment()
-        ScreenKeys.CHANGES_LIST -> ChangesListFragment()
-        else -> null!!
-    }.let { it as Fragment }.also {
-        it.setScreenKey(screenKey)
-    }
+    override fun createFragment(screenKey: String, data: Any?) = when (ScreenKey.valueOf(screenKey)) {
+        ScreenKey.RECORDS_LIST -> RecordsListFragment()
+        ScreenKey.CHANGES_LIST -> ChangesListFragment()
+    }.also { it.setScreenKey(ScreenKey.valueOf(screenKey)) }
 
     override fun exit() {
         activity.finish()

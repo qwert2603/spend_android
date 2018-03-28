@@ -5,8 +5,8 @@ class DefaultLogger:Logger{
         println("$tag: $msg")
     }
 
-    override fun e(tag: String, msg: String, t: Throwable?) {
+    override fun e(tag: String, msg: String, t: Throwable) {
         println("$tag: $msg")
-        t?.printStackTrace()
+        t.printStackTrace()
     }
 }

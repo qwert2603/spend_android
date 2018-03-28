@@ -1,1 +1,18 @@
-[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":9},"path":"spend-noServer-release.apk","properties":{"packageId":"com.qwert2603.spenddemo.noServer","split":"","minSdkVersion":"22"}}]
+[
+  {
+    "outputType": {
+      "type": "APK"
+    },
+    "apkInfo": {
+      "type": "MAIN",
+      "splits": [],
+      "versionCode": 9
+    },
+    "path": "spend-noServer-release.apk",
+    "properties": {
+      "packageId": "com.qwert2603.spenddemo.noServer",
+      "split": "",
+      "minSdkVersion": "22"
+    }
+  }
+]

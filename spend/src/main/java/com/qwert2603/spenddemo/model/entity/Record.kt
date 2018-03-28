@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.entity
 
+import com.qwert2603.andrlib.model.IdentifiableLong
 import java.util.*
 
 data class Record(

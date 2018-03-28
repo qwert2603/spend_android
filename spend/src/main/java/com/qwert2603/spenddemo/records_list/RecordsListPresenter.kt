@@ -16,14 +16,16 @@ import javax.inject.Inject
 class RecordsListPresenter @Inject constructor(
         private val recordsListInteractor: RecordsListInteractor,
         uiSchedulerProvider: UiSchedulerProvider,
-        @ShowChangeKinds private val showChangeKinds: Boolean,
-        @ShowIds private val showIds: Boolean
+        @ShowChangeKinds showChangeKinds: Boolean,
+        @ShowIds showIds: Boolean
 ) : BasePresenter<RecordsListView, RecordsListViewState>(uiSchedulerProvider) {
 
     override val initialState = RecordsListViewState(emptyList(), 0, 0, false, false)
 
+    private val viewCreated = intent { it.viewCreated() }
+
     private val recordsStateChanges = recordsListInteractor.recordsState()
-            .delaySubscription(intent { it.viewCreated() })
+            .delaySubscription(intent { viewCreated })
             .share()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(
@@ -35,8 +37,10 @@ class RecordsListPresenter @Inject constructor(
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             Observable.just(showChangeKinds)
+                    .delaySubscription(viewCreated)
                     .map { RecordsListPartialChange.ShowChangeKinds(it) },
             Observable.just(showIds)
+                    .delaySubscription(viewCreated)
                     .map { RecordsListPartialChange.ShowIds(it) }
     )
 
@@ -57,7 +61,7 @@ class RecordsListPresenter @Inject constructor(
         super.bindIntents()
 
         intent { it.showChangesClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen()) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen) }
                 .subscribeToView()
         intent { it.editRecordClicks() }
                 .filter { it.canEdit }
@@ -88,7 +92,7 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.SendRecords(it)) }
                 .subscribeToView()
         intent { it.showAboutClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout()) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout) }
                 .subscribeToView()
     }
 }

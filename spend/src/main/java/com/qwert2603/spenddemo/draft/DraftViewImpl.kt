@@ -9,6 +9,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.andrlib.base.mvi.ViewAction
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
@@ -18,8 +19,8 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_draft.view.*
 
-class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null)
-    : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView {
+class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView {
+
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .draftPresenterComponentBuilder()
             .build()
@@ -70,12 +71,12 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
         LogUtils.d("DraftViewImpl executeAction $va")
         if (va !is DraftViewAction) return
         when (va) {
-            is DraftViewAction.FocusOnKindInput -> {
+            DraftViewAction.FocusOnKindInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(kind_EditText)
                 }
             }
-            is DraftViewAction.FocusOnValueInput -> {
+            DraftViewAction.FocusOnValueInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(value_EditText)
                 }
@@ -83,14 +84,14 @@ class DraftViewImpl @JvmOverloads constructor(context: Context, attrs: Attribute
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
                     .show((context as FragmentActivity).supportFragmentManager, "date")
                     .also { keyboardManager.hideKeyboard() }
-            is DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
+            DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
                     .show((context as FragmentActivity).supportFragmentManager, "choose_kind")
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.ShowKindSuggestions -> {
                 kind_EditText.setAdapter(SuggestionAdapter(context, va.suggestions, va.search))
                 kind_EditText.showDropDown()
             }
-            is DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
+            DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
         }
     }
 }

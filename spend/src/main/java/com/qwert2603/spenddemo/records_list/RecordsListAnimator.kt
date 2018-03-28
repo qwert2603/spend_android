@@ -51,9 +51,8 @@ class RecordsListAnimator : DefaultItemAnimator() {
                             }
                         })
                     }
-            highlightAnimators.put(oldHolder, animator)
+            highlightAnimators[oldHolder] = animator
             animator.start()
-
             return false
         }
         return super.animateChange(oldHolder, newHolder, preInfo, postInfo)

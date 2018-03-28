@@ -5,7 +5,7 @@ import com.qwert2603.spenddemo.di.presenters.DraftPresenterCreatorComponent
 import com.qwert2603.spenddemo.di.presenters.RecordsListPresenterCreatorComponent
 import dagger.Subcomponent
 
-@Subcomponent(modules = arrayOf(PresenterModule::class))
+@Subcomponent(modules = [PresenterModule::class])
 interface PresentersCreatorComponent {
     fun recordsListPresenterComponentBuilder(): RecordsListPresenterCreatorComponent.Builder
     fun changesListPresenterComponentBuilder(): ChangesListPresenterCreatorComponent.Builder

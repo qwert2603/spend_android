@@ -9,8 +9,8 @@ android {
         applicationId "com.qwert2603.spenddemo"
         minSdkVersion 22
         targetSdkVersion 27
-        versionCode 9
-        versionName "2.0-alpha7"
+        versionCode 10
+        versionName "2.0-alpha8"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
 
         resConfigs "en"
@@ -67,18 +67,18 @@ dependencies {
 
     implementation project(path: ':syncprocessor')
 
-    ext.support_version = '27.0.2'
-    ext.andrlib_version = '1.5.4'
+    ext.support_version = '27.1.0'
+    ext.andrlib_version = '1.6.5'
     ext.andrlib_generator_version = '1.0.7'
-    ext.rxjava_version = '2.1.8'
-    ext.rxandroid_version = '2.0.1'
-    ext.rxbinding_version = '2.0.0'
+    ext.rxjava_version = '2.1.10'
+    ext.rxandroid_version = '2.0.2'
+    ext.rxbinding_version = '2.1.1'
     ext.mosby_version = '3.1.0'
     ext.fragmentargs_version = '3.0.2'
-    ext.cicerone_version = '2.1.0'
+    ext.cicerone_version = '3.0.0'
     ext.postgresql_version = '42.1.4.jre7'
-    ext.arch_components_version = '1.0.0'
-    ext.dagger_version = '2.13'
+    ext.room_version = '1.1.0-beta1'
+    ext.dagger_version = '2.15'
     ext.junit_version = '4.12'
     ext.stetho_version = '1.5.0'
 
@@ -90,9 +90,9 @@ dependencies {
     annotationProcessor "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
     kapt "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
 
-    implementation "android.arch.persistence.room:runtime:$arch_components_version"
-    implementation "android.arch.persistence.room:rxjava2:$arch_components_version"
-    kapt "android.arch.persistence.room:compiler:$arch_components_version"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    implementation "android.arch.persistence.room:rxjava2:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 

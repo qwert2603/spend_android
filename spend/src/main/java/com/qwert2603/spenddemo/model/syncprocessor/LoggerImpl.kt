@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.model.syncprocessor
 
-import com.qwert2603.spenddemo.utils.LogUtils
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.syncprocessor.logger.Logger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,7 +11,7 @@ class LoggerImpl @Inject constructor() : Logger {
         LogUtils.d(tag, msg)
     }
 
-    override fun e(tag: String, msg: String, t: Throwable?) {
+    override fun e(tag: String, msg: String, t: Throwable) {
         LogUtils.e(tag, msg, t)
     }
 }

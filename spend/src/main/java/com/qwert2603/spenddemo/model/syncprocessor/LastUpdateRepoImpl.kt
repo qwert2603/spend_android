@@ -2,8 +2,8 @@ package com.qwert2603.spenddemo.model.syncprocessor
 
 import android.content.Context
 import android.preference.PreferenceManager
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.BuildConfig
-import com.qwert2603.spenddemo.utils.LogUtils
 import com.qwert2603.syncprocessor.datasource.LastUpdateRepo
 import java.text.SimpleDateFormat
 import java.util.*

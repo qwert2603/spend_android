@@ -51,7 +51,7 @@ class DraftPresenter @Inject constructor(
                                 if (search !in it) {
                                     viewActions.onNext(DraftViewAction.ShowKindSuggestions(it, search))
                                 } else {
-                                    viewActions.onNext(DraftViewAction.HideKindSuggestions())
+                                    viewActions.onNext(DraftViewAction.HideKindSuggestions)
                                 }
                             }
                             .toObservable()
@@ -64,18 +64,18 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.selectKindClicks() }
-                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectKind()) }
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectKind) }
                 .subscribeToView()
 
         intent { it.saveClicks() }
                 .withLatestFrom(draftChanges, BiFunction { _: Any, creatingRecord: CreatingRecord -> creatingRecord })
                 .filter { draftInteractor.isValid(it) }
                 .doOnNext { draftInteractor.createRecord() }
-                .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput()) }
+                .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
                 .subscribeToView()
 
         draftInteractor.kindSelected()
-                .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput()) }
+                .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput) }
                 .subscribeToView()
     }
 }

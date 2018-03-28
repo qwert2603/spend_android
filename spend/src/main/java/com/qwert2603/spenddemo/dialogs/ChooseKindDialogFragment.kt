@@ -34,7 +34,7 @@ class ChooseKindDialogFragment : DialogFragment() {
                 .mapList { it.kind }
                 .blockingGet()
 
-        return AlertDialog.Builder(context!!)
+        return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)
                 .setItems(kinds.toTypedArray(), { _, which ->
                     val targetFragment = targetFragment

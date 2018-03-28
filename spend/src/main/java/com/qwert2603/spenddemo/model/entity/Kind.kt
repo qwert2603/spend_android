@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.model.entity
 
-import com.qwert2603.spenddemo.utils.hashCodeLong
+import com.qwert2603.andrlib.model.IdentifiableLong
+import com.qwert2603.andrlib.model.hashCodeLong
 import java.util.*
 
 data class Kind(

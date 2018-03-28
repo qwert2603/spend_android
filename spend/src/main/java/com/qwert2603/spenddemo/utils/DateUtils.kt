@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.utils
 import android.content.res.Resources
 import com.qwert2603.spenddemo.R
 import java.util.*
+import com.qwert2603.andrlib.util.Const as LibConst
 
 fun java.util.Date.toSqlDate() = java.sql.Date(this.time)
 fun java.sql.Date.toUtilDate() = java.util.Date(this.time)
@@ -19,8 +20,8 @@ fun Date.onlyDate(): Date = Calendar
         .time
 
 fun Date.isToday() = this.onlyDate() == Date().onlyDate()
-fun Date.isYesterday() = this.onlyDate() == Date(System.currentTimeMillis() - Const.MILLIS_PER_DAY).onlyDate()
-fun Date.isTomorrow() = this.onlyDate() == Date(System.currentTimeMillis() + Const.MILLIS_PER_DAY).onlyDate()
+fun Date.isYesterday() = this.onlyDate() == Date(System.currentTimeMillis() - LibConst.MILLIS_PER_DAY).onlyDate()
+fun Date.isTomorrow() = this.onlyDate() == Date(System.currentTimeMillis() + LibConst.MILLIS_PER_DAY).onlyDate()
 
 fun Date.toFormattedString(resources: Resources): String = when {
     isToday() -> resources.getString(R.string.today_text)

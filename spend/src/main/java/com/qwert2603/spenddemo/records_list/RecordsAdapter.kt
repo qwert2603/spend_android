@@ -26,7 +26,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
         else -> null!!
     } as BaseRecyclerViewHolder<RecordsListItem>
 
-    override fun onBindViewHolder(holder: BaseRecyclerViewHolder<IdentifiableLong>?, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: BaseRecyclerViewHolder<IdentifiableLong>, position: Int, payloads: MutableList<Any>) {
         if (RecordsListAnimator.PAYLOAD_HIGHLIGHT in payloads) return
         super.onBindViewHolder(holder, position, payloads)
     }

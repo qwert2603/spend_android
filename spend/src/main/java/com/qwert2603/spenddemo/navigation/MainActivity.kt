@@ -21,8 +21,10 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
-    @Inject lateinit var router: Router
-    @Inject lateinit var navigatorHolder: NavigatorHolder
+    @Inject
+    lateinit var router: Router
+    @Inject
+    lateinit var navigatorHolder: NavigatorHolder
 
     var resumedFragment: Fragment? = null
 
@@ -31,8 +33,10 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         override val fragmentContainer = R.id.fragment_container
         override fun finish() = this@MainActivity.finish()
         override fun hideKeyboard() = this@MainActivity.hideKeyboard()
-        override fun viewForSnackbars(): View = (resumedFragment as? BaseFragment<*, *, *>)?.viewForSnackbar() ?: activity_root_FrameLayout
-        override val navigationActivity = this@MainActivity
+        override fun viewForSnackbars(): View = (resumedFragment as? BaseFragment<*, *, *>)?.viewForSnackbar()
+                ?: activity_root_FrameLayout
+
+        override val navigationActivity: NavigationActivity = this@MainActivity
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,19 +46,10 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(ScreenKeys.RECORDS_LIST)
+            router.newRootScreen(ScreenKey.RECORDS_LIST.name)
         }
-    }
 
-
-    override fun onResume() {
-        super.onResume()
-        navigatorHolder.setNavigator(navigator)
-    }
-
-    override fun onPause() {
-        navigatorHolder.removeNavigator()
-        super.onPause()
+        lifecycle.addObserver(navigatorHolder.createLifecycleObserver(navigator))
     }
 
     override fun onBackPressed() {
@@ -74,9 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
                 ?.apply {
                     setSupportActionBar(this)
                     navigationIcon = if (isRoot) null else ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_arrow_back_white_24dp)
-                    setNavigationOnClickListener {
-                        router.exit()
-                    }
+                    setNavigationOnClickListener { router.exit() }
                 }
         resumedFragment = fragment
     }

@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import com.hannesdorfmann.fragmentargs.FragmentArgs
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -49,6 +48,7 @@ class EditRecordDialogFragment : DialogFragment() {
 
     private lateinit var dialogView: View
 
+    // todo: use delegate.
     private var selectedDate: Long
         get() = arguments!!.getLong(SELECTED_DATE_KEY)
         set(value) {
@@ -57,7 +57,6 @@ class EditRecordDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FragmentArgs.inject(this)
         arguments = arguments ?: Bundle()
         selectedDate = date
     }
@@ -113,7 +112,7 @@ class EditRecordDialogFragment : DialogFragment() {
                                 ?.isEnabled = it
                     })
         }
-        return AlertDialog.Builder(context!!)
+        return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.edit_record_text)
                 .setView(dialogView)
                 .setPositiveButton(R.string.text_edit, { _, _ -> sendResult() })

@@ -1,9 +1,9 @@
 package com.qwert2603.spenddemo.model.syncprocessor
 
+import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.local_db.tables.toRecord
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordTable
-import com.qwert2603.spenddemo.utils.mapList
 import com.qwert2603.syncprocessor.datasource.LocalItemsDataSource
 import io.reactivex.Completable
 import io.reactivex.Single

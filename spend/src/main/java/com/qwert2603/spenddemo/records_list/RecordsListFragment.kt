@@ -15,7 +15,7 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.navigation.ScreenKeys
+import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
@@ -84,7 +84,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         showChangeKinds,
                         BiFunction { notZero: Boolean, show: Boolean -> notZero && show }
                 )
-                .subscribe(RxMenuItem.visible(menu.findItem(R.id.show_local_changes)))
+                .subscribe { menu.findItem(R.id.show_local_changes).isVisible = it }
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
         RxMenuItem.clicks(menu.findItem(R.id.send)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
@@ -140,7 +140,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         if (va !is RecordsListViewAction) return
         @Suppress("IMPLICIT_CAST_TO_ANY")
         when (va) {
-            is RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKeys.CHANGES_LIST)
+            RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKey.CHANGES_LIST.name)
             is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id)
                     .also { it.setTargetFragment(this, REQUEST_DELETE_RECORD) }
                     .show(fragmentManager, "delete_record")
@@ -161,7 +161,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         .let { Intent.createChooser(it, context?.getString(R.string.send_title)) }
                         .apply { context?.startActivity(this) }
             }
-            is RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
+            RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")
                     .also { (context as KeyboardManager).hideKeyboard() }
         }.also { }

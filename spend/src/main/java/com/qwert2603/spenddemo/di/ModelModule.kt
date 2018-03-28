@@ -10,6 +10,7 @@ import com.qwert2603.spenddemo.model.remote_db.RemoteDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
 import com.qwert2603.spenddemo.model.syncprocessor.*
+import com.qwert2603.spenddemo.utils.sortedByDescending
 import com.qwert2603.syncprocessor.SyncProcessor
 import com.qwert2603.syncprocessor.datasource.LastUpdateRepo
 import com.qwert2603.syncprocessor.datasource.LocalChangesDataSource
@@ -49,8 +50,7 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun remoteItemsDataSource(remoteDBFacade: RemoteDBFacade)
-            : RemoteItemsDataSource<Long, SyncingRecord, RemoteRecord> =
+    fun remoteItemsDataSource(remoteDBFacade: RemoteDBFacade): RemoteItemsDataSource<Long, SyncingRecord, RemoteRecord> =
             when (BuildConfig.SERVER_TYPE) {
                 ServerType.NO_SERVER -> StubRemoteItemsDataSource()
                 ServerType.SERVER_TEST -> RemoteItemsDataSourceImpl(remoteDBFacade)
@@ -59,8 +59,7 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun localChangesDataSource(localDB: LocalDB)
-            : LocalChangesDataSource<Long> =
+    fun localChangesDataSource(localDB: LocalDB): LocalChangesDataSource<Long> =
             when (BuildConfig.SERVER_TYPE) {
                 ServerType.NO_SERVER -> StubLocalChangesDataSource()
                 ServerType.SERVER_TEST -> LocalChangesDataSourceImpl(localDB)
@@ -69,8 +68,7 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun lastUpdateRepo(appContext: Context)
-            : LastUpdateRepo =
+    fun lastUpdateRepo(appContext: Context): LastUpdateRepo =
             when (BuildConfig.SERVER_TYPE) {
                 ServerType.NO_SERVER -> StubLastUpdateRepo()
                 ServerType.SERVER_TEST -> LastUpdateRepoImpl(appContext)
@@ -92,12 +90,6 @@ class ModelModule {
             lastUpdateRepo = lastUpdateRepo,
             logger = logger,
             r2t = RemoteRecord::toSyncingRecord,
-            sortFun = {
-                it.sortedWith(kotlin.Comparator { r1, r2 ->
-                    r2.date.compareTo(r1.date)
-                            .takeIf { it != 0 }
-                            ?: r2.id.compareTo(r1.id)
-                })
-            }
+            sortFun = { it.sortedByDescending({ it.date }, { it.id }) }
     )
 }

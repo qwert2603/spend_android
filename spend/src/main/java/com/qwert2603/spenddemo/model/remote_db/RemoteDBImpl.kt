@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.model.remote_db
 
-import com.qwert2603.spenddemo.utils.LogUtils
+import com.qwert2603.andrlib.util.LogUtils
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement

@@ -20,7 +20,7 @@ class AppInfoDialogFragment : DialogFragment() {
                 SimpleDateFormat("d.MM.yyyy", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
                 SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME))
         ))
-        return AlertDialog.Builder(context!!)
+        return AlertDialog.Builder(requireContext())
                 .setMessage(message)
                 .setPositiveButton(R.string.text_ok, null)
                 .create()

@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.widget.EditText
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.qwert2603.andrlib.util.LogUtils
 import io.reactivex.Observable
 
 class UserInputEditText(private val editText: EditText) {
