@@ -74,11 +74,16 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
             DraftViewAction.FocusOnKindInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(kind_EditText)
+                } else {
+                    kind_EditText.requestFocus()
                 }
             }
             DraftViewAction.FocusOnValueInput -> {
+                val value_EditText = value_EditText
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(value_EditText)
+                } else {
+                    value_EditText.postDelayed({ keyboardManager.showKeyboard(value_EditText) }, 100)
                 }
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
