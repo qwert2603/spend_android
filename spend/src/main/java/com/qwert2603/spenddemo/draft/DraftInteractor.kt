@@ -61,7 +61,7 @@ class DraftInteractor @Inject constructor(
             changeDraft {
                 it.copy(
                         kind = kind,
-                        value = allKinds.value.find { it.kind == kind }?.lastPrice ?: it.value
+                        value = allKinds.value?.find { it.kind == kind }?.lastPrice ?: it.value
                 )
             }
             kindSelected.onNext(Any())
