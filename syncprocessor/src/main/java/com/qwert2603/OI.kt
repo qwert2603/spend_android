@@ -27,5 +27,5 @@ fun main(args: Array<String>) {
 
     val pa: Producer<A> = PA()
     val pb: Producer<A> = PB()
-    val pc: Producer<C> = PC()
+    val pc: Producer<A> = PC()
 }

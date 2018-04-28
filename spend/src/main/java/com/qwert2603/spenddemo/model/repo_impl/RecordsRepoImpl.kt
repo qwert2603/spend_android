@@ -2,11 +2,10 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
-import com.qwert2603.spenddemo.model.syncprocessor.RemoteRecord
 import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toSyncingRecord
-import com.qwert2603.syncprocessor.SyncProcessor
+import com.qwert2603.syncprocessor.ISyncProcessor
 import com.qwert2603.syncprocessor.entity.ItemEvent
 import io.reactivex.Observable
 import java.util.*
@@ -15,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RecordsRepoImpl @Inject constructor(
-        private val syncProcessor: SyncProcessor<Long, SyncingRecord, RemoteRecord>
+        private val syncProcessor: ISyncProcessor<Long, SyncingRecord>
 ) : RecordsRepo {
 
     override fun addRecord(creatingRecord: CreatingRecord) {

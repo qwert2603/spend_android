@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo
 
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
 import org.junit.Test
@@ -12,6 +13,8 @@ import java.util.*
 class T {
     @Test
     fun t() {
+        LogUtils.logType = LogUtils.LogType.SOUT
+
         val bufferedReader = BufferedReader(FileReader("/home/alex/StudioProjects/SpendDemo/spend/src/test/r.txt"))
         var s: String?
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
@@ -26,7 +29,7 @@ class T {
             s = bufferedReader.readLine()
             if (s == null) break
 
-            val split = s.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val split = s.split("\t").toTypedArray()
 
             if (!bb) {
                 bb = true

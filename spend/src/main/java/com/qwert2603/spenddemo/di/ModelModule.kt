@@ -11,6 +11,7 @@ import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
 import com.qwert2603.spenddemo.model.syncprocessor.*
 import com.qwert2603.spenddemo.utils.sortedByDescending
+import com.qwert2603.syncprocessor.ISyncProcessor
 import com.qwert2603.syncprocessor.SyncProcessor
 import com.qwert2603.syncprocessor.datasource.LastUpdateRepo
 import com.qwert2603.syncprocessor.datasource.LocalChangesDataSource
@@ -83,7 +84,7 @@ class ModelModule {
             localChangesDataSource: LocalChangesDataSource<Long>,
             logger: Logger,
             lastUpdateRepo: LastUpdateRepo
-    ): SyncProcessor<Long, SyncingRecord, RemoteRecord> = SyncProcessor(
+    ): ISyncProcessor<Long, SyncingRecord> = SyncProcessor(
             remoteItemsDataSource = remoteItemsDataSource,
             localItemsDataSource = localItemsDataSource,
             localChangesDataSource = localChangesDataSource,
