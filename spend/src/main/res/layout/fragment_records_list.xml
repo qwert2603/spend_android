@@ -29,6 +29,7 @@
             android:background="@drawable/shadow" />
 
         <com.qwert2603.spenddemo.draft.DraftViewImpl
+            android:id="@+id/draftViewImpl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.draft
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -75,6 +76,18 @@ class DraftPresenter @Inject constructor(
 
         draftInteractor.kindSelected()
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput) }
+                .subscribeToView()
+
+        intent { it.onDateSelected() }
+                .doOnNext { LogUtils.d("DraftPresenter onDateSelected $it") }
+                .subscribeToView()
+
+        intent { it.onKindSelected() }
+                .doOnNext { LogUtils.d("DraftPresenter onKindSelected $it") }
+                .subscribeToView()
+
+        intent { it.onKindInputFocused() }
+                .doOnNext { LogUtils.d("DraftPresenter onKindInputFocused") }
                 .subscribeToView()
     }
 }

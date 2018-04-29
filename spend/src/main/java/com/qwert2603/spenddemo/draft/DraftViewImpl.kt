@@ -1,8 +1,9 @@
 package com.qwert2603.spenddemo.draft
 
 import android.animation.LayoutTransition
+import android.app.Activity
 import android.content.Context
-import android.support.v4.app.FragmentActivity
+import android.content.Intent
 import android.util.AttributeSet
 import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
@@ -15,15 +16,25 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
+import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragment
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.navigation.KeyboardManager
+import com.qwert2603.spenddemo.utils.DialogAwareView
 import com.qwert2603.spenddemo.utils.UserInputEditText
 import com.qwert2603.spenddemo.utils.mapToInt
 import com.qwert2603.spenddemo.utils.toFormattedString
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_draft.view.*
+import java.util.*
 
-class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView {
+// todo: extend BaseFrameLayout.
+class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
+
+    companion object {
+        private const val REQUEST_CODE_DATE = 5
+        private const val REQUEST_CODE_KIND = 6
+    }
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .draftPresenterComponentBuilder()
@@ -35,9 +46,22 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
+    private val onDateSelected = PublishSubject.create<Date>()
+    private val onKindSelected = PublishSubject.create<String>()
+
+    override lateinit var dialogShower: DialogAwareView.DialogShower
+
     init {
         inflate(R.layout.view_draft, attachToRoot = true)
         draft_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+    }
+
+    override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK || data == null) return
+        when (requestCode) {
+            REQUEST_CODE_DATE -> onDateSelected.onNext(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
+            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseKindDialogFragment.KIND_KEY))
+        }
     }
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
@@ -55,6 +79,10 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
     override fun selectDateClicks(): Observable<Any> = RxView.clicks(date_EditText)
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
+
+    override fun onDateSelected(): Observable<Date> = onDateSelected
+
+    override fun onKindSelected(): Observable<String> = onKindSelected
 
     override fun onKindInputFocused(): Observable<Any> = RxView.focusChanges(kind_EditText)
             .skipInitialValue()
@@ -96,10 +124,10 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
                 }
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
-                    .show((context as FragmentActivity).supportFragmentManager, "date")
+                    .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
             DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
-                    .show((context as FragmentActivity).supportFragmentManager, "choose_kind")
+                    .also { dialogShower.showDialog(it, REQUEST_CODE_KIND) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.ShowKindSuggestions -> {
                 kind_EditText.setAdapter(SuggestionAdapter(context, va.suggestions, va.search))

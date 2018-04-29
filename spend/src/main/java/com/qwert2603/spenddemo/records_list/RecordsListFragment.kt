@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.records_list
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.jakewharton.rxbinding2.view.RxMenuItem
@@ -17,6 +18,7 @@ import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.utils.DialogAwareView
 import com.qwert2603.spenddemo.utils.castAndFilter
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -67,12 +69,21 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         records_RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
                 .also { it.initialPrefetchItemCount = 10 }
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
         records_RecyclerView.itemAnimator = RecordsListAnimator()
+
+        draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
+            override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
+                dialogFragment
+                        .also { it.setTargetFragment(this@RecordsListFragment, requestCode) }
+                        .show(fragmentManager, dialogFragment.toString())
+            }
+        }
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,6 +102,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        draftViewImpl.onDialogResult(requestCode, resultCode, data)
+
         if (requestCode == REQUEST_DELETE_RECORD && resultCode == Activity.RESULT_OK && data != null) {
             deleteRecordConfirmed.onNext(data.getLongExtra(DeleteRecordDialogFragment.ID_KEY, 0))
         }
@@ -102,7 +117,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     Date(data.getLongExtra(EditRecordDialogFragment.DATE_KEY, 0L))
             ))
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
