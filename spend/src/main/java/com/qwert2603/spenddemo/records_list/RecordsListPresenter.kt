@@ -22,10 +22,10 @@ class RecordsListPresenter @Inject constructor(
 
     override val initialState = RecordsListViewState(emptyList(), 0, 0, false, false)
 
-    private val viewCreated = intent { it.viewCreated() }
+    private val viewCreated = intent { it.viewCreated() }.share()
 
     private val recordsStateChanges = recordsListInteractor.recordsState()
-            .delaySubscription(intent { viewCreated })
+            .delaySubscription(viewCreated)
             .share()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(

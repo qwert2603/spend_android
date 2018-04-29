@@ -13,6 +13,6 @@ import javax.inject.Singleton
 class SchedulersProviderImpl @Inject constructor() : UiSchedulerProvider, ModelSchedulersProvider {
     override val ui: Scheduler = AndroidSchedulers.mainThread()
     override fun isOnUi() = Looper.myLooper() == Looper.getMainLooper()
-    override val io: Scheduler = Schedulers.newThread()
+    override val io: Scheduler = Schedulers.io()
     override val computation: Scheduler = Schedulers.computation()
 }
