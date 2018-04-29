@@ -22,13 +22,13 @@ class DraftInteractor @Inject constructor(
         private val kindsRepo: KindsRepo
 ) {
     companion object {
-        private val EmptyCreatingRecord = CreatingRecord("", 0, Date().onlyDate(), false)
+        private val EMPTY_CREATING_RECORD = CreatingRecord("", 0, Date().onlyDate(), false)
     }
 
     private val draftChanges = BehaviorSubject.create<CreatingRecord>()
     private val kindSelected = PublishSubject.create<Any>()
 
-    private var draft = EmptyCreatingRecord
+    private var draft = EMPTY_CREATING_RECORD
     private val changeDraftLock = Any()
 
     private val allKinds: BehaviorSubject<List<Kind>> = kindsRepo.getAllKinds().subscribeWith(BehaviorSubject.create())
@@ -81,7 +81,7 @@ class DraftInteractor @Inject constructor(
     fun createRecord() {
         val draft = draft
         if (!isValid(draft)) return
-        changeDraft { EmptyCreatingRecord }
+        changeDraft { EMPTY_CREATING_RECORD }
         recordsRepo.addRecord(draft)
     }
 

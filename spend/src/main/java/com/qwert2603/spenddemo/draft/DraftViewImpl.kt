@@ -32,7 +32,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
 
     private val kindEditText by lazy { UserInputEditText(kind_EditText) }
     private val valueEditText by lazy { UserInputEditText(value_EditText) }
-    private val dateEditText by lazy { UserInputEditText(date_EditText) }
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
@@ -65,12 +64,13 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
         LogUtils.d("DraftViewImpl render $vs")
         kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
-        dateEditText.setText(vs.creatingRecord.date.toFormattedString(resources))
+        date_EditText.setText(vs.creatingRecord.date.toFormattedString(resources))
         date_EditText.setTextColor(resources.color(if (vs.creatingRecord.dateSet) android.R.color.black else R.color.date_default))
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun executeAction(va: ViewAction) {
         LogUtils.d("DraftViewImpl executeAction $va")
         if (va !is DraftViewAction) return
@@ -101,6 +101,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
                 kind_EditText.showDropDown()
             }
             DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
-        }
+        }.also {  }
     }
 }
