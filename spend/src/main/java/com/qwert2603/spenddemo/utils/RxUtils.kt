@@ -1,12 +1,8 @@
 package com.qwert2603.spenddemo.utils
 
 import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Function
+import io.reactivex.functions.BiFunction
 import java.lang.NumberFormatException
-import java.util.*
 
 fun <T : Any, R> Observable<T>.castAndFilter(toClass: Class<R>): Observable<R> = this
         .filter { it.javaClass.isAssignableFrom(toClass) }
@@ -19,3 +15,7 @@ fun Observable<String>.mapToInt(): Observable<Int> = this.map {
         0
     }
 }
+
+fun <T, U> makePair() = BiFunction { t: T, u: U -> Pair(t, u) }
+fun <T, U> firstOfTwo() = BiFunction { t: T, _: U -> t }
+fun <T, U> secondOfTwo() = BiFunction { _: T, u: U -> u }

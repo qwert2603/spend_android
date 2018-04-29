@@ -24,7 +24,8 @@ class ChangesRepoImpl @Inject constructor(
             .subscribeOn(modelSchedulersProvider.io)
 
     override fun saveChange(change: Change): Completable = Completable
-            .fromAction { localDB.changesDao().saveChange(change.toChangeTable()) }.subscribeOn(modelSchedulersProvider.io)
+            .fromAction { localDB.changesDao().saveChange(change.toChangeTable()) }
+            .subscribeOn(modelSchedulersProvider.io)
 
     override fun removeChange(recordId: Long): Completable = Completable
             .fromAction { localDB.changesDao().removeChange(recordId) }

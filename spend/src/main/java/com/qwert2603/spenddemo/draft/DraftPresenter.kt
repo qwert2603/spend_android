@@ -3,10 +3,10 @@ package com.qwert2603.spenddemo.draft
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
+import com.qwert2603.spenddemo.utils.secondOfTwo
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -16,17 +16,75 @@ class DraftPresenter @Inject constructor(
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<DraftView, DraftViewState>(uiSchedulerProvider) {
 
-    override val initialState = DraftViewState(CreatingRecord("", 0, Date(), false), false)
+    override val initialState = DraftViewState(
+            creatingRecord = CreatingRecord(
+                    kind = "",
+                    value = 0,
+                    date = Date(),
+                    dateSet = false
+            ),
+            createEnable = false
+    )
 
-    private val kindIntent = intent { it.kingChanges() }.share()
-    private val draftChanges = draftInteractor.getDraft()
-            .delaySubscription(intent { it.viewCreated() })
+    private val loadDraftB: Observable<CreatingRecord> = intent { it.viewCreated() }
+            .switchMapSingle { draftInteractor.getDraft() }
             .share()
+
+    private val clearDraft = PublishSubject.create<Any>()
+
+    private val onDateSelectedIntent = intent { it.onDateSelected() }.share()
+    private val kingChangesIntent = intent { it.kingChanges() }.share()
+    private val onKindSelectedIntent = intent { it.onKindSelected() }.share()
+
+    private val draftChangesB: Observable<CreatingRecord> = Observable
+            .merge(
+                    loadDraftB
+                            .map { draft ->
+                                { _: CreatingRecord -> draft }
+                            },
+                    Observable
+                            .merge(listOf(
+                                    onDateSelectedIntent
+                                            .map { date ->
+                                                { r: CreatingRecord -> r.copy(date = date, dateSet = true) }
+                                            },
+                                    kingChangesIntent
+                                            .map { kind ->
+                                                { r: CreatingRecord -> r.copy(kind = kind) }
+                                            },
+                                    intent { it.valueChanges() }
+                                            .map { value ->
+                                                { r: CreatingRecord -> r.copy(value = value) }
+                                            },
+                                    Observable
+                                            .merge(
+                                                    onKindSelectedIntent,
+                                                    intent { it.suggestionSelected() }
+                                            )
+                                            .switchMapSingle { kind ->
+                                                draftInteractor.getLastPriceOfKind(kind).map { Pair(kind, it) }
+                                            }
+                                            .map { (kind, lastPrice) ->
+                                                { r: CreatingRecord -> r.copy(kind = kind, value = lastPrice) }
+                                            },
+                                    clearDraft
+                                            .map {
+                                                { _: CreatingRecord -> initialState.creatingRecord }
+                                            }
+                            ))
+                            .delaySubscription(loadDraftB)
+            )
+            .scan(initialState.creatingRecord, { creatingRecord: CreatingRecord, change: (CreatingRecord) -> CreatingRecord ->
+                change(creatingRecord)
+            })
+            .skip(1) // skip initialValue in scan.
+            .share()
+
 
     private data class DraftChanged(val draftViewState: DraftViewState) : PartialChange
 
-    override val partialChanges: Observable<PartialChange> = draftChanges
-            .map { DraftViewState(it, draftInteractor.isValid(it)) }
+    override val partialChanges: Observable<PartialChange> = draftChangesB
+            .map { DraftViewState(it, draftInteractor.isCreatable(it)) }
             .map { DraftChanged(it) }
 
     override fun stateReducer(vs: DraftViewState, change: PartialChange) = (change as DraftChanged).draftViewState
@@ -34,20 +92,16 @@ class DraftPresenter @Inject constructor(
     override fun bindIntents() {
         super.bindIntents()
 
-        kindIntent
-                .doOnNext { draftInteractor.onKindChanged(it, false) }
-                .subscribeToView()
-        intent { it.suggestionSelected() }
-                .doOnNext { draftInteractor.onKindChanged(it, true) }
-                .subscribeToView()
-        intent { it.valueChanges() }
-                .doOnNext { draftInteractor.onValueChanged(it) }
+        draftChangesB
+                .skip(1) // skip loaded draft.
+                .switchMapCompletable { draftInteractor.saveDraft(it) }
+                .toObservable<Any>()
                 .subscribeToView()
 
-        kindIntent
+        kingChangesIntent
                 .debounce(100, TimeUnit.MILLISECONDS)
                 .switchMapSingle { search ->
-                    draftInteractor.getMatchingKinds(search)
+                    draftInteractor.getSuggestions(search)
                             .doOnSuccess {
                                 if (search !in it) {
                                     viewActions.onNext(DraftViewAction.ShowKindSuggestions(it, search))
@@ -59,7 +113,7 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.selectDateClicks() }
-                .withLatestFrom(draftChanges, BiFunction { _: Any, creatingRecord: CreatingRecord -> creatingRecord })
+                .withLatestFrom(draftChangesB, secondOfTwo())
                 .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.date.time)) }
                 .subscribeToView()
 
@@ -68,26 +122,29 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.saveClicks() }
-                .withLatestFrom(draftChanges, BiFunction { _: Any, creatingRecord: CreatingRecord -> creatingRecord })
-                .filter { draftInteractor.isValid(it) }
-                .doOnNext { draftInteractor.createRecord() }
+                .withLatestFrom(draftChangesB, secondOfTwo())
+                .filter { draftInteractor.isCreatable(it) }
+                .switchMapCompletable {
+                    draftInteractor.createRecord(it)
+                            .doOnComplete { clearDraft.onNext(Any()) }
+                            .doOnComplete { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
+                }
+                .toObservable<Any>()
+                .subscribeToView()
+
+        onDateSelectedIntent
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
                 .subscribeToView()
 
-        draftInteractor.kindSelected()
+        onKindSelectedIntent
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput) }
                 .subscribeToView()
 
-        intent { it.onDateSelected() }
-                .doOnNext { LogUtils.d("DraftPresenter onDateSelected $it") }
-                .subscribeToView()
-
-        intent { it.onKindSelected() }
-                .doOnNext { LogUtils.d("DraftPresenter onKindSelected $it") }
-                .subscribeToView()
-
         intent { it.onKindInputFocused() }
-                .doOnNext { LogUtils.d("DraftPresenter onKindInputFocused") }
+                .withLatestFrom(draftChangesB, secondOfTwo())
+                .filter { it.kind.isBlank() }
+                .switchMapSingle { draftInteractor.getInitialSuggestions() }
+                .doOnNext { viewActions.onNext(DraftViewAction.ShowKindSuggestions(it, "")) }
                 .subscribeToView()
     }
 }
