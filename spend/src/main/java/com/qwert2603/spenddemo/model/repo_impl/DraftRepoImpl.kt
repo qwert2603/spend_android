@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import com.qwert2603.spenddemo.model.repo.DraftRepo
+import com.qwert2603.spenddemo.utils.onlyDate
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -35,9 +36,18 @@ class DraftRepoImpl @Inject constructor(
         private fun SharedPreferences.getDraft() = CreatingRecord(
                 getString(DRAFT_KIND_KEY, ""),
                 getInt(DRAFT_VALUE_KEY, 0),
-                Date(getLong(DRAFT_DATE_KEY, System.currentTimeMillis())),
+                Date(getLong(DRAFT_DATE_KEY, System.currentTimeMillis())).onlyDate(),
                 getBoolean(DRAFT_DATE_SET_KEY, false)
         )
+
+        private fun SharedPreferences.removeDraft() {
+            edit()
+                    .remove(DRAFT_KIND_KEY)
+                    .remove(DRAFT_VALUE_KEY)
+                    .remove(DRAFT_DATE_KEY)
+                    .remove(DRAFT_DATE_SET_KEY)
+                    .apply()
+        }
     }
 
     private val prefs = appContext.getSharedPreferences(DRAFT_FILENAME, Context.MODE_PRIVATE)
@@ -45,4 +55,6 @@ class DraftRepoImpl @Inject constructor(
     override fun saveDraft(creatingRecord: CreatingRecord): Completable = Completable.fromAction { prefs.saveDraft(creatingRecord) }
 
     override fun getDraft(): Single<CreatingRecord> = Single.fromCallable { prefs.getDraft() }
+
+    override fun removeDraft(): Completable = Completable.fromAction { prefs.removeDraft() }
 }

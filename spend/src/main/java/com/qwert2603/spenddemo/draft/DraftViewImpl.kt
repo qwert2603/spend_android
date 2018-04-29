@@ -56,6 +56,11 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
 
+    override fun onKindInputFocused(): Observable<Any> = RxView.focusChanges(kind_EditText)
+            .skipInitialValue()
+            .filter { it }
+            .map { Any() }
+
     override fun suggestionSelected(): Observable<String> = RxAutoCompleteTextView
             .itemClickEvents(kind_EditText)
             .map { it.view().adapter.getItem(it.position()).toString() }
@@ -101,6 +106,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
                 kind_EditText.showDropDown()
             }
             DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
-        }.also {  }
+        }.also { }
     }
 }

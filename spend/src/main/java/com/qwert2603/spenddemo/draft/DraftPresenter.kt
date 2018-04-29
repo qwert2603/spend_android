@@ -45,7 +45,7 @@ class DraftPresenter @Inject constructor(
 
         kindIntent
                 .debounce(100, TimeUnit.MILLISECONDS)
-                .switchMap { search ->
+                .switchMapSingle { search ->
                     draftInteractor.getMatchingKinds(search)
                             .doOnSuccess {
                                 if (search !in it) {
@@ -54,7 +54,6 @@ class DraftPresenter @Inject constructor(
                                     viewActions.onNext(DraftViewAction.HideKindSuggestions)
                                 }
                             }
-                            .toObservable()
                 }
                 .subscribeToView()
 

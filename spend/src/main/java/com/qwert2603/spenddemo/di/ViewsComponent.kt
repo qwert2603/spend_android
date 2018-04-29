@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.di
 
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
-import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragment
 import com.qwert2603.spenddemo.dialogs.DeleteRecordDialogFragment
 import com.qwert2603.spenddemo.navigation.MainActivity
 import com.qwert2603.spenddemo.records_list.RecordsListFragment
@@ -12,6 +11,5 @@ interface ViewsComponent {
     fun inject(mainActivity: MainActivity)
     fun inject(recordsListFragment: RecordsListFragment)
     fun inject(chooseKindDialogFragment: ChooseKindDialogFragment)
-    fun inject(datePickerDialogFragment: DatePickerDialogFragment)
     fun inject(deleteRecordDialogFragment: DeleteRecordDialogFragment)
 }

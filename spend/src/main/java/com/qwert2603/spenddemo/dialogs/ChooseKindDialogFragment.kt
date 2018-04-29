@@ -10,7 +10,6 @@ import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.draft.DraftInteractor
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import javax.inject.Inject
 
@@ -20,8 +19,8 @@ class ChooseKindDialogFragment : DialogFragment() {
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
     }
 
-    @Inject lateinit var kindsRepo: KindsRepo
-    @Inject lateinit var draftInteractor: DraftInteractor
+    @Inject
+    lateinit var kindsRepo: KindsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -37,16 +36,11 @@ class ChooseKindDialogFragment : DialogFragment() {
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)
                 .setItems(kinds.toTypedArray(), { _, which ->
-                    val targetFragment = targetFragment
-                    if (targetFragment != null) {
-                        targetFragment.onActivityResult(
-                                targetRequestCode,
-                                Activity.RESULT_OK,
-                                Intent().putExtra(KIND_KEY, kinds[which])
-                        )
-                    } else {
-                        draftInteractor.onKindChanged(kinds[which], true)
-                    }
+                    targetFragment!!.onActivityResult(
+                            targetRequestCode,
+                            Activity.RESULT_OK,
+                            Intent().putExtra(KIND_KEY, kinds[which])
+                    )
                 })
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()

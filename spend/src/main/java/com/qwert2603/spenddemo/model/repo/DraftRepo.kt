@@ -7,4 +7,5 @@ import io.reactivex.Single
 interface DraftRepo {
     fun saveDraft(creatingRecord: CreatingRecord): Completable
     fun getDraft(): Single<CreatingRecord>
+    fun removeDraft(): Completable
 }

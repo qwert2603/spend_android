@@ -7,15 +7,14 @@ import com.qwert2603.spenddemo.model.repo.DraftRepo
 import com.qwert2603.spenddemo.model.repo.KindsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.utils.onlyDate
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class DraftInteractor @Inject constructor(
         private val draftRepo: DraftRepo,
         private val recordsRepo: RecordsRepo,
@@ -24,6 +23,27 @@ class DraftInteractor @Inject constructor(
     companion object {
         private val EMPTY_CREATING_RECORD = CreatingRecord("", 0, Date().onlyDate(), false)
     }
+
+    fun getDraftB(): Single<CreatingRecord> = draftRepo.getDraft()
+
+    fun saveDraftB(creatingRecord: CreatingRecord): Completable = draftRepo.saveDraft(creatingRecord)
+
+    fun createRecordB(creatingRecord: CreatingRecord): Completable = Completable
+            .fromAction { recordsRepo.addRecord(creatingRecord) }
+            .concatWith(draftRepo.removeDraft())
+
+    fun isCreatable(creatingRecord: CreatingRecord) = creatingRecord.kind.isNotBlank() && creatingRecord.value > 0
+
+    fun getInitialSuggestionsB(): Single<List<String>> = kindsRepo.getKindSuggestions("")
+
+    fun getSuggestionsB(inputKind: String): Single<List<String>> = kindsRepo.getKindSuggestions(inputKind)
+
+    fun getLastPriceOfKind(kind: String): Single<Int> = kindsRepo.getKind(kind).map { it.lastPrice }
+
+
+
+
+
 
     private val draftChanges = BehaviorSubject.create<CreatingRecord>()
     private val kindSelected = PublishSubject.create<Any>()
