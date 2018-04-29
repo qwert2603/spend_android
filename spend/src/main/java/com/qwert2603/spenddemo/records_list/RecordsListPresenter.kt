@@ -63,20 +63,25 @@ class RecordsListPresenter @Inject constructor(
         intent { it.showChangesClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen) }
                 .subscribeToView()
+
         intent { it.editRecordClicks() }
                 .filter { it.canEdit }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it)) }
                 .subscribeToView()
+
         intent { it.deleteRecordClicks() }
                 .filter { it.canDelete }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id)) }
                 .subscribeToView()
+
         intent { it.deleteRecordConfirmed() }
                 .doOnNext { recordsListInteractor.deleteRecord(it) }
                 .subscribeToView()
+
         intent { it.editRecordConfirmed() }
                 .doOnNext { recordsListInteractor.editRecord(it) }
                 .subscribeToView()
+
         recordsListInteractor.recordCreatedEvents()
                 .withLatestFrom(
                         recordsStateChanges,
@@ -87,10 +92,12 @@ class RecordsListPresenter @Inject constructor(
                 .filter { it >= 0 }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToPosition(it)) }
                 .subscribeToView()
+
         intent { it.sendRecordsClicks() }
                 .flatMapSingle { recordsListInteractor.getRecordsTextToSend() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.SendRecords(it)) }
                 .subscribeToView()
+
         intent { it.showAboutClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout) }
                 .subscribeToView()

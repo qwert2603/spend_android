@@ -3,9 +3,9 @@ package com.qwert2603.spenddemo.records_list
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
+import com.qwert2603.andrlib.util.color
 import com.qwert2603.spenddemo.R
 
 class RecordsListAnimator : DefaultItemAnimator() {
@@ -39,7 +39,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
                                 else -> 1f
                             }
                         }
-                        val color = ResourcesCompat.getColor(oldHolder.itemView.resources, R.color.highlight_created_record, null)
+                        val color = oldHolder.itemView.resources.color(R.color.highlight_created_record)
                         fun Float.makeColor() = color and ((255 * this).toInt() shl 24 or 0xffffff)
                         it.addUpdateListener { oldHolder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
                         it.duration = 2000

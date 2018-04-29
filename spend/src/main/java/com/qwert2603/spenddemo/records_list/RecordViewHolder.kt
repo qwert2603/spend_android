@@ -1,14 +1,14 @@
 package com.qwert2603.spenddemo.records_list
 
-import android.support.v4.content.res.ResourcesCompat
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
+import com.qwert2603.andrlib.util.color
+import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.setStrike
-import com.qwert2603.spenddemo.utils.setVisible
 import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_record.view.*
 
@@ -28,13 +28,13 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
             SyncStatus.REMOTE -> R.drawable.ic_done_24dp
         })
         if (m.changeKind != null) {
-            local_ImageView.setColorFilter(ResourcesCompat.getColor(resources, when (m.changeKind) {
+            local_ImageView.setColorFilter(resources.color(when (m.changeKind) {
                 ChangeKind.INSERT -> R.color.local_change_create
                 ChangeKind.UPDATE -> R.color.local_change_edit
                 ChangeKind.DELETE -> R.color.local_change_delete
-            }, null))
+            }))
         } else {
-            local_ImageView.setColorFilter(ResourcesCompat.getColor(resources, R.color.anth, null))
+            local_ImageView.setColorFilter(resources.color(R.color.anth))
         }
         id_TextView.text = m.id.toString()
         date_TextView.text = m.date.toFormattedString(resources)
@@ -45,9 +45,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
         isLongClickable = m.canDelete
 
         val strike = showChangeKinds && m.changeKind == ChangeKind.DELETE
-        id_TextView.setStrike(strike)
-        date_TextView.setStrike(strike)
-        kind_TextView.setStrike(strike)
-        value_TextView.setStrike(strike)
+        listOf(id_TextView, date_TextView, kind_TextView, value_TextView)
+                .forEach { it.setStrike(strike) }
     }
 }

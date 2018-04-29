@@ -3,14 +3,13 @@ package com.qwert2603.spenddemo.draft
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
-import android.support.annotation.LayoutRes
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
@@ -32,7 +31,4 @@ class SuggestionAdapter(context: Context, suggestions: List<String>, s: String? 
         view.suggestion_TextView.text = spannableStringBuilder
         return view
     }
-
-    private fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View =
-            LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }

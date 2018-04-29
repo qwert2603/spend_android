@@ -10,12 +10,16 @@ import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.andrlib.util.color
+import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.utils.*
+import com.qwert2603.spenddemo.utils.UserInputEditText
+import com.qwert2603.spenddemo.utils.mapToInt
+import com.qwert2603.spenddemo.utils.toFormattedString
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.view_draft.view.*
 
