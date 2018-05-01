@@ -1,4 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">spend</string>
+
     <string name="kind">kind</string>
     <string name="value">value</string>
     <string name="date">date</string>

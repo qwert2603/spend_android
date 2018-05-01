@@ -11,6 +11,7 @@ import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.page_list_item.AllItemsLoaded
+import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
@@ -82,6 +83,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         .show(fragmentManager, dialogFragment.toString())
             }
         }
+
+        toolbar.subtitle = "${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
 
         super.onViewCreated(view, savedInstanceState)
     }
