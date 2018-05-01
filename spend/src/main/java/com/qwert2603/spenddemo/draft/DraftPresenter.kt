@@ -101,7 +101,11 @@ class DraftPresenter @Inject constructor(
 
         Observable
                 .merge(
-                        intent { it.onKindInputFocused() }
+                        Observable
+                                .merge(
+                                        intent { it.onKindInputFocused() },
+                                        intent { it.onKindInputClicked() }
+                                )
                                 .withLatestFrom(draftChanges, secondOfTwo())
                                 .map { it.kind },
                         kingChangesIntent

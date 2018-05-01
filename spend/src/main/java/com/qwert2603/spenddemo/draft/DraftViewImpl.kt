@@ -89,6 +89,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
             .filter { it }
             .map { Any() }
 
+    override fun onKindInputClicked(): Observable<Any> = RxView.clicks(kind_EditText)
+
     override fun onKindSuggestionSelected(): Observable<String> = RxAutoCompleteTextView
             .itemClickEvents(kind_EditText)
             .map { it.view().adapter.getItem(it.position()).toString() }
@@ -130,7 +132,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
                     .also { dialogShower.showDialog(it, REQUEST_CODE_KIND) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.ShowKindSuggestions -> {
-                kind_EditText.setAdapter(SuggestionAdapter(context, va.suggestions, va.search))
+                kind_EditText.setAdapter(SuggestionAdapter(context, va.suggestions.reversed(), va.search))
                 kind_EditText.showDropDown()
             }
             DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()

@@ -19,6 +19,7 @@ interface DraftView : BaseView<DraftViewState> {
     fun onKindSelected(): Observable<String>
 
     fun onKindInputFocused(): Observable<Any>
+    fun onKindInputClicked(): Observable<Any>
 
     fun onKindSuggestionSelected(): Observable<String>
 }
