@@ -89,7 +89,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
             .filter { it }
             .map { Any() }
 
-    override fun suggestionSelected(): Observable<String> = RxAutoCompleteTextView
+    override fun onKindSuggestionSelected(): Observable<String> = RxAutoCompleteTextView
             .itemClickEvents(kind_EditText)
             .map { it.view().adapter.getItem(it.position()).toString() }
 

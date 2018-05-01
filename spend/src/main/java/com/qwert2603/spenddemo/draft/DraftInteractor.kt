@@ -27,9 +27,9 @@ class DraftInteractor @Inject constructor(
 
     fun isCreatable(creatingRecord: CreatingRecord) = creatingRecord.kind.isNotBlank() && creatingRecord.value > 0
 
-    fun getInitialSuggestions(): Single<List<String>> = kindsRepo.getKindSuggestions("")
-
     fun getSuggestions(inputKind: String): Single<List<String>> = kindsRepo.getKindSuggestions(inputKind)
 
-    fun getLastPriceOfKind(kind: String): Single<Int> = kindsRepo.getKind(kind).map { it.lastPrice }
+    fun getLastPriceOfKind(kind: String): Single<Int> = kindsRepo.getKind(kind)
+            .map { it.lastPrice }
+            .onErrorReturnItem(0)
 }

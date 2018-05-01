@@ -20,5 +20,5 @@ interface DraftView : BaseView<DraftViewState> {
 
     fun onKindInputFocused(): Observable<Any>
 
-    fun suggestionSelected(): Observable<String>
+    fun onKindSuggestionSelected(): Observable<String>
 }

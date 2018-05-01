@@ -23,6 +23,7 @@ import java.util.*
 
 @FragmentWithArgs
 class EditRecordDialogFragment : DialogFragment() {
+
     companion object {
         const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
@@ -114,15 +115,19 @@ class EditRecordDialogFragment : DialogFragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CHOOSE_KIND && resultCode == Activity.RESULT_OK && data != null) {
-            val kind = data.getStringExtra(ChooseKindDialogFragment.KIND_KEY)
-            dialogView.kind_EditText.setText(kind)
-            dialogView.value_EditText.requestFocus()
-            dialogView.value_EditText.selectEnd()
-        }
-        if (requestCode == REQUEST_DATE && resultCode == Activity.RESULT_OK && data != null) {
-            selectedDate = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)
-            dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            when (requestCode) {
+                REQUEST_CHOOSE_KIND -> {
+                    val kind = data.getStringExtra(ChooseKindDialogFragment.KIND_KEY)
+                    dialogView.kind_EditText.setText(kind)
+                    dialogView.value_EditText.requestFocus()
+                    dialogView.value_EditText.selectEnd()
+                }
+                REQUEST_DATE -> {
+                    selectedDate = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)
+                    dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+                }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

@@ -15,7 +15,7 @@ class UserInputEditText(private val editText: EditText) {
         userInput = false
         if (editText.text.toString() != text) {
             editText.setText(text)
-            editText.setSelection(editText.text.length)
+            editText.selectEnd()
         }
         userInput = true
     }

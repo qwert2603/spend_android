@@ -55,6 +55,7 @@
             android:hint="@string/value"
             android:imeOptions="actionDone|flagNoFullscreen"
             android:inputType="number"
+            android:selectAllOnFocus="true"
             android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
