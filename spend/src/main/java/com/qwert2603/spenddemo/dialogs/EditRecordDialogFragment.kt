@@ -15,10 +15,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.utils.UserInputEditText
-import com.qwert2603.spenddemo.utils.mapToInt
-import com.qwert2603.spenddemo.utils.selectEnd
-import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_edit_record.view.*
@@ -40,7 +37,8 @@ class EditRecordDialogFragment : DialogFragment() {
 
     @Arg
     var id: Long = 0
-    @Arg lateinit var kind: String
+    @Arg
+    lateinit var kind: String
     @Arg
     var date: Long = 0
     @Arg
@@ -48,12 +46,7 @@ class EditRecordDialogFragment : DialogFragment() {
 
     private lateinit var dialogView: View
 
-    // todo: use delegate.
-    private var selectedDate: Long
-        get() = arguments!!.getLong(SELECTED_DATE_KEY)
-        set(value) {
-            arguments!!.putLong(SELECTED_DATE_KEY, value)
-        }
+    private var selectedDate by BundleLong(SELECTED_DATE_KEY, { arguments!! })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,7 +128,7 @@ class EditRecordDialogFragment : DialogFragment() {
     }
 
     private fun sendResult() {
-        targetFragment?.onActivityResult(
+        targetFragment!!.onActivityResult(
                 targetRequestCode,
                 Activity.RESULT_OK,
                 Intent()

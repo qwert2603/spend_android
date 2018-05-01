@@ -26,5 +26,7 @@ class SpendDemoApplication : Application() {
         }
 
         LogUtils.logType = LogUtils.LogType.ANDROID
+
+        // todo: record incomes. (show current balance)
     }
 }

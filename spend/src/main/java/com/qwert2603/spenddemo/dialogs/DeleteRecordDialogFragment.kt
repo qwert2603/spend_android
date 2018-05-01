@@ -42,7 +42,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .setTitle(R.string.delete_record_text)
                 .setMessage(text)
                 .setPositiveButton(R.string.text_delete, { _, _ ->
-                    targetFragment?.onActivityResult(
+                    targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
                             Intent().putExtra(ID_KEY, id)
