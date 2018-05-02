@@ -16,7 +16,7 @@
         <ImageView
             android:id="@+id/local_ImageView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_local"
             tools:tint="@color/local_change_edit" />

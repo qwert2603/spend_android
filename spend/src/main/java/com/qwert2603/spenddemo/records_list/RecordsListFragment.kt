@@ -19,8 +19,10 @@ import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
 import com.qwert2603.spenddemo.utils.DialogAwareView
 import com.qwert2603.spenddemo.utils.castAndFilter
+import com.qwert2603.spenddemo.utils.checkedChanges
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
@@ -53,6 +55,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showChangesClicks = PublishSubject.create<Any>()
     private val sendRecordsClicks = PublishSubject.create<Any>()
     private val showAboutClicks = PublishSubject.create<Any>()
+    private val showIdsChanges = PublishSubject.create<Boolean>()
+    private val showChangeKindsChanges = PublishSubject.create<Boolean>()
+    private val showDateSumsChanges = PublishSubject.create<Boolean>()
+
+    private var optionsMenu: Menu? = null
 
     private val deleteRecordConfirmed = PublishSubject.create<Long>()
     private val editRecordConfirmed = PublishSubject.create<Record>()
@@ -70,11 +77,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        records_RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+        records_RecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
                 .also { it.initialPrefetchItemCount = 10 }
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
         records_RecyclerView.itemAnimator = RecordsListAnimator()
+        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
+            vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
+        }))
 
         draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
@@ -92,6 +102,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
+        optionsMenu = menu
         Observable
                 .combineLatest(
                         changesCount.map { it > 0 },
@@ -100,8 +111,18 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 )
                 .subscribe { menu.findItem(R.id.show_local_changes).isVisible = it }
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
-        RxMenuItem.clicks(menu.findItem(R.id.send)).subscribeWith(sendRecordsClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.send_records)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
+        menu.findItem(R.id.show_ids).checkedChanges().subscribeWith(showIdsChanges)
+        menu.findItem(R.id.show_change_kinds).checkedChanges().subscribeWith(showChangeKindsChanges)
+        menu.findItem(R.id.show_date_sums).checkedChanges().subscribeWith(showDateSumsChanges)
+
+        renderAll()
+    }
+
+    override fun onDestroyOptionsMenu() {
+        optionsMenu = null
+        super.onDestroyOptionsMenu()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -109,16 +130,16 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         draftViewImpl.onDialogResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_DELETE_RECORD && resultCode == Activity.RESULT_OK && data != null) {
-            deleteRecordConfirmed.onNext(data.getLongExtra(DeleteRecordDialogFragment.ID_KEY, 0))
-        }
-        if (requestCode == REQUEST_EDIT_RECORD && resultCode == Activity.RESULT_OK && data != null) {
-            editRecordConfirmed.onNext(Record(
-                    data.getLongExtra(EditRecordDialogFragment.ID_KEY, 0),
-                    data.getStringExtra(EditRecordDialogFragment.KIND_KEY),
-                    data.getIntExtra(EditRecordDialogFragment.VALUE_KEY, 0),
-                    Date(data.getLongExtra(EditRecordDialogFragment.DATE_KEY, 0L))
-            ))
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            when (requestCode) {
+                REQUEST_DELETE_RECORD -> deleteRecordConfirmed.onNext(data.getLongExtra(DeleteRecordDialogFragment.ID_KEY, 0))
+                REQUEST_EDIT_RECORD -> editRecordConfirmed.onNext(Record(
+                        data.getLongExtra(EditRecordDialogFragment.ID_KEY, 0),
+                        data.getStringExtra(EditRecordDialogFragment.KIND_KEY),
+                        data.getIntExtra(EditRecordDialogFragment.VALUE_KEY, 0),
+                        Date(data.getLongExtra(EditRecordDialogFragment.DATE_KEY, 0L))
+                ))
+            }
         }
     }
 
@@ -140,18 +161,34 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun showAboutClicks(): Observable<Any> = showAboutClicks
 
+    override fun showIdsChanges(): Observable<Boolean> = showIdsChanges
+
+    override fun showChangeKindsChanges(): Observable<Boolean> = showChangeKindsChanges
+
+    override fun showDateSumsChanges(): Observable<Boolean> = showDateSumsChanges
+
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
-        adapter.showIds = vs.showIds
-        adapter.showChangeKinds = vs.showChangeKinds
+
+        renderIfChanged({ showIds }) { adapter.showIds = it }
+        renderIfChanged({ showChangeKinds }) { adapter.showChangeKinds = it }
+        renderIfChangedTwo({ Pair(showIds, showChangeKinds) }) { adapter.notifyDataSetChanged() }
+
         if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
+
         // todo: show changesCount on menuItem's icon.
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
         showChangeKinds.onNext(vs.showChangeKinds)
         changesCount.onNext(vs.changesCount)
 
         toolbar.subtitle = getString(R.string.text_balance_30_days_format, vs.balance30Days)
+
+        optionsMenu?.apply {
+            findItem(R.id.show_ids).isChecked = vs.showIds
+            findItem(R.id.show_change_kinds).isChecked = vs.showChangeKinds
+            findItem(R.id.show_date_sums).isChecked = vs.showDateSums
+        }
     }
 
     override fun executeAction(va: ViewAction) {

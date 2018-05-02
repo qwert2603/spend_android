@@ -18,4 +18,8 @@ interface RecordsListView : BaseView<RecordsListViewState> {
 
     fun sendRecordsClicks(): Observable<Any>
     fun showAboutClicks(): Observable<Any>
+
+    fun showIdsChanges(): Observable<Boolean>
+    fun showChangeKindsChanges(): Observable<Boolean>
+    fun showDateSumsChanges(): Observable<Boolean>
 }

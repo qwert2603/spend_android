@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/show_local_changes"
-        android:icon="@drawable/ic_local"
-        android:title="@string/show_local_changes"
-        app:showAsAction="ifRoom" />
+        android:title="@string/show_local_changes" />
 
     <item
         android:id="@+id/about"
-        android:icon="@drawable/ic_about"
-        android:title="@string/about_text"
-        app:showAsAction="always" />
+        android:title="@string/about_text" />
 
     <item
-        android:id="@+id/send"
-        android:icon="@drawable/ic_send_black_24dp"
-        android:title="@string/send_text"
-        app:showAsAction="always" />
+        android:id="@+id/send_records"
+        android:title="@string/send_records_text" />
+
+    <item
+        android:id="@+id/show_ids"
+        android:checkable="true"
+        android:title="@string/text_show_ids" />
+
+    <item
+        android:id="@+id/show_change_kinds"
+        android:checkable="true"
+        android:title="@string/text_show_change_kinds" />
+
+    <item
+        android:id="@+id/show_spends"
+        android:checkable="true"
+        android:title="@string/text_show_spends" />
+
+    <item
+        android:id="@+id/show_profits"
+        android:checkable="true"
+        android:title="@string/text_show_profits" />
+
+    <item
+        android:id="@+id/show_date_sums"
+        android:checkable="true"
+        android:title="@string/text_show_date_sums" />
+
+    <item
+        android:id="@+id/new_profit"
+        android:title="@string/text_new_profit" />
 
 </menu>

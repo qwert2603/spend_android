@@ -1,5 +1,7 @@
 package com.qwert2603.spenddemo.utils
 
+import android.view.MenuItem
+import com.jakewharton.rxbinding2.view.RxMenuItem
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import java.lang.NumberFormatException
@@ -19,3 +21,5 @@ fun Observable<String>.mapToInt(): Observable<Int> = this.map {
 fun <T, U> makePair() = BiFunction { t: T, u: U -> Pair(t, u) }
 fun <T, U> firstOfTwo() = BiFunction { t: T, _: U -> t }
 fun <T, U> secondOfTwo() = BiFunction { _: T, u: U -> u }
+
+fun MenuItem.checkedChanges(): Observable<Boolean> = RxMenuItem.clicks(this).map { !this.isChecked }
