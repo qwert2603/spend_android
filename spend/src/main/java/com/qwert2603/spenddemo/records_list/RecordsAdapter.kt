@@ -16,6 +16,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
 
     var showChangeKinds = true
     var showIds = true
+    var showDatesInRecords = true
 
     override fun getItemViewTypeModel(m: RecordsListItem) = when (m) {
         is RecordUI -> VIEW_TYPE_RECORD

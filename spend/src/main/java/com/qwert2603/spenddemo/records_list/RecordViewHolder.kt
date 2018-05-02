@@ -18,9 +18,11 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
 
         val showIds = (adapter as? RecordsAdapter)?.showIds ?: true
         val showChangeKinds = (adapter as? RecordsAdapter)?.showChangeKinds ?: true
+        val showDatesInRecords = (adapter as? RecordsAdapter)?.showDatesInRecords ?: true
 
         local_ImageView.setVisible(showChangeKinds)
         id_TextView.setVisible(showIds)
+        date_FrameLayout.setVisible(showDatesInRecords)
 
         local_ImageView.setImageResource(when (m.syncStatus) {
             SyncStatus.LOCAL -> R.drawable.ic_local

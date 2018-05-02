@@ -172,7 +172,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         renderIfChanged({ showIds }) { adapter.showIds = it }
         renderIfChanged({ showChangeKinds }) { adapter.showChangeKinds = it }
-        renderIfChangedTwo({ Pair(showIds, showChangeKinds) }) { adapter.notifyDataSetChanged() }
+        renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
+        renderIfChangedThree({ Triple(showIds, showChangeKinds, showDateSums) }) { adapter.notifyDataSetChanged() }
 
         if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
