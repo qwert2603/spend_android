@@ -5,12 +5,11 @@ import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.di.qualifiers.ShowChangeKinds
 import com.qwert2603.spenddemo.di.qualifiers.ShowIds
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordsState
+import com.qwert2603.spenddemo.records_list.entity.DateSum
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.toRecordUI
+import com.qwert2603.spenddemo.utils.onlyDate
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -34,6 +33,14 @@ class RecordsListPresenter @Inject constructor(
                         recordsState.records.map {
                             it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
                         }
+                    }
+                    .map {
+                        it
+                                .groupBy { it.date.onlyDate() }
+                                .map { (date, records) ->
+                                    records + DateSum(date, records.sumBy { it.value })
+                                }
+                                .flatten()
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             Observable.just(showChangeKinds)
@@ -83,14 +90,7 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         recordsListInteractor.recordCreatedEvents()
-                .withLatestFrom(
-                        recordsStateChanges,
-                        BiFunction { record: Record, recordsState: RecordsState ->
-                            recordsState.records.indexOf(record)
-                        }
-                )
-                .filter { it >= 0 }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToPosition(it)) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToRecordAndHighlight(it.id)) }
                 .subscribeToView()
 
         intent { it.sendRecordsClicks() }

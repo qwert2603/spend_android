@@ -84,7 +84,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        toolbar.subtitle = "${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
+        toolbar.subtitle = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -146,9 +146,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         adapter.showChangeKinds = vs.showChangeKinds
         if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
-        toolbar.title = getString(R.string.app_name) +
-                if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
         // todo: show changesCount on menuItem's icon.
+//        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
         showChangeKinds.onNext(vs.showChangeKinds)
         changesCount.onNext(vs.changesCount)
     }
@@ -167,9 +166,17 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            is RecordsListViewAction.ScrollToPosition -> {
-                records_RecyclerView.scrollToPosition(va.position)
-                records_RecyclerView.postDelayed({ adapter.notifyItemChanged(va.position, RecordsListAnimator.PAYLOAD_HIGHLIGHT) }, 100)
+            is RecordsListViewAction.ScrollToRecordAndHighlight -> {
+                currentViewState.records
+                        .indexOfFirst { it is RecordUI && it.id == va.recordId }
+                        .takeIf { it >=0 }
+                        ?.let {
+                            records_RecyclerView.scrollToPosition(it)
+                            records_RecyclerView.postDelayed(
+                                    { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
+                                    100
+                            )
+                        }
             }
             is RecordsListViewAction.SendRecords -> {
                 Intent(Intent.ACTION_SEND)

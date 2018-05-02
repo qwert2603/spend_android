@@ -26,6 +26,7 @@ class DraftPresenter @Inject constructor(
             createEnable = false
     )
 
+    // todo: test it with delay.
     private val loadDraft: Observable<CreatingRecord> = intent { it.viewCreated() }
             .switchMapSingle { draftInteractor.getDraft() }
             .share()
@@ -103,13 +104,15 @@ class DraftPresenter @Inject constructor(
                 .merge(
                         Observable
                                 .merge(
-                                        intent { it.onKindInputFocused() },
+                                        intent { it.onKindInputFocused() }.delay(500, TimeUnit.MILLISECONDS),
                                         intent { it.onKindInputClicked() }
                                 )
                                 .withLatestFrom(draftChanges, secondOfTwo())
                                 .map { it.kind },
                         kingChangesIntent
-                                .debounce(100, TimeUnit.MILLISECONDS)
+                                .debounce(100, TimeUnit.MILLISECONDS),
+                        loadDraft
+                                .map { it.kind }
                 )
                 .switchMapSingle { kind ->
                     draftInteractor.getSuggestions(kind)
