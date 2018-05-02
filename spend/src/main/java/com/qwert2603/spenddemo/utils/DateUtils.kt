@@ -19,6 +19,9 @@ fun Date.onlyDate(): Date = Calendar
         }
         .time
 
+
+fun Date.plusDays(days: Int) = Date(this.time + days * com.qwert2603.andrlib.util.Const.MILLIS_PER_DAY)
+
 fun Date.isToday() = this.onlyDate() == Date().onlyDate()
 fun Date.isYesterday() = this.onlyDate() == Date(System.currentTimeMillis() - LibConst.MILLIS_PER_DAY).onlyDate()
 fun Date.isTomorrow() = this.onlyDate() == Date(System.currentTimeMillis() + LibConst.MILLIS_PER_DAY).onlyDate()

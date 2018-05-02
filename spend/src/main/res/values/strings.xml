@@ -40,4 +40,6 @@
         built: <b>%3$s</b> at <b>%4$s</b><br/>
         ]]>
     </string>
+
+    <string name="text_balance_30_days_format">balance 30 days: %d</string>
 </resources>

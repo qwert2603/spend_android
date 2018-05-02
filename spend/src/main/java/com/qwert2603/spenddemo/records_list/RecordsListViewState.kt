@@ -7,5 +7,6 @@ data class RecordsListViewState(
         val recordsCount: Int,
         val changesCount: Int,
         val showChangeKinds: Boolean,
-        val showIds: Boolean
+        val showIds: Boolean,
+        val balance30Days: Int
 )

@@ -84,7 +84,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        toolbar.subtitle = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
+        toolbar.title = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -150,6 +150,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
         showChangeKinds.onNext(vs.showChangeKinds)
         changesCount.onNext(vs.changesCount)
+
+        toolbar.subtitle = getString(R.string.text_balance_30_days_format, vs.balance30Days)
     }
 
     override fun executeAction(va: ViewAction) {
@@ -169,7 +171,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.ScrollToRecordAndHighlight -> {
                 currentViewState.records
                         .indexOfFirst { it is RecordUI && it.id == va.recordId }
-                        .takeIf { it >=0 }
+                        .takeIf { it >= 0 }
                         ?.let {
                             records_RecyclerView.scrollToPosition(it)
                             records_RecyclerView.postDelayed(

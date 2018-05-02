@@ -9,7 +9,9 @@ import com.qwert2603.spenddemo.records_list.entity.DateSum
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.entity.toRecordUI
 import com.qwert2603.spenddemo.utils.onlyDate
+import com.qwert2603.spenddemo.utils.plusDays
 import io.reactivex.Observable
+import java.util.*
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -19,7 +21,7 @@ class RecordsListPresenter @Inject constructor(
         @ShowIds showIds: Boolean
 ) : BasePresenter<RecordsListView, RecordsListViewState>(uiSchedulerProvider) {
 
-    override val initialState = RecordsListViewState(emptyList(), 0, 0, false, false)
+    override val initialState = RecordsListViewState(emptyList(), 0, 0, false, false, 0)
 
     private val viewCreated = intent { it.viewCreated() }.share()
 
@@ -57,7 +59,10 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.RecordsListUpdated -> vs.copy(
                     records = change.records,
                     recordsCount = change.records.count { it is RecordUI },
-                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null }
+                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null },
+                    balance30Days = change.records
+                            .filter { it is DateSum && it.date.onlyDate().plusDays(30) > Date().onlyDate() }
+                            .sumBy { (it as DateSum).sum }
             )
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
