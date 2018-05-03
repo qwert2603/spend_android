@@ -3,8 +3,7 @@ package com.qwert2603.spenddemo.model.entity
 import com.qwert2603.andrlib.model.IdentifiableLong
 import java.util.*
 
-// todo: rename to Spend.
-data class Record(
+data class Profit(
         override val id: Long,
         val kind: String,
         val value: Int,

@@ -8,9 +8,10 @@ import dagger.Module
 @Module
 @Suppress("UNUSED")
 interface BindReposModule {
-    @Binds fun bind0(recordsRepoImpl: RecordsRepoImpl): RecordsRepo
-    @Binds fun bind1(kindsRepoImpl: KindsRepoImpl): KindsRepo
-    @Binds fun bind2(changesRepoImpl: ChangesRepoImpl): ChangesRepo
-    @Binds fun bind3(draftRepoImpl: DraftRepoImpl): DraftRepo
-    @Binds fun bind4(draftRepoImpl: UserSettingsRepoImpl): UserSettingsRepo
+    @Binds fun bind0(repo: RecordsRepoImpl): RecordsRepo
+    @Binds fun bind1(repo: KindsRepoImpl): KindsRepo
+    @Binds fun bind2(repo: ChangesRepoImpl): ChangesRepo
+    @Binds fun bind3(repo: DraftRepoImpl): DraftRepo
+    @Binds fun bind4(repo: UserSettingsRepoImpl): UserSettingsRepo
+    @Binds fun bind5(repo: ProfitsRepoImpl): ProfitsRepo
 }
