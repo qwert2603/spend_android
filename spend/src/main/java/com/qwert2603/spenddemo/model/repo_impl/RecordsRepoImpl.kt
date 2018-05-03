@@ -5,9 +5,11 @@ import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toSyncingRecord
+import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.syncprocessor.ISyncProcessor
 import com.qwert2603.syncprocessor.entity.ItemEvent
 import io.reactivex.Observable
+import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,4 +51,20 @@ class RecordsRepoImpl @Inject constructor(
     override fun recordCreatedEvents(): Observable<Record> = syncProcessor.itemEvents()
             .filter { it.second == ItemEvent.CREATED_LOCALLY }
             .map { it.first.toRecord() }
+
+    override fun getDumpText(): Single<String> = recordsState()
+            .firstOrError()
+            .map {
+                if (it.records.isEmpty()) return@map "nth"
+                it.records
+                        .reversed()
+                        .map {
+                            listOf(
+                                    it.kind,
+                                    Const.DATE_FORMAT.format(it.date),
+                                    it.value.toString()
+                            ).reduce { s1, s2 -> "$s1,$s2" }
+                        }
+                        .reduce { s1, s2 -> "$s1\n$s2" }
+            }
 }

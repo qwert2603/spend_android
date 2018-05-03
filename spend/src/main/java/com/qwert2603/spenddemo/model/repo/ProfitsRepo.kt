@@ -9,4 +9,6 @@ interface ProfitsRepo {
     fun getAllProfits(): Single<List<Profit>>
     fun addProfit(creatingProfit: CreatingProfit): Completable
     fun removeProfit(profitId: Long): Completable
+
+    fun getDumpText(): Single<String>
 }

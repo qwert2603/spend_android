@@ -2,16 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/new_profit"
+        android:title="@string/text_new_profit" />
+
+    <item
         android:id="@+id/show_local_changes"
         android:title="@string/show_local_changes" />
-
-    <item
-        android:id="@+id/about"
-        android:title="@string/about_text" />
-
-    <item
-        android:id="@+id/send_records"
-        android:title="@string/send_records_text" />
 
     <item
         android:id="@+id/show_ids"
@@ -20,9 +16,9 @@
 
     <item
         android:id="@+id/show_change_kinds"
+        android:layout_height="match_parent"
         android:checkable="true"
         android:title="@string/text_show_change_kinds" />
-
     <item
         android:id="@+id/show_spends"
         android:checkable="true"
@@ -39,7 +35,10 @@
         android:title="@string/text_show_date_sums" />
 
     <item
-        android:id="@+id/new_profit"
-        android:title="@string/text_new_profit" />
+        android:id="@+id/send_records"
+        android:title="@string/send_records_text" />
 
+    <item
+        android:id="@+id/about"
+        android:title="@string/about_text" />
 </menu>

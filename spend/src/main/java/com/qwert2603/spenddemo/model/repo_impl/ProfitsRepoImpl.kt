@@ -9,6 +9,7 @@ import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.local_db.tables.toProfit
 import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
+import com.qwert2603.spenddemo.utils.Const
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -37,4 +38,19 @@ class ProfitsRepoImpl @Inject constructor(
     override fun removeProfit(profitId: Long): Completable = Completable
             .fromAction { localDB.profitsDao().removeProfit(profitId) }
             .subscribeOn(modelSchedulersProvider.io)
+
+    override fun getDumpText(): Single<String> = getAllProfits()
+            .map {
+                if (it.isEmpty()) return@map "nth"
+                it
+                        .reversed()
+                        .map {
+                            listOf(
+                                    it.kind,
+                                    Const.DATE_FORMAT.format(it.date),
+                                    it.value.toString()
+                            ).reduce { s1, s2 -> "$s1,$s2" }
+                        }
+                        .reduce { s1, s2 -> "$s1\n$s2" }
+            }
 }

@@ -6,9 +6,9 @@ import com.qwert2603.spenddemo.model.entity.RecordsState
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.utils.Const
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import javax.inject.Inject
 
 class RecordsListInteractor @Inject constructor(
@@ -29,21 +29,12 @@ class RecordsListInteractor @Inject constructor(
 
     fun recordCreatedEvents(): Observable<Record> = recordsRepo.recordCreatedEvents()
 
-    fun getRecordsTextToSend(): Single<String> = recordsRepo.recordsState()
-            .firstOrError()
-            .map {
-                if (it.records.isEmpty()) return@map ""
-                it.records
-                        .reversed()
-                        .map {
-                            listOf(
-                                    it.kind,
-                                    Const.DATE_FORMAT.format(it.date),
-                                    it.value.toString()
-                            ).reduce { s1, s2 -> "$s1,$s2" }
-                        }
-                        .reduce { s1, s2 -> "$s1\n$s2" }
-            }
+    fun getRecordsTextToSend(): Single<String> = Single
+            .zip(
+                    recordsRepo.getDumpText(),
+                    profitsRepo.getDumpText(),
+                    BiFunction { spends, profits -> "SPENDS:\n$spends\n\nPROFITS:\n$profits" }
+            )
 
     fun isShowIds() = userSettingsRepo.showIds
     fun setShowIds(show: Boolean) {

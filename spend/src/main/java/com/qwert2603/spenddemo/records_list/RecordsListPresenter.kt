@@ -175,7 +175,10 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.sendRecordsClicks() }
-                .flatMapSingle { recordsListInteractor.getRecordsTextToSend() }
+                .flatMapSingle {
+                    recordsListInteractor.getRecordsTextToSend()
+                            .onErrorReturn { "$it\n${it.message}" }
+                }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.SendRecords(it)) }
                 .subscribeToView()
 
