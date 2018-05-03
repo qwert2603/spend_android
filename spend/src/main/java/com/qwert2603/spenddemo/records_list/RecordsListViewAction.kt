@@ -10,4 +10,6 @@ sealed class RecordsListViewAction : ViewAction {
     data class ScrollToRecordAndHighlight(val recordId: Long) : RecordsListViewAction()
     data class SendRecords(val text: String) : RecordsListViewAction()
     object ShowAbout : RecordsListViewAction()
+    object OpenAddProfitDialog : RecordsListViewAction()
+    data class AskToDeleteProfit(val id: Long) : RecordsListViewAction()
 }

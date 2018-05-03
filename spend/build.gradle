@@ -68,7 +68,7 @@ dependencies {
     implementation project(path: ':syncprocessor')
 
     ext.support_version = '27.1.1'
-    ext.andrlib_version = '1.7.1'
+    ext.andrlib_version = '1.7.2'
     ext.andrlib_generator_version = '1.0.10'
     ext.rxjava_version = '2.1.13'
     ext.rxandroid_version = '2.0.2'

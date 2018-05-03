@@ -10,3 +10,5 @@ inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDes
             ?: kotlin.comparisons.compareByDescending(second)
                     .compare(i1, i2)
 })
+
+infix fun <T> List<T>?.plusNN(anth: List<T>?): List<T> = (this ?: emptyList()) + (anth ?: emptyList())

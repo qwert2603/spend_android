@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="app_name">spend</string>
 
     <string name="kind">kind</string>
@@ -9,11 +9,13 @@
     <string name="no_local_changes">no local changes</string>
 
     <string name="delete_record_text">delete record?</string>
-    <string name="create_record_text">create record</string>
+    <string name="delete_profit_text">delete profit?</string>
     <string name="edit_record_text">edit record</string>
+    <string name="create_profit_text">create profit</string>
     <string name="choose_kind_text">select kind</string>
 
     <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
+    <string name="text_create">create</string>
     <string name="text_edit">edit</string>
     <string name="text_delete">delete</string>
     <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
@@ -48,7 +50,7 @@
         ]]>
     </string>
 
-    <string name="text_balance_30_days_format">30 days balance: %d</string>
+    <string name="text_balance_30_days_format" formatted="true">30 days balance: %d</string>
 
     <string name="text_show_ids">ids</string>
     <string name="text_show_change_kinds">change kinds</string>
@@ -56,4 +58,9 @@
     <string name="text_show_profits">profits</string>
     <string name="text_show_date_sums">date sums</string>
     <string name="text_new_profit">new profit</string>
+
+    <string name="text_all_records_loaded">all records loaded</string>
+
+    <string name="text_total_items_format" formatted="true">%s. sum is %d</string>
+    <string name="text_total_balance_format" formatted="true">total balance: %d</string>
 </resources>

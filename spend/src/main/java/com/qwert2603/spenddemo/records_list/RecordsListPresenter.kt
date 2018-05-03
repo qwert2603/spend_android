@@ -3,14 +3,11 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.spenddemo.records_list.entity.DateSum
-import com.qwert2603.spenddemo.records_list.entity.RecordUI
-import com.qwert2603.spenddemo.records_list.entity.toRecordUI
-import com.qwert2603.spenddemo.utils.makePair
+import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.utils.makeTriple
 import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.plusDays
+import com.qwert2603.spenddemo.utils.plusNN
 import io.reactivex.Observable
-import java.util.*
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -20,7 +17,6 @@ class RecordsListPresenter @Inject constructor(
 
     override val initialState = RecordsListViewState(
             records = emptyList(),
-            recordsCount = 0,
             changesCount = 0,
             showChangeKinds = false,
             showIds = false,
@@ -48,20 +44,42 @@ class RecordsListPresenter @Inject constructor(
                                             it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
                                         }
                                     },
+                            Observable
+                                    .merge(
+                                            viewCreated,
+                                            intent { it.addProfitConfirmed() }
+                                                    .flatMapSingle { recordsListInteractor.addProfit(it).toSingleDefault(Unit) },
+                                            intent { it.deleteProfitConfirmed() }
+                                                    .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) }
+                                    )
+                                    .switchMapSingle { recordsListInteractor.getAllProfits() }
+                                    .map { it.map { it.toProfitUI() } },
                             showDateSumsChanges,
-                            makePair()
+                            makeTriple()
                     )
-                    .map { (recordsList, showDateSums) ->
-                        if (showDateSums) {
-                            recordsList
-                                    .groupBy { it.date.onlyDate() }
-                                    .map { (date, records) ->
-                                        records + DateSum(date, records.sumBy { it.value })
-                                    }
-                                    .flatten()
-                        } else {
-                            recordsList
-                        }
+                    .map { (recordsList, profitsList, showDateSums) ->
+                        val recordsByDate = recordsList.groupBy { it.date.onlyDate() }
+                        val profitsByDate = profitsList.groupBy { it.date.onlyDate() }
+                        (recordsByDate.keys union profitsByDate.keys)
+                                .sortedDescending()
+                                .map { date ->
+                                    (profitsByDate[date] plusNN recordsByDate[date])
+                                            .let {
+                                                if (showDateSums) {
+                                                    it + DateSumUI(
+                                                            date,
+                                                            recordsByDate[date]?.sumBy { it.value }
+                                                                    ?: 0,
+                                                            profitsByDate[date]?.sumBy { it.value }
+                                                                    ?: 0
+                                                    )
+                                                } else {
+                                                    it
+                                                }
+                                            }
+                                }
+                                .flatten()
+                                .addTotalsItem()
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             intent { it.showIdsChanges() }
@@ -81,11 +99,15 @@ class RecordsListPresenter @Inject constructor(
         return when (change) {
             is RecordsListPartialChange.RecordsListUpdated -> vs.copy(
                     records = change.records,
-                    recordsCount = change.records.count { it is RecordUI },
                     changesCount = change.records.count { (it as? RecordUI)?.changeKind != null },
                     balance30Days = change.records
-                            .filter { it is RecordUI && it.date.onlyDate().plusDays(30) > Date().onlyDate() }
-                            .sumBy { (it as RecordUI).value }
+                            .sumBy {
+                                when (it) {
+                                    is RecordUI -> -it.value
+                                    is ProfitUI -> it.value
+                                    else -> 0
+                                }
+                            }
             )
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
@@ -130,5 +152,27 @@ class RecordsListPresenter @Inject constructor(
         intent { it.showAboutClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.ShowAbout) }
                 .subscribeToView()
+
+        intent { it.addProfitClicks() }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.OpenAddProfitDialog) }
+                .subscribeToView()
+
+        intent { it.deleteProfitClicks() }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteProfit(it.id)) }
+                .subscribeToView()
+    }
+
+    private fun List<RecordsListItem>.addTotalsItem(): List<RecordsListItem> {
+        val spends = mapNotNull { it as? RecordUI }
+        val profits = mapNotNull { it as? ProfitUI }
+        val spendsSum = spends.sumBy { it.value }
+        val profitsSum = profits.sumBy { it.value }
+        return this + TotalsUi(
+                spendsCount = spends.size,
+                spendsSum = spendsSum,
+                profitsCount = profits.size,
+                profitsSum = profitsSum,
+                totalBalance = profitsSum - spendsSum
+        )
     }
 }

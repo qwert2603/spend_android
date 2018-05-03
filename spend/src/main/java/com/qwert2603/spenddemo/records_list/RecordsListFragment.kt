@@ -10,14 +10,15 @@ import com.jakewharton.rxbinding2.view.RxMenuItem
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
-import com.qwert2603.andrlib.base.recyclerview.page_list_item.AllItemsLoaded
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
+import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
 import com.qwert2603.spenddemo.utils.DialogAwareView
@@ -38,6 +39,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     companion object {
         private const val REQUEST_DELETE_RECORD = 1
         private const val REQUEST_EDIT_RECORD = 2
+        private const val REQUEST_ADD_PROFIT = 3
+        private const val REQUEST_DELETE_PROFIT = 4
     }
 
     private val adapter = RecordsAdapter()
@@ -58,11 +61,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showIdsChanges = PublishSubject.create<Boolean>()
     private val showChangeKindsChanges = PublishSubject.create<Boolean>()
     private val showDateSumsChanges = PublishSubject.create<Boolean>()
+    private val addProfitClicks = PublishSubject.create<Any>()
 
     private var optionsMenu: Menu? = null
 
     private val deleteRecordConfirmed = PublishSubject.create<Long>()
     private val editRecordConfirmed = PublishSubject.create<Record>()
+    private val addProfitConfirmed = PublishSubject.create<CreatingProfit>()
+    private val deleteProfitConfirmed = PublishSubject.create<Long>()
 
     private val showChangeKinds: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     private val changesCount: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
@@ -113,6 +119,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
         RxMenuItem.clicks(menu.findItem(R.id.send_records)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.new_profit)).subscribeWith(addProfitClicks)
         menu.findItem(R.id.show_ids).checkedChanges().subscribeWith(showIdsChanges)
         menu.findItem(R.id.show_change_kinds).checkedChanges().subscribeWith(showChangeKindsChanges)
         menu.findItem(R.id.show_date_sums).checkedChanges().subscribeWith(showDateSumsChanges)
@@ -139,6 +146,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         data.getIntExtra(EditRecordDialogFragment.VALUE_KEY, 0),
                         Date(data.getLongExtra(EditRecordDialogFragment.DATE_KEY, 0L))
                 ))
+                REQUEST_ADD_PROFIT -> addProfitConfirmed.onNext(CreatingProfit(
+                        data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
+                        data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
+                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0))
+                ))
+                REQUEST_DELETE_PROFIT -> deleteProfitConfirmed.onNext(data.getLongExtra(DeleteProfitDialogFragment.ID_KEY, 0))
             }
         }
     }
@@ -167,6 +180,15 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun showDateSumsChanges(): Observable<Boolean> = showDateSumsChanges
 
+    override fun addProfitClicks(): Observable<Any> = addProfitClicks
+
+    override fun deleteProfitClicks(): Observable<ProfitUI> = adapter.modelItemLongClicks
+            .castAndFilter(ProfitUI::class.java)
+
+    override fun addProfitConfirmed(): Observable<CreatingProfit> = addProfitConfirmed
+
+    override fun deleteProfitConfirmed(): Observable<Long> = deleteProfitConfirmed
+
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
 
@@ -176,7 +198,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChangedThree({ Triple(showIds, showChangeKinds, showDateSums) }) { adapter.notifyDataSetChanged() }
 
         if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
-        adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records, AllItemsLoaded(vs.recordsCount))
+        adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records)
 
         // todo: show changesCount on menuItem's icon.
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
@@ -227,6 +249,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
             RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")
+                    .also { (context as KeyboardManager).hideKeyboard() }
+            RecordsListViewAction.OpenAddProfitDialog -> AddProfitDialogFragment()
+                    .also { it.setTargetFragment(this, REQUEST_ADD_PROFIT) }
+                    .show(fragmentManager, "add_profit")
+                    .also { (context as KeyboardManager).hideKeyboard() }
+            is RecordsListViewAction.AskToDeleteProfit -> DeleteProfitDialogFragmentBuilder.newDeleteProfitDialogFragment(va.id)
+                    .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
+                    .show(fragmentManager, "delete_profit")
                     .also { (context as KeyboardManager).hideKeyboard() }
         }.also { }
     }

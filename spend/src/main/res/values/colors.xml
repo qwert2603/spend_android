@@ -13,5 +13,8 @@
     <color name="local_change_edit">#2020DF</color>
     <color name="local_change_delete">#DF2020</color>
 
+    <color name="spend">#d02222</color>
+    <color name="profit">#12a022</color>
+
     <color name="highlight_created_record">#4CAF50</color>
 </resources>

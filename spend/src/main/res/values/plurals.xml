@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+
+    <plurals name="spends">
+        <item quantity="one">%d spend</item>
+        <item quantity="other">%d spends</item>
+    </plurals>
+
+    <plurals name="profits">
+        <item quantity="one">%d profit</item>
+        <item quantity="other">%d profits</item>
+    </plurals>
+
+</resources>

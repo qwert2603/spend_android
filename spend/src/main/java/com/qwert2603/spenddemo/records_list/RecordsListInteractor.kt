@@ -1,7 +1,9 @@
 package com.qwert2603.spenddemo.records_list
 
+import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordsState
+import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.Const
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 class RecordsListInteractor @Inject constructor(
         private val recordsRepo: RecordsRepo,
-        private val userSettingsRepo: UserSettingsRepo
+        private val userSettingsRepo: UserSettingsRepo,
+        private val profitsRepo: ProfitsRepo
 ) {
 
     fun deleteRecord(id: Long) {
@@ -56,4 +59,8 @@ class RecordsListInteractor @Inject constructor(
     fun setShowDateSums(show: Boolean) {
         userSettingsRepo.showChangeDateSums = show
     }
+
+    fun getAllProfits() = profitsRepo.getAllProfits()
+    fun addProfit(creatingProfit: CreatingProfit) = profitsRepo.addProfit(creatingProfit)
+    fun removeProfit(profitId: Long) = profitsRepo.removeProfit(profitId)
 }
