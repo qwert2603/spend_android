@@ -68,7 +68,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:textColor="@android:color/black"
+            android:textColor="@color/profit"
             android:textSize="18sp"
             android:textStyle="bold"
             tools:text="food" />

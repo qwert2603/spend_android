@@ -34,15 +34,14 @@
     <string name="yesterday_text">yesterday</string>
     <string name="tomorrow_text">tomorrow</string>
 
-    <!--todo: links.-->
     <string name="app_info_text_format">
         <![CDATA[
         <b>spend</b> application<br/>
         <br/>
         developed by <b>Alexander Zhdanov</b><br/>
-        github.com/qwert2603/SpendDemo<br/>
+        https://github.com/qwert2603/SpendDemo<br/>
         telegram: <b>qwert2603</b><br/>
-        vk.com/qwert2603<br/>
+        https://vk.com/qwert2603<br/>
         <br/>
         version: <b>%1$s</b><br/>
         version code: <b>%2$d</b><br/>
