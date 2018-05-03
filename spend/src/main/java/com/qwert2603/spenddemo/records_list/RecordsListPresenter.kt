@@ -9,6 +9,7 @@ import com.qwert2603.spenddemo.utils.onlyDate
 import com.qwert2603.spenddemo.utils.plusDays
 import com.qwert2603.spenddemo.utils.plusNN
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import java.util.*
 import javax.inject.Inject
 
@@ -49,25 +50,31 @@ class RecordsListPresenter @Inject constructor(
             .share()
             .startWith(recordsListInteractor.isShowProfits())
 
+    private val spendsListChanges = recordsStateChanges
+            .map { recordsState ->
+                recordsState.records.map {
+                    it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
+                }
+            }
+            .share()
+
+    private val profitsListChanges = Observable
+            .merge(
+                    viewCreated,
+                    intent { it.addProfitConfirmed() }
+                            .flatMapSingle { recordsListInteractor.addProfit(it).toSingleDefault(Unit) },
+                    intent { it.deleteProfitConfirmed() }
+                            .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) }
+            )
+            .switchMapSingle { recordsListInteractor.getAllProfits() }
+            .map { it.map { it.toProfitUI() } }
+            .share()
+
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             Observable
                     .combineLatest(
-                            recordsStateChanges
-                                    .map { recordsState ->
-                                        recordsState.records.map {
-                                            it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
-                                        }
-                                    },
-                            Observable
-                                    .merge(
-                                            viewCreated,
-                                            intent { it.addProfitConfirmed() }
-                                                    .flatMapSingle { recordsListInteractor.addProfit(it).toSingleDefault(Unit) },
-                                            intent { it.deleteProfitConfirmed() }
-                                                    .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) }
-                                    )
-                                    .switchMapSingle { recordsListInteractor.getAllProfits() }
-                                    .map { it.map { it.toProfitUI() } },
+                            spendsListChanges,
+                            profitsListChanges,
                             showDateSumsChanges,
                             showSpendsChanges,
                             showProfitsChanges,
@@ -111,7 +118,17 @@ class RecordsListPresenter @Inject constructor(
             showSpendsChanges
                     .map { RecordsListPartialChange.ShowSpends(it) },
             showProfitsChanges
-                    .map { RecordsListPartialChange.ShowProfits(it) }
+                    .map { RecordsListPartialChange.ShowProfits(it) },
+            Observable
+                    .combineLatest(
+                            spendsListChanges
+                                    .map { it.filter { it.date.onlyDate().plusDays(30) > Date().onlyDate() } }
+                                    .map { it.sumBy { it.value } },
+                            profitsListChanges
+                                    .map { it.filter { it.date.onlyDate().plusDays(30) > Date().onlyDate() } }
+                                    .map { it.sumBy { it.value } },
+                            BiFunction { spendsSum, profitsSum -> RecordsListPartialChange.Balance30DaysChanged(profitsSum - spendsSum) }
+                    )
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -119,22 +136,14 @@ class RecordsListPresenter @Inject constructor(
         return when (change) {
             is RecordsListPartialChange.RecordsListUpdated -> vs.copy(
                     records = change.records,
-                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null },
-                    balance30Days = change.records
-                            .mapNotNull { listItem ->
-                                when (listItem) {
-                                    is RecordUI -> listItem.value.unaryMinus().takeIf { listItem.date.onlyDate().plusDays(30) > Date().onlyDate() }
-                                    is ProfitUI -> listItem.value.takeIf { listItem.date.onlyDate().plusDays(30) > Date().onlyDate() }
-                                    else -> null
-                                }
-                            }
-                            .sum()
+                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null }
             )
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
             is RecordsListPartialChange.ShowDateSums -> vs.copy(showDateSums = change.show)
             is RecordsListPartialChange.ShowSpends -> vs.copy(showSpends = change.show)
             is RecordsListPartialChange.ShowProfits -> vs.copy(showProfits = change.show)
+            is RecordsListPartialChange.Balance30DaysChanged -> vs.copy(balance30Days = change.balance)
         }
     }
 
