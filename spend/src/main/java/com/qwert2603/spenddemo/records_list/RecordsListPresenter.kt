@@ -102,7 +102,7 @@ class RecordsListPresenter @Inject constructor(
                                             }
                                 }
                                 .flatten()
-                                .addTotalsItem(showProfits, showSpends)
+                                .plus(createTotalsItem(recordsList, profitsList, showProfits, showSpends))
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             intent { it.showIdsChanges() }
@@ -194,17 +194,20 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
     }
 
-    private fun List<RecordsListItem>.addTotalsItem(showProfits: Boolean, showSpends: Boolean): List<RecordsListItem> {
-        val spends = mapNotNull { it as? RecordUI }
-        val profits = mapNotNull { it as? ProfitUI }
-        val spendsSum = spends.sumBy { it.value }
-        val profitsSum = profits.sumBy { it.value }
-        return this + TotalsUi(
+    private fun createTotalsItem(
+            recordsList: List<RecordUI>,
+            profitsList: List<ProfitUI>,
+            showProfits: Boolean,
+            showSpends: Boolean
+    ): TotalsUi {
+        val spendsSum = recordsList.sumBy { it.value }
+        val profitsSum = profitsList.sumBy { it.value }
+        return TotalsUi(
                 showProfits = showProfits,
                 showSpends = showSpends,
-                spendsCount = spends.size,
+                spendsCount = recordsList.size,
                 spendsSum = spendsSum,
-                profitsCount = profits.size,
+                profitsCount = profitsList.size,
                 profitsSum = profitsSum,
                 totalBalance = profitsSum - spendsSum
         )
