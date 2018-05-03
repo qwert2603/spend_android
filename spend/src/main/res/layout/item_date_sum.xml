@@ -10,16 +10,16 @@
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="4dp">
+        android:layout_marginStart="4dp"
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/date_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:textSize="16sp"
+            android:textStyle="bold"
             tools:text="today" />
 
         <!--
@@ -36,12 +36,20 @@
 
     </FrameLayout>
 
-    <!--todo: show spend/profits/total sums-->
     <TextView
-        android:id="@+id/sum_TextView"
+        android:id="@+id/profitsSum_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/anth"
+        android:textColor="@color/profit"
+        android:textSize="18sp"
+        tools:text="175" />
+
+    <TextView
+        android:id="@+id/spendsSum_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/spend"
         android:textSize="18sp"
         tools:text="175" />
 

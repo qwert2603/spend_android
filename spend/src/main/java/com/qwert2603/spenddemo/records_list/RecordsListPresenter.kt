@@ -91,10 +91,8 @@ class RecordsListPresenter @Inject constructor(
                                                 if (showDateSums) {
                                                     it + DateSumUI(
                                                             date,
-                                                            recordsByDate[date]?.sumBy { it.value }
-                                                                    ?: 0,
+                                                            recordsByDate[date]?.sumBy { it.value },
                                                             profitsByDate[date]?.sumBy { it.value }
-                                                                    ?: 0
                                                     )
                                                 } else {
                                                     it
