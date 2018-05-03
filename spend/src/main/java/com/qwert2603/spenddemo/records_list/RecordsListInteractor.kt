@@ -55,9 +55,19 @@ class RecordsListInteractor @Inject constructor(
         userSettingsRepo.showChangeKinds = show
     }
 
-    fun isShowDateSums() = userSettingsRepo.showChangeDateSums
+    fun isShowDateSums() = userSettingsRepo.showDateSums
     fun setShowDateSums(show: Boolean) {
-        userSettingsRepo.showChangeDateSums = show
+        userSettingsRepo.showDateSums = show
+    }
+
+    fun isShowSpends() = userSettingsRepo.showSpends
+    fun setShowSpends(show: Boolean) {
+        userSettingsRepo.showSpends = show
+    }
+
+    fun isShowProfits() = userSettingsRepo.showProfits
+    fun setShowProfits(show: Boolean) {
+        userSettingsRepo.showProfits = show
     }
 
     fun getAllProfits() = profitsRepo.getAllProfits()

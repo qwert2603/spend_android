@@ -8,4 +8,6 @@ sealed class RecordsListPartialChange : PartialChange {
     data class ShowChangeKinds(val show: Boolean) : RecordsListPartialChange()
     data class ShowIds(val show: Boolean) : RecordsListPartialChange()
     data class ShowDateSums(val show: Boolean) : RecordsListPartialChange()
+    data class ShowSpends(val show: Boolean) : RecordsListPartialChange()
+    data class ShowProfits(val show: Boolean) : RecordsListPartialChange()
 }

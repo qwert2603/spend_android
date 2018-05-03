@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#df0944</color>
-    <color name="colorPrimaryDark">#cf0934</color>
-    <color name="colorAccent">#4d8533</color>
-
     <color name="icon_fill">#3322BB</color>
 </resources>

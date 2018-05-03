@@ -36,6 +36,7 @@
 
     </FrameLayout>
 
+    <!--todo: show spend/profits/total sums-->
     <TextView
         android:id="@+id/sum_TextView"
         android:layout_width="wrap_content"

@@ -4,10 +4,12 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.records_list.entity.*
-import com.qwert2603.spenddemo.utils.makeTriple
+import com.qwert2603.spenddemo.utils.makeQuint
 import com.qwert2603.spenddemo.utils.onlyDate
+import com.qwert2603.spenddemo.utils.plusDays
 import com.qwert2603.spenddemo.utils.plusNN
 import io.reactivex.Observable
+import java.util.*
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -21,6 +23,8 @@ class RecordsListPresenter @Inject constructor(
             showChangeKinds = false,
             showIds = false,
             showDateSums = false,
+            showProfits = false,
+            showSpends = false,
             balance30Days = 0
     )
 
@@ -34,6 +38,16 @@ class RecordsListPresenter @Inject constructor(
             .doOnNext { recordsListInteractor.setShowDateSums(it) }
             .share()
             .startWith(recordsListInteractor.isShowDateSums())
+
+    private val showSpendsChanges = intent { it.showSpendsChanges() }
+            .doOnNext { recordsListInteractor.setShowSpends(it) }
+            .share()
+            .startWith(recordsListInteractor.isShowSpends())
+
+    private val showProfitsChanges = intent { it.showProfitsChanges() }
+            .doOnNext { recordsListInteractor.setShowProfits(it) }
+            .share()
+            .startWith(recordsListInteractor.isShowProfits())
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             Observable
@@ -55,11 +69,13 @@ class RecordsListPresenter @Inject constructor(
                                     .switchMapSingle { recordsListInteractor.getAllProfits() }
                                     .map { it.map { it.toProfitUI() } },
                             showDateSumsChanges,
-                            makeTriple()
+                            showSpendsChanges,
+                            showProfitsChanges,
+                            makeQuint()
                     )
-                    .map { (recordsList, profitsList, showDateSums) ->
-                        val recordsByDate = recordsList.groupBy { it.date.onlyDate() }
-                        val profitsByDate = profitsList.groupBy { it.date.onlyDate() }
+                    .map { (recordsList, profitsList, showDateSums, showSpends, showProfits) ->
+                        val recordsByDate = if (showSpends) recordsList.groupBy { it.date.onlyDate() } else emptyMap()
+                        val profitsByDate = if (showProfits) profitsList.groupBy { it.date.onlyDate() } else emptyMap()
                         (recordsByDate.keys union profitsByDate.keys)
                                 .sortedDescending()
                                 .map { date ->
@@ -79,7 +95,7 @@ class RecordsListPresenter @Inject constructor(
                                             }
                                 }
                                 .flatten()
-                                .addTotalsItem()
+                                .addTotalsItem(showProfits, showSpends)
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             intent { it.showIdsChanges() }
@@ -91,7 +107,11 @@ class RecordsListPresenter @Inject constructor(
                     .startWith(recordsListInteractor.isShowChangeKinds())
                     .map { RecordsListPartialChange.ShowChangeKinds(it) },
             showDateSumsChanges
-                    .map { RecordsListPartialChange.ShowDateSums(it) }
+                    .map { RecordsListPartialChange.ShowDateSums(it) },
+            showSpendsChanges
+                    .map { RecordsListPartialChange.ShowSpends(it) },
+            showProfitsChanges
+                    .map { RecordsListPartialChange.ShowProfits(it) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -101,17 +121,20 @@ class RecordsListPresenter @Inject constructor(
                     records = change.records,
                     changesCount = change.records.count { (it as? RecordUI)?.changeKind != null },
                     balance30Days = change.records
-                            .sumBy {
-                                when (it) {
-                                    is RecordUI -> -it.value
-                                    is ProfitUI -> it.value
-                                    else -> 0
+                            .mapNotNull { listItem ->
+                                when (listItem) {
+                                    is RecordUI -> listItem.value.unaryMinus().takeIf { listItem.date.onlyDate().plusDays(30) > Date().onlyDate() }
+                                    is ProfitUI -> listItem.value.takeIf { listItem.date.onlyDate().plusDays(30) > Date().onlyDate() }
+                                    else -> null
                                 }
                             }
+                            .sum()
             )
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
             is RecordsListPartialChange.ShowDateSums -> vs.copy(showDateSums = change.show)
+            is RecordsListPartialChange.ShowSpends -> vs.copy(showSpends = change.show)
+            is RecordsListPartialChange.ShowProfits -> vs.copy(showProfits = change.show)
         }
     }
 
@@ -162,12 +185,14 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
     }
 
-    private fun List<RecordsListItem>.addTotalsItem(): List<RecordsListItem> {
+    private fun List<RecordsListItem>.addTotalsItem(showProfits: Boolean, showSpends: Boolean): List<RecordsListItem> {
         val spends = mapNotNull { it as? RecordUI }
         val profits = mapNotNull { it as? ProfitUI }
         val spendsSum = spends.sumBy { it.value }
         val profitsSum = profits.sumBy { it.value }
         return this + TotalsUi(
+                showProfits = showProfits,
+                showSpends = showSpends,
                 spendsCount = spends.size,
                 spendsSum = spendsSum,
                 profitsCount = profits.size,

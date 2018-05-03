@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.records_list
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
+import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.records_list.entity.TotalsUi
 import kotlinx.android.synthetic.main.item_totals.view.*
@@ -10,6 +11,8 @@ class TotalsViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<TotalsUi>(par
     override fun bind(m: TotalsUi) = with(itemView) {
         super.bind(m)
 
+        profits_TextView.setVisible(m.showProfits)
+        spends_TextView.setVisible(m.showSpends)
         profits_TextView.text = resources.getString(
                 R.string.text_total_items_format,
                 resources.getQuantityString(R.plurals.profits, m.profitsCount, m.profitsCount),

@@ -61,6 +61,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showIdsChanges = PublishSubject.create<Boolean>()
     private val showChangeKindsChanges = PublishSubject.create<Boolean>()
     private val showDateSumsChanges = PublishSubject.create<Boolean>()
+    private val showSpendsChanges = PublishSubject.create<Boolean>()
+    private val showProfitsChanges = PublishSubject.create<Boolean>()
     private val addProfitClicks = PublishSubject.create<Any>()
 
     private var optionsMenu: Menu? = null
@@ -123,6 +125,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menu.findItem(R.id.show_ids).checkedChanges().subscribeWith(showIdsChanges)
         menu.findItem(R.id.show_change_kinds).checkedChanges().subscribeWith(showChangeKindsChanges)
         menu.findItem(R.id.show_date_sums).checkedChanges().subscribeWith(showDateSumsChanges)
+        menu.findItem(R.id.show_spends).checkedChanges().subscribeWith(showSpendsChanges)
+        menu.findItem(R.id.show_profits).checkedChanges().subscribeWith(showProfitsChanges)
 
         renderAll()
     }
@@ -180,6 +184,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun showDateSumsChanges(): Observable<Boolean> = showDateSumsChanges
 
+    override fun showSpendsChanges(): Observable<Boolean> = showSpendsChanges
+
+    override fun showProfitsChanges(): Observable<Boolean> = showProfitsChanges
+
     override fun addProfitClicks(): Observable<Any> = addProfitClicks
 
     override fun deleteProfitClicks(): Observable<ProfitUI> = adapter.modelItemLongClicks
@@ -211,6 +219,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             findItem(R.id.show_ids).isChecked = vs.showIds
             findItem(R.id.show_change_kinds).isChecked = vs.showChangeKinds
             findItem(R.id.show_date_sums).isChecked = vs.showDateSums
+            findItem(R.id.show_spends).isChecked = vs.showSpends
+            findItem(R.id.show_spends).isEnabled = vs.showSpendsEnable()
+            findItem(R.id.show_profits).isChecked = vs.showProfits
+            findItem(R.id.show_profits).isEnabled = vs.showProfitsEnable()
         }
     }
 

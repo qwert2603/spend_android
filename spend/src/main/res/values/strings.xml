@@ -62,5 +62,5 @@
     <string name="text_all_records_loaded">all records loaded</string>
 
     <string name="text_total_items_format" formatted="true">%s. sum is %d</string>
-    <string name="text_total_balance_format" formatted="true">total balance: %d</string>
+    <string name="text_total_balance_format" formatted="true">total balance is %d</string>
 </resources>
