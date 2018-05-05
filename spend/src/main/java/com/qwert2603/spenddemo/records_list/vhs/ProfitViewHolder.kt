@@ -1,10 +1,11 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.records_list.vhs
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.records_list.RecordsAdapter
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_record.view.*

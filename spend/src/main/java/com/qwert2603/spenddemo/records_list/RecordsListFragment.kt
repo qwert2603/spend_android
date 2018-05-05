@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
+import android.view.animation.AnimationUtils
 import com.jakewharton.rxbinding2.view.RxMenuItem
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
+import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
@@ -20,6 +22,7 @@ import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
 import com.qwert2603.spenddemo.utils.DialogAwareView
 import com.qwert2603.spenddemo.utils.castAndFilter
@@ -75,10 +78,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showChangeKinds: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
     private val changesCount: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
 
+    private var wasRecreated = false
+    private var layoutAnimationShown = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        DIHolder.diManager.viewsComponent.inject(this)
+        wasRecreated = savedInstanceState != null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -205,6 +212,16 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
         renderIfChangedThree({ Triple(showIds, showChangeKinds, showDateSums) }) { adapter.notifyDataSetChanged() }
 
+        if (!wasRecreated) {
+            renderIfChanged({ records }) {
+                if (!layoutAnimationShown) {
+                    layoutAnimationShown = true
+                    val layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
+                    records_RecyclerView.layoutAnimation = layoutAnimation
+                }
+            }
+        }
+
         if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
         adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records)
 
@@ -223,7 +240,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             findItem(R.id.show_spends).isEnabled = vs.showSpendsEnable()
             findItem(R.id.show_profits).isChecked = vs.showProfits
             findItem(R.id.show_profits).isEnabled = vs.showProfitsEnable()
+            findItem(R.id.new_profit).isVisible = vs.newProfitVisible()
         }
+
+        draftPanel_LinearLayout.setVisible(vs.newSpendVisible())
+        if (!vs.newSpendVisible()) (context as KeyboardManager).hideKeyboard()
     }
 
     override fun executeAction(va: ViewAction) {

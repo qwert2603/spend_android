@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.records_list.vhs
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
@@ -7,6 +7,7 @@ import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
+import com.qwert2603.spenddemo.records_list.RecordsAdapter
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toFormattedString

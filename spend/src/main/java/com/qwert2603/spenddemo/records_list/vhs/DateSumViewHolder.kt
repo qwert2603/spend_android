@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.records_list.vhs
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder

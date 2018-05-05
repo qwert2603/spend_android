@@ -14,4 +14,6 @@ data class RecordsListViewState(
 ) {
     fun showSpendsEnable() = showProfits
     fun showProfitsEnable() = showSpends
+    fun newProfitVisible() = showProfits
+    fun newSpendVisible() = showSpends
 }

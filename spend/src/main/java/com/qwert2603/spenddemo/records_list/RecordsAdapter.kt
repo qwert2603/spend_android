@@ -5,6 +5,10 @@ import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
+import com.qwert2603.spenddemo.records_list.vhs.ProfitViewHolder
+import com.qwert2603.spenddemo.records_list.vhs.RecordViewHolder
+import com.qwert2603.spenddemo.records_list.vhs.TotalsViewHolder
 
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {

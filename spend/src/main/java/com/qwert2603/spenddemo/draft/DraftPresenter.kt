@@ -113,6 +113,7 @@ class DraftPresenter @Inject constructor(
                                 .debounce(100, TimeUnit.MILLISECONDS),
                         loadDraft
                                 .map { it.kind }
+                                .delay(600, TimeUnit.MILLISECONDS)
                 )
                 .switchMapSingle { kind ->
                     draftInteractor.getSuggestions(kind)
