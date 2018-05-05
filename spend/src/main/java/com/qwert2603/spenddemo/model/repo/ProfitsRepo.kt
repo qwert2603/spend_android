@@ -7,7 +7,10 @@ import io.reactivex.Single
 
 interface ProfitsRepo {
     fun getAllProfits(): Single<List<Profit>>
-    fun addProfit(creatingProfit: CreatingProfit): Completable
+
+    /** #@return id of created profit */
+    fun addProfit(creatingProfit: CreatingProfit): Single<Long>
+
     fun removeProfit(profitId: Long): Completable
 
     fun getDumpText(): Single<String>

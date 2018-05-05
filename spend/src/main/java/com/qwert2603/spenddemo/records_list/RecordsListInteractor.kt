@@ -1,11 +1,13 @@
 package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordsState
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
@@ -61,7 +63,7 @@ class RecordsListInteractor @Inject constructor(
         userSettingsRepo.showProfits = show
     }
 
-    fun getAllProfits() = profitsRepo.getAllProfits()
-    fun addProfit(creatingProfit: CreatingProfit) = profitsRepo.addProfit(creatingProfit)
-    fun removeProfit(profitId: Long) = profitsRepo.removeProfit(profitId)
+    fun getAllProfits(): Single<List<Profit>> = profitsRepo.getAllProfits()
+    fun addProfit(creatingProfit: CreatingProfit): Single<Long> = profitsRepo.addProfit(creatingProfit)
+    fun removeProfit(profitId: Long): Completable = profitsRepo.removeProfit(profitId)
 }

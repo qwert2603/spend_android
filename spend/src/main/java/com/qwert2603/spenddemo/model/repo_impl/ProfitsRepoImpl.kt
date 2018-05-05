@@ -27,11 +27,12 @@ class ProfitsRepoImpl @Inject constructor(
             .mapList { it.toProfit() }
             .subscribeOn(modelSchedulersProvider.io)
 
-    override fun addProfit(creatingProfit: CreatingProfit): Completable = Completable
-            .fromAction {
+    override fun addProfit(creatingProfit: CreatingProfit): Single<Long> = Single
+            .fromCallable {
                 val localId = Random().nextInt(1_000_000).toLong() // todo
                 val profit = creatingProfit.toProfit(localId).toProfitTable()
                 localDB.profitsDao().addProfit(profit)
+                return@fromCallable localId
             }
             .subscribeOn(modelSchedulersProvider.io)
 

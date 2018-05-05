@@ -273,6 +273,21 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                             )
                         }
             }
+            is RecordsListViewAction.ScrollToProfitAndHighlight -> {
+                // todo: remove this delay when profits list will use sync processor like spends list.
+                records_RecyclerView.postDelayed({
+                    currentViewState.records
+                            .indexOfFirst { it is ProfitUI && it.id == va.profitId }
+                            .takeIf { it >= 0 }
+                            ?.let {
+                                records_RecyclerView?.scrollToPosition(it)
+                                records_RecyclerView?.postDelayed(
+                                        { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
+                                        100
+                                )
+                            }
+                }, 500)
+            }
             is RecordsListViewAction.SendRecords -> {
                 Intent(Intent.ACTION_SEND)
                         .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }

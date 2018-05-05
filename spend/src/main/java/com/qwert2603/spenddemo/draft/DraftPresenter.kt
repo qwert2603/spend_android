@@ -7,7 +7,6 @@ import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import com.qwert2603.spenddemo.utils.secondOfTwo
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -20,8 +19,7 @@ class DraftPresenter @Inject constructor(
             creatingRecord = CreatingRecord(
                     kind = "",
                     value = 0,
-                    date = Date(),
-                    dateSet = false
+                    date = null
             ),
             createEnable = false
     )
@@ -48,7 +46,7 @@ class DraftPresenter @Inject constructor(
                             .merge(listOf(
                                     onDateSelectedIntent
                                             .map { date ->
-                                                { r: CreatingRecord -> r.copy(date = date, dateSet = true) }
+                                                { r: CreatingRecord -> r.copy(date = date) }
                                             },
                                     kingChangesIntent
                                             .map { kind ->
@@ -130,7 +128,7 @@ class DraftPresenter @Inject constructor(
 
         intent { it.selectDateClicks() }
                 .withLatestFrom(draftChanges, secondOfTwo())
-                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.date.time)) }
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.date?.time ?: System.currentTimeMillis())) }
                 .subscribeToView()
 
         intent { it.selectKindClicks() }

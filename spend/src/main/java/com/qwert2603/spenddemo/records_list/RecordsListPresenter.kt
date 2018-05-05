@@ -62,7 +62,11 @@ class RecordsListPresenter @Inject constructor(
             .merge(
                     viewCreated,
                     intent { it.addProfitConfirmed() }
-                            .flatMapSingle { recordsListInteractor.addProfit(it).toSingleDefault(Unit) },
+                            .flatMapSingle {
+                                recordsListInteractor
+                                        .addProfit(it)
+                                        .doAfterSuccess { viewActions.onNext(RecordsListViewAction.ScrollToProfitAndHighlight(it)) }
+                            },
                     intent { it.deleteProfitConfirmed() }
                             .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) }
             )

@@ -99,8 +99,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
         LogUtils.d("DraftViewImpl render $vs")
         kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
-        date_EditText.setText(vs.creatingRecord.date.toFormattedString(resources))
-        date_EditText.setTextColor(resources.color(if (vs.creatingRecord.dateSet) android.R.color.black else R.color.date_default))
+        date_EditText.setText(vs.creatingRecord.getDateNN().toFormattedString(resources))
+        date_EditText.setTextColor(resources.color(if (vs.creatingRecord.date != null) android.R.color.black else R.color.date_default))
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }

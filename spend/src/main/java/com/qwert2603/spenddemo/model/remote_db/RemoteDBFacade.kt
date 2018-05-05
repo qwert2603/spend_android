@@ -26,7 +26,7 @@ class RemoteDBFacade @Inject constructor(
     fun insertRecord(creatingRecord: CreatingRecord): Long = remoteDB.query(
             "INSERT INTO $REMOTE_TABLE_NAME (kind, value, date) VALUES (?, ?, ?) returning id",
             { IdSqlWrapper(it).id },
-            listOf(creatingRecord.kind, creatingRecord.value, creatingRecord.date.toSqlDate())
+            listOf(creatingRecord.kind, creatingRecord.value, creatingRecord.date!!.toSqlDate())
     ).single()
 
     fun updateRecord(record: Record) {
