@@ -52,10 +52,10 @@ class RemoteDBFacade @Inject constructor(
         }
     }
 
-    fun insertMother(kind: String, subkind: String, value: Double, date: Date) {
+    fun insertMother(kind: String, subkind: String, value: Double, date: Date, alex: Boolean) {
         remoteDB.execute(
-                "INSERT INTO mother (kind, subkind, value, date) VALUES (?, ?, ?, ?)",
-                listOf(kind, subkind, value, date)
+                "INSERT INTO mother (kind, subkind, value, date, alex) VALUES (?, ?, ?, ?, ?)",
+                listOf(kind, subkind, value, date, alex)
         )
     }
 }

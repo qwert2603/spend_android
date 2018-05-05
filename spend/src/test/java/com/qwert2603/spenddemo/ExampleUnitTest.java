@@ -37,7 +37,7 @@ public class ExampleUnitTest {
                 date = new Date(dateFormat.parse(split[0]).getTime());
             }
 
-            remoteDBFacade.insertMother(split[1], split[2], Double.valueOf(split[3].replace(",", ".")), date);
+//            remoteDBFacade.insertMother(split[1], split[2], Double.valueOf(split[3].replace(",", ".")), date);
         }
     }
 }
