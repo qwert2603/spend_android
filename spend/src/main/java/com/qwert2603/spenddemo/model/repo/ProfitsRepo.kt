@@ -13,5 +13,7 @@ interface ProfitsRepo {
 
     fun removeProfit(profitId: Long): Completable
 
+    fun removeAllProfits(): Completable
+
     fun getDumpText(): Single<String>
 }

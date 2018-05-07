@@ -16,4 +16,7 @@ interface ProfitsDao {
 
     @Query("DELETE FROM ProfitTable WHERE id = :id")
     fun removeProfit(id: Long)
+
+    @Query("DELETE FROM ProfitTable")
+    fun removeAllProfits()
 }

@@ -1,9 +1,6 @@
 package com.qwert2603.spenddemo.records_list
 
-import com.qwert2603.spenddemo.model.entity.CreatingProfit
-import com.qwert2603.spenddemo.model.entity.Profit
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordsState
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
@@ -19,12 +16,20 @@ class RecordsListInteractor @Inject constructor(
         private val profitsRepo: ProfitsRepo
 ) {
 
+    fun addRecord(creatingRecord: CreatingRecord) {
+        recordsRepo.addRecord(creatingRecord)
+    }
+
     fun deleteRecord(id: Long) {
         recordsRepo.removeRecord(id)
     }
 
     fun editRecord(record: Record) {
         recordsRepo.editRecord(record)
+    }
+
+    fun deleteAllRecords() {
+        recordsRepo.removeAllRecords()
     }
 
     fun recordsState(): Observable<RecordsState> = recordsRepo.recordsState()
@@ -66,4 +71,5 @@ class RecordsListInteractor @Inject constructor(
     fun getAllProfits(): Single<List<Profit>> = profitsRepo.getAllProfits()
     fun addProfit(creatingProfit: CreatingProfit): Single<Long> = profitsRepo.addProfit(creatingProfit)
     fun removeProfit(profitId: Long): Completable = profitsRepo.removeProfit(profitId)
+    fun removeAllProfits(): Completable = profitsRepo.removeAllProfits()
 }

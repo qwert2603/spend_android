@@ -6,20 +6,6 @@
         android:title="@string/text_new_profit" />
 
     <item
-        android:id="@+id/show_local_changes"
-        android:title="@string/show_local_changes" />
-
-    <item
-        android:id="@+id/show_ids"
-        android:checkable="true"
-        android:title="@string/text_show_ids" />
-
-    <item
-        android:id="@+id/show_change_kinds"
-        android:layout_height="match_parent"
-        android:checkable="true"
-        android:title="@string/text_show_change_kinds" />
-    <item
         android:id="@+id/show_spends"
         android:checkable="true"
         android:title="@string/text_show_spends" />
@@ -41,4 +27,32 @@
     <item
         android:id="@+id/about"
         android:title="@string/about_text" />
+
+    <item
+        android:id="@+id/show_local_changes"
+        android:title="@string/show_local_changes" />
+
+    <item
+        android:id="@+id/show_ids"
+        android:checkable="true"
+        android:title="@string/text_show_ids" />
+
+    <item
+        android:id="@+id/show_change_kinds"
+        android:layout_height="match_parent"
+        android:checkable="true"
+        android:title="@string/text_show_change_kinds" />
+
+    <item
+        android:id="@+id/add_stub_spends"
+        android:title="@string/test_add_stub_spends" />
+
+
+    <item
+        android:id="@+id/add_stub_profits"
+        android:title="@string/test_add_stub_profits" />
+
+    <item
+        android:id="@+id/clear_all"
+        android:title="@string/text_clear_all" />
 </menu>

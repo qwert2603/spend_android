@@ -10,6 +10,7 @@ interface RecordsRepo {
     fun addRecord(creatingRecord: CreatingRecord)
     fun editRecord(record: Record)
     fun removeRecord(recordId: Long)
+    fun removeAllRecords()
 
     fun recordsState(): Observable<RecordsState>
     fun recordCreatedEvents(): Observable<Record>

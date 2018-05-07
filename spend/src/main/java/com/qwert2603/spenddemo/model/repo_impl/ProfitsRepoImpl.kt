@@ -40,6 +40,10 @@ class ProfitsRepoImpl @Inject constructor(
             .fromAction { localDB.profitsDao().removeProfit(profitId) }
             .subscribeOn(modelSchedulersProvider.io)
 
+    override fun removeAllProfits(): Completable = Completable
+            .fromAction { localDB.profitsDao().removeAllProfits() }
+            .subscribeOn(modelSchedulersProvider.io)
+
     override fun getDumpText(): Single<String> = getAllProfits()
             .map {
                 if (it.isEmpty()) return@map "nth"

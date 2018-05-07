@@ -32,4 +32,8 @@ interface RecordsListView : BaseView<RecordsListViewState> {
 
     fun addProfitConfirmed(): Observable<CreatingProfit>
     fun deleteProfitConfirmed(): Observable<Long>
+
+    fun addStubSpendsClicks(): Observable<Any>
+    fun addStubProfitsClicks(): Observable<Any>
+    fun clearAllClicks(): Observable<Any>
 }

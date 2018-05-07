@@ -3,14 +3,15 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.CreatingRecord
 import com.qwert2603.spenddemo.records_list.entity.*
-import com.qwert2603.spenddemo.utils.makeQuint
-import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.plusDays
-import com.qwert2603.spenddemo.utils.plusNN
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.PublishSubject
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -58,6 +59,8 @@ class RecordsListPresenter @Inject constructor(
             }
             .share()
 
+    private val reloadProfits = PublishSubject.create<Any>()
+
     private val profitsListChanges = Observable
             .merge(
                     viewCreated,
@@ -68,7 +71,8 @@ class RecordsListPresenter @Inject constructor(
                                         .doAfterSuccess { viewActions.onNext(RecordsListViewAction.ScrollToProfitAndHighlight(it)) }
                             },
                     intent { it.deleteProfitConfirmed() }
-                            .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) }
+                            .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) },
+                    reloadProfits
             )
             .switchMapSingle { recordsListInteractor.getAllProfits() }
             .map { it.map { it.toProfitUI() } }
@@ -196,6 +200,47 @@ class RecordsListPresenter @Inject constructor(
 
         intent { it.deleteProfitClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteProfit(it.id)) }
+                .subscribeToView()
+
+        intent { it.addStubSpendsClicks() }
+                .flatMap {
+                    val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
+                    val random = Random()
+                    Observable.interval(100, TimeUnit.MILLISECONDS)
+                            .take(20)
+                            .doOnNext {
+                                recordsListInteractor.addRecord(CreatingRecord(
+                                        kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
+                                        value = random.nextInt(10000) + 1,
+                                        date = Date() - (random.nextInt(21)).days
+                                ))
+                            }
+                }
+                .subscribeToView()
+
+        intent { it.addStubProfitsClicks() }
+                .flatMap {
+                    val stubProfitKinds = listOf("стипендия", "зарплата", "аванс", "доход")
+                    val random = Random()
+                    Observable.range(0, 200)
+                            .concatMapSingle {
+                                recordsListInteractor.addProfit(CreatingProfit(
+                                        kind = stubProfitKinds[random.nextInt(stubProfitKinds.size)],
+                                        value = random.nextInt(10000) + 1,
+                                        date = Date() - (random.nextInt(21)).days
+                                ))
+                            }
+                            .doAfterTerminate { reloadProfits.onNext(Any()) }
+                }
+                .subscribeToView()
+
+        intent { it.clearAllClicks() }
+                .flatMap {
+                    recordsListInteractor.removeAllProfits()
+                            .doOnComplete { recordsListInteractor.deleteAllRecords() }
+                            .toObservable<Any>()
+                            .doAfterTerminate { reloadProfits.onNext(Any()) }
+                }
                 .subscribeToView()
     }
 

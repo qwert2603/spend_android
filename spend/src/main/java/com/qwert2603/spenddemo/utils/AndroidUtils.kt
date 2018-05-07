@@ -25,3 +25,12 @@ inline fun Animator.doOnEnd(crossinline action: () -> Unit): Animator {
     })
     return this
 }
+
+inline fun Animator.doOnStart(crossinline action: () -> Unit): Animator {
+    addListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationStart(animation: Animator?) {
+            action()
+        }
+    })
+    return this
+}

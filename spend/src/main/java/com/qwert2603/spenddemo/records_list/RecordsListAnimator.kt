@@ -10,6 +10,7 @@ import android.graphics.Rect
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
@@ -32,12 +33,13 @@ class RecordsListAnimator : DefaultItemAnimator() {
 
     var spendOrigin: SpendOrigin? = null
 
-    private class Q : RecyclerView.ItemAnimator.ItemHolderInfo()
+    private object CreateSpend : RecyclerView.ItemAnimator.ItemHolderInfo()
 
-    private val highlightAnimators = mutableMapOf<RecyclerView.ViewHolder, Animator>()
+    // pair is <Animator, cancel_action>.
+    private val createSpendAnimators = mutableMapOf<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
 
     override fun recordPreLayoutInformation(state: RecyclerView.State, viewHolder: RecyclerView.ViewHolder, changeFlags: Int, payloads: MutableList<Any>): ItemHolderInfo {
-        if (PAYLOAD_HIGHLIGHT in payloads) return Q()
+        if (PAYLOAD_HIGHLIGHT in payloads) return CreateSpend
         return super.recordPreLayoutInformation(state, viewHolder, changeFlags, payloads)
     }
 
@@ -46,7 +48,8 @@ class RecordsListAnimator : DefaultItemAnimator() {
     }
 
     override fun animateChange(oldHolder: RecyclerView.ViewHolder, newHolder: RecyclerView.ViewHolder, preInfo: ItemHolderInfo, postInfo: ItemHolderInfo): Boolean {
-        if (preInfo is Q) {
+        if (preInfo === CreateSpend) {
+            endAnimation(oldHolder)
             val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
                     .also {
                         val th = 0.25f
@@ -69,6 +72,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
 
             val recyclerView = oldHolder.itemView.parent as View
             val translationAnimators = mutableListOf<Animator>()
+            val resetActions = mutableListOf<() -> Unit>()
             val spendOrigin = spendOrigin
             if (oldHolder is RecordViewHolder && spendOrigin != null) {
 
@@ -85,7 +89,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
                             .ofFloat(target, "translationX", "translationY", pathDate)
                             .setDuration(500)
                             .also { it.startDelay = 100 }
-//                            .also { it.interpolator = AccelerateDecelerateInterpolator() }
+                            .also { it.interpolator = AccelerateDecelerateInterpolator() }
                             .doOnEnd {
                                 target.translationX = 0f
                                 target.translationY = 0f
@@ -98,17 +102,33 @@ class RecordsListAnimator : DefaultItemAnimator() {
                 translationAnimators.add(createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_FrameLayout))
                 translationAnimators.add(createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView))
                 translationAnimators.add(createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView))
+                listOf(
+                        oldHolder.itemView.date_FrameLayout,
+                        oldHolder.itemView.kind_TextView,
+                        oldHolder.itemView.value_TextView
+                ).forEach { view ->
+                    resetActions.add({
+                        view.translationX = 0f
+                        view.translationY = 0f
+                    })
+                }
             }
 
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(translationAnimators + highlightAnimator)
             animatorSet.doOnEnd {
                 dispatchAnimationFinished(oldHolder)
-                highlightAnimators.remove(oldHolder)
+                createSpendAnimators.remove(oldHolder)
                 recyclerView.elevation = 0f
             }
 
-            highlightAnimators[oldHolder] = animatorSet
+            createSpendAnimators[oldHolder] = Pair(
+                    animatorSet,
+                    {
+                        oldHolder.itemView.background = null
+                        resetActions.forEach { it() }
+                    }
+            )
             animatorSet.start()
             return false
         }
@@ -116,13 +136,16 @@ class RecordsListAnimator : DefaultItemAnimator() {
     }
 
     override fun endAnimation(item: RecyclerView.ViewHolder?) {
-        highlightAnimators.remove(item)?.cancel()
+        createSpendAnimators.remove(item)?.apply {
+            first.cancel()
+            second.invoke()
+        }
         super.endAnimation(item)
     }
 
     override fun endAnimations() {
-        highlightAnimators.forEach { it.value.cancel() }
-        highlightAnimators.clear()
+        createSpendAnimators.forEach { endAnimation(it.key) }
+        createSpendAnimators.clear()
         super.endAnimations()
     }
 }

@@ -64,6 +64,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showSpendsChanges = PublishSubject.create<Boolean>()
     private val showProfitsChanges = PublishSubject.create<Boolean>()
     private val addProfitClicks = PublishSubject.create<Any>()
+    private val addStubSpendsClicks = PublishSubject.create<Any>()
+    private val addStubProfitsClicks = PublishSubject.create<Any>()
+    private val clearAllClicks = PublishSubject.create<Any>()
 
     private var optionsMenu: Menu? = null
 
@@ -120,11 +123,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         inflater.inflate(R.menu.records_list, menu)
         optionsMenu = menu
 
-        // todo: menu items:
-        // add 200 stub spends.
-        // add 200 stub profits.
-        // clear all.
-
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
         RxMenuItem.clicks(menu.findItem(R.id.send_records)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
@@ -134,6 +132,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menu.findItem(R.id.show_date_sums).checkedChanges().subscribeWith(showDateSumsChanges)
         menu.findItem(R.id.show_spends).checkedChanges().subscribeWith(showSpendsChanges)
         menu.findItem(R.id.show_profits).checkedChanges().subscribeWith(showProfitsChanges)
+        RxMenuItem.clicks(menu.findItem(R.id.add_stub_spends)).subscribeWith(addStubSpendsClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.add_stub_profits)).subscribeWith(addStubProfitsClicks)
+        RxMenuItem.clicks(menu.findItem(R.id.clear_all)).subscribeWith(clearAllClicks)
 
         renderAll()
     }
@@ -203,6 +204,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun addProfitConfirmed(): Observable<CreatingProfit> = addProfitConfirmed
 
     override fun deleteProfitConfirmed(): Observable<Long> = deleteProfitConfirmed
+
+    override fun addStubSpendsClicks(): Observable<Any> = addStubSpendsClicks
+
+    override fun addStubProfitsClicks(): Observable<Any> = addStubProfitsClicks
+
+    override fun clearAllClicks(): Observable<Any> = clearAllClicks
 
     override fun render(vs: RecordsListViewState) {
         super.render(vs)

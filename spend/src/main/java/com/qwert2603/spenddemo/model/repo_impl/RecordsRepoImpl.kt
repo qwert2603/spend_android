@@ -33,6 +33,14 @@ class RecordsRepoImpl @Inject constructor(
         syncProcessor.removeItem(recordId)
     }
 
+    override fun removeAllRecords() {
+        // todo: OMG =\
+        syncProcessor.itemsState()
+                .blockingFirst()
+                .items
+                .forEach { removeRecord(it.id) }
+    }
+
     override fun recordsState(): Observable<RecordsState> = syncProcessor.itemsState()
             .map { itemsState ->
                 RecordsState(

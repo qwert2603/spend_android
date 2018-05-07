@@ -32,3 +32,8 @@ fun Date.toFormattedString(resources: Resources): String = when {
     isTomorrow() -> resources.getString(R.string.tomorrow_text)
     else -> Const.DATE_FORMAT.format(this)
 }
+
+infix operator fun Date.plus(millis: Long) = Date(time + millis)
+infix operator fun Date.minus(millis: Long) = this + -millis
+
+val Int.days get() = this * LibConst.MILLIS_PER_DAY
