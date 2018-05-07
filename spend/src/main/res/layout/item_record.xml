@@ -29,49 +29,26 @@
             android:id="@+id/id_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
+            android:ems="3"
             android:lines="1"
-            android:maxEms="3"
-            android:minEms="3"
             android:textColor="#444444"
             android:textSize="14sp"
-            tools:text="191826" />
+            tools:text="918236" />
 
-        <FrameLayout
-            android:id="@+id/date_FrameLayout"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/date_TextView"
+            android:layout_width="80sp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:clipChildren="false"
-            android:clipToPadding="false">
-
-            <TextView
-                android:id="@+id/date_TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
-                android:textSize="16sp"
-                tools:text="@string/today_text" />
-
-            <!--
-            invisible text to make all date_TextViews same width.
-            because "today" is thinner than "0000-00-00".
-            -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0000-00-00"
-                android:textSize="16sp"
-                android:visibility="invisible"
-                tools:ignore="HardcodedText" />
-
-        </FrameLayout>
+            android:lines="1"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp"
+            tools:text="2018-04-28" />
 
         <TextView
             android:id="@+id/kind_TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:textColor="@color/spend"
@@ -83,6 +60,7 @@
             android:id="@+id/value_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:textColor="@color/colorAccent"
             android:textSize="18sp"
             tools:text="175" />

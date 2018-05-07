@@ -88,7 +88,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
             recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()
 
             listOf(
-                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_FrameLayout),
+                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_TextView),
                     createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView),
                     createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView)
             ).forEach {

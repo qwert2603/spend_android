@@ -1,5 +1,7 @@
 package com.qwert2603.spenddemo.records_list.vhs
 
+import android.support.v4.widget.TextViewCompat
+import android.util.TypedValue
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.color
@@ -8,9 +10,21 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.records_list.RecordsAdapter
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.utils.toFormattedString
-import kotlinx.android.synthetic.main.item_record.view.*
+import kotlinx.android.synthetic.main.item_profit.view.*
 
 class ProfitViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<ProfitUI>(parent, R.layout.item_profit) {
+
+    init {
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.date_TextView,
+                14,
+                16,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
+    }
+
+
     override fun bind(m: ProfitUI) = with(itemView) {
         super.bind(m)
 
@@ -20,7 +34,7 @@ class ProfitViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<ProfitUI>(par
 
         local_ImageView.setVisible(showChangeKinds)
         id_TextView.setVisible(showIds)
-        date_FrameLayout.setVisible(showDatesInRecords)
+        date_TextView.setVisible(showDatesInRecords)
 
         local_ImageView.setImageResource(R.drawable.ic_done_24dp)
         local_ImageView.setColorFilter(resources.color(R.color.anth))

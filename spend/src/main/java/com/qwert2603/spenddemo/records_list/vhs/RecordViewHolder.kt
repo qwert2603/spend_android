@@ -1,5 +1,7 @@
 package com.qwert2603.spenddemo.records_list.vhs
 
+import android.support.v4.widget.TextViewCompat
+import android.util.TypedValue
 import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.color
@@ -14,6 +16,17 @@ import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_record.view.*
 
 class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(parent, R.layout.item_record) {
+
+    init {
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.date_TextView,
+                14,
+                16,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
+    }
+
     override fun bind(m: RecordUI) = with(itemView) {
         super.bind(m)
 
@@ -23,7 +36,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
 
         local_ImageView.setVisible(showChangeKinds)
         id_TextView.setVisible(showIds)
-        date_FrameLayout.setVisible(showDatesInRecords)
+        date_TextView.setVisible(showDatesInRecords)
 
         local_ImageView.setImageResource(when (m.syncStatus) {
             SyncStatus.LOCAL -> R.drawable.ic_local
