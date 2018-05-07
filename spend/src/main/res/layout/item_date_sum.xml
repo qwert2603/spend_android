@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!-- FrameLayout is for highlight animation -->
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,34 +7,16 @@
     android:orientation="horizontal"
     android:padding="6dp">
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/date_TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_weight="1">
-
-        <TextView
-            android:id="@+id/date_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="today" />
-
-        <!--
-        invisible text to make all date_TextViews same width.
-        because "today" is thinner than "0000-00-00".
-        -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0000-00-00"
-            android:textSize="16sp"
-            android:visibility="invisible"
-            tools:ignore="HardcodedText" />
-
-    </FrameLayout>
+        android:layout_weight="1"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="today" />
 
     <TextView
         android:id="@+id/profitsSum_TextView"

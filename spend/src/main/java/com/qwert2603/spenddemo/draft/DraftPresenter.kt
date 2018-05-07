@@ -24,7 +24,6 @@ class DraftPresenter @Inject constructor(
             createEnable = false
     )
 
-    // todo: test it with delay.
     private val loadDraft: Observable<CreatingRecord> = intent { it.viewCreated() }
             .switchMapSingle { draftInteractor.getDraft() }
             .share()
@@ -100,19 +99,13 @@ class DraftPresenter @Inject constructor(
 
         Observable
                 .merge(
-                        Observable
-                                .merge(
-                                        intent { it.onKindInputFocused() }.delay(500, TimeUnit.MILLISECONDS),
-                                        intent { it.onKindInputClicked() }
-                                )
+                        intent { it.onKindInputClicked() }
                                 .withLatestFrom(draftChanges, secondOfTwo())
                                 .map { it.kind },
                         kingChangesIntent
-                                .debounce(100, TimeUnit.MILLISECONDS),
-                        loadDraft
-                                .map { it.kind }
-                                .delay(600, TimeUnit.MILLISECONDS)
+                                .debounce(100, TimeUnit.MILLISECONDS)
                 )
+                .skipUntil(loadDraft)
                 .switchMapSingle { kind ->
                     draftInteractor.getSuggestions(kind)
                             .map { if (it.isNotEmpty()) it else listOf("smth") }
@@ -128,7 +121,7 @@ class DraftPresenter @Inject constructor(
 
         intent { it.selectDateClicks() }
                 .withLatestFrom(draftChanges, secondOfTwo())
-                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.date?.time ?: System.currentTimeMillis())) }
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.getDateNN().time)) }
                 .subscribeToView()
 
         intent { it.selectKindClicks() }

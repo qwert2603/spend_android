@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                tools:text="today" />
+                tools:text="@string/yesterday_text" />
 
             <!--
             invisible text to make all date_TextViews same width.
@@ -71,7 +71,7 @@
             android:textColor="@color/profit"
             android:textSize="18sp"
             android:textStyle="bold"
-            tools:text="food" />
+            tools:text="salary" />
 
         <TextView
             android:id="@+id/value_TextView"

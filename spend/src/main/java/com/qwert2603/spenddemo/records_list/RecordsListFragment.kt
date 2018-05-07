@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.records_list
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
@@ -23,16 +24,14 @@ import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
-import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
-import com.qwert2603.spenddemo.utils.DialogAwareView
-import com.qwert2603.spenddemo.utils.castAndFilter
-import com.qwert2603.spenddemo.utils.checkedChanges
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.android.synthetic.main.view_draft.view.*
 import ru.terrakok.cicerone.Router
 import java.sql.Date
 import javax.inject.Inject
@@ -93,10 +92,17 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         records_RecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
-                .also { it.initialPrefetchItemCount = 10 }
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_PROFIT, 20)
         records_RecyclerView.itemAnimator = RecordsListAnimator()
+                .also {
+                    it.spendOrigin = object : RecordsListAnimator.SpendOrigin {
+                        override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
+                        override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
+                        override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
+                    }
+                }
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
         }))
@@ -118,6 +124,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
         optionsMenu = menu
+
+        //todo: this is ugly.
         Observable
                 .combineLatest(
                         changesCount.map { it > 0 },

@@ -5,10 +5,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import com.hannesdorfmann.mosby3.mvi.layout.MviFrameLayout
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.qwert2603.andrlib.base.mvi.BaseFrameLayout
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
@@ -28,8 +28,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_draft.view.*
 import java.util.*
 
-// todo: extend BaseFrameLayout.
-class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFrameLayout<DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
+class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
 
     companion object {
         private const val REQUEST_CODE_DATE = 5
@@ -84,11 +83,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
 
     override fun onKindSelected(): Observable<String> = onKindSelected
 
-    override fun onKindInputFocused(): Observable<Any> = RxView.focusChanges(kind_EditText)
-            .skipInitialValue()
-            .filter { it }
-            .map { Any() }
-
     override fun onKindInputClicked(): Observable<Any> = RxView.clicks(kind_EditText)
 
     override fun onKindSuggestionSelected(): Observable<String> = RxAutoCompleteTextView
@@ -96,7 +90,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : MviFram
             .map { it.view().adapter.getItem(it.position()).toString() }
 
     override fun render(vs: DraftViewState) {
-        LogUtils.d("DraftViewImpl render $vs")
+        super.render(vs)
         kindEditText.setText(vs.creatingRecord.kind)
         valueEditText.setText(vs.valueString)
         date_EditText.setText(vs.creatingRecord.getDateNN().toFormattedString(resources))
