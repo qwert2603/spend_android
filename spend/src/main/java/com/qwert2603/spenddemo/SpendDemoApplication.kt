@@ -27,4 +27,6 @@ class SpendDemoApplication : Application() {
 
         LogUtils.logType = LogUtils.LogType.ANDROID
     }
+
+    // todo: App Shortcuts for frequent spends.
 }

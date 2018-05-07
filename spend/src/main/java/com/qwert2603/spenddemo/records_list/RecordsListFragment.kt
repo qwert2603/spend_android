@@ -120,6 +120,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         inflater.inflate(R.menu.records_list, menu)
         optionsMenu = menu
 
+        // todo: menu items:
+        // add 200 stub spends.
+        // add 200 stub profits.
+        // clear all.
+
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
         RxMenuItem.clicks(menu.findItem(R.id.send_records)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
