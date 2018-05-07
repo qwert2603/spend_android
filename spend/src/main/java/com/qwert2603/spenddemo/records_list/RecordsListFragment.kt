@@ -26,8 +26,6 @@ import com.qwert2603.spenddemo.records_list.entity.RecordUI
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -73,9 +71,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val editRecordConfirmed = PublishSubject.create<Record>()
     private val addProfitConfirmed = PublishSubject.create<CreatingProfit>()
     private val deleteProfitConfirmed = PublishSubject.create<Long>()
-
-    private val showChangeKinds: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
-    private val changesCount: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
 
     private var wasRecreated = false
     private var layoutAnimationShown = false
@@ -125,14 +120,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         inflater.inflate(R.menu.records_list, menu)
         optionsMenu = menu
 
-        //todo: this is ugly.
-        Observable
-                .combineLatest(
-                        changesCount.map { it > 0 },
-                        showChangeKinds,
-                        BiFunction { notZero: Boolean, show: Boolean -> notZero && show }
-                )
-                .subscribe { menu.findItem(R.id.show_local_changes).isVisible = it }
         RxMenuItem.clicks(menu.findItem(R.id.show_local_changes)).subscribeWith(showChangesClicks)
         RxMenuItem.clicks(menu.findItem(R.id.send_records)).subscribeWith(sendRecordsClicks)
         RxMenuItem.clicks(menu.findItem(R.id.about)).subscribeWith(showAboutClicks)
@@ -220,7 +207,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
         renderIfChangedThree({ Triple(showIds, showChangeKinds, showDateSums) }) { adapter.notifyDataSetChanged() }
 
-        if (!wasRecreated) {
+        adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records)
+
+        if (!wasRecreated && vs.records.size > 1) {
             renderIfChanged({ records }) {
                 if (!layoutAnimationShown) {
                     layoutAnimationShown = true
@@ -230,17 +219,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        if (adapter.adapterList.size <= 1) records_RecyclerView.scrollToPosition(0)
-        adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records)
-
         // todo: show changesCount on menuItem's icon.
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
-        showChangeKinds.onNext(vs.showChangeKinds)
-        changesCount.onNext(vs.changesCount)
 
         toolbar.subtitle = getString(R.string.text_balance_30_days_format, vs.balance30Days)
 
         optionsMenu?.apply {
+            findItem(R.id.show_local_changes).isVisible = vs.showChangeKinds && vs.changesCount > 0
             findItem(R.id.show_ids).isChecked = vs.showIds
             findItem(R.id.show_change_kinds).isChecked = vs.showChangeKinds
             findItem(R.id.show_date_sums).isChecked = vs.showDateSums
