@@ -10,7 +10,7 @@ data class RecordsListViewState(
         val showDateSums: Boolean,
         val showProfits: Boolean,
         val showSpends: Boolean,
-        val balance30Days: Int
+        val balance30Days: Int//todo: Long
 ) {
     fun showSpendsEnable() = showProfits
     fun showProfitsEnable() = showSpends

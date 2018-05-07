@@ -48,91 +48,69 @@ class RecordsListAnimator : DefaultItemAnimator() {
     }
 
     override fun animateChange(oldHolder: RecyclerView.ViewHolder, newHolder: RecyclerView.ViewHolder, preInfo: ItemHolderInfo, postInfo: ItemHolderInfo): Boolean {
-        if (preInfo === CreateSpend) {
-            endAnimation(oldHolder)
-            val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
-                    .also {
-                        val th = 0.25f
-                        it.setInterpolator {
-                            when {
-                                it < th -> it / th
-                                it > 1f - th -> (1f - it) / th
-                                else -> 1f
-                            }
-                        }
-                        val color = oldHolder.itemView.resources.color(R.color.highlight_created_record)
-                        fun Float.makeColor(): Int {
-                            val alpha = (Color.alpha(color) * this).toInt()
-                            return color and 0x00_ff_ff_ff or (alpha shl 24)
-                        }
-                        it.addUpdateListener { oldHolder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
-                        it.duration = 2000
-                        it.doOnEnd { oldHolder.itemView.background = null }
-                    }
-
-            val recyclerView = oldHolder.itemView.parent as View
-            val translationAnimators = mutableListOf<Animator>()
-            val resetActions = mutableListOf<() -> Unit>()
-            val spendOrigin = spendOrigin
-            if (oldHolder is RecordViewHolder && spendOrigin != null) {
-
-                fun createTranslationAnimator(originGlobalVisibleRect: Rect, target: View): Animator {
-                    val targetGlobalVisibleRect = target.getGlobalVisibleRectRightNow()
-                    val translationXDate = (originGlobalVisibleRect.left - targetGlobalVisibleRect.left).toFloat()
-                    val translationYDate = (originGlobalVisibleRect.centerY() - targetGlobalVisibleRect.centerY()).toFloat()
-                    target.translationX = translationXDate
-                    target.translationY = translationYDate
-                    val pathDate = Path()
-                    pathDate.moveTo(translationXDate, translationYDate)
-                    pathDate.lineTo(0f, 0f)
-                    return ObjectAnimator
-                            .ofFloat(target, "translationX", "translationY", pathDate)
-                            .setDuration(500)
-                            .also { it.startDelay = 100 }
-                            .also { it.interpolator = AccelerateDecelerateInterpolator() }
-                            .doOnEnd {
-                                target.translationX = 0f
-                                target.translationY = 0f
-                            }
-                }
-
-                // todo: don't do it.
-                recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()
-
-                translationAnimators.add(createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_FrameLayout))
-                translationAnimators.add(createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView))
-                translationAnimators.add(createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView))
-                listOf(
-                        oldHolder.itemView.date_FrameLayout,
-                        oldHolder.itemView.kind_TextView,
-                        oldHolder.itemView.value_TextView
-                ).forEach { view ->
-                    resetActions.add({
-                        view.translationX = 0f
-                        view.translationY = 0f
-                    })
-                }
-            }
-
-            val animatorSet = AnimatorSet()
-            animatorSet.playTogether(translationAnimators + highlightAnimator)
-            animatorSet.doOnEnd {
-                dispatchAnimationFinished(oldHolder)
-                createSpendAnimators.remove(oldHolder)
-                recyclerView.elevation = 0f
-            }
-
-            createSpendAnimators[oldHolder] = Pair(
-                    animatorSet,
-                    {
-                        oldHolder.itemView.background = null
-                        resetActions.forEach { it() }
-                    }
-            )
-            animatorSet.start()
-            return false
+        if (preInfo !== CreateSpend) {
+            return super.animateChange(oldHolder, newHolder, preInfo, postInfo)
         }
-        return super.animateChange(oldHolder, newHolder, preInfo, postInfo)
+
+        endAnimation(oldHolder)
+
+        val animators = mutableListOf<Animator>()
+        val resetActions = mutableListOf<() -> Unit>()
+
+        val resetHighlightAction = { oldHolder.itemView.background = null }
+        val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
+                .also {
+                    val th = 0.25f
+                    it.setInterpolator {
+                        when {
+                            it < th -> it / th
+                            it > 1f - th -> (1f - it) / th
+                            else -> 1f
+                        }
+                    }
+                    val color = oldHolder.itemView.resources.color(R.color.highlight_created_record)
+                    fun Float.makeColor(): Int {
+                        val alpha = (Color.alpha(color) * this).toInt()
+                        return color and 0x00_ff_ff_ff or (alpha shl 24)
+                    }
+                    it.addUpdateListener { oldHolder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
+                    it.duration = 2000
+                    it.doOnEnd(resetHighlightAction)
+                }
+        animators.add(highlightAnimator)
+        resetActions.add(resetHighlightAction)
+
+        val recyclerView = oldHolder.itemView.parent as View
+        val spendOrigin = spendOrigin
+        if (oldHolder is RecordViewHolder && spendOrigin != null) {
+
+            // todo: don't do it.
+            recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()
+
+            listOf(
+                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_FrameLayout),
+                    createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView),
+                    createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView)
+            ).forEach {
+                animators.add(it.first)
+                resetActions.add(it.second)
+            }
+        }
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(animators)
+        animatorSet.doOnEnd {
+            dispatchAnimationFinished(oldHolder)
+            createSpendAnimators.remove(oldHolder)
+            recyclerView.elevation = 0f
+        }
+
+        createSpendAnimators[oldHolder] = Pair(
+                animatorSet,
+                { resetActions.forEach { it() } }
+        )
+        animatorSet.start()
+        return false
     }
 
     override fun endAnimation(item: RecyclerView.ViewHolder?) {
@@ -147,5 +125,27 @@ class RecordsListAnimator : DefaultItemAnimator() {
         createSpendAnimators.forEach { endAnimation(it.key) }
         createSpendAnimators.clear()
         super.endAnimations()
+    }
+
+    private fun createTranslationAnimator(originGlobalVisibleRect: Rect, target: View): Pair<Animator, () -> Unit> {
+        val targetGlobalVisibleRect = target.getGlobalVisibleRectRightNow()
+        val translationXDate = (originGlobalVisibleRect.left - targetGlobalVisibleRect.left).toFloat()
+        val translationYDate = (originGlobalVisibleRect.centerY() - targetGlobalVisibleRect.centerY()).toFloat()
+        target.translationX = translationXDate
+        target.translationY = translationYDate
+        val pathDate = Path()
+        pathDate.moveTo(translationXDate, translationYDate)
+        pathDate.lineTo(0f, 0f)
+        val resetAction = {
+            target.translationX = 0f
+            target.translationY = 0f
+        }
+        return ObjectAnimator
+                .ofFloat(target, "translationX", "translationY", pathDate)
+                .setDuration(500)
+                .also { it.startDelay = 100 }
+                .also { it.interpolator = AccelerateDecelerateInterpolator() }
+                .doOnEnd(resetAction)
+                .let { Pair(it, resetAction) }
     }
 }

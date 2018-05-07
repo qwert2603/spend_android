@@ -211,7 +211,7 @@ class RecordsListPresenter @Inject constructor(
                             .doOnNext {
                                 recordsListInteractor.addRecord(CreatingRecord(
                                         kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
-                                        value = random.nextInt(10000) + 1,
+                                        value = random.nextInt(1000) + 1,
                                         date = Date() - (random.nextInt(21)).days
                                 ))
                             }
