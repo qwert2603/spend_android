@@ -19,3 +19,6 @@
 -keepattributes SourceFile,LineNumberTable
 
 -dontwarn org.postgresql.**
+
+# andrlib_generator
+-dontwarn com.qwert2603.andrlib.generator.**
