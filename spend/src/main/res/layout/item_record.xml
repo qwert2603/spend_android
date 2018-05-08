@@ -1,70 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?><!-- FrameLayout is for highlight animation -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="6dp"
+    tools:ignore="UselessParent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/local_ImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_local"
+        tools:tint="@color/local_change_edit" />
+
+    <TextView
+        android:id="@+id/id_TextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="6dp"
-        tools:ignore="UselessParent">
+        android:ellipsize="end"
+        android:ems="3"
+        android:lines="1"
+        android:textColor="#444444"
+        android:textSize="14sp"
+        tools:text="918236" />
 
-        <ImageView
-            android:id="@+id/local_ImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_local"
-            tools:tint="@color/local_change_edit" />
+    <TextView
+        android:id="@+id/date_TextView"
+        android:layout_width="80sp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:lines="1"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        tools:text="2018-04-28" />
 
-        <TextView
-            android:id="@+id/id_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="3"
-            android:lines="1"
-            android:textColor="#444444"
-            android:textSize="14sp"
-            tools:text="918236" />
+    <TextView
+        android:id="@+id/kind_TextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1"
+        android:textColor="@color/spend"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="food" />
 
-        <TextView
-            android:id="@+id/date_TextView"
-            android:layout_width="80sp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:lines="1"
-            android:textColor="@color/colorAccent"
-            android:textSize="16sp"
-            tools:text="2018-04-28" />
+    <TextView
+        android:id="@+id/value_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        tools:text="175" />
 
-        <TextView
-            android:id="@+id/kind_TextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:textColor="@color/spend"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="food" />
-
-        <TextView
-            android:id="@+id/value_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:textColor="@color/colorAccent"
-            android:textSize="18sp"
-            tools:text="175" />
-
-    </LinearLayout>
-
-</FrameLayout>
+</LinearLayout>

@@ -18,6 +18,7 @@ import com.qwert2603.spenddemo.records_list.vhs.RecordViewHolder
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
 import kotlinx.android.synthetic.main.item_record.view.*
+import java.util.concurrent.ConcurrentHashMap
 
 class RecordsListAnimator : DefaultItemAnimator() {
 
@@ -36,7 +37,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
     private object CreateSpend : RecyclerView.ItemAnimator.ItemHolderInfo()
 
     // pair is <Animator, cancel_action>.
-    private val createSpendAnimators = mutableMapOf<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
+    private val createSpendAnimators = ConcurrentHashMap<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
 
     override fun recordPreLayoutInformation(state: RecyclerView.State, viewHolder: RecyclerView.ViewHolder, changeFlags: Int, payloads: MutableList<Any>): ItemHolderInfo {
         if (PAYLOAD_HIGHLIGHT in payloads) return CreateSpend
@@ -57,7 +58,8 @@ class RecordsListAnimator : DefaultItemAnimator() {
         val animators = mutableListOf<Animator>()
         val resetActions = mutableListOf<() -> Unit>()
 
-        val resetHighlightAction = { oldHolder.itemView.background = null }
+        val prevBackground = oldHolder.itemView.background
+        val resetHighlightAction = { oldHolder.itemView.background = prevBackground }
         val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
                 .also {
                     val th = 0.25f
