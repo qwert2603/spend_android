@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
+import android.content.Context
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
@@ -10,17 +11,23 @@ import com.qwert2603.spenddemo.model.local_db.tables.toProfit
 import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.utils.Const
+import com.qwert2603.spenddemo.utils.PrefsCounter
 import io.reactivex.Completable
 import io.reactivex.Single
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ProfitsRepoImpl @Inject constructor(
         private val localDB: LocalDB,
-        private val modelSchedulersProvider: ModelSchedulersProvider
+        private val modelSchedulersProvider: ModelSchedulersProvider,
+        appContext: Context
 ) : ProfitsRepo {
+
+    private val localIdCounter = PrefsCounter(
+            prefs = appContext.getSharedPreferences("profits.prefs", Context.MODE_PRIVATE),
+            key = "last_profit_local_id"
+    )
 
     override fun getAllProfits(): Single<List<Profit>> = localDB.profitsDao()
             .getAllProfits()
@@ -29,7 +36,7 @@ class ProfitsRepoImpl @Inject constructor(
 
     override fun addProfit(creatingProfit: CreatingProfit): Single<Long> = Single
             .fromCallable {
-                val localId = Random().nextInt(1_000_000).toLong() // todo
+                val localId = localIdCounter.getNext()
                 val profit = creatingProfit.toProfit(localId).toProfitTable()
                 localDB.profitsDao().addProfit(profit)
                 return@fromCallable localId

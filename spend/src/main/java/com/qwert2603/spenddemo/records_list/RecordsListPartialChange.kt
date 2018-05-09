@@ -10,5 +10,5 @@ sealed class RecordsListPartialChange : PartialChange {
     data class ShowDateSums(val show: Boolean) : RecordsListPartialChange()
     data class ShowSpends(val show: Boolean) : RecordsListPartialChange()
     data class ShowProfits(val show: Boolean) : RecordsListPartialChange()
-    data class Balance30DaysChanged(val balance: Int) : RecordsListPartialChange()
+    data class Balance30DaysChanged(val balance: Long) : RecordsListPartialChange()
 }

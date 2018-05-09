@@ -34,3 +34,11 @@ inline fun Animator.doOnStart(crossinline action: () -> Unit): Animator {
     })
     return this
 }
+
+inline fun <T> Iterable<T>.sumByLong(crossinline selector: (T) -> Long): Long {
+    var sum = 0L
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}

@@ -99,8 +99,8 @@ class RecordsListPresenter @Inject constructor(
                                                 if (showDateSums) {
                                                     it + DateSumUI(
                                                             date,
-                                                            recordsByDate[date]?.sumBy { it.value },
-                                                            profitsByDate[date]?.sumBy { it.value }
+                                                            recordsByDate[date]?.sumByLong { it.value.toLong() },
+                                                            profitsByDate[date]?.sumByLong { it.value.toLong() }
                                                     )
                                                 } else {
                                                     it
@@ -129,10 +129,10 @@ class RecordsListPresenter @Inject constructor(
                     .combineLatest(
                             spendsListChanges
                                     .map { it.filter { it.date.onlyDate().plusDays(30) > Date().onlyDate() } }
-                                    .map { it.sumBy { it.value } },
+                                    .map { it.sumByLong { it.value.toLong() } },
                             profitsListChanges
                                     .map { it.filter { it.date.onlyDate().plusDays(30) > Date().onlyDate() } }
-                                    .map { it.sumBy { it.value } },
+                                    .map { it.sumByLong { it.value.toLong() } },
                             BiFunction { spendsSum, profitsSum -> RecordsListPartialChange.Balance30DaysChanged(profitsSum - spendsSum) }
                     )
     ))
@@ -250,8 +250,8 @@ class RecordsListPresenter @Inject constructor(
             showProfits: Boolean,
             showSpends: Boolean
     ): TotalsUi {
-        val spendsSum = recordsList.sumBy { it.value }
-        val profitsSum = profitsList.sumBy { it.value }
+        val spendsSum = recordsList.sumByLong { it.value.toLong() }
+        val profitsSum = profitsList.sumByLong { it.value.toLong() }
         return TotalsUi(
                 showProfits = showProfits,
                 showSpends = showSpends,

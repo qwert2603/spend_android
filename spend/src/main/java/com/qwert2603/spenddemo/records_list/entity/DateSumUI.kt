@@ -4,8 +4,8 @@ import java.util.*
 
 data class DateSumUI(
         val date: Date,
-        val spends: Int?,//todo: Long?
-        val profits: Int?//todo: Long?
+        val spends: Long?,
+        val profits: Long?
 ) : RecordsListItem {
     override val id = date.time
 }

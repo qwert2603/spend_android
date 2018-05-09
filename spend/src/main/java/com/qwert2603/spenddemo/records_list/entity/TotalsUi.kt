@@ -4,10 +4,10 @@ data class TotalsUi(
         val showSpends: Boolean,
         val showProfits: Boolean,
         val spendsCount: Int,
-        val spendsSum: Int,
+        val spendsSum: Long,
         val profitsCount: Int,
-        val profitsSum: Int,
-        val totalBalance: Int
+        val profitsSum: Long,
+        val totalBalance: Long
 ) : RecordsListItem {
     override val id = 459267892756L
 }

@@ -1,26 +1,33 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
+import android.content.Context
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toRecord
 import com.qwert2603.spenddemo.model.syncprocessor.toSyncingRecord
 import com.qwert2603.spenddemo.utils.Const
+import com.qwert2603.spenddemo.utils.PrefsCounter
 import com.qwert2603.syncprocessor.ISyncProcessor
 import com.qwert2603.syncprocessor.entity.ItemEvent
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RecordsRepoImpl @Inject constructor(
-        private val syncProcessor: ISyncProcessor<Long, SyncingRecord>
+        private val syncProcessor: ISyncProcessor<Long, SyncingRecord>,
+        appContext: Context
 ) : RecordsRepo {
 
+    private val localIdCounter = PrefsCounter(
+            prefs = appContext.getSharedPreferences("spends.prefs", Context.MODE_PRIVATE),
+            key = "last_spend_local_id"
+    )
+
     override fun addRecord(creatingRecord: CreatingRecord) {
-        val localId = Random().nextInt(1_000_000).toLong()/*todo*/
+        val localId = localIdCounter.getNext()
         val localRecord = creatingRecord.toRecord(localId)
         syncProcessor.addItem(localRecord.toSyncingRecord())
     }

@@ -214,6 +214,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
 
+        // todo: show floating date on top of screen when showing date sums.
+
         renderIfChanged({ showIds }) { adapter.showIds = it }
         renderIfChanged({ showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
