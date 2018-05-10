@@ -69,6 +69,10 @@ class AddProfitDialogFragment : DialogFragment() {
                 value_EditText.setText(value.toString())
             }
 
+            kind_EditText.setOnLongClickListener {
+                // todo: choose kind.
+                true
+            }
             date_EditText.setOnClickListener {
                 DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
                         .also { it.setTargetFragment(this@AddProfitDialogFragment, REQUEST_DATE) }
