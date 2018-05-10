@@ -1,11 +1,11 @@
 package com.qwert2603.spenddemo.model.remote_db
 
 import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
-import com.qwert2603.spenddemo.model.entity.CreatingRecord
-import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.IdSqlWrapper
-import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.RemoteRecordSqlWrapper
-import com.qwert2603.spenddemo.model.syncprocessor.RemoteRecord
+import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.RemoteSpendSqlWrapper
+import com.qwert2603.spenddemo.model.syncprocessor.RemoteSpend
 import com.qwert2603.spenddemo.utils.toSqlDate
 import java.sql.Date
 import java.sql.Timestamp
@@ -17,29 +17,29 @@ class RemoteDBFacade @Inject constructor(
         private val remoteDB: RemoteDB,
         @RemoteTableName private val REMOTE_TABLE_NAME: String
 ) {
-    fun getAllRecords(lastUpdateMillis: Long = 0): List<RemoteRecord> = remoteDB.query(
+    fun getAllSpends(lastUpdateMillis: Long = 0): List<RemoteSpend> = remoteDB.query(
             "SELECT * FROM $REMOTE_TABLE_NAME WHERE updated > ? ORDER BY updated DESC",
-            { RemoteRecordSqlWrapper(it).record },
+            { RemoteSpendSqlWrapper(it).spend },
             listOf(Timestamp(lastUpdateMillis))
     )
 
-    fun insertRecord(creatingRecord: CreatingRecord): Long = remoteDB.query(
+    fun insertSpend(creatingSpend: CreatingSpend): Long = remoteDB.query(
             "INSERT INTO $REMOTE_TABLE_NAME (kind, value, date) VALUES (?, ?, ?) returning id",
             { IdSqlWrapper(it).id },
-            listOf(creatingRecord.kind, creatingRecord.value, creatingRecord.getDateNN().toSqlDate())
+            listOf(creatingSpend.kind, creatingSpend.value, creatingSpend.getDateNN().toSqlDate())
     ).single()
 
-    fun updateRecord(record: Record) {
+    fun updateSpend(spend: Spend) {
         remoteDB.execute(
                 "UPDATE $REMOTE_TABLE_NAME SET kind=?, value=?, date=?, updated=NOW() WHERE id=?",
-                listOf(record.kind, record.value, record.date.toSqlDate(), record.id)
+                listOf(spend.kind, spend.value, spend.date.toSqlDate(), spend.id)
         )
     }
 
-    fun deleteRecord(recordId: Long) {
+    fun deleteSpend(spendId: Long) {
         remoteDB.execute(
                 "UPDATE $REMOTE_TABLE_NAME SET deleted=TRUE, updated=NOW() WHERE id = ?",
-                listOf(recordId)
+                listOf(spendId)
         )
     }
 

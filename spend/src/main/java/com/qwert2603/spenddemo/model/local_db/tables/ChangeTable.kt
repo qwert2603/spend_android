@@ -8,8 +8,8 @@ import com.qwert2603.spenddemo.model.entity.ChangeKind
 @Entity
 data class ChangeTable(
         val changeKind: ChangeKind,
-        @PrimaryKey val recordId: Long
+        @PrimaryKey val spendId: Long
 )
 
-fun Change.toChangeTable() = ChangeTable(changeKind, recordId)
-fun ChangeTable.toChange() = Change(changeKind, recordId)
+fun Change.toChangeTable() = ChangeTable(changeKind, spendId)
+fun ChangeTable.toChange() = Change(changeKind, spendId)

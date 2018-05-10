@@ -18,11 +18,11 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import kotlinx.android.synthetic.main.dialog_edit_record.view.*
+import kotlinx.android.synthetic.main.dialog_edit_spend.view.*
 import java.util.*
 
 @FragmentWithArgs
-class EditRecordDialogFragment : DialogFragment() {
+class EditSpendDialogFragment : DialogFragment() {
 
     companion object {
         const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
@@ -57,21 +57,21 @@ class EditRecordDialogFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
+        dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_spend, null)
         dialogView.apply {
             kind_EditText.setText(kind)
             date_EditText.setText(Date(selectedDate).toFormattedString(resources))
             value_EditText.setText(value.toString())
 
             kind_EditText.setOnLongClickListener {
-                ChooseKindDialogFragment()
-                        .also { it.setTargetFragment(this@EditRecordDialogFragment, REQUEST_CHOOSE_KIND) }
+                ChooseSpendKindDialogFragment()
+                        .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_CHOOSE_KIND) }
                         .show(fragmentManager, "choose_kind")
                 true
             }
             date_EditText.setOnClickListener {
                 DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
-                        .also { it.setTargetFragment(this@EditRecordDialogFragment, REQUEST_DATE) }
+                        .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_DATE) }
                         .show(fragmentManager, "date")
             }
             value_EditText.setOnEditorActionListener { _, _, _ ->
@@ -107,7 +107,7 @@ class EditRecordDialogFragment : DialogFragment() {
                     })
         }
         return AlertDialog.Builder(requireContext())
-                .setTitle(R.string.edit_record_text)
+                .setTitle(R.string.edit_spend_text)
                 .setView(dialogView)
                 .setPositiveButton(R.string.text_edit, { _, _ -> sendResult() })
                 .setNegativeButton(R.string.text_cancel, null)
@@ -118,7 +118,7 @@ class EditRecordDialogFragment : DialogFragment() {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
                 REQUEST_CHOOSE_KIND -> {
-                    val kind = data.getStringExtra(ChooseKindDialogFragment.KIND_KEY)
+                    val kind = data.getStringExtra(ChooseSpendKindDialogFragment.KIND_KEY)
                     dialogView.kind_EditText.setText(kind)
                     dialogView.value_EditText.requestFocus()
                     dialogView.value_EditText.selectEnd()

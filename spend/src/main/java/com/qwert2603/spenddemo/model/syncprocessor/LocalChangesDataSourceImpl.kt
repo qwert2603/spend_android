@@ -15,7 +15,7 @@ class LocalChangesDataSourceImpl(
 ) : LocalChangesDataSource<Long> {
     override fun getAll(): Single<List<Change<Long>>> = localDB.changesDao()
             .getAllChanges()
-            .mapList { Change(it.recordId, it.changeKind.toSyncChangeKind()) }
+            .mapList { Change(it.spendId, it.changeKind.toSyncChangeKind()) }
 
     override fun save(change: Change<Long>): Completable = Completable.fromAction {
         localDB.changesDao().saveChange(ChangeTable(change.changeKind.toChangeKind(), change.itemId))

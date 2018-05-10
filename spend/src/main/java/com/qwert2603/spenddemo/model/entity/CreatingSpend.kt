@@ -2,7 +2,7 @@ package com.qwert2603.spenddemo.model.entity
 
 import java.util.*
 
-data class CreatingRecord(
+data class CreatingSpend(
         val kind: String,
         val value: Int,
         val date: Date?
@@ -10,5 +10,5 @@ data class CreatingRecord(
     fun getDateNN() = date ?: Date()
 }
 
-fun CreatingRecord.toRecord(id: Long) = Record(id, kind, value, getDateNN())
-fun Record.toCreatingRecord() = CreatingRecord(kind, value, date)
+fun CreatingSpend.toSpend(id: Long) = Spend(id, kind, value, getDateNN())
+fun Spend.toCreatingSpend() = CreatingSpend(kind, value, date)

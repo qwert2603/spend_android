@@ -1,10 +1,10 @@
 package com.qwert2603.spenddemo.model.remote_db.sql_wrapper
 
-import com.qwert2603.spenddemo.model.syncprocessor.RemoteRecord
+import com.qwert2603.spenddemo.model.syncprocessor.RemoteSpend
 import java.sql.ResultSet
 
-class RemoteRecordSqlWrapper(resultSet: ResultSet) {
-    val record = RemoteRecord(
+class RemoteSpendSqlWrapper(resultSet: ResultSet) {
+    val spend = RemoteSpend(
             resultSet.getLong("id"),
             resultSet.getString("kind"),
             resultSet.getInt("value"),

@@ -4,7 +4,7 @@ import com.qwert2603.andrlib.model.IdentifiableLong
 
 data class Change(
         val changeKind: ChangeKind,
-        val recordId: Long
+        val spendId: Long
 ) : IdentifiableLong {
-    override val id = recordId
+    override val id = spendId
 }

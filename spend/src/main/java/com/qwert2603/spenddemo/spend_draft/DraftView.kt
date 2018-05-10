@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.draft
+package com.qwert2603.spenddemo.spend_draft
 
 import com.qwert2603.andrlib.base.mvi.BaseView
 import io.reactivex.Observable

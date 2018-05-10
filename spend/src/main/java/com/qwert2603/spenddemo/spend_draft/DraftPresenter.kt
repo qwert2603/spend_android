@@ -1,9 +1,9 @@
-package com.qwert2603.spenddemo.draft
+package com.qwert2603.spenddemo.spend_draft
 
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.spenddemo.model.entity.CreatingRecord
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.utils.secondOfTwo
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -16,7 +16,7 @@ class DraftPresenter @Inject constructor(
 ) : BasePresenter<DraftView, DraftViewState>(uiSchedulerProvider) {
 
     override val initialState = DraftViewState(
-            creatingRecord = CreatingRecord(
+            creatingSpend = CreatingSpend(
                     kind = "",
                     value = 0,
                     date = null
@@ -24,7 +24,7 @@ class DraftPresenter @Inject constructor(
             createEnable = false
     )
 
-    private val loadDraft: Observable<CreatingRecord> = intent { it.viewCreated() }
+    private val loadDraft: Observable<CreatingSpend> = intent { it.viewCreated() }
             .switchMapSingle { draftInteractor.getDraft() }
             .share()
 
@@ -35,25 +35,25 @@ class DraftPresenter @Inject constructor(
     private val onKindSelectedIntent = intent { it.onKindSelected() }.share()
     private val onKindSuggestionSelectedIntent = intent { it.onKindSuggestionSelected() }.share()
 
-    private val draftChanges: Observable<CreatingRecord> = Observable
+    private val draftChanges: Observable<CreatingSpend> = Observable
             .merge(
                     loadDraft
                             .map { draft ->
-                                { _: CreatingRecord -> draft }
+                                { _: CreatingSpend -> draft }
                             },
                     Observable
                             .merge(listOf(
                                     onDateSelectedIntent
                                             .map { date ->
-                                                { r: CreatingRecord -> r.copy(date = date) }
+                                                { r: CreatingSpend -> r.copy(date = date) }
                                             },
                                     kingChangesIntent
                                             .map { kind ->
-                                                { r: CreatingRecord -> r.copy(kind = kind) }
+                                                { r: CreatingSpend -> r.copy(kind = kind) }
                                             },
                                     intent { it.valueChanges() }
                                             .map { value ->
-                                                { r: CreatingRecord -> r.copy(value = value) }
+                                                { r: CreatingSpend -> r.copy(value = value) }
                                             },
                                     Observable
                                             .merge(
@@ -64,17 +64,17 @@ class DraftPresenter @Inject constructor(
                                                 draftInteractor.getLastPriceOfKind(kind).map { Pair(kind, it) }
                                             }
                                             .map { (kind, lastPrice) ->
-                                                { r: CreatingRecord -> r.copy(kind = kind, value = lastPrice) }
+                                                { r: CreatingSpend -> r.copy(kind = kind, value = lastPrice) }
                                             },
                                     clearDraft
                                             .map {
-                                                { _: CreatingRecord -> initialState.creatingRecord }
+                                                { _: CreatingSpend -> initialState.creatingSpend }
                                             }
                             ))
                             .delaySubscription(loadDraft)
             )
-            .scan(initialState.creatingRecord, { creatingRecord: CreatingRecord, change: (CreatingRecord) -> CreatingRecord ->
-                change(creatingRecord)
+            .scan(initialState.creatingSpend, { creatingSpend: CreatingSpend, change: (CreatingSpend) -> CreatingSpend ->
+                change(creatingSpend)
             })
             .skip(1) // skip initialValue in scan.
             .share()
@@ -132,7 +132,7 @@ class DraftPresenter @Inject constructor(
                 .withLatestFrom(draftChanges, secondOfTwo())
                 .filter { draftInteractor.isCreatable(it) }
                 .switchMapCompletable {
-                    draftInteractor.createRecord(it)
+                    draftInteractor.createSpend(it)
                             .doOnComplete { clearDraft.onNext(Any()) }
                             .doOnComplete { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
                 }

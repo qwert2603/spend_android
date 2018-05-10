@@ -4,7 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
-import com.qwert2603.spenddemo.model.entity.CreatingRecord
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
@@ -32,10 +32,6 @@ class RecordsListPresenter @Inject constructor(
 
     private val viewCreated = intent { it.viewCreated() }.share()
 
-    private val recordsStateChanges = recordsListInteractor.recordsState()
-            .delaySubscription(viewCreated)
-            .share()
-
     private val showDateSumsChanges = intent { it.showDateSumsChanges() }
             .doOnNext { recordsListInteractor.setShowDateSums(it) }
             .share()
@@ -51,10 +47,11 @@ class RecordsListPresenter @Inject constructor(
             .share()
             .startWith(recordsListInteractor.isShowProfits())
 
-    private val spendsListChanges = recordsStateChanges
-            .map { recordsState ->
-                recordsState.records.map {
-                    it.toRecordUI(recordsState.syncStatuses[it.id]!!, recordsState.changeKinds[it.id])
+    private val spendsListChanges = recordsListInteractor.spendsState()
+            .delaySubscription(viewCreated)
+            .map { spendsState ->
+                spendsState.spends.map {
+                    it.toSpendUI(spendsState.syncStatuses[it.id]!!, spendsState.changeKinds[it.id])
                 }
             }
             .share()
@@ -90,18 +87,18 @@ class RecordsListPresenter @Inject constructor(
                             showProfitsChanges,
                             makeQuint()
                     )
-                    .map { (recordsList, profitsList, showDateSums, showSpends, showProfits) ->
-                        val recordsByDate = if (showSpends) recordsList.groupBy { it.date.onlyDate() } else emptyMap()
+                    .map { (spendsList, profitsList, showDateSums, showSpends, showProfits) ->
+                        val spendsByDate = if (showSpends) spendsList.groupBy { it.date.onlyDate() } else emptyMap()
                         val profitsByDate = if (showProfits) profitsList.groupBy { it.date.onlyDate() } else emptyMap()
-                        (recordsByDate.keys union profitsByDate.keys)
+                        (spendsByDate.keys union profitsByDate.keys)
                                 .sortedDescending()
                                 .map { date ->
-                                    (profitsByDate[date] plusNN recordsByDate[date])
+                                    (profitsByDate[date] plusNN spendsByDate[date])
                                             .let {
                                                 if (showDateSums) {
                                                     it + DateSumUI(
                                                             date,
-                                                            recordsByDate[date]?.sumByLong { it.value.toLong() },
+                                                            spendsByDate[date]?.sumByLong { it.value.toLong() },
                                                             profitsByDate[date]?.sumByLong { it.value.toLong() }
                                                     )
                                                 } else {
@@ -110,7 +107,7 @@ class RecordsListPresenter @Inject constructor(
                                             }
                                 }
                                 .flatten()
-                                .plus(createTotalsItem(recordsList, profitsList, showProfits, showSpends))
+                                .plus(createTotalsItem(spendsList, profitsList, showProfits, showSpends))
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             intent { it.showIdsChanges() }
@@ -144,7 +141,7 @@ class RecordsListPresenter @Inject constructor(
         return when (change) {
             is RecordsListPartialChange.RecordsListUpdated -> vs.copy(
                     records = change.records,
-                    changesCount = change.records.count { (it as? RecordUI)?.changeKind != null }
+                    changesCount = change.records.count { (it as? SpendUI)?.changeKind != null }
             )
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
@@ -162,26 +159,26 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.MoveToChangesScreen) }
                 .subscribeToView()
 
-        intent { it.editRecordClicks() }
+        intent { it.editSpendClicks() }
                 .filter { it.canEdit }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it)) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditSpend(it)) }
                 .subscribeToView()
 
-        intent { it.deleteRecordClicks() }
+        intent { it.deleteSpendClicks() }
                 .filter { it.canDelete }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.id)) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteSpend(it.id)) }
                 .subscribeToView()
 
-        intent { it.deleteRecordConfirmed() }
-                .doOnNext { recordsListInteractor.deleteRecord(it) }
+        intent { it.deleteSpendConfirmed() }
+                .doOnNext { recordsListInteractor.deleteSpend(it) }
                 .subscribeToView()
 
-        intent { it.editRecordConfirmed() }
-                .doOnNext { recordsListInteractor.editRecord(it) }
+        intent { it.editSpendConfirmed() }
+                .doOnNext { recordsListInteractor.editSpend(it) }
                 .subscribeToView()
 
-        recordsListInteractor.recordCreatedEvents()
-                .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToRecordAndHighlight(it.id)) }
+        recordsListInteractor.spendCreatedEvents()
+                .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToSpendAndHighlight(it.id)) }
                 .subscribeToView()
 
         intent { it.sendRecordsClicks() }
@@ -215,7 +212,7 @@ class RecordsListPresenter @Inject constructor(
                     Observable.interval(100, TimeUnit.MILLISECONDS)
                             .take(20)
                             .doOnNext {
-                                recordsListInteractor.addRecord(CreatingRecord(
+                                recordsListInteractor.addSpend(CreatingSpend(
                                         kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
                                         value = random.nextInt(1000) + 1,
                                         date = Date() - (random.nextInt(21)).days
@@ -243,7 +240,7 @@ class RecordsListPresenter @Inject constructor(
         intent { it.clearAllClicks() }
                 .flatMap {
                     recordsListInteractor.removeAllProfits()
-                            .doOnComplete { recordsListInteractor.deleteAllRecords() }
+                            .doOnComplete { recordsListInteractor.deleteAllSpends() }
                             .toObservable<Any>()
                             .doAfterTerminate { reloadProfits.onNext(Any()) }
                 }
@@ -251,17 +248,17 @@ class RecordsListPresenter @Inject constructor(
     }
 
     private fun createTotalsItem(
-            recordsList: List<RecordUI>,
+            spendsList: List<SpendUI>,
             profitsList: List<ProfitUI>,
             showProfits: Boolean,
             showSpends: Boolean
     ): TotalsUi {
-        val spendsSum = recordsList.sumByLong { it.value.toLong() }
+        val spendsSum = spendsList.sumByLong { it.value.toLong() }
         val profitsSum = profitsList.sumByLong { it.value.toLong() }
         return TotalsUi(
                 showProfits = showProfits,
                 showSpends = showSpends,
-                spendsCount = recordsList.size,
+                spendsCount = spendsList.size,
                 spendsSum = spendsSum,
                 profitsCount = profitsList.size,
                 profitsSum = profitsSum,

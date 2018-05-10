@@ -10,7 +10,7 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class ChangesListPresenter @Inject constructor(
-        private val recordsListInteractor: ChangesListInteractor,
+        private val changesListInteractor: ChangesListInteractor,
         uiSchedulerProvider: UiSchedulerProvider
 ) : ListPresenter<Any, List<Change>, ChangesListModel, ChangesListView, Change>(uiSchedulerProvider) {
 
@@ -20,7 +20,7 @@ class ChangesListPresenter @Inject constructor(
 
     override fun ChangesListModel.addNextPage(nextPage: List<Change>) = null!!
 
-    override fun initialModelSingle(additionalKey: Any): Single<List<Change>> = recordsListInteractor.getAllChanges()
+    override fun initialModelSingle(additionalKey: Any): Single<List<Change>> = changesListInteractor.getAllChanges()
 
     override fun nextPageSingle(): Single<Page<Change>> = Single.error(Exception("No more pages! All changes should be loaded via initialModelSingle."))
 

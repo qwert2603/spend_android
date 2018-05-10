@@ -1,8 +1,6 @@
 package com.qwert2603.spenddemo.di
 
-import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Room
-import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
@@ -33,16 +31,6 @@ class ModelModule {
     @Singleton
     fun localDB(appContext: Context) = Room
             .databaseBuilder(appContext, LocalDB::class.java, "local_db")
-            .addMigrations(object : Migration(1, 2) {
-                override fun migrate(database: SupportSQLiteDatabase) {
-                    database.execSQL(
-                            "CREATE TABLE IF NOT EXISTS `ProfitTable` (`id` INTEGER NOT NULL, `kind` TEXT NOT NULL, `value` INTEGER NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`id`))"
-                    )
-                    database.execSQL(
-                            "CREATE  INDEX `index_ProfitTable_date` ON `ProfitTable` (`date`)"
-                    )
-                }
-            })
             .build()
 
     @Provides
@@ -63,7 +51,7 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun remoteItemsDataSource(remoteDBFacade: RemoteDBFacade): RemoteItemsDataSource<Long, SyncingRecord, RemoteRecord> =
+    fun remoteItemsDataSource(remoteDBFacade: RemoteDBFacade): RemoteItemsDataSource<Long, SyncingSpend, RemoteSpend> =
             when (BuildConfig.SERVER_TYPE) {
                 ServerType.NO_SERVER -> StubRemoteItemsDataSource()
                 ServerType.SERVER_TEST -> RemoteItemsDataSourceImpl(remoteDBFacade)
@@ -91,18 +79,18 @@ class ModelModule {
     @Provides
     @Singleton
     fun syncProcessor(
-            remoteItemsDataSource: RemoteItemsDataSource<Long, SyncingRecord, RemoteRecord>,
-            localItemsDataSource: LocalItemsDataSource<Long, SyncingRecord>,
+            remoteItemsDataSource: RemoteItemsDataSource<Long, SyncingSpend, RemoteSpend>,
+            localItemsDataSource: LocalItemsDataSource<Long, SyncingSpend>,
             localChangesDataSource: LocalChangesDataSource<Long>,
             logger: Logger,
             lastUpdateRepo: LastUpdateRepo
-    ): ISyncProcessor<Long, SyncingRecord> = SyncProcessor(
+    ): ISyncProcessor<Long, SyncingSpend> = SyncProcessor(
             remoteItemsDataSource = remoteItemsDataSource,
             localItemsDataSource = localItemsDataSource,
             localChangesDataSource = localChangesDataSource,
             lastUpdateRepo = lastUpdateRepo,
             logger = logger,
-            r2t = RemoteRecord::toSyncingRecord,
+            r2t = RemoteSpend::toSyncingSpend,
             sortFun = { it.sortedByDescending({ it.date }, { it.id }) }
     )
 }

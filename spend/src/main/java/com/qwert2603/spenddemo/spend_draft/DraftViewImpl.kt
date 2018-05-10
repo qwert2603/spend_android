@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.draft
+package com.qwert2603.spenddemo.spend_draft
 
 import android.animation.LayoutTransition
 import android.app.Activity
@@ -15,7 +15,7 @@ import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
+import com.qwert2603.spenddemo.dialogs.ChooseSpendKindDialogFragment
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragment
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.navigation.KeyboardManager
@@ -25,7 +25,7 @@ import com.qwert2603.spenddemo.utils.mapToInt
 import com.qwert2603.spenddemo.utils.toFormattedString
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.view_draft.view.*
+import kotlinx.android.synthetic.main.view_spend_draft.view.*
 import java.util.*
 
 class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
@@ -51,7 +51,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     override lateinit var dialogShower: DialogAwareView.DialogShower
 
     init {
-        inflate(R.layout.view_draft, attachToRoot = true)
+        inflate(R.layout.view_spend_draft, attachToRoot = true)
         draft_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
@@ -59,7 +59,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
             REQUEST_CODE_DATE -> onDateSelected.onNext(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
-            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseKindDialogFragment.KIND_KEY))
+            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseSpendKindDialogFragment.KIND_KEY))
         }
     }
 
@@ -91,10 +91,10 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     override fun render(vs: DraftViewState) {
         super.render(vs)
-        kindEditText.setText(vs.creatingRecord.kind)
+        kindEditText.setText(vs.creatingSpend.kind)
         valueEditText.setText(vs.valueString)
-        date_EditText.setText(vs.creatingRecord.getDateNN().toFormattedString(resources))
-        date_EditText.setTextColor(resources.color(if (vs.creatingRecord.date != null) android.R.color.black else R.color.date_default))
+        date_EditText.setText(vs.creatingSpend.getDateNN().toFormattedString(resources))
+        date_EditText.setTextColor(resources.color(if (vs.creatingSpend.date != null) android.R.color.black else R.color.date_default))
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }
@@ -122,7 +122,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
-            DraftViewAction.AskToSelectKind -> ChooseKindDialogFragment()
+            DraftViewAction.AskToSelectKind -> ChooseSpendKindDialogFragment()
                     .also { dialogShower.showDialog(it, REQUEST_CODE_KIND) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.ShowKindSuggestions -> {

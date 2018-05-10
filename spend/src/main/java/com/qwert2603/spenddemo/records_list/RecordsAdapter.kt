@@ -8,12 +8,12 @@ import com.qwert2603.andrlib.util.Const
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.records_list.vhs.ProfitViewHolder
-import com.qwert2603.spenddemo.records_list.vhs.RecordViewHolder
+import com.qwert2603.spenddemo.records_list.vhs.SpendViewHolder
 import com.qwert2603.spenddemo.records_list.vhs.TotalsViewHolder
 
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {
-        const val VIEW_TYPE_RECORD = 1
+        const val VIEW_TYPE_SPEND = 1
         const val VIEW_TYPE_DATE_SUM = 2
         const val VIEW_TYPE_PROFIT = 3
         const val VIEW_TYPE_TOTALS = 4
@@ -24,7 +24,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     var showDatesInRecords = true
 
     override fun getItemViewTypeModel(m: RecordsListItem) = when (m) {
-        is RecordUI -> VIEW_TYPE_RECORD
+        is SpendUI -> VIEW_TYPE_SPEND
         is DateSumUI -> VIEW_TYPE_DATE_SUM
         is ProfitUI -> VIEW_TYPE_PROFIT
         is TotalsUi -> VIEW_TYPE_TOTALS
@@ -33,7 +33,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
 
     // because both spend's and profit's ids start from 1L.
     override fun getItemIdModel(m: RecordsListItem) = when (m) {
-        is RecordUI -> m.id + 10_000_000L
+        is SpendUI -> m.id + 10_000_000L
         is DateSumUI -> m.date.time / Const.MILLIS_PER_DAY + 30_000_000L
         is ProfitUI -> m.id + 20_000_000L
         is TotalsUi -> 1918L
@@ -42,7 +42,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolderModel(parent: ViewGroup, viewType: Int) = when (viewType) {
-        VIEW_TYPE_RECORD -> RecordViewHolder(parent)
+        VIEW_TYPE_SPEND -> SpendViewHolder(parent)
         VIEW_TYPE_DATE_SUM -> DateSumViewHolder(parent)
         VIEW_TYPE_PROFIT -> ProfitViewHolder(parent)
         VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)

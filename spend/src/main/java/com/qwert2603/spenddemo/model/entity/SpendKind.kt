@@ -4,7 +4,7 @@ import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.andrlib.model.hashCodeLong
 import java.util.*
 
-data class Kind(
+data class SpendKind(
         val kind: String,
         val spendsCount: Int,
         val lastPrice: Int,

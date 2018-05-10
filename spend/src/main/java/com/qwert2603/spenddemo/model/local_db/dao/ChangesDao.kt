@@ -9,15 +9,15 @@ import io.reactivex.Single
 
 @Dao
 interface ChangesDao {
-    @Query("SELECT * FROM ChangeTable ORDER BY recordId")
+    @Query("SELECT * FROM ChangeTable ORDER BY spendId")
     fun getAllChanges(): Single<List<ChangeTable>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveChange(changeTable: ChangeTable)
 
-    @Query("DELETE FROM ChangeTable WHERE recordId = :recordId")
-    fun removeChange(recordId: Long)
+    @Query("DELETE FROM ChangeTable WHERE spendId = :spendId")
+    fun removeChange(spendId: Long)
 
-    @Query("DELETE FROM ChangeTable WHERE recordId IN (:recordIds)")
-    fun removeChanges(recordIds: List<Long>)
+    @Query("DELETE FROM ChangeTable WHERE spendId IN (:spendIds)")
+    fun removeChanges(spendIds: List<Long>)
 }

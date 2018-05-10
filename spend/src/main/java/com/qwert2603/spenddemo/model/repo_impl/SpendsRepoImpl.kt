@@ -2,10 +2,10 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import android.content.Context
 import com.qwert2603.spenddemo.model.entity.*
-import com.qwert2603.spenddemo.model.repo.RecordsRepo
-import com.qwert2603.spenddemo.model.syncprocessor.SyncingRecord
-import com.qwert2603.spenddemo.model.syncprocessor.toRecord
-import com.qwert2603.spenddemo.model.syncprocessor.toSyncingRecord
+import com.qwert2603.spenddemo.model.repo.SpendsRepo
+import com.qwert2603.spenddemo.model.syncprocessor.SyncingSpend
+import com.qwert2603.spenddemo.model.syncprocessor.toSpend
+import com.qwert2603.spenddemo.model.syncprocessor.toSyncingSpend
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.PrefsCounter
 import com.qwert2603.syncprocessor.ISyncProcessor
@@ -16,42 +16,42 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RecordsRepoImpl @Inject constructor(
-        private val syncProcessor: ISyncProcessor<Long, SyncingRecord>,
+class SpendsRepoImpl @Inject constructor(
+        private val syncProcessor: ISyncProcessor<Long, SyncingSpend>,
         appContext: Context
-) : RecordsRepo {
+) : SpendsRepo {
 
     private val localIdCounter = PrefsCounter(
             prefs = appContext.getSharedPreferences("spends.prefs", Context.MODE_PRIVATE),
             key = "last_spend_local_id"
     )
 
-    override fun addRecord(creatingRecord: CreatingRecord) {
+    override fun addSpend(creatingSpend: CreatingSpend) {
         val localId = localIdCounter.getNext()
-        val localRecord = creatingRecord.toRecord(localId)
-        syncProcessor.addItem(localRecord.toSyncingRecord())
+        val localSpend = creatingSpend.toSpend(localId)
+        syncProcessor.addItem(localSpend.toSyncingSpend())
     }
 
-    override fun editRecord(record: Record) {
-        syncProcessor.editItem(record.toSyncingRecord())
+    override fun editSpend(spend: Spend) {
+        syncProcessor.editItem(spend.toSyncingSpend())
     }
 
-    override fun removeRecord(recordId: Long) {
-        syncProcessor.removeItem(recordId)
+    override fun removeSpend(spendId: Long) {
+        syncProcessor.removeItem(spendId)
     }
 
-    override fun removeAllRecords() {
+    override fun removeAllSpends() {
         // todo: OMG =\
         syncProcessor.itemsState()
                 .blockingFirst()
                 .items
-                .forEach { removeRecord(it.id) }
+                .forEach { removeSpend(it.id) }
     }
 
-    override fun recordsState(): Observable<RecordsState> = syncProcessor.itemsState()
+    override fun spendsState(): Observable<SpendsState> = syncProcessor.itemsState()
             .map { itemsState ->
-                RecordsState(
-                        itemsState.items.map { it.toRecord() },
+                SpendsState(
+                        itemsState.items.map { it.toSpend() },
                         itemsState.items.map {
                             Pair(it.id, when {
                                 it.id in itemsState.syncingItems -> SyncStatus.SYNCING
@@ -63,15 +63,15 @@ class RecordsRepoImpl @Inject constructor(
                 )
             }
 
-    override fun recordCreatedEvents(): Observable<Record> = syncProcessor.itemEvents()
+    override fun spendCreatedEvents(): Observable<Spend> = syncProcessor.itemEvents()
             .filter { it.second == ItemEvent.CREATED_LOCALLY }
-            .map { it.first.toRecord() }
+            .map { it.first.toSpend() }
 
-    override fun getDumpText(): Single<String> = recordsState()
+    override fun getDumpText(): Single<String> = spendsState()
             .firstOrError()
             .map {
-                if (it.records.isEmpty()) return@map "nth"
-                it.records
+                if (it.spends.isEmpty()) return@map "nth"
+                it.spends
                         .reversed()
                         .map {
                             listOf(

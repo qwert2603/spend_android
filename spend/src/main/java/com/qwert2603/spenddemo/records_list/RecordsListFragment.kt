@@ -19,18 +19,18 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
-import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
-import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.records_list.entity.SpendUI
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import kotlinx.android.synthetic.main.view_draft.view.*
+import kotlinx.android.synthetic.main.view_spend_draft.view.*
 import ru.terrakok.cicerone.Router
 import java.sql.Date
 import javax.inject.Inject
@@ -38,8 +38,8 @@ import javax.inject.Inject
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
 
     companion object {
-        private const val REQUEST_DELETE_RECORD = 1
-        private const val REQUEST_EDIT_RECORD = 2
+        private const val REQUEST_DELETE_SPEND = 1
+        private const val REQUEST_EDIT_SPEND = 2
         private const val REQUEST_ADD_PROFIT = 3
         private const val REQUEST_EDIT_PROFIT = 4
         private const val REQUEST_DELETE_PROFIT = 5
@@ -72,8 +72,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private var optionsMenu: Menu? = null
 
-    private val deleteRecordConfirmed = PublishSubject.create<Long>()
-    private val editRecordConfirmed = PublishSubject.create<Record>()
+    private val deleteSpendConfirmed = PublishSubject.create<Long>()
+    private val editSpendConfirmed = PublishSubject.create<Spend>()
     private val addProfitConfirmed = PublishSubject.create<CreatingProfit>()
     private val editProfitConfirmed = PublishSubject.create<Profit>()
     private val deleteProfitConfirmed = PublishSubject.create<Long>()
@@ -94,7 +94,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         records_RecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         records_RecyclerView.adapter = adapter
-        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_PROFIT, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_DATE_SUM, 20)
         records_RecyclerView.itemAnimator = RecordsListAnimator()
@@ -155,12 +155,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
-                REQUEST_DELETE_RECORD -> deleteRecordConfirmed.onNext(data.getLongExtra(DeleteRecordDialogFragment.ID_KEY, 0))
-                REQUEST_EDIT_RECORD -> editRecordConfirmed.onNext(Record(
-                        data.getLongExtra(EditRecordDialogFragment.ID_KEY, 0),
-                        data.getStringExtra(EditRecordDialogFragment.KIND_KEY),
-                        data.getIntExtra(EditRecordDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(EditRecordDialogFragment.DATE_KEY, 0L))
+                REQUEST_DELETE_SPEND -> deleteSpendConfirmed.onNext(data.getLongExtra(DeleteSpendDialogFragment.ID_KEY, 0))
+                REQUEST_EDIT_SPEND -> editSpendConfirmed.onNext(Spend(
+                        data.getLongExtra(EditSpendDialogFragment.ID_KEY, 0),
+                        data.getStringExtra(EditSpendDialogFragment.KIND_KEY),
+                        data.getIntExtra(EditSpendDialogFragment.VALUE_KEY, 0),
+                        Date(data.getLongExtra(EditSpendDialogFragment.DATE_KEY, 0L))
                 ))
                 REQUEST_ADD_PROFIT -> addProfitConfirmed.onNext(CreatingProfit(
                         data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
@@ -180,17 +180,17 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun viewCreated(): Observable<Any> = Observable.just(Any())
 
-    override fun editRecordClicks(): Observable<RecordUI> = adapter.modelItemClicks
-            .castAndFilter(RecordUI::class.java)
+    override fun editSpendClicks(): Observable<SpendUI> = adapter.modelItemClicks
+            .castAndFilter(SpendUI::class.java)
 
-    override fun deleteRecordClicks(): Observable<RecordUI> = adapter.modelItemLongClicks
-            .castAndFilter(RecordUI::class.java)
+    override fun deleteSpendClicks(): Observable<SpendUI> = adapter.modelItemLongClicks
+            .castAndFilter(SpendUI::class.java)
 
     override fun showChangesClicks(): Observable<Any> = showChangesClicks
 
-    override fun deleteRecordConfirmed(): Observable<Long> = deleteRecordConfirmed
+    override fun deleteSpendConfirmed(): Observable<Long> = deleteSpendConfirmed
 
-    override fun editRecordConfirmed(): Observable<Record> = editRecordConfirmed
+    override fun editSpendConfirmed(): Observable<Spend> = editSpendConfirmed
 
     override fun sendRecordsClicks(): Observable<Any> = sendRecordsClicks
 
@@ -276,18 +276,18 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         @Suppress("IMPLICIT_CAST_TO_ANY")
         when (va) {
             RecordsListViewAction.MoveToChangesScreen -> router.navigateTo(ScreenKey.CHANGES_LIST.name)
-            is RecordsListViewAction.AskToDeleteRecord -> DeleteRecordDialogFragmentBuilder.newDeleteRecordDialogFragment(va.id)
-                    .also { it.setTargetFragment(this, REQUEST_DELETE_RECORD) }
+            is RecordsListViewAction.AskToDeleteSpend -> DeleteSpendDialogFragmentBuilder.newDeleteSpendDialogFragment(va.id)
+                    .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
                     .show(fragmentManager, "delete_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            is RecordsListViewAction.AskToEditRecord -> EditRecordDialogFragmentBuilder
-                    .newEditRecordDialogFragment(va.record.date.time, va.record.id, va.record.kind, va.record.value)
-                    .also { it.setTargetFragment(this, REQUEST_EDIT_RECORD) }
+            is RecordsListViewAction.AskToEditSpend -> EditSpendDialogFragmentBuilder
+                    .newEditSpendDialogFragment(va.spend.date.time, va.spend.id, va.spend.kind, va.spend.value)
+                    .also { it.setTargetFragment(this, REQUEST_EDIT_SPEND) }
                     .show(fragmentManager, "edit_record")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            is RecordsListViewAction.ScrollToRecordAndHighlight -> {
+            is RecordsListViewAction.ScrollToSpendAndHighlight -> {
                 currentViewState.records
-                        .indexOfFirst { it is RecordUI && it.id == va.recordId }
+                        .indexOfFirst { it is SpendUI && it.id == va.spendId }
                         .takeIf { it >= 0 }
                         ?.let {
                             records_RecyclerView.scrollToPosition(it)
@@ -317,7 +317,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }
                         .also { it.type = "text/plain" }
                         .let { Intent.createChooser(it, context?.getString(R.string.send_title)) }
-                        .apply { context?.startActivity(this) }
+                        .apply { requireActivity().startActivity(this) }
             }
             RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")

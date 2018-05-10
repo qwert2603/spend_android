@@ -1,6 +1,6 @@
 package com.qwert2603.spenddemo.di.presenters
 
-import com.qwert2603.spenddemo.draft.DraftPresenter
+import com.qwert2603.spenddemo.spend_draft.DraftPresenter
 import dagger.Subcomponent
 
 @Subcomponent

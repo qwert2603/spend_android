@@ -3,21 +3,21 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BaseView
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
-import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
-import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.records_list.entity.SpendUI
 import io.reactivex.Observable
 
 interface RecordsListView : BaseView<RecordsListViewState> {
     fun viewCreated(): Observable<Any>
 
-    fun editRecordClicks(): Observable<RecordUI>
-    fun deleteRecordClicks(): Observable<RecordUI>
+    fun editSpendClicks(): Observable<SpendUI>
+    fun deleteSpendClicks(): Observable<SpendUI>
 
     fun showChangesClicks(): Observable<Any>
 
-    fun deleteRecordConfirmed(): Observable<Long>
-    fun editRecordConfirmed(): Observable<Record>
+    fun deleteSpendConfirmed(): Observable<Long>
+    fun editSpendConfirmed(): Observable<Spend>
 
     fun sendRecordsClicks(): Observable<Any>
     fun showAboutClicks(): Observable<Any>

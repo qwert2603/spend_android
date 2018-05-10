@@ -10,12 +10,12 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list.RecordsAdapter
-import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.records_list.entity.SpendUI
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toFormattedString
-import kotlinx.android.synthetic.main.item_record.view.*
+import kotlinx.android.synthetic.main.item_spend.view.*
 
-class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(parent, R.layout.item_record) {
+class SpendViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<SpendUI>(parent, R.layout.item_spend) {
 
     init {
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -27,7 +27,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<RecordUI>(par
         )
     }
 
-    override fun bind(m: RecordUI) = with(itemView) {
+    override fun bind(m: SpendUI) = with(itemView) {
         super.bind(m)
 
         val showIds = (adapter as? RecordsAdapter)?.showIds ?: true

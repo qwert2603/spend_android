@@ -14,10 +14,10 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.records_list.vhs.RecordViewHolder
+import com.qwert2603.spenddemo.records_list.vhs.SpendViewHolder
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
-import kotlinx.android.synthetic.main.item_record.view.*
+import kotlinx.android.synthetic.main.item_spend.view.*
 import java.util.concurrent.ConcurrentHashMap
 
 class RecordsListAnimator : DefaultItemAnimator() {
@@ -84,7 +84,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
 
         val recyclerView = oldHolder.itemView.parent as View
         val spendOrigin = spendOrigin
-        if (oldHolder is RecordViewHolder && spendOrigin != null) {
+        if (oldHolder is SpendViewHolder && spendOrigin != null) {
 
             // todo: don't do it.
             recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()

@@ -2,13 +2,13 @@ package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
-import com.qwert2603.spenddemo.records_list.entity.RecordUI
+import com.qwert2603.spenddemo.records_list.entity.SpendUI
 
 sealed class RecordsListViewAction : ViewAction {
     object MoveToChangesScreen : RecordsListViewAction()
-    data class AskToDeleteRecord(val id: Long) : RecordsListViewAction()
-    data class AskToEditRecord(val record: RecordUI) : RecordsListViewAction()
-    data class ScrollToRecordAndHighlight(val recordId: Long) : RecordsListViewAction()
+    data class AskToDeleteSpend(val id: Long) : RecordsListViewAction()
+    data class AskToEditSpend(val spend: SpendUI) : RecordsListViewAction()
+    data class ScrollToSpendAndHighlight(val spendId: Long) : RecordsListViewAction()
     data class ScrollToProfitAndHighlight(val profitId: Long) : RecordsListViewAction()
     data class SendRecords(val text: String) : RecordsListViewAction()
     object ShowAbout : RecordsListViewAction()

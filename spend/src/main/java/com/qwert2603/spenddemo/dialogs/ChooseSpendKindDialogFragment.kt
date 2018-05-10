@@ -15,20 +15,20 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.entity.Kind
-import com.qwert2603.spenddemo.model.repo.KindsRepo
+import com.qwert2603.spenddemo.model.entity.SpendKind
+import com.qwert2603.spenddemo.model.repo.SpendKindsRepo
 import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_spend_kind.view.*
 import javax.inject.Inject
 
-class ChooseKindDialogFragment : DialogFragment() {
+class ChooseSpendKindDialogFragment : DialogFragment() {
 
     companion object {
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
     }
 
     @Inject
-    lateinit var kindsRepo: KindsRepo
+    lateinit var spendKindsRepo: SpendKindsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -36,7 +36,7 @@ class ChooseKindDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val kinds = kindsRepo.getAllKinds()
+        val kinds = spendKindsRepo.getAllKinds()
                 .firstOrError()
                 .blockingGet()
 
@@ -55,7 +55,7 @@ class ChooseKindDialogFragment : DialogFragment() {
 
     }
 
-    private class SpendKindsAdapter(context: Context, spendKinds: List<Kind>) : ArrayAdapter<Kind>(context, 0, spendKinds) {
+    private class SpendKindsAdapter(context: Context, spendSpendKinds: List<SpendKind>) : ArrayAdapter<SpendKind>(context, 0, spendSpendKinds) {
         @SuppressLint("SetTextI18n")
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = convertView ?: parent.inflate(R.layout.item_spend_kind)

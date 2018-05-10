@@ -7,5 +7,5 @@ import io.reactivex.Single
 interface ChangesRepo {
     fun getAllChanges(): Single<List<Change>>
     fun saveChange(change: Change): Completable
-    fun removeChange(recordId: Long): Completable
+    fun removeChange(spendId: Long): Completable
 }

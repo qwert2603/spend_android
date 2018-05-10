@@ -2,7 +2,7 @@ package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
-import com.qwert2603.spenddemo.model.repo.RecordsRepo
+import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -11,34 +11,34 @@ import io.reactivex.functions.BiFunction
 import javax.inject.Inject
 
 class RecordsListInteractor @Inject constructor(
-        private val recordsRepo: RecordsRepo,
+        private val spendsRepo: SpendsRepo,
         private val userSettingsRepo: UserSettingsRepo,
         private val profitsRepo: ProfitsRepo
 ) {
 
-    fun addRecord(creatingRecord: CreatingRecord) {
-        recordsRepo.addRecord(creatingRecord)
+    fun addSpend(creatingSpend: CreatingSpend) {
+        spendsRepo.addSpend(creatingSpend)
     }
 
-    fun deleteRecord(id: Long) {
-        recordsRepo.removeRecord(id)
+    fun deleteSpend(id: Long) {
+        spendsRepo.removeSpend(id)
     }
 
-    fun editRecord(record: Record) {
-        recordsRepo.editRecord(record)
+    fun editSpend(spend: Spend) {
+        spendsRepo.editSpend(spend)
     }
 
-    fun deleteAllRecords() {
-        recordsRepo.removeAllRecords()
+    fun deleteAllSpends() {
+        spendsRepo.removeAllSpends()
     }
 
-    fun recordsState(): Observable<RecordsState> = recordsRepo.recordsState()
+    fun spendsState(): Observable<SpendsState> = spendsRepo.spendsState()
 
-    fun recordCreatedEvents(): Observable<Record> = recordsRepo.recordCreatedEvents()
+    fun spendCreatedEvents(): Observable<Spend> = spendsRepo.spendCreatedEvents()
 
     fun getRecordsTextToSend(): Single<String> = Single
             .zip(
-                    recordsRepo.getDumpText(),
+                    spendsRepo.getDumpText(),
                     profitsRepo.getDumpText(),
                     BiFunction { spends, profits -> "SPENDS:\n$spends\n\nPROFITS:\n$profits" }
             )

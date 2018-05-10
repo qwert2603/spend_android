@@ -19,6 +19,6 @@ class ChangeViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<Change>(paren
             ChangeKind.DELETE -> R.color.local_change_delete
         }))
 
-        recordId_TextView.text = m.recordId.toString()
+        spendId_TextView.text = m.spendId.toString()
     }
 }

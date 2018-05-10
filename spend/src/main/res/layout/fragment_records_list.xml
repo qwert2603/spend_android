@@ -26,7 +26,7 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             tools:itemCount="20"
-            tools:listitem="@layout/item_record" />
+            tools:listitem="@layout/item_spend" />
 
         <LinearLayout
             android:id="@+id/draftPanel_LinearLayout"
@@ -40,7 +40,7 @@
                 android:layout_height="2dp"
                 android:background="@drawable/shadow" />
 
-            <com.qwert2603.spenddemo.draft.DraftViewImpl
+            <com.qwert2603.spenddemo.spend_draft.DraftViewImpl
                 android:id="@+id/draftViewImpl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
