@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.model.IdentifiableLong
+import com.qwert2603.andrlib.util.Const
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.records_list.vhs.ProfitViewHolder
@@ -27,6 +28,15 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
         is DateSumUI -> VIEW_TYPE_DATE_SUM
         is ProfitUI -> VIEW_TYPE_PROFIT
         is TotalsUi -> VIEW_TYPE_TOTALS
+        else -> null!!
+    }
+
+    // because both spend's and profit's ids start from 1L.
+    override fun getItemIdModel(m: RecordsListItem) = when (m) {
+        is RecordUI -> m.id + 10_000_000L
+        is DateSumUI -> m.date.time / Const.MILLIS_PER_DAY + 30_000_000L
+        is ProfitUI -> m.id + 20_000_000L
+        is TotalsUi -> 1918L
         else -> null!!
     }
 

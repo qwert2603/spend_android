@@ -221,7 +221,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
         renderIfChangedThree({ Triple(showIds, showChangeKinds, showDateSums) }) { adapter.notifyDataSetChanged() }
 
-        adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records)
+        renderIfChanged({ records }) { adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(it) }
 
         if (!wasRecreated && vs.records.size > 1) {
             renderIfChanged({ records }) {
@@ -236,22 +236,24 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         // todo: show changesCount on menuItem's icon.
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
 
-        toolbar.subtitle = getString(R.string.text_balance_30_days_format, vs.balance30Days)
+        renderIfChanged({ balance30Days }) { toolbar.subtitle = getString(R.string.text_balance_30_days_format, it) }
 
         optionsMenu?.apply {
-            findItem(R.id.show_local_changes).isVisible = vs.showChangeKinds && vs.changesCount > 0
-            findItem(R.id.show_ids).isChecked = vs.showIds
-            findItem(R.id.show_change_kinds).isChecked = vs.showChangeKinds
-            findItem(R.id.show_date_sums).isChecked = vs.showDateSums
-            findItem(R.id.show_spends).isChecked = vs.showSpends
-            findItem(R.id.show_spends).isEnabled = vs.showSpendsEnable()
-            findItem(R.id.show_profits).isChecked = vs.showProfits
-            findItem(R.id.show_profits).isEnabled = vs.showProfitsEnable()
-            findItem(R.id.new_profit).isVisible = vs.newProfitVisible()
+            renderIfChanged({ showChangeKinds && changesCount > 0 }) { findItem(R.id.show_local_changes).isVisible = it }
+            renderIfChanged({ showIds }) { findItem(R.id.show_ids).isChecked = it }
+            renderIfChanged({ showChangeKinds }) { findItem(R.id.show_change_kinds).isChecked = it }
+            renderIfChanged({ showDateSums }) { findItem(R.id.show_date_sums).isChecked = it }
+            renderIfChanged({ showSpends }) { findItem(R.id.show_spends).isChecked = it }
+            renderIfChanged({ showSpendsEnable() }) { findItem(R.id.show_spends).isEnabled = it }
+            renderIfChanged({ showProfits }) { findItem(R.id.show_profits).isChecked = it }
+            renderIfChanged({ showProfitsEnable() }) { findItem(R.id.show_profits).isEnabled = it }
+            renderIfChanged({ newProfitVisible() }) { findItem(R.id.new_profit).isVisible = it }
         }
 
-        draftPanel_LinearLayout.setVisible(vs.newSpendVisible())
-        if (!vs.newSpendVisible()) (context as KeyboardManager).hideKeyboard()
+        renderIfChanged({ newSpendVisible() }) {
+            draftPanel_LinearLayout.setVisible(it)
+            if (!it) (context as KeyboardManager).hideKeyboard()
+        }
     }
 
     override fun executeAction(va: ViewAction) {
