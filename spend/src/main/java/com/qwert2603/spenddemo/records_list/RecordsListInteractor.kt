@@ -70,6 +70,7 @@ class RecordsListInteractor @Inject constructor(
 
     fun getAllProfits(): Single<List<Profit>> = profitsRepo.getAllProfits()
     fun addProfit(creatingProfit: CreatingProfit): Single<Long> = profitsRepo.addProfit(creatingProfit)
+    fun editProfit(profit: Profit): Completable = profitsRepo.editProfit(profit)
     fun removeProfit(profitId: Long): Completable = profitsRepo.removeProfit(profitId)
     fun removeAllProfits(): Completable = profitsRepo.removeAllProfits()
 }

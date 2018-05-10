@@ -18,6 +18,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
@@ -40,7 +41,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         private const val REQUEST_DELETE_RECORD = 1
         private const val REQUEST_EDIT_RECORD = 2
         private const val REQUEST_ADD_PROFIT = 3
-        private const val REQUEST_DELETE_PROFIT = 4
+        private const val REQUEST_EDIT_PROFIT = 4
+        private const val REQUEST_DELETE_PROFIT = 5
     }
 
     private val adapter = RecordsAdapter()
@@ -73,6 +75,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val deleteRecordConfirmed = PublishSubject.create<Long>()
     private val editRecordConfirmed = PublishSubject.create<Record>()
     private val addProfitConfirmed = PublishSubject.create<CreatingProfit>()
+    private val editProfitConfirmed = PublishSubject.create<Profit>()
     private val deleteProfitConfirmed = PublishSubject.create<Long>()
 
     private var wasRecreated = false
@@ -93,6 +96,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_RECORD, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_PROFIT, 20)
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_DATE_SUM, 20)
         records_RecyclerView.itemAnimator = RecordsListAnimator()
                 .also {
                     it.spendOrigin = object : RecordsListAnimator.SpendOrigin {
@@ -163,6 +167,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
                         Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0))
                 ))
+                REQUEST_EDIT_PROFIT -> editProfitConfirmed.onNext(Profit(
+                        data.getLongExtra(AddProfitDialogFragment.ID_KEY, 0),
+                        data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
+                        data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
+                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0L))
+                ))
                 REQUEST_DELETE_PROFIT -> deleteProfitConfirmed.onNext(data.getLongExtra(DeleteProfitDialogFragment.ID_KEY, 0))
             }
         }
@@ -198,10 +208,15 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun addProfitClicks(): Observable<Any> = addProfitClicks
 
+    override fun editProfitClicks(): Observable<ProfitUI> = adapter.modelItemClicks
+            .castAndFilter(ProfitUI::class.java)
+
     override fun deleteProfitClicks(): Observable<ProfitUI> = adapter.modelItemLongClicks
             .castAndFilter(ProfitUI::class.java)
 
     override fun addProfitConfirmed(): Observable<CreatingProfit> = addProfitConfirmed
+
+    override fun editProfitConfirmed(): Observable<Profit> = editProfitConfirmed
 
     override fun deleteProfitConfirmed(): Observable<Long> = deleteProfitConfirmed
 
@@ -307,9 +322,18 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")
                     .also { (context as KeyboardManager).hideKeyboard() }
-            RecordsListViewAction.OpenAddProfitDialog -> AddProfitDialogFragment()
+            RecordsListViewAction.OpenAddProfitDialog -> AddProfitDialogFragmentBuilder.newAddProfitDialogFragment(true)
                     .also { it.setTargetFragment(this, REQUEST_ADD_PROFIT) }
                     .show(fragmentManager, "add_profit")
+                    .also { (context as KeyboardManager).hideKeyboard() }
+            is RecordsListViewAction.AskToEditProfit -> AddProfitDialogFragmentBuilder(false)
+                    .id(va.profitUI.id)
+                    .kind(va.profitUI.kind)
+                    .value(va.profitUI.value)
+                    .date(va.profitUI.date.time)
+                    .build()
+                    .also { it.setTargetFragment(this, REQUEST_EDIT_PROFIT) }
+                    .show(fragmentManager, "edit_profit")
                     .also { (context as KeyboardManager).hideKeyboard() }
             is RecordsListViewAction.AskToDeleteProfit -> DeleteProfitDialogFragmentBuilder.newDeleteProfitDialogFragment(va.id)
                     .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }

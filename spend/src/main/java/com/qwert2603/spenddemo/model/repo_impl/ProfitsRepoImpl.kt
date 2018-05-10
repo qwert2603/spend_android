@@ -43,6 +43,10 @@ class ProfitsRepoImpl @Inject constructor(
             }
             .subscribeOn(modelSchedulersProvider.io)
 
+    override fun editProfit(profit: Profit): Completable = Completable
+            .fromAction { localDB.profitsDao().editProfit(profit.toProfitTable()) }
+            .subscribeOn(modelSchedulersProvider.io)
+
     override fun removeProfit(profitId: Long): Completable = Completable
             .fromAction { localDB.profitsDao().removeProfit(profitId) }
             .subscribeOn(modelSchedulersProvider.io)

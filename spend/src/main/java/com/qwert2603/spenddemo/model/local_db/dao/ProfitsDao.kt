@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.model.local_db.dao
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import io.reactivex.Single
@@ -13,6 +14,9 @@ interface ProfitsDao {
 
     @Insert
     fun addProfit(profit: ProfitTable)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun editProfit(profit: ProfitTable)
 
     @Query("DELETE FROM ProfitTable WHERE id = :id")
     fun removeProfit(id: Long)

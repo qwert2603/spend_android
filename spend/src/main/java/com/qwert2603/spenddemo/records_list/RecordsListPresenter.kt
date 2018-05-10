@@ -62,7 +62,7 @@ class RecordsListPresenter @Inject constructor(
     private val reloadProfits = PublishSubject.create<Any>()
 
     private val profitsListChanges = Observable
-            .merge(
+            .merge(listOf(
                     viewCreated,
                     intent { it.addProfitConfirmed() }
                             .flatMapSingle {
@@ -70,10 +70,12 @@ class RecordsListPresenter @Inject constructor(
                                         .addProfit(it)
                                         .doAfterSuccess { viewActions.onNext(RecordsListViewAction.ScrollToProfitAndHighlight(it)) }
                             },
+                    intent { it.editProfitConfirmed() }
+                            .flatMapSingle { recordsListInteractor.editProfit(it).toSingleDefault(Unit) },
                     intent { it.deleteProfitConfirmed() }
                             .flatMapSingle { recordsListInteractor.removeProfit(it).toSingleDefault(Unit) },
                     reloadProfits
-            )
+            ))
             .switchMapSingle { recordsListInteractor.getAllProfits() }
             .map { it.map { it.toProfitUI() } }
             .share()
@@ -196,6 +198,10 @@ class RecordsListPresenter @Inject constructor(
 
         intent { it.addProfitClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.OpenAddProfitDialog) }
+                .subscribeToView()
+
+        intent { it.editProfitClicks() }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditProfit(it)) }
                 .subscribeToView()
 
         intent { it.deleteProfitClicks() }

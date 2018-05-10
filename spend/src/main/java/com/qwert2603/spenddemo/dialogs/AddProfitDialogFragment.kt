@@ -10,6 +10,8 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
+import com.hannesdorfmann.fragmentargs.annotation.Arg
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
@@ -22,9 +24,11 @@ import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_add_profit.view.*
 import java.util.*
 
+@FragmentWithArgs
 class AddProfitDialogFragment : DialogFragment() {
 
     companion object {
+        const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
         const val DATE_KEY = "${BuildConfig.APPLICATION_ID}.DATE_KEY"
         const val VALUE_KEY = "${BuildConfig.APPLICATION_ID}.VALUE_KEY"
@@ -34,6 +38,17 @@ class AddProfitDialogFragment : DialogFragment() {
         private const val REQUEST_DATE = 2
     }
 
+    @Arg(required = true)
+    var newProfit: Boolean = true
+    @Arg(required = false)
+    var id: Long = 0
+    @Arg(required = false)
+    var kind: String = ""
+    @Arg(required = false)
+    var date: Long = 0
+    @Arg(required = false)
+    var value: Int = 0
+
     private lateinit var dialogView: View
 
     private var selectedDate by BundleLong(SELECTED_DATE_KEY, { arguments!! })
@@ -41,7 +56,7 @@ class AddProfitDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
-        selectedDate = System.currentTimeMillis()
+        selectedDate = if (newProfit) System.currentTimeMillis() else date
     }
 
     @SuppressLint("InflateParams")
@@ -49,6 +64,10 @@ class AddProfitDialogFragment : DialogFragment() {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_profit, null)
         dialogView.apply {
             date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+            if (!newProfit) {
+                kind_EditText.setText(kind)
+                value_EditText.setText(value.toString())
+            }
 
             date_EditText.setOnClickListener {
                 DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
@@ -88,9 +107,9 @@ class AddProfitDialogFragment : DialogFragment() {
                     })
         }
         return AlertDialog.Builder(requireContext())
-                .setTitle(R.string.create_profit_text)
+                .setTitle(if (newProfit) R.string.create_profit_text else R.string.edit_profit_text)
                 .setView(dialogView)
-                .setPositiveButton(R.string.text_create, { _, _ -> sendResult() })
+                .setPositiveButton(if (newProfit) R.string.text_create else R.string.text_edit, { _, _ -> sendResult() })
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
     }
@@ -115,6 +134,7 @@ class AddProfitDialogFragment : DialogFragment() {
                         .putExtra(KIND_KEY, dialogView.kind_EditText.text.toString())
                         .putExtra(DATE_KEY, selectedDate)
                         .putExtra(VALUE_KEY, dialogView.value_EditText.text.toString().toInt())
+                        .also { if (!newProfit) it.putExtra(ID_KEY, id) }
         )
     }
 }

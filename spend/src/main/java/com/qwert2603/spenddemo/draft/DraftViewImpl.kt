@@ -31,8 +31,8 @@ import java.util.*
 class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
 
     companion object {
-        private const val REQUEST_CODE_DATE = 5
-        private const val REQUEST_CODE_KIND = 6
+        private const val REQUEST_CODE_DATE = 11
+        private const val REQUEST_CODE_KIND = 12
     }
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent

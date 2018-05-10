@@ -11,6 +11,8 @@ interface ProfitsRepo {
     /** #@return id of created profit */
     fun addProfit(creatingProfit: CreatingProfit): Single<Long>
 
+    fun editProfit(profit: Profit): Completable
+
     fun removeProfit(profitId: Long): Completable
 
     fun removeAllProfits(): Completable
