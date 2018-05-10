@@ -25,8 +25,13 @@ class SpendDemoApplication : Application() {
             }
         }
 
-        LogUtils.logType = LogUtils.LogType.ANDROID
+        LogUtils.logType = if (BuildConfig.DEBUG) {
+            LogUtils.LogType.ANDROID
+        } else {
+            LogUtils.LogType.ANDROID_ERRORS
+        }
     }
 
     // todo: App Shortcuts for frequent spends.
+    // TODO: !!!! BACK UP SPENDS IN PROD APP BEFORE UPDATING.
 }
