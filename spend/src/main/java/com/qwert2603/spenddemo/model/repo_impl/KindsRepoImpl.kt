@@ -45,7 +45,14 @@ class KindsRepoImpl @Inject constructor(
                         .groupBy { it.kind }
                         .map { it.value }
                         .sortedByDescending { it.size }
-                        .map { it.maxBy { it.date }!! }
-                        .map { Kind(it.kind, it.value, it.date) }
+                        .map { it.maxBy { it.date }!! to it.size }
+                        .map { (lastSpend, count) ->
+                            Kind(
+                                    kind = lastSpend.kind,
+                                    spendsCount = count,
+                                    lastPrice = lastSpend.value,
+                                    lastDate = lastSpend.date
+                            )
+                        }
             }
 }

@@ -6,6 +6,7 @@ import java.util.*
 
 data class Kind(
         val kind: String,
+        val spendsCount: Int,
         val lastPrice: Int,
         val lastDate: Date
 ) : IdentifiableLong {
