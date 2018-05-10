@@ -15,10 +15,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.utils.BundleLong
-import com.qwert2603.spenddemo.utils.UserInputEditText
-import com.qwert2603.spenddemo.utils.mapToInt
-import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_add_profit.view.*
@@ -35,6 +32,7 @@ class AddProfitDialogFragment : DialogFragment() {
 
         private const val SELECTED_DATE_KEY = "SELECTED_DATE_KEY"
 
+        private const val REQUEST_KIND = 1
         private const val REQUEST_DATE = 2
     }
 
@@ -70,7 +68,9 @@ class AddProfitDialogFragment : DialogFragment() {
             }
 
             kind_EditText.setOnLongClickListener {
-                // todo: choose kind.
+                ChooseProfitKindDialogFragment()
+                        .also { it.setTargetFragment(this@AddProfitDialogFragment, REQUEST_KIND) }
+                        .show(fragmentManager, "choose_kind")
                 true
             }
             date_EditText.setOnClickListener {
@@ -92,23 +92,6 @@ class AddProfitDialogFragment : DialogFragment() {
                     .mapToInt()
                     .filter { it == 0 }
                     .subscribe { userInputValueEditText.setText("") }
-
-            Observable
-                    .combineLatest(
-                            RxTextView.textChanges(kind_EditText)
-                                    .map { it.toString() },
-                            RxTextView.textChanges(value_EditText)
-                                    .map { it.toString() }
-                                    .mapToInt(),
-                            BiFunction { kind: String, value: Int ->
-                                kind.isNotBlank() && value > 0
-                            }
-                    )
-                    .subscribe({
-                        (dialog as? AlertDialog)
-                                ?.getButton(AlertDialog.BUTTON_POSITIVE)
-                                ?.isEnabled = it
-                    })
         }
         return AlertDialog.Builder(requireContext())
                 .setTitle(if (newProfit) R.string.create_profit_text else R.string.edit_profit_text)
@@ -116,11 +99,37 @@ class AddProfitDialogFragment : DialogFragment() {
                 .setPositiveButton(if (newProfit) R.string.text_create else R.string.text_edit, { _, _ -> sendResult() })
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
+                .also {
+                    it.setOnShowListener {
+                        Observable
+                                .combineLatest(
+                                        RxTextView.textChanges(dialogView.kind_EditText)
+                                                .map { it.toString() },
+                                        RxTextView.textChanges(dialogView.value_EditText)
+                                                .map { it.toString() }
+                                                .mapToInt(),
+                                        BiFunction { kind: String, value: Int ->
+                                            kind.isNotBlank() && value > 0
+                                        }
+                                )
+                                .subscribe({
+                                    (dialog as? AlertDialog)
+                                            ?.getButton(AlertDialog.BUTTON_POSITIVE)
+                                            ?.isEnabled = it
+                                })
+                    }
+                }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
+                REQUEST_KIND -> {
+                    val kind = data.getStringExtra(ChooseProfitKindDialogFragment.KIND_KEY)
+                    dialogView.kind_EditText.setText(kind)
+                    dialogView.value_EditText.requestFocus()
+                    dialogView.value_EditText.selectEnd()
+                }
                 REQUEST_DATE -> {
                     selectedDate = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)
                     dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))

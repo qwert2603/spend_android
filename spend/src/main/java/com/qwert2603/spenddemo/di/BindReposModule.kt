@@ -14,4 +14,5 @@ interface BindReposModule {
     @Binds fun bind3(repo: DraftRepoImpl): DraftRepo
     @Binds fun bind4(repo: UserSettingsRepoImpl): UserSettingsRepo
     @Binds fun bind5(repo: ProfitsRepoImpl): ProfitsRepo
+    @Binds fun bind6(repo: ProfitKindsRepoImpl): ProfitKindsRepo
 }

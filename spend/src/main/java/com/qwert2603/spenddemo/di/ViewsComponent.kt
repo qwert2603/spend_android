@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.di
 
 import com.qwert2603.spenddemo.dialogs.ChooseKindDialogFragment
+import com.qwert2603.spenddemo.dialogs.ChooseProfitKindDialogFragment
 import com.qwert2603.spenddemo.dialogs.DeleteProfitDialogFragment
 import com.qwert2603.spenddemo.dialogs.DeleteRecordDialogFragment
 import com.qwert2603.spenddemo.navigation.MainActivity
@@ -14,4 +15,5 @@ interface ViewsComponent {
     fun inject(chooseKindDialogFragment: ChooseKindDialogFragment)
     fun inject(deleteRecordDialogFragment: DeleteRecordDialogFragment)
     fun inject(deleteProfitDialogFragment: DeleteProfitDialogFragment)
+    fun inject(chooseProfitKindDialogFragment: ChooseProfitKindDialogFragment)
 }

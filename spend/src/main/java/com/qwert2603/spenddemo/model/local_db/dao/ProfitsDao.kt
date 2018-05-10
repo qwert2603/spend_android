@@ -23,4 +23,7 @@ interface ProfitsDao {
 
     @Query("DELETE FROM ProfitTable")
     fun removeAllProfits()
+
+    @Query("SELECT kind FROM ProfitTable GROUP BY kind ORDER BY count(id) DESC")
+    fun getKinds(): Single<List<String>>
 }
