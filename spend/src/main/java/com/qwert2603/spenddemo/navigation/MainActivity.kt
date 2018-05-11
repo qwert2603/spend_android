@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.navigation
 
 import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -14,6 +15,7 @@ import android.widget.EditText
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.dialogs.AppInfoDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
@@ -49,7 +51,18 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
             router.newRootScreen(ScreenKey.RECORDS_LIST.name)
         }
 
+        if (savedInstanceState == null && intent.action == Intent.ACTION_VIEW) {
+            AppInfoDialogFragment().show(supportFragmentManager, "about")
+        }
+
         lifecycle.addObserver(navigatorHolder.createLifecycleObserver(navigator))
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == "android.intent.action.VIEW") {
+            AppInfoDialogFragment().show(supportFragmentManager, "about")
+        }
     }
 
     override fun onBackPressed() {
