@@ -90,9 +90,9 @@ class RecordsListAnimator : DefaultItemAnimator() {
             recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()
 
             listOf(
-                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_TextView),
-                    createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView),
-                    createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView)
+                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_TextView, 100),
+                    createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView, 170),
+                    createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView, 240)
             ).forEach {
                 animators.add(it.first)
                 resetActions.add(it.second)
@@ -129,7 +129,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
         super.endAnimations()
     }
 
-    private fun createTranslationAnimator(originGlobalVisibleRect: Rect, target: View): Pair<Animator, () -> Unit> {
+    private fun createTranslationAnimator(originGlobalVisibleRect: Rect, target: View, delay: Long): Pair<Animator, () -> Unit> {
         val targetGlobalVisibleRect = target.getGlobalVisibleRectRightNow()
         val translationXDate = (originGlobalVisibleRect.left - targetGlobalVisibleRect.left).toFloat()
         val translationYDate = (originGlobalVisibleRect.centerY() - targetGlobalVisibleRect.centerY()).toFloat()
@@ -145,7 +145,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
         return ObjectAnimator
                 .ofFloat(target, "translationX", "translationY", pathDate)
                 .setDuration(500)
-                .also { it.startDelay = 100 }
+                .also { it.startDelay = delay }
                 .also { it.interpolator = AccelerateDecelerateInterpolator() }
                 .doOnEnd(resetAction)
                 .let { Pair(it, resetAction) }
