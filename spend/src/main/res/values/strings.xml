@@ -67,4 +67,7 @@
     <string name="test_add_stub_spends">20 stub spends</string>
     <string name="test_add_stub_profits">200 stub profits</string>
     <string name="text_clear_all">clear all</string>
+
+    <string name="text_source_code">source code</string>
+    <string name="text_source_code_long">source code on github.com</string>
 </resources>

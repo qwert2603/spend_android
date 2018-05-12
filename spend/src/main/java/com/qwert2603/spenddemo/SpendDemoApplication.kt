@@ -32,6 +32,7 @@ class SpendDemoApplication : Application() {
         }
     }
 
+    // todo: stat screen.
     // todo: App Shortcuts for frequent spends.
     // TODO: !!!! BACK UP SPENDS IN PROD APP BEFORE UPDATING.
 }

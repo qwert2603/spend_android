@@ -74,7 +74,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
 
                                         localDataSender.send(Completable.concat(listOf(
                                                 updatedItems
-                                                        .filter { inMemoryStateHolder.state.value.changes[it.id]?.changeKind != ChangeKind.EDIT }
+                                                        .filter { inMemoryStateHolder.state.value?.changes?.get(it.id)?.changeKind != ChangeKind.EDIT }
                                                         .map { localItemsDataSource.save(it) }
                                                         .let { Completable.concat(it) },
                                                 removedItemIds
@@ -126,7 +126,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
     override fun editItem(item: T) {
         //todo: keep Set<item#id> in ItemsState.
         if (!isExistingItem(item.id)) return
-        when (inMemoryStateHolder.state.value.changes[item.id]?.changeKind) {
+        when (inMemoryStateHolder.state.value?.changes?.get(item.id)?.changeKind) {
             ChangeKind.DELETE -> return
             ChangeKind.CREATE -> addItem(item)
             else -> {
@@ -155,7 +155,7 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
 
     override fun removeItem(itemId: I) {
         if (!isExistingItem(itemId)) return
-        when (inMemoryStateHolder.state.value.changes[itemId]?.changeKind) {
+        when (inMemoryStateHolder.state.value?.changes?.get(itemId)?.changeKind) {
             ChangeKind.DELETE -> return
             ChangeKind.CREATE -> {
                 inMemoryStateHolder.changeState(ItemsStatePartialChange.ItemDeletedCompletely(itemId))
@@ -203,8 +203,10 @@ class SyncProcessor<I : Any, T : Identifiable<I>, R>(
         }
     }
 
-    private fun isExistingItem(id: I) = id in inMemoryStateHolder.state.value.items.map { it.id }
+    private fun isExistingItem(id: I): Boolean {
+        val ids = inMemoryStateHolder.state.value?.items?.map { it.id } ?: return false
+        return id in ids
+    }
 
-    private fun isChangeActual(id: I, timedChange: TimedChange)
-            = true// inMemoryStateHolder.state.value.changes[id] == timedChange
+    private fun isChangeActual(id: I, timedChange: TimedChange) = true// inMemoryStateHolder.state.value.changes[id] == timedChange
 }

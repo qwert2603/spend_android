@@ -1,11 +1,24 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_about"
+        android:icon="@drawable/icon"
         android:shortcutId="about"
         android:shortcutShortLabel="@string/about_text">
         <intent
             android:action="android.intent.action.VIEW"
+            android:targetPackage="@string/app_package"
             android:targetClass="com.qwert2603.spenddemo.navigation.MainActivity" />
     </shortcut>
+
+    <shortcut
+        android:icon="@drawable/github"
+        android:shortcutId="source_code"
+        android:shortcutLongLabel="@string/text_source_code_long"
+        android:shortcutShortLabel="@string/text_source_code">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/qwert2603/SpendDemo" />
+    </shortcut>
+
 </shortcuts>

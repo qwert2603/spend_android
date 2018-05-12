@@ -342,3 +342,4 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }.also { }
     }
 }
+//todo: month sums
