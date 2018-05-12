@@ -25,6 +25,7 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun showIdsChanges(): Observable<Boolean>
     fun showChangeKindsChanges(): Observable<Boolean>
     fun showDateSumsChanges(): Observable<Boolean>
+    fun showMonthSumsChanges(): Observable<Boolean>
     fun showSpendsChanges(): Observable<Boolean>
     fun showProfitsChanges(): Observable<Boolean>
 

@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import kotlin.math.absoluteValue
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
         crossinline first: (T) -> R1,
@@ -42,3 +43,17 @@ inline fun <T> Iterable<T>.sumByLong(crossinline selector: (T) -> Long): Long {
     }
     return sum
 }
+
+fun Long.toPointedString(): String {
+    val negative = this < 0
+    val absString = this.absoluteValue.toString().reversed()
+    val stringBuilder = StringBuilder()
+    absString.forEachIndexed { index, c ->
+        stringBuilder.append(c)
+        if (index % 3 == 2 && index != absString.lastIndex) stringBuilder.append('.')
+    }
+    if (negative) stringBuilder.append('-')
+    return stringBuilder.toString().reversed()
+}
+
+fun String.zeroToEmpty() = if (this == "0") "" else this

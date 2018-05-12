@@ -63,6 +63,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val showIdsChanges = PublishSubject.create<Boolean>()
     private val showChangeKindsChanges = PublishSubject.create<Boolean>()
     private val showDateSumsChanges = PublishSubject.create<Boolean>()
+    private val showMonthSumsChanges = PublishSubject.create<Boolean>()
     private val showSpendsChanges = PublishSubject.create<Boolean>()
     private val showProfitsChanges = PublishSubject.create<Boolean>()
     private val addProfitClicks = PublishSubject.create<Any>()
@@ -92,6 +93,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // todo: select spends/profits and delete selected. (? recycler view selection library)
         records_RecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsAdapter.VIEW_TYPE_SPEND, 20)
@@ -134,6 +136,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menu.findItem(R.id.show_ids).checkedChanges().subscribeWith(showIdsChanges)
         menu.findItem(R.id.show_change_kinds).checkedChanges().subscribeWith(showChangeKindsChanges)
         menu.findItem(R.id.show_date_sums).checkedChanges().subscribeWith(showDateSumsChanges)
+        menu.findItem(R.id.show_month_sums).checkedChanges().subscribeWith(showMonthSumsChanges)
         menu.findItem(R.id.show_spends).checkedChanges().subscribeWith(showSpendsChanges)
         menu.findItem(R.id.show_profits).checkedChanges().subscribeWith(showProfitsChanges)
         RxMenuItem.clicks(menu.findItem(R.id.add_stub_spends)).subscribeWith(addStubSpendsClicks)
@@ -202,6 +205,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun showDateSumsChanges(): Observable<Boolean> = showDateSumsChanges
 
+    override fun showMonthSumsChanges(): Observable<Boolean> = showMonthSumsChanges
+
     override fun showSpendsChanges(): Observable<Boolean> = showSpendsChanges
 
     override fun showProfitsChanges(): Observable<Boolean> = showProfitsChanges
@@ -251,17 +256,20 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         // todo: show changesCount on menuItem's icon.
 //        toolbar.title = getString(R.string.app_name) + if (vs.showChangeKinds && vs.changesCount > 0) " (${vs.changesCount})" else ""
 
-        renderIfChanged({ balance30Days }) { toolbar.subtitle = getString(R.string.text_balance_30_days_format, it) }
+        renderIfChanged({ balance30Days }) { toolbar.subtitle = getString(R.string.text_balance_30_days_format, it.toPointedString()) }
 
         optionsMenu?.apply {
             renderIfChanged({ showChangeKinds && changesCount > 0 }) { findItem(R.id.show_local_changes).isVisible = it }
             renderIfChanged({ showIds }) { findItem(R.id.show_ids).isChecked = it }
             renderIfChanged({ showChangeKinds }) { findItem(R.id.show_change_kinds).isChecked = it }
             renderIfChanged({ showDateSums }) { findItem(R.id.show_date_sums).isChecked = it }
+            renderIfChanged({ showMonthSums }) { findItem(R.id.show_month_sums).isChecked = it }
             renderIfChanged({ showSpends }) { findItem(R.id.show_spends).isChecked = it }
-            renderIfChanged({ showSpendsEnable() }) { findItem(R.id.show_spends).isEnabled = it }
             renderIfChanged({ showProfits }) { findItem(R.id.show_profits).isChecked = it }
+            renderIfChanged({ showSpendsEnable() }) { findItem(R.id.show_spends).isEnabled = it }
             renderIfChanged({ showProfitsEnable() }) { findItem(R.id.show_profits).isEnabled = it }
+            renderIfChanged({ showDateSumsEnable() }) { findItem(R.id.show_date_sums).isEnabled = it }
+            renderIfChanged({ showMonthSumsEnable() }) { findItem(R.id.show_month_sums).isEnabled = it }
             renderIfChanged({ newProfitVisible() }) { findItem(R.id.new_profit).isVisible = it }
         }
 
@@ -342,4 +350,3 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }.also { }
     }
 }
-//todo: month sums

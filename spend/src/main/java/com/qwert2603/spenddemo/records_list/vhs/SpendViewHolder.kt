@@ -13,6 +13,8 @@ import com.qwert2603.spenddemo.records_list.RecordsAdapter
 import com.qwert2603.spenddemo.records_list.entity.SpendUI
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.toPointedString
+import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_spend.view.*
 
 class SpendViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<SpendUI>(parent, R.layout.item_spend) {
@@ -55,7 +57,7 @@ class SpendViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<SpendUI>(paren
         id_TextView.text = m.id.toString()
         date_TextView.text = m.date.toFormattedString(resources)
         kind_TextView.text = m.kind
-        value_TextView.text = m.value.toString()
+        value_TextView.text = m.value.toLong().toPointedString().zeroToEmpty()
 
         isClickable = m.canEdit
         isLongClickable = m.canDelete

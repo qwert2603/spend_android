@@ -3,15 +3,17 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.spenddemo.model.entity.CreatingProfit
-import com.qwert2603.spenddemo.model.entity.CreatingSpend
-import com.qwert2603.spenddemo.records_list.entity.*
-import com.qwert2603.spenddemo.utils.*
+import com.qwert2603.spenddemo.records_list.entity.SpendUI
+import com.qwert2603.spenddemo.records_list.entity.toProfitUI
+import com.qwert2603.spenddemo.records_list.entity.toSpendUI
+import com.qwert2603.spenddemo.utils.makeSextuple
+import com.qwert2603.spenddemo.utils.onlyDate
+import com.qwert2603.spenddemo.utils.plusDays
+import com.qwert2603.spenddemo.utils.sumByLong
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RecordsListPresenter @Inject constructor(
@@ -25,6 +27,7 @@ class RecordsListPresenter @Inject constructor(
             showChangeKinds = false,
             showIds = false,
             showDateSums = false,
+            showMonthSums = false,
             showProfits = false,
             showSpends = false,
             balance30Days = 0
@@ -36,6 +39,11 @@ class RecordsListPresenter @Inject constructor(
             .doOnNext { recordsListInteractor.setShowDateSums(it) }
             .share()
             .startWith(recordsListInteractor.isShowDateSums())
+
+    private val showMonthSumsChanges = intent { it.showMonthSumsChanges() }
+            .doOnNext { recordsListInteractor.setShowMonthSums(it) }
+            .share()
+            .startWith(recordsListInteractor.isShowMonthSums())
 
     private val showSpendsChanges = intent { it.showSpendsChanges() }
             .doOnNext { recordsListInteractor.setShowSpends(it) }
@@ -83,31 +91,13 @@ class RecordsListPresenter @Inject constructor(
                             spendsListChanges,
                             profitsListChanges,
                             showDateSumsChanges,
+                            showMonthSumsChanges,
                             showSpendsChanges,
                             showProfitsChanges,
-                            makeQuint()
+                            makeSextuple()
                     )
-                    .map { (spendsList, profitsList, showDateSums, showSpends, showProfits) ->
-                        val spendsByDate = if (showSpends) spendsList.groupBy { it.date.onlyDate() } else emptyMap()
-                        val profitsByDate = if (showProfits) profitsList.groupBy { it.date.onlyDate() } else emptyMap()
-                        (spendsByDate.keys union profitsByDate.keys)
-                                .sortedDescending()
-                                .map { date ->
-                                    (profitsByDate[date] plusNN spendsByDate[date])
-                                            .let {
-                                                if (showDateSums) {
-                                                    it + DateSumUI(
-                                                            date,
-                                                            spendsByDate[date]?.sumByLong { it.value.toLong() },
-                                                            profitsByDate[date]?.sumByLong { it.value.toLong() }
-                                                    )
-                                                } else {
-                                                    it
-                                                }
-                                            }
-                                }
-                                .flatten()
-                                .plus(createTotalsItem(spendsList, profitsList, showProfits, showSpends))
+                    .map { (spendsList, profitsList, showDateSums, showMonthSums, showSpends, showProfits) ->
+                        makeRecordsList(spendsList, profitsList, showDateSums, showMonthSums, showProfits, showSpends)
                     }
                     .map { RecordsListPartialChange.RecordsListUpdated(it) },
             intent { it.showIdsChanges() }
@@ -120,6 +110,8 @@ class RecordsListPresenter @Inject constructor(
                     .map { RecordsListPartialChange.ShowChangeKinds(it) },
             showDateSumsChanges
                     .map { RecordsListPartialChange.ShowDateSums(it) },
+            showMonthSumsChanges
+                    .map { RecordsListPartialChange.ShowMonthSums(it) },
             showSpendsChanges
                     .map { RecordsListPartialChange.ShowSpends(it) },
             showProfitsChanges
@@ -146,6 +138,7 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.ShowChangeKinds -> vs.copy(showChangeKinds = change.show)
             is RecordsListPartialChange.ShowIds -> vs.copy(showIds = change.show)
             is RecordsListPartialChange.ShowDateSums -> vs.copy(showDateSums = change.show)
+            is RecordsListPartialChange.ShowMonthSums -> vs.copy(showMonthSums = change.show)
             is RecordsListPartialChange.ShowSpends -> vs.copy(showSpends = change.show)
             is RecordsListPartialChange.ShowProfits -> vs.copy(showProfits = change.show)
             is RecordsListPartialChange.Balance30DaysChanged -> vs.copy(balance30Days = change.balance)
@@ -206,33 +199,12 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.addStubSpendsClicks() }
-                .flatMap {
-                    val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
-                    val random = Random()
-                    Observable.interval(100, TimeUnit.MILLISECONDS)
-                            .take(20)
-                            .doOnNext {
-                                recordsListInteractor.addSpend(CreatingSpend(
-                                        kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
-                                        value = random.nextInt(1000) + 1,
-                                        date = Date() - (random.nextInt(21)).days
-                                ))
-                            }
-                }
+                .flatMap { addStubSpends(recordsListInteractor, 20) }
                 .subscribeToView()
 
         intent { it.addStubProfitsClicks() }
                 .flatMap {
-                    val stubProfitKinds = listOf("стипендия", "зарплата", "аванс", "доход")
-                    val random = Random()
-                    Observable.range(0, 200)
-                            .concatMapSingle {
-                                recordsListInteractor.addProfit(CreatingProfit(
-                                        kind = stubProfitKinds[random.nextInt(stubProfitKinds.size)],
-                                        value = random.nextInt(10000) + 1,
-                                        date = Date() - (random.nextInt(21)).days
-                                ))
-                            }
+                    addStubProfits(recordsListInteractor, 200)
                             .doAfterTerminate { reloadProfits.onNext(Any()) }
                 }
                 .subscribeToView()
@@ -245,24 +217,5 @@ class RecordsListPresenter @Inject constructor(
                             .doAfterTerminate { reloadProfits.onNext(Any()) }
                 }
                 .subscribeToView()
-    }
-
-    private fun createTotalsItem(
-            spendsList: List<SpendUI>,
-            profitsList: List<ProfitUI>,
-            showProfits: Boolean,
-            showSpends: Boolean
-    ): TotalsUi {
-        val spendsSum = spendsList.sumByLong { it.value.toLong() }
-        val profitsSum = profitsList.sumByLong { it.value.toLong() }
-        return TotalsUi(
-                showProfits = showProfits,
-                showSpends = showSpends,
-                spendsCount = spendsList.size,
-                spendsSum = spendsSum,
-                profitsCount = profitsList.size,
-                profitsSum = profitsSum,
-                totalBalance = profitsSum - spendsSum
-        )
     }
 }

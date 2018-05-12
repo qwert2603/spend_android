@@ -58,6 +58,11 @@ class RecordsListInteractor @Inject constructor(
         userSettingsRepo.showDateSums = show
     }
 
+    fun isShowMonthSums() = userSettingsRepo.showMonthSums
+    fun setShowMonthSums(show: Boolean) {
+        userSettingsRepo.showMonthSums = show
+    }
+
     fun isShowSpends() = userSettingsRepo.showSpends
     fun setShowSpends(show: Boolean) {
         userSettingsRepo.showSpends = show

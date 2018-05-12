@@ -50,19 +50,20 @@
         ]]>
     </string>
 
-    <string name="text_balance_30_days_format" formatted="true">30 days balance: %d</string>
+    <string name="text_balance_30_days_format" formatted="true">30 days balance: %s</string>
 
     <string name="text_show_ids">ids</string>
     <string name="text_show_change_kinds">change kinds</string>
     <string name="text_show_spends">spends</string>
     <string name="text_show_profits">profits</string>
     <string name="text_show_date_sums">date sums</string>
+    <string name="text_show_month_sums">month sums</string>
     <string name="text_new_profit">new profit</string>
 
     <string name="text_all_records_loaded">all records loaded</string>
 
-    <string name="text_total_items_format" formatted="true">%s. sum is %d</string>
-    <string name="text_total_balance_format" formatted="true">total balance is %d</string>
+    <string name="text_total_items_format" formatted="true">%s. sum is %s</string>
+    <string name="text_total_balance_format" formatted="true">total balance is %s</string>
 
     <string name="test_add_stub_spends">20 stub spends</string>
     <string name="test_add_stub_profits">200 stub profits</string>

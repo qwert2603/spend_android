@@ -1,6 +1,8 @@
 package com.qwert2603.spenddemo.records_list.entity
 
-data class TotalsUi(
+import com.qwert2603.andrlib.model.IdentifiableLong
+
+data class TotalsUI(
         val showSpends: Boolean,
         val showProfits: Boolean,
         val spendsCount: Int,
@@ -9,5 +11,5 @@ data class TotalsUi(
         val profitsSum: Long,
         val totalBalance: Long
 ) : RecordsListItem {
-    override val id = 459267892756L
+    override val id = IdentifiableLong.NO_ID
 }

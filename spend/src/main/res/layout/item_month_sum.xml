@@ -3,20 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#EEEEEE"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="6dp">
 
     <TextView
-        android:id="@+id/date_TextView"
+        android:id="@+id/month_TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="12dp"
         android:layout_weight="1"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorAccentDark"
         android:textSize="16sp"
         android:textStyle="bold"
-        tools:text="today" />
+        tools:text="2018 march" />
 
     <TextView
         android:id="@+id/profitsSum_TextView"
@@ -24,17 +25,20 @@
         android:layout_height="wrap_content"
         android:textColor="@color/profit"
         android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="175" />
 
     <TextView
         android:id="@+id/spendsSum_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
         android:layout_marginStart="8dp"
         android:gravity="end"
-        android:minWidth="80sp"
+        android:minWidth="100sp"
         android:textColor="@color/spend"
         android:textSize="18sp"
-        tools:text="175" />
+        android:textStyle="bold"
+        tools:text="75.634" />
 
 </LinearLayout>

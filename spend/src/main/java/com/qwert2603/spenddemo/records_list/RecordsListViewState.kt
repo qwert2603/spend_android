@@ -8,12 +8,15 @@ data class RecordsListViewState(
         val showChangeKinds: Boolean,
         val showIds: Boolean,
         val showDateSums: Boolean,
+        val showMonthSums: Boolean,
         val showProfits: Boolean,
         val showSpends: Boolean,
         val balance30Days: Long
 ) {
-    fun showSpendsEnable() = showProfits
-    fun showProfitsEnable() = showSpends
+    fun showSpendsEnable() = showProfits || showDateSums || showMonthSums
+    fun showProfitsEnable() = showSpends || showDateSums || showMonthSums
+    fun showDateSumsEnable() = showSpends || showProfits || showMonthSums
+    fun showMonthSumsEnable() = showSpends || showProfits || showDateSums
     fun newProfitVisible() = showProfits
     fun newSpendVisible() = showSpends
 }

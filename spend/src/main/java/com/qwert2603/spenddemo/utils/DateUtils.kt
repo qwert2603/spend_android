@@ -19,6 +19,17 @@ fun Date.onlyDate(): Date = Calendar
         }
         .time
 
+fun Date.onlyMonth(): Date = Calendar
+        .getInstance()
+        .also { it.time = this }
+        .also {
+            it.set(Calendar.DAY_OF_MONTH, 1)
+            it.set(Calendar.HOUR_OF_DAY, 0)
+            it.set(Calendar.MINUTE, 0)
+            it.set(Calendar.SECOND, 0)
+            it.set(Calendar.MILLISECOND, 0)
+        }
+        .time
 
 fun Date.plusDays(days: Int) = Date(this.time + days * com.qwert2603.andrlib.util.Const.MILLIS_PER_DAY)
 

@@ -10,6 +10,8 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.records_list.RecordsAdapter
 import com.qwert2603.spenddemo.records_list.entity.ProfitUI
 import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.toPointedString
+import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_profit.view.*
 
 class ProfitViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<ProfitUI>(parent, R.layout.item_profit) {
@@ -23,7 +25,6 @@ class ProfitViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<ProfitUI>(par
                 TypedValue.COMPLEX_UNIT_SP
         )
     }
-
 
     override fun bind(m: ProfitUI) = with(itemView) {
         super.bind(m)
@@ -42,6 +43,6 @@ class ProfitViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<ProfitUI>(par
         id_TextView.text = m.id.toString()
         date_TextView.text = m.date.toFormattedString(resources)
         kind_TextView.text = m.kind
-        value_TextView.text = m.value.toString()
+        value_TextView.text = m.value.toLong().toPointedString().zeroToEmpty()
     }
 }

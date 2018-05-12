@@ -4,11 +4,12 @@ import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.records_list.entity.TotalsUi
+import com.qwert2603.spenddemo.records_list.entity.TotalsUI
+import com.qwert2603.spenddemo.utils.toPointedString
 import kotlinx.android.synthetic.main.item_totals.view.*
 
-class TotalsViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<TotalsUi>(parent, R.layout.item_totals) {
-    override fun bind(m: TotalsUi) = with(itemView) {
+class TotalsViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<TotalsUI>(parent, R.layout.item_totals) {
+    override fun bind(m: TotalsUI) = with(itemView) {
         super.bind(m)
 
         profits_TextView.setVisible(m.showProfits)
@@ -16,13 +17,13 @@ class TotalsViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<TotalsUi>(par
         profits_TextView.text = resources.getString(
                 R.string.text_total_items_format,
                 resources.getQuantityString(R.plurals.profits, m.profitsCount, m.profitsCount),
-                m.profitsSum
+                m.profitsSum.toPointedString()
         )
         spends_TextView.text = resources.getString(
                 R.string.text_total_items_format,
                 resources.getQuantityString(R.plurals.spends, m.spendsCount, m.spendsCount),
-                m.spendsSum
+                m.spendsSum.toPointedString()
         )
-        total_TextView.text = resources.getString(R.string.text_total_balance_format, m.totalBalance)
+        total_TextView.text = resources.getString(R.string.text_total_balance_format, m.totalBalance.toPointedString())
     }
 }
