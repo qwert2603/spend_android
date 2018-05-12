@@ -56,8 +56,16 @@ fun makeRecordsList(
                 when (it) {
                     is SpendUI -> showSpends
                     is ProfitUI -> showProfits
-                    is DateSumUI -> showDateSums
-                    is MonthSumUI -> showMonthSums
+                    is DateSumUI -> showDateSums && when {
+                        showSpends == showProfits -> true
+                        showSpends -> spendsByDate[it.date] != null
+                        else -> profitsByDate[it.date] != null
+                    }
+                    is MonthSumUI -> showMonthSums && when {
+                        showSpends == showProfits -> true
+                        showSpends -> datesByMonth[it.month]!!.any { it in spendsByDate }
+                        else -> datesByMonth[it.month]!!.any { it in profitsByDate }
+                    }
                     is TotalsUI -> true
                     else -> null!!
                 }
