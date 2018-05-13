@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
+
+    <plurals name="spends">
+        <item quantity="one">%d расход</item>
+        <item quantity="few">%d расхода</item>
+        <item quantity="many">%d расходов</item>
+        <item quantity="other">%d расходов</item>
+    </plurals>
+
+    <plurals name="profits">
+        <item quantity="one">%d доход</item>
+        <item quantity="few">%d дохода</item>
+        <item quantity="many">%d доходов</item>
+        <item quantity="other">%d доходов</item>
+    </plurals>
+
+</resources>
