@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">расходы</string>
 
     <string name="kind">вид</string>

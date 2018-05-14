@@ -22,3 +22,5 @@
 
 # andrlib_generator
 -dontwarn com.qwert2603.andrlib.generator.**
+
+-dontwarn com.qwert2603.spenddemo.dialogs.**
