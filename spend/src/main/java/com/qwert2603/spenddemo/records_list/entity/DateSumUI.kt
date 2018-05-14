@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.records_list.entity
 
+import com.qwert2603.andrlib.util.Const
 import java.util.*
 
 data class DateSumUI(
@@ -9,5 +10,5 @@ data class DateSumUI(
         val spends: Long,
         val profits: Long
 ) : RecordsListItem {
-    override val id = date.time
+    override val id = date.time / Const.MILLIS_PER_DAY
 }

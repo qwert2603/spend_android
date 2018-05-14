@@ -22,13 +22,11 @@
     <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
 
     <string name="error_text">error</string>
-    <string name="loading_error_text">loading error</string>
-    <string name="refreshing_error_text">refresh error</string>
     <string name="retry_text">retry</string>
     <string name="empty_list_text">list is empty</string>
     <string name="list_loaded_completely">list loaded completely</string>
-    <string name="send_records_text">send spends</string>
-    <string name="send_title">send spends</string>
+    <string name="send_records_text">send records</string>
+    <string name="send_title">send records</string>
     <string name="about_text">about</string>
 
     <string name="today_text">today</string>

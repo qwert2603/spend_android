@@ -50,4 +50,28 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:padding="12dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/floatingDate_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:alpha="0"
+            android:background="@color/colorPrimaryTransparent"
+            android:elevation="4dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            tools:alpha="1"
+            tools:text="2018-05-02" />
+
+    </FrameLayout>
+
 </android.support.design.widget.CoordinatorLayout>

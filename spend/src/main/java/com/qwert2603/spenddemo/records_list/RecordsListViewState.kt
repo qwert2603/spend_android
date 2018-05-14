@@ -17,6 +17,7 @@ data class RecordsListViewState(
     fun showProfitsEnable() = showSpends || showDateSums || showMonthSums
     fun showDateSumsEnable() = showSpends || showProfits || showMonthSums
     fun showMonthSumsEnable() = showSpends || showProfits || showDateSums
-    fun newProfitVisible() = showProfits
+    fun newProfitEnable() = showProfits
     fun newSpendVisible() = showSpends
+    fun showFloatingDate() = showDateSums && (showSpends || showProfits)
 }

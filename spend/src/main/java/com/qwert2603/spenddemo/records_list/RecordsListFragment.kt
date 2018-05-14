@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.view.animation.AnimationUtils
+import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.view.RxMenuItem
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -22,17 +23,18 @@ import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.navigation.ScreenKey
-import com.qwert2603.spenddemo.records_list.entity.ProfitUI
-import com.qwert2603.spenddemo.records_list.entity.SpendUI
+import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.records_list.vhs.DateSumViewHolder
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
 import ru.terrakok.cicerone.Router
 import java.sql.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
@@ -120,6 +122,39 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
 
         toolbar.title = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
+
+        RxRecyclerView.scrollEvents(records_RecyclerView)
+                .switchMap {
+                    Observable.interval(0, 1, TimeUnit.SECONDS)
+                            .take(2)
+                            .map { it == 0L }
+                }
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    floatingDate_TextView.animate()
+                            .setStartDelay(0L)
+                            .setDuration(250L)
+                            .alpha(if (it && currentViewState.showFloatingDate() && currentViewState.records.any { it is DateSumUI }) 1f else 0f)
+                }
+                .disposeOnDestroyView()
+        RxRecyclerView.scrollEvents(records_RecyclerView)
+                .subscribe {
+                    if (!currentViewState.showFloatingDate()) return@subscribe
+                    var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val floatingTop = floatingDate_TextView.getGlobalVisibleRectRightNow().bottom
+                    val vhTop = records_RecyclerView.findViewHolderForAdapterPosition(i).itemView.getGlobalVisibleRectRightNow().bottom
+                    if (i > 0 && vhTop < floatingTop) --i
+                    if (i in 1..currentViewState.records.lastIndex && currentViewState.records[i] is TotalsUI) --i
+                    if (i in 1..currentViewState.records.lastIndex && currentViewState.records[i] is MonthSumUI) --i
+                    i = currentViewState.records.indexOfFirst(startIndex = i) { it is DateSumUI }
+                    if (i >= 0) {
+                        floatingDate_TextView.text = (currentViewState.records[i] as DateSumUI).date.toFormattedString(resources)
+                    } else {
+                        floatingDate_TextView.text = ""
+                    }
+                }
+                .disposeOnDestroyView()
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -234,8 +269,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
 
-        // todo: show floating date on top of screen when showing date sums.
-
         renderIfChanged({ showIds }) { adapter.showIds = it }
         renderIfChanged({ showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showDateSums }) { adapter.showDatesInRecords = !it }
@@ -270,7 +303,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             renderIfChanged({ showProfitsEnable() }) { findItem(R.id.show_profits).isEnabled = it }
             renderIfChanged({ showDateSumsEnable() }) { findItem(R.id.show_date_sums).isEnabled = it }
             renderIfChanged({ showMonthSumsEnable() }) { findItem(R.id.show_month_sums).isEnabled = it }
-            renderIfChanged({ newProfitVisible() }) { findItem(R.id.new_profit).isVisible = it }
+            renderIfChanged({ newProfitEnable() }) { findItem(R.id.new_profit).isEnabled = it }
         }
 
         renderIfChanged({ newSpendVisible() }) {

@@ -133,7 +133,8 @@ class RecordsListAnimator : DefaultItemAnimator() {
         val targetGlobalVisibleRect = target.getGlobalVisibleRectRightNow()
         val translationXDate = (originGlobalVisibleRect.left - targetGlobalVisibleRect.left).toFloat()
         val translationYDate = (originGlobalVisibleRect.centerY() - targetGlobalVisibleRect.centerY()).toFloat()
-        target.translationX = translationXDate
+        // +4dp because EditText's text has padding.
+        target.translationX = translationXDate + target.resources.toPx(4)
         target.translationY = translationYDate
         val pathDate = Path()
         pathDate.moveTo(translationXDate, translationYDate)

@@ -25,6 +25,11 @@
         android:checkable="true"
         android:title="@string/text_show_month_sums" />
 
+    <!--todo: <item-->
+        <!--android:id="@+id/show_balance"-->
+        <!--android:checkable="true"-->
+        <!--android:title="show balance" />-->
+
     <item
         android:id="@+id/send_records"
         android:title="@string/send_records_text" />

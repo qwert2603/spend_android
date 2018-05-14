@@ -13,9 +13,6 @@ android {
         versionName "2.0-alpha8"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
 
-        resConfigs "en"
-        resConfigs "ldltr"
-
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]

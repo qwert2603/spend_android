@@ -57,3 +57,10 @@ fun Long.toPointedString(): String {
 }
 
 fun String.zeroToEmpty() = if (this == "0") "" else this
+
+fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
+    for (i in startIndex..lastIndex) {
+        if (predicate(this[i])) return i
+    }
+    return -1
+}

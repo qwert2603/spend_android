@@ -8,6 +8,7 @@ import com.qwert2603.andrlib.util.Const
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.records_list.vhs.*
 
+// todo: delegate adapters.
 class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
     companion object {
         const val VIEW_TYPE_SPEND = 1
