@@ -121,6 +121,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
+        // todo: don't show RELEASE
         toolbar.title = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
 
         RxRecyclerView.scrollEvents(records_RecyclerView)
