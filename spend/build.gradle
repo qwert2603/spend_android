@@ -11,6 +11,7 @@ android {
         targetSdkVersion 27
         versionCode 14
         versionName "2.0-beta4"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
 
         javaCompileOptions {
@@ -64,20 +65,22 @@ dependencies {
 
     implementation project(path: ':syncprocessor')
 
-    ext.support_version = '27.1.1'
-    ext.andrlib_version = '1.7.4'
-    ext.andrlib_generator_version = '1.0.10'
-    ext.rxjava_version = '2.1.13'
-    ext.rxandroid_version = '2.0.2'
-    ext.rxbinding_version = '2.1.1'
-    ext.mosby_version = '3.1.0'
-    ext.fragmentargs_version = '3.0.2'
-    ext.cicerone_version = '3.0.0'
-    ext.postgresql_version = '42.1.4.jre7'
-    ext.room_version = '1.1.0'
-    ext.dagger_version = '2.15'
-    ext.junit_version = '4.12'
-    ext.stetho_version = '1.5.0'
+    def support_version = '27.1.1'
+    def andrlib_version = '1.7.4'
+    def andrlib_generator_version = '1.0.10'
+    def rxjava_version = '2.1.13'
+    def rxandroid_version = '2.0.2'
+    def rxbinding_version = '2.1.1'
+    def mosby_version = '3.1.0'
+    def fragmentargs_version = '3.0.2'
+    def cicerone_version = '3.0.0'
+    def postgresql_version = '42.1.4.jre7'
+    def dagger_version = '2.15'
+    def junit_version = '4.12'
+    def stetho_version = '1.5.0'
+    def paging_version = "1.0.0"
+    def room_version = "1.1.0"
+    def lifecycle_version = "1.1.1"
 
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
@@ -87,9 +90,13 @@ dependencies {
     annotationProcessor "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
     kapt "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
 
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
     implementation "android.arch.persistence.room:runtime:$room_version"
     implementation "android.arch.persistence.room:rxjava2:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
+
+    implementation "android.arch.paging:runtime:$paging_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -112,6 +119,7 @@ dependencies {
     implementation "org.postgresql:postgresql:$postgresql_version"
 
     testImplementation "junit:junit:$junit_version"
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
 
     implementation "com.facebook.stetho:stetho:$stetho_version"
 }

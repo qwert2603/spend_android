@@ -9,8 +9,14 @@ abstract class SpendsDao {
     @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
     abstract fun getAllSpends(): Single<List<SpendTable>>
 
+    @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
+    abstract fun getAllSpendsList(): List<SpendTable>
+
     @Insert
     abstract fun addSpend(spend: SpendTable): Long
+
+    @Query("SELECT SUM(value) FROM SpendTable")
+    abstract fun getTotal(): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun editSpend(spend: SpendTable)

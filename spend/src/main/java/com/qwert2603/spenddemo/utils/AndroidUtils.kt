@@ -53,7 +53,7 @@ fun Long.toPointedString(): String {
         if (index % 3 == 2 && index != absString.lastIndex) stringBuilder.append('.')
     }
     if (negative) stringBuilder.append('-')
-    return stringBuilder.toString().reversed()
+    return stringBuilder.reverse().toString()
 }
 
 fun String.zeroToEmpty() = if (this == "0") "" else this
