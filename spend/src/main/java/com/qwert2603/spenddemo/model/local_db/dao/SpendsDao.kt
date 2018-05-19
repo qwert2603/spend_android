@@ -38,4 +38,7 @@ abstract class SpendsDao {
 
     @Query("DELETE FROM SpendTable WHERE id IN (:ids)")
     abstract fun removeSpends(ids: List<Long>)
+
+    @Query("select id from (SELECT * from SpendTable UNION SELECT * from ProfitTable) order by id")
+    abstract fun getAllRecordsIds(): List<Long>
 }
