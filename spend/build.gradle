@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.qwert2603.spenddemo"
+        applicationId "com.qwert2603.spenddemo_2"
         minSdkVersion 22
         targetSdkVersion 27
         versionCode 15
