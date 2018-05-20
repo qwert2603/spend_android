@@ -2,11 +2,12 @@ package com.qwert2603.spenddemo.model.local_db.tables
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.qwert2603.spenddemo.model.entity.Spend
 import java.util.*
 
-@Entity
+@Entity(indices = [Index("id", unique = true)])
 data class SpendTable(
         @PrimaryKey val id: Long,
         val kind: String,

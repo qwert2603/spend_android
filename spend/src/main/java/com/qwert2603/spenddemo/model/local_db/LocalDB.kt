@@ -13,7 +13,7 @@ import com.qwert2603.spenddemo.model.local_db.tables.ChangeTable
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 
-@Database(version = 3, exportSchema = true, entities = [SpendTable::class, ChangeTable::class, ProfitTable::class])
+@Database(version = 4, exportSchema = true, entities = [SpendTable::class, ChangeTable::class, ProfitTable::class])
 @TypeConverters(DateConverter::class, ChangeKindConverter::class)
 abstract class LocalDB : RoomDatabase() {
     abstract fun spendsDao(): SpendsDao

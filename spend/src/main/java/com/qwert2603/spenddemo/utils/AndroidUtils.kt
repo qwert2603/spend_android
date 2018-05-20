@@ -2,6 +2,9 @@ package com.qwert2603.spenddemo.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MediatorLiveData
+import android.arch.lifecycle.Transformations
 import kotlin.math.absoluteValue
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
@@ -64,3 +67,29 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
     }
     return -1
 }
+
+fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
+fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
+
+fun <T, U, V> combineLatest(liveDataT: LiveData<T>, liveDataU: LiveData<U>, combiner: (T, U) -> V) = MediatorLiveData<V>()
+        .apply {
+            var lastT: T? = null
+            var lastU: U? = null
+
+            fun update() {
+                val localLastT = lastT
+                val localLastU = lastU
+                if (localLastT != null && localLastU != null) {
+                    value = combiner(localLastT, localLastU)
+                }
+            }
+
+            addSource(liveDataT) {
+                lastT = it
+                update()
+            }
+            addSource(liveDataU) {
+                lastU = it
+                update()
+            }
+        }

@@ -1,6 +1,9 @@
 package com.qwert2603.spenddemo.model.local_db.dao
 
+import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.arch.persistence.room.*
+import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 import io.reactivex.Single
 
@@ -30,6 +33,9 @@ abstract class SpendsDao {
     @Query("DELETE FROM SpendTable WHERE id = :spendId")
     abstract fun removeSpend(spendId: Long)
 
+    @Query("DELETE FROM SpendTable")
+    abstract fun removeAllSpends()
+
     @Insert
     abstract fun addSpends(spends: List<SpendTable>)
 
@@ -41,4 +47,13 @@ abstract class SpendsDao {
 
     @Query("select id from (SELECT * from SpendTable UNION SELECT * from ProfitTable) order by id")
     abstract fun getAllRecordsIds(): List<Long>
+
+    @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
+    abstract fun getSpends(): DataSource.Factory<Int, SpendTable>
+
+    @Query("SELECT * FROM (SELECT COUNT (*) FROM SpendTable UNION ALL SELECT COUNT (*) FROM ProfitTable)")
+    abstract fun getCounts(): LiveData<List<Int>>
+
+    @Query("SELECT * FROM (SELECT 1 type, id, kind, value, date FROM SpendTable UNION ALL SELECT 2 type, id, kind, value, date FROM ProfitTable) ORDER BY date DESC")
+    abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 }

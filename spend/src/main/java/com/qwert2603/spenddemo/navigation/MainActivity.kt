@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(ScreenKey.RECORDS_LIST.name)
+            router.newRootScreen(ScreenKey.RECORDS_LIST_MVVM.name)
         }
 
         if (savedInstanceState == null && intent.action == Intent.ACTION_VIEW) {
