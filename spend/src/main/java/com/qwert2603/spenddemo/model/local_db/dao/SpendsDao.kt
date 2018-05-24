@@ -54,6 +54,12 @@ abstract class SpendsDao {
     @Query("SELECT * FROM (SELECT COUNT (*) FROM SpendTable UNION ALL SELECT COUNT (*) FROM ProfitTable)")
     abstract fun getCounts(): LiveData<List<Int>>
 
-    @Query("SELECT * FROM (SELECT 1 type, id, kind, value, date FROM SpendTable UNION ALL SELECT 2 type, id, kind, value, date FROM ProfitTable) ORDER BY date DESC")
+    @Query("""
+        SELECT * FROM (
+            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date FROM SpendTable
+        UNION ALL
+            SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date FROM ProfitTable
+        ) ORDER BY date DESC
+        """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 }
