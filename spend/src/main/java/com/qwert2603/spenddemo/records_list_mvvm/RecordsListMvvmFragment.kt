@@ -8,6 +8,7 @@ import android.view.*
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.dialogs.AppInfoDialogFragment
 import com.qwert2603.spenddemo.navigation.KeyboardManager
+import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
 import kotlinx.android.synthetic.main.fragment_records_list_mvvm.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 
@@ -32,6 +33,9 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
+        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
+            vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
+        }))
 
         var prevSecond: RecordsListViewModel.RecordListInfo? = null
         viewModel.recordsLiveData.observe(this, Observer {
