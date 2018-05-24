@@ -36,7 +36,7 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
 
     data class RecordListInfo(val showSpends: Boolean, val showProfits: Boolean, val showDateSums: Boolean, val showMonthSums: Boolean)
 
-    val recordsLiveData: LiveData<Pair<List<RecordsListItem>, RecordListInfo>> = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
+    val recordsLiveData: LiveData<List<RecordsListItem>> = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
             .switchMap { list ->
                 val showSpends = list[0] == true
                 val showProfits = list[1] == true
@@ -44,19 +44,16 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
                 val showMonthSums = list[3] == true
                 val showSpendSum = showSpends || !showProfits
                 val showProfitSum = showProfits || !showSpends
-                val recordListInfo = RecordListInfo(showSpends, showProfits, showDateSums, showMonthSums)
                 recordsList
                         .map {
-                            Pair(
-                                    it.toRecordItemsList(
-                                            showSpends = showSpends,
-                                            showProfits = showProfits,
-                                            showDateSums = showDateSums,
-                                            showMonthSums = showMonthSums,
-                                            showSpendSum = showSpendSum,
-                                            showProfitSum = showProfitSum
-                                    ),
-                                    recordListInfo
+                            // todo: background thread.
+                            it.toRecordItemsList(
+                                    showSpends = showSpends,
+                                    showProfits = showProfits,
+                                    showDateSums = showDateSums,
+                                    showMonthSums = showMonthSums,
+                                    showSpendSum = showSpendSum,
+                                    showProfitSum = showProfitSum
                             )
                         }
             }

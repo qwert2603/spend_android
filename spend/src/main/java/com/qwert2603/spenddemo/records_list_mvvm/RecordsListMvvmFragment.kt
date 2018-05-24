@@ -37,16 +37,7 @@ class RecordsListMvvmFragment : Fragment() {
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
         }))
 
-        var prevSecond: RecordsListViewModel.RecordListInfo? = null
-        viewModel.recordsLiveData.observe(this, Observer {
-            if (it?.second != prevSecond) {
-                // todo: check later.
-                // because calculate diff is too long.
-                adapter.submitList(null)
-            }
-            prevSecond = it?.second
-            adapter.submitList(it?.first)
-        })
+        viewModel.recordsLiveData.observe(this, Observer { adapter.list = it ?: emptyList() })
         viewModel.recordsCounts.observe(this, Observer { toolbar.subtitle = it })
     }
 
