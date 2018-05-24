@@ -29,6 +29,10 @@ class RecordsListMvvmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = RecordsListAdapter()
         records_RecyclerView.adapter = adapter
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)
+        records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
+
         var prevSecond: RecordsListViewModel.RecordListInfo? = null
         viewModel.recordsLiveData.observe(this, Observer {
             if (it?.second != prevSecond) {

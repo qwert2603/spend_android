@@ -10,5 +10,6 @@ data class MonthSumUI(
         val spends: Long,
         val profits: Long
 ) : RecordsListItem {
+    // fixme: id changes if date changes.
     override val id = month.time / Const.MILLIS_PER_DAY
 }

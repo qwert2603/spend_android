@@ -48,3 +48,6 @@ infix operator fun Date.plus(millis: Long) = Date(time + millis)
 infix operator fun Date.minus(millis: Long) = this + -millis
 
 val Int.days get() = this * LibConst.MILLIS_PER_DAY
+
+fun Calendar.daysEqual(anth: Calendar) = this[Calendar.YEAR] == anth.get(Calendar.YEAR) && this[Calendar.DAY_OF_YEAR] == anth[Calendar.DAY_OF_YEAR]
+fun Calendar.monthsEqual(anth: Calendar) = this[Calendar.YEAR] == anth[Calendar.YEAR] && this[Calendar.MONTH] == anth[Calendar.MONTH]

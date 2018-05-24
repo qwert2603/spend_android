@@ -3,13 +3,10 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.model.local_db.LocalDB
-import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
-import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
 import java.util.concurrent.Executor
@@ -39,7 +36,7 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
 
     data class RecordListInfo(val showSpends: Boolean, val showProfits: Boolean, val showDateSums: Boolean, val showMonthSums: Boolean)
 
-    val recordsLiveData: LiveData<Pair<ArrayList<RecordsListItem>, RecordListInfo>> = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
+    val recordsLiveData: LiveData<Pair<List<RecordsListItem>, RecordListInfo>> = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
             .switchMap { list ->
                 val showSpends = list[0] == true
                 val showProfits = list[1] == true
@@ -49,67 +46,18 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
                 val showProfitSum = showProfits || !showSpends
                 val recordListInfo = RecordListInfo(showSpends, showProfits, showDateSums, showMonthSums)
                 recordsList
-                        .map { tableList ->
-                            val currentTimeMillis = System.currentTimeMillis()
-
-                            var spendsCount = 0
-                            var spendsSum = 0L
-                            var profitsCount = 0
-                            var profitsSum = 0L
-
-                            var daySpendsSum = 0L
-                            var dayProfitsSum = 0L
-
-                            var monthSpendsSum = 0L
-                            var monthProfitsSum = 0L
-
-                            val result = ArrayList<RecordsListItem>(tableList.size * 2)
-                            tableList.forEachIndexed { index, tableRow ->
-                                if (index > 0) {
-                                    // todo: optimize onlyDate/onlyMonth
-                                    if (showDateSums) {
-                                        val dateInPrev = tableList[index - 1].date.onlyDate()
-                                        if (dateInPrev != tableRow.date.onlyDate()) {
-                                            result.add(DateSumUI(dateInPrev, showSpendSum, showProfitSum, daySpendsSum, dayProfitsSum))
-                                            daySpendsSum = 0L
-                                            dayProfitsSum = 0L
-                                        }
-                                    }
-                                    if (showMonthSums) {
-                                        val monthInPrev = tableList[index - 1].date.onlyMonth()
-                                        if (monthInPrev != tableRow.date.onlyMonth()) {
-                                            result.add(MonthSumUI(monthInPrev, showSpendSum, showProfitSum, monthSpendsSum, monthProfitsSum))
-                                            monthSpendsSum = 0L
-                                            monthProfitsSum = 0L
-                                        }
-                                    }
-                                }
-                                when (tableRow.type) {
-                                    RecordResult.TYPE_SPEND -> {
-                                        daySpendsSum += tableRow.value
-                                        monthSpendsSum += tableRow.value
-                                        ++spendsCount
-                                        spendsSum += tableRow.value
-                                        if (showSpends) result.add(SpendUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date, SyncStatus.REMOTE, null))
-                                    }
-                                    RecordResult.TYPE_PROFIT -> {
-                                        dayProfitsSum += tableRow.value
-                                        monthProfitsSum += tableRow.value
-                                        ++profitsCount
-                                        profitsSum += tableRow.value
-                                        if (showProfits) result.add(ProfitUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date))
-                                    }
-                                }
-                            }
-                            val dateInPrev = (tableList.lastOrNull())?.date?.onlyDate()
-                            if (dateInPrev != null) {
-                                result.add(DateSumUI(dateInPrev, showSpends, showProfits, daySpendsSum, dayProfitsSum))
-                            }
-                            result.add(TotalsUI(showSpends, showProfits, spendsCount, spendsSum, profitsCount, profitsSum, profitsSum - spendsSum))
-
-                            LogUtils.d("RecordsListViewModel recordsLiveData map ${System.currentTimeMillis() - currentTimeMillis} ms")
-
-                            Pair(result, recordListInfo)
+                        .map {
+                            Pair(
+                                    it.toRecordItemsList(
+                                            showSpends = showSpends,
+                                            showProfits = showProfits,
+                                            showDateSums = showDateSums,
+                                            showMonthSums = showMonthSums,
+                                            showSpendSum = showSpendSum,
+                                            showProfitSum = showProfitSum
+                                    ),
+                                    recordListInfo
+                            )
                         }
             }
 
