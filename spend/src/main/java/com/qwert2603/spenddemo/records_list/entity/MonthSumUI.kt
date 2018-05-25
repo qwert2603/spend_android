@@ -4,12 +4,11 @@ import com.qwert2603.andrlib.util.Const
 import java.util.*
 
 data class MonthSumUI(
-        val month: Date,
+        val date: Date,
         val showSpends: Boolean,
         val showProfits: Boolean,
         val spends: Long,
         val profits: Long
 ) : RecordsListItem {
-    // fixme: id changes if date changes.
-    override val id = month.time / Const.MILLIS_PER_DAY
+    override val id = date.time / Const.MILLIS_PER_DAY
 }

@@ -46,7 +46,7 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
                 val showProfitSum = showProfits || !showSpends
                 recordsList
                         .map {
-                            // todo: background thread.
+                            // todo: background thread coroutines.
                             it.toRecordItemsList(
                                     showSpends = showSpends,
                                     showProfits = showProfits,

@@ -20,7 +20,7 @@ class MonthSumViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInfl
 
     fun bind(m: MonthSumUI?) = with(itemView) {
         if (m == null) return@with
-        month_TextView.text = MONTH_FORMAT.format(m.month).toLowerCase()
+        month_TextView.text = MONTH_FORMAT.format(m.date).toLowerCase()
         profitsSum_TextView.setVisible(m.showProfits)
         profitsSum_TextView.text = m.profits.toPointedString().zeroToEmpty()
         spendsSum_TextView.setVisible(m.showSpends)

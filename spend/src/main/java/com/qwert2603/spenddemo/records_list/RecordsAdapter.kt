@@ -37,7 +37,7 @@ class RecordsAdapter : BaseRecyclerViewAdapter<RecordsListItem>() {
         is DateSumUI -> m.date.time / Const.MILLIS_PER_DAY + 3_000_000_000L
         is ProfitUI -> m.id + 2_000_000_000L
         is TotalsUI -> 1918L
-        is MonthSumUI -> m.month.time / Const.MILLIS_PER_DAY + 4_000_000_000L
+        is MonthSumUI -> m.date.time / Const.MILLIS_PER_DAY + 4_000_000_000L
         else -> null!!
     }
 

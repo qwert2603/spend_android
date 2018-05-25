@@ -21,14 +21,8 @@ fun Date.onlyDate(): Date = Calendar
 
 fun Date.onlyMonth(): Date = Calendar
         .getInstance()
-        .also { it.time = this }
-        .also {
-            it.set(Calendar.DAY_OF_MONTH, 1)
-            it.set(Calendar.HOUR_OF_DAY, 0)
-            it.set(Calendar.MINUTE, 0)
-            it.set(Calendar.SECOND, 0)
-            it.set(Calendar.MILLISECOND, 0)
-        }
+        .also { it.time = this.onlyDate() }
+        .also { it.set(Calendar.DAY_OF_MONTH, 1) }
         .time
 
 fun Date.plusDays(days: Int) = Date(this.time + days * com.qwert2603.andrlib.util.Const.MILLIS_PER_DAY)
@@ -51,3 +45,6 @@ val Int.days get() = this * LibConst.MILLIS_PER_DAY
 
 fun Calendar.daysEqual(anth: Calendar) = this[Calendar.YEAR] == anth.get(Calendar.YEAR) && this[Calendar.DAY_OF_YEAR] == anth[Calendar.DAY_OF_YEAR]
 fun Calendar.monthsEqual(anth: Calendar) = this[Calendar.YEAR] == anth[Calendar.YEAR] && this[Calendar.MONTH] == anth[Calendar.MONTH]
+
+fun Calendar.onlyDate(): Date = GregorianCalendar(this[Calendar.YEAR], this[Calendar.MONTH], this[Calendar.DAY_OF_MONTH]).time
+fun Calendar.onlyMonth(): Date = GregorianCalendar(this[Calendar.YEAR], this[Calendar.MONTH], 1).time

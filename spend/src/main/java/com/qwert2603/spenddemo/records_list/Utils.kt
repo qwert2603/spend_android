@@ -42,7 +42,7 @@ fun makeRecordsList(
                         .flatten()
                         .let {
                             it + MonthSumUI(
-                                    month = month,
+                                    date = month,
                                     showSpends = showSpendSum,
                                     showProfits = showProfitSum,
                                     spends = it.mapNotNull { it as? SpendUI }.sumSpends(),
@@ -63,8 +63,8 @@ fun makeRecordsList(
                     }
                     is MonthSumUI -> showMonthSums && when {
                         showSpends == showProfits -> true
-                        showSpends -> datesByMonth[it.month]!!.any { it in spendsByDate }
-                        else -> datesByMonth[it.month]!!.any { it in profitsByDate }
+                        showSpends -> datesByMonth[it.date]!!.any { it in spendsByDate }
+                        else -> datesByMonth[it.date]!!.any { it in profitsByDate }
                     }
                     is TotalsUI -> true
                     else -> null!!

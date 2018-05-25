@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.records_list_mvvm
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.utils.FastDiffUtils
@@ -14,7 +13,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val oldList = field
             field = value
 
-            // todo: background thread.
+            // todo: background thread coroutines.
             FastDiffUtils.fastCalculateDiff(
                     oldList = oldList,
                     newList = field,
@@ -22,7 +21,9 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     compareOrder = { r1, r2 ->
                         r2.time().compareTo(r1.time())
                                 .takeIf { it != 0 }
-                                ?: r1.priority().compareTo(r2.priority())
+                                ?: r2.priority().compareTo(r1.priority())
+                                        .takeIf { it != 0 }
+                                ?: r2.id.compareTo(r1.id)
                     },
                     isEqual = { r1, r2 -> r1 == r2 }
             )
@@ -68,10 +69,10 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun RecordsListItem.id() = when (this) {
             is SpendUI -> this.id + 1_000_000_000L
-            is DateSumUI -> this.date.time / Const.MILLIS_PER_DAY + 3_000_000_000L
+            is DateSumUI -> this.id + 3_000_000_000L
             is ProfitUI -> this.id + 2_000_000_000L
             is TotalsUI -> 1918L
-            is MonthSumUI -> this.month.time / Const.MILLIS_PER_DAY + 4_000_000_000L
+            is MonthSumUI -> this.id + 4_000_000_000L
             else -> null!!
         }
 
@@ -80,7 +81,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is DateSumUI -> this.date.time
             is ProfitUI -> this.date.time
             is TotalsUI -> Long.MIN_VALUE
-            is MonthSumUI -> this.month.time
+            is MonthSumUI -> this.date.time
             else -> null!!
         }
 

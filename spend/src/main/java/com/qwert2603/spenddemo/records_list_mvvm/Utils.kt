@@ -6,6 +6,8 @@ import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.utils.daysEqual
 import com.qwert2603.spenddemo.utils.monthsEqual
+import com.qwert2603.spenddemo.utils.onlyDate
+import com.qwert2603.spenddemo.utils.onlyMonth
 import java.util.*
 
 fun List<RecordResult>.toRecordItemsList(
@@ -37,14 +39,26 @@ fun List<RecordResult>.toRecordItemsList(
         if (index > 0) {
             if (showDateSums) {
                 if (!calendarPrev.daysEqual(calendarIndex)) {
-                    result.add(DateSumUI(calendarPrev.time, showSpendSum, showProfitSum, daySpendsSum, dayProfitsSum))
+                    result.add(DateSumUI(
+                            date = calendarPrev.onlyDate(),
+                            showSpends = showSpendSum,
+                            showProfits = showProfitSum,
+                            spends = daySpendsSum,
+                            profits = dayProfitsSum
+                    ))
                     daySpendsSum = 0L
                     dayProfitsSum = 0L
                 }
             }
             if (showMonthSums) {
                 if (!calendarPrev.monthsEqual(calendarIndex)) {
-                    result.add(MonthSumUI(calendarPrev.time, showSpendSum, showProfitSum, monthSpendsSum, monthProfitsSum))
+                    result.add(MonthSumUI(
+                            date = calendarPrev.onlyMonth(),
+                            showSpends = showSpendSum,
+                            showProfits = showProfitSum,
+                            spends = monthSpendsSum,
+                            profits = monthProfitsSum
+                    ))
                     monthSpendsSum = 0L
                     monthProfitsSum = 0L
                 }
@@ -70,8 +84,20 @@ fun List<RecordResult>.toRecordItemsList(
     }
     val dateInPrev = (this.lastOrNull())?.date
     if (dateInPrev != null) {
-        if (showDateSums) result.add(DateSumUI(dateInPrev, showSpendSum, showProfitSum, daySpendsSum, dayProfitsSum))
-        if (showMonthSums) result.add(MonthSumUI(dateInPrev, showSpendSum, showProfitSum, monthSpendsSum, monthProfitsSum))
+        if (showDateSums) result.add(DateSumUI(
+                date = calendarPrev.onlyDate(),
+                showSpends = showSpendSum,
+                showProfits = showProfitSum,
+                spends = daySpendsSum,
+                profits = dayProfitsSum
+        ))
+        if (showMonthSums) result.add(MonthSumUI(
+                date = calendarPrev.onlyMonth(),
+                showSpends = showSpendSum,
+                showProfits = showProfitSum,
+                spends = monthSpendsSum,
+                profits = monthProfitsSum
+        ))
     }
     result.add(TotalsUI(showSpends, showProfits, spendsCount, spendsSum, profitsCount, profitsSum, profitsSum - spendsSum))
 
