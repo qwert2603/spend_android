@@ -19,7 +19,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     newList = field,
                     id = { this.id() },
                     compareOrder = { r1, r2 ->
-                        r2.time().compareTo(r1.time())
+                        return@fastCalculateDiff r2.time().compareTo(r1.time())
                                 .takeIf { it != 0 }
                                 ?: r2.priority().compareTo(r1.priority())
                                         .takeIf { it != 0 }
@@ -86,11 +86,11 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         private fun RecordsListItem.priority() = when (this) {
-            is SpendUI -> 1
-            is ProfitUI -> 2
+            is SpendUI -> 5
+            is ProfitUI -> 4
             is DateSumUI -> 3
-            is MonthSumUI -> 4
-            is TotalsUI -> 5
+            is MonthSumUI -> 2
+            is TotalsUI -> 1
             else -> null!!
         }
 

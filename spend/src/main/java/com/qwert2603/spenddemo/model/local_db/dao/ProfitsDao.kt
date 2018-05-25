@@ -37,4 +37,7 @@ interface ProfitsDao {
 
     @Query("SELECT * FROM ProfitTable ORDER BY date DESC, id DESC")
     fun getProfitsLiveData(): LiveData<List<ProfitTable>>
+
+    @Query("SELECT SUM(p.value) FROM ProfitTable p WHERE date(p.date/1000, 'unixepoch') > date('now','-30 day')")
+    fun get30DaysSum(): LiveData<Long?>
 }

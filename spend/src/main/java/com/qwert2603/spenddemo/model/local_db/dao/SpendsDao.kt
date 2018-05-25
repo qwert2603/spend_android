@@ -62,4 +62,7 @@ abstract class SpendsDao {
         ) ORDER BY date DESC
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
+
+    @Query("SELECT SUM(s.value) FROM SpendTable s WHERE date(s.date/1000, 'unixepoch') > date('now','-30 day')")
+    abstract fun get30DaysSum(): LiveData<Long?>
 }

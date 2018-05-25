@@ -6,13 +6,17 @@ import android.arch.lifecycle.ViewModel
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
+import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
+class RecordsListViewModel(
+        private val localDB: LocalDB,
+        private val userSettingsRepo: UserSettingsRepo
+) : ViewModel() {
 
     companion object {
         lateinit var LOCAL_DB: LocalDB
@@ -26,52 +30,68 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
 
     init {
         LOCAL_DB = localDB
-        showSpends.value = false
-        showProfits.value = false
-        showDateSums.value = false
-        showMonthSums.value = false
+        showSpends.value = userSettingsRepo.showSpends
+        showProfits.value = userSettingsRepo.showProfits
+        showDateSums.value = userSettingsRepo.showDateSums
+        showMonthSums.value = userSettingsRepo.showMonthSums
     }
+
+    data class ShowInfo(
+            val showSpends: Boolean,
+            val showProfits: Boolean,
+            val showDateSums: Boolean,
+            val showMonthSums: Boolean
+    ) {
+        fun showSpendSum() = showSpends || !showProfits
+        fun showProfitSum() = showProfits || !showSpends
+        fun showSpendsEnable() = showProfits || showDateSums || showMonthSums
+        fun showProfitsEnable() = showSpends || showDateSums || showMonthSums
+        fun showDateSumsEnable() = showSpends || showProfits || showMonthSums
+        fun showMonthSumsEnable() = showSpends || showProfits || showDateSums
+        fun newProfitEnable() = showProfits
+        fun newSpendVisible() = showSpends
+        fun showFloatingDate() = showDateSums && (showSpends || showProfits)
+    }
+
+    val showInfo = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
+            .map {
+                ShowInfo(
+                        showSpends = it[0] == true,
+                        showProfits = it[1] == true,
+                        showDateSums = it[2] == true,
+                        showMonthSums = it[3] == true
+                )
+            }
 
     private val recordsList = localDB.spendsDao().getSpendsAndProfits()
 
-    data class RecordListInfo(val showSpends: Boolean, val showProfits: Boolean, val showDateSums: Boolean, val showMonthSums: Boolean)
-
-    val recordsLiveData: LiveData<List<RecordsListItem>> = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
-            .switchMap { list ->
-                val showSpends = list[0] == true
-                val showProfits = list[1] == true
-                val showDateSums = list[2] == true
-                val showMonthSums = list[3] == true
-                val showSpendSum = showSpends || !showProfits
-                val showProfitSum = showProfits || !showSpends
+    val recordsLiveData: LiveData<List<RecordsListItem>> = showInfo
+            .switchMap { showInfo ->
                 recordsList
                         .map {
                             // todo: background thread coroutines.
-                            it.toRecordItemsList(
-                                    showSpends = showSpends,
-                                    showProfits = showProfits,
-                                    showDateSums = showDateSums,
-                                    showMonthSums = showMonthSums,
-                                    showSpendSum = showSpendSum,
-                                    showProfitSum = showProfitSum
-                            )
+                            it.toRecordItemsList(showInfo)
                         }
             }
 
     fun showSpends(show: Boolean) {
         showSpends.value = show
+        userSettingsRepo.showSpends = show
     }
 
     fun showProfits(show: Boolean) {
         showProfits.value = show
+        userSettingsRepo.showProfits = show
     }
 
     fun showDateSums(show: Boolean) {
         showDateSums.value = show
+        userSettingsRepo.showDateSums = show
     }
 
     fun showMonthSums(show: Boolean) {
         showMonthSums.value = show
+        userSettingsRepo.showMonthSums = show
     }
 
     fun addStubSpends() {
@@ -113,4 +133,10 @@ class RecordsListViewModel(private val localDB: LocalDB) : ViewModel() {
 
     val recordsCounts = localDB.spendsDao().getCounts()
             .map { "${it[0]} ${it[1]}" }
+
+    val balance30Days = combineLatest(
+            localDB.profitsDao().get30DaysSum(),
+            localDB.spendsDao().get30DaysSum(),
+            { profits, spends -> (profits ?: 0L) - (spends ?: 0L) }
+    )
 }

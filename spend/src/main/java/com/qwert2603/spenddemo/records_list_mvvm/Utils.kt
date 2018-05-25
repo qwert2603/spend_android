@@ -10,14 +10,7 @@ import com.qwert2603.spenddemo.utils.onlyDate
 import com.qwert2603.spenddemo.utils.onlyMonth
 import java.util.*
 
-fun List<RecordResult>.toRecordItemsList(
-        showSpends: Boolean,
-        showProfits: Boolean,
-        showDateSums: Boolean,
-        showMonthSums: Boolean,
-        showSpendSum: Boolean,
-        showProfitSum: Boolean
-): List<RecordsListItem> {
+fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo): List<RecordsListItem> {
     val currentTimeMillis = System.currentTimeMillis()
 
     var spendsCount = 0
@@ -37,31 +30,41 @@ fun List<RecordResult>.toRecordItemsList(
     this.forEachIndexed { index, tableRow ->
         calendarIndex.time = tableRow.date
         if (index > 0) {
-            if (showDateSums) {
-                if (!calendarPrev.daysEqual(calendarIndex)) {
-                    result.add(DateSumUI(
-                            date = calendarPrev.onlyDate(),
-                            showSpends = showSpendSum,
-                            showProfits = showProfitSum,
-                            spends = daySpendsSum,
-                            profits = dayProfitsSum
-                    ))
-                    daySpendsSum = 0L
-                    dayProfitsSum = 0L
-                }
+            if (showInfo.showDateSums
+                    && when {
+                        showInfo.showSpends == showInfo.showProfits -> true
+                        showInfo.showSpends -> daySpendsSum > 0
+                        else -> dayProfitsSum > 0
+                    }
+                    && !calendarPrev.daysEqual(calendarIndex)
+            ) {
+                result.add(DateSumUI(
+                        date = calendarPrev.onlyDate(),
+                        showSpends = showInfo.showSpendSum(),
+                        showProfits = showInfo.showProfitSum(),
+                        spends = daySpendsSum,
+                        profits = dayProfitsSum
+                ))
+                daySpendsSum = 0L
+                dayProfitsSum = 0L
             }
-            if (showMonthSums) {
-                if (!calendarPrev.monthsEqual(calendarIndex)) {
-                    result.add(MonthSumUI(
-                            date = calendarPrev.onlyMonth(),
-                            showSpends = showSpendSum,
-                            showProfits = showProfitSum,
-                            spends = monthSpendsSum,
-                            profits = monthProfitsSum
-                    ))
-                    monthSpendsSum = 0L
-                    monthProfitsSum = 0L
-                }
+            if (showInfo.showMonthSums
+                    && when {
+                        showInfo.showSpends == showInfo.showProfits -> true
+                        showInfo.showSpends -> monthSpendsSum > 0
+                        else -> monthProfitsSum > 0
+                    }
+                    && !calendarPrev.monthsEqual(calendarIndex)
+            ) {
+                result.add(MonthSumUI(
+                        date = calendarPrev.onlyMonth(),
+                        showSpends = showInfo.showSpendSum(),
+                        showProfits = showInfo.showProfitSum(),
+                        spends = monthSpendsSum,
+                        profits = monthProfitsSum
+                ))
+                monthSpendsSum = 0L
+                monthProfitsSum = 0L
             }
         }
         calendarPrev.time = calendarIndex.time
@@ -71,35 +74,50 @@ fun List<RecordResult>.toRecordItemsList(
                 monthSpendsSum += tableRow.value
                 ++spendsCount
                 spendsSum += tableRow.value
-                if (showSpends) result.add(SpendUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date, SyncStatus.REMOTE, null))
+                if (showInfo.showSpends) result.add(SpendUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date, SyncStatus.REMOTE, null))
             }
             RecordResult.TYPE_PROFIT -> {
                 dayProfitsSum += tableRow.value
                 monthProfitsSum += tableRow.value
                 ++profitsCount
                 profitsSum += tableRow.value
-                if (showProfits) result.add(ProfitUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date))
+                if (showInfo.showProfits) result.add(ProfitUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date))
             }
         }
     }
-    val dateInPrev = (this.lastOrNull())?.date
-    if (dateInPrev != null) {
-        if (showDateSums) result.add(DateSumUI(
-                date = calendarPrev.onlyDate(),
-                showSpends = showSpendSum,
-                showProfits = showProfitSum,
-                spends = daySpendsSum,
-                profits = dayProfitsSum
-        ))
-        if (showMonthSums) result.add(MonthSumUI(
-                date = calendarPrev.onlyMonth(),
-                showSpends = showSpendSum,
-                showProfits = showProfitSum,
-                spends = monthSpendsSum,
-                profits = monthProfitsSum
-        ))
+    if (this.isNotEmpty()) {
+        if (showInfo.showDateSums
+                && when {
+                    showInfo.showSpends == showInfo.showProfits -> true
+                    showInfo.showSpends -> daySpendsSum > 0
+                    else -> dayProfitsSum > 0
+                }
+        ) {
+            result.add(DateSumUI(
+                    date = calendarPrev.onlyDate(),
+                    showSpends = showInfo.showSpendSum(),
+                    showProfits = showInfo.showProfitSum(),
+                    spends = daySpendsSum,
+                    profits = dayProfitsSum
+            ))
+        }
+        if (showInfo.showMonthSums
+                && when {
+                    showInfo.showSpends == showInfo.showProfits -> true
+                    showInfo.showSpends -> monthSpendsSum > 0
+                    else -> monthProfitsSum > 0
+                }
+        ) {
+            result.add(MonthSumUI(
+                    date = calendarPrev.onlyMonth(),
+                    showSpends = showInfo.showSpendSum(),
+                    showProfits = showInfo.showProfitSum(),
+                    spends = monthSpendsSum,
+                    profits = monthProfitsSum
+            ))
+        }
     }
-    result.add(TotalsUI(showSpends, showProfits, spendsCount, spendsSum, profitsCount, profitsSum, profitsSum - spendsSum))
+    result.add(TotalsUI(showInfo.showSpends, showInfo.showProfits, spendsCount, spendsSum, profitsCount, profitsSum, profitsSum - spendsSum))
 
     LogUtils.d("List<RecordResult>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
 

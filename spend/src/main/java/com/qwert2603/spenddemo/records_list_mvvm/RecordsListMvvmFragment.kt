@@ -39,6 +39,14 @@ class RecordsListMvvmFragment : Fragment() {
 
         viewModel.recordsLiveData.observe(this, Observer { adapter.list = it ?: emptyList() })
         viewModel.recordsCounts.observe(this, Observer { toolbar.subtitle = it })
+        viewModel.showInfo.observe(this, Observer {
+            if (it == null) return@Observer
+            // todo:
+//            it.newSpendVisible()
+//            it.showFloatingDate()
+        })
+
+        viewModel.balance30Days.observe(this, Observer { toolbar.title = getString(R.string.app_name) + it?.toString() })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -57,6 +65,15 @@ class RecordsListMvvmFragment : Fragment() {
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
         showDateSumsMenuItem.setOnMenuItemClickListener { viewModel.showDateSums(!showDateSumsMenuItem.isChecked);true }
         showMonthSumsMenuItem.setOnMenuItemClickListener { viewModel.showMonthSums(!showMonthSumsMenuItem.isChecked);true }
+
+        viewModel.showInfo.observe(this, Observer {
+            if (it == null) return@Observer
+            menu.findItem(R.id.new_profit).isEnabled = it.newProfitEnable()
+            showSpendsMenuItem.isEnabled = it.showSpendsEnable()
+            showProfitsMenuItem.isEnabled = it.showProfitsEnable()
+            showDateSumsMenuItem.isEnabled = it.showDateSumsEnable()
+            showMonthSumsMenuItem.isEnabled = it.showMonthSumsEnable()
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
