@@ -63,8 +63,6 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation project(path: ':syncprocessor')
-
     def support_version = '27.1.1'
     def andrlib_version = '1.7.4'
     def andrlib_generator_version = '1.0.10'

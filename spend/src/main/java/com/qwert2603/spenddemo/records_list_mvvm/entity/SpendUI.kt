@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list.entity
+package com.qwert2603.spenddemo.records_list_mvvm.entity
 
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.Spend

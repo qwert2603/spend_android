@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import com.hannesdorfmann.fragmentargs.FragmentArgs
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.spenddemo.changes_list.ChangesListFragment
-import com.qwert2603.spenddemo.records_list.RecordsListFragment
 import com.qwert2603.spenddemo.records_list_mvvm.RecordsListMvvmFragment
 import ru.terrakok.cicerone.android.SupportFragmentNavigator
 import ru.terrakok.cicerone.commands.Command
@@ -49,7 +48,6 @@ class Navigator(private val activity: ActivityInterface)
     }
 
     override fun createFragment(screenKey: String, data: Any?) = when (ScreenKey.valueOf(screenKey)) {
-        ScreenKey.RECORDS_LIST -> RecordsListFragment()
         ScreenKey.RECORDS_LIST_MVVM -> RecordsListMvvmFragment()
         ScreenKey.CHANGES_LIST -> ChangesListFragment()
     }.also { it.setScreenKey(ScreenKey.valueOf(screenKey)) }

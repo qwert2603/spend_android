@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.records_list_mvvm
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -14,7 +14,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.records_list.vhs.SpendViewHolder
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
 import kotlinx.android.synthetic.main.item_spend.view.*
@@ -32,6 +31,7 @@ class RecordsListAnimator : DefaultItemAnimator() {
         fun getValueGlobalVisibleRect(): Rect
     }
 
+    // todo: move to constructor.
     var spendOrigin: SpendOrigin? = null
 
     private object CreateSpend : RecyclerView.ItemAnimator.ItemHolderInfo()

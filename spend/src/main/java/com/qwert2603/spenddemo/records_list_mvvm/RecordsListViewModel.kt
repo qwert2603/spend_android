@@ -4,23 +4,22 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
-import com.qwert2603.spenddemo.model.entity.toProfit
-import com.qwert2603.spenddemo.model.local_db.LocalDB
-import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
-import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
-import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
-import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
+import com.qwert2603.spenddemo.model.repo.ProfitsRepo
+import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
+import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
-import java.util.concurrent.Executors
+import java.util.concurrent.Executor
 
 class RecordsListViewModel(
-        private val localDB: LocalDB,
-        private val userSettingsRepo: UserSettingsRepo
+        private val spendsRepo: SpendsRepo,
+        private val profitsRepo: ProfitsRepo,
+        private val userSettingsRepo: UserSettingsRepo,
+        private val backgroundExecutor: Executor
 ) : ViewModel() {
 
     val showSpends = MutableLiveData<Boolean>()
@@ -68,7 +67,7 @@ class RecordsListViewModel(
                 )
             }
 
-    private val recordsList = localDB.spendsDao().getSpendsAndProfits()
+    private val recordsList = spendsRepo.getRecordsList()
 
     val recordsLiveData: LiveData<List<RecordsListItem>> = showInfo
             .switchMap { showInfo ->
@@ -110,87 +109,62 @@ class RecordsListViewModel(
     }
 
     fun addStubSpends() {
-        Executors.newSingleThreadExecutor().execute {
-            val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
-            val random = Random()
-            localDB.spendsDao().addSpends((1..200).map {
-                SpendTable(
-                        id = random.nextLong(),
-                        kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
-                        value = random.nextInt(1000) + 1,
-                        date = Date() - (random.nextInt(2100)).days
-                )
-            })
-        }
+        val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
+        val random = Random()
+        spendsRepo.addSpends((1..200)
+                .map {
+                    CreatingSpend(
+                            kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
+                            value = random.nextInt(1000) + 1,
+                            date = Date() - (random.nextInt(2100)).days
+                    )
+                })
     }
 
     fun addStubProfits() {
-        Executors.newSingleThreadExecutor().execute {
-            val stubSpendKinds = listOf("стипендия", "зарплата", "аванс", "доход")
-            val random = Random()
-            localDB.profitsDao().addProfits((1..200).map {
-                ProfitTable(
-                        id = random.nextLong(),
-                        kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
-                        value = random.nextInt(10000) + 1,
-                        date = Date() - (random.nextInt(2100)).days
-                )
-            })
-        }
+        val stubSpendKinds = listOf("стипендия", "зарплата", "аванс", "доход")
+        val random = Random()
+        profitsRepo.addProfits((1..200)
+                .map {
+                    CreatingProfit(
+                            kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
+                            value = random.nextInt(10000) + 1,
+                            date = Date() - (random.nextInt(2100)).days
+                    )
+                }
+        )
     }
 
     fun clearAll() {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.spendsDao().removeAllSpends()
-            localDB.profitsDao().removeAllProfits()
-        }
+        spendsRepo.removeAllSpends()
+        profitsRepo.removeAllProfits()
     }
 
-    val recordsCounts = localDB.spendsDao().getCounts()
-            .map { "${it[0]} ${it[1]}" }
-
-    val balance30Days = combineLatest(
-            localDB.profitsDao().get30DaysSum(),
-            localDB.spendsDao().get30DaysSum(),
-            { profits, spends -> (profits ?: 0L) - (spends ?: 0L) }
-    )
+    val balance30Days = spendsRepo.get30DaysBalance()
 
     fun deleteSpend(id: Long) {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.spendsDao().removeSpend(id)
-        }
+        spendsRepo.removeSpend(id)
     }
 
     fun deleteProfit(id: Long) {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.profitsDao().removeProfit(id)
-        }
+        profitsRepo.removeProfit(id)
     }
 
     fun addProfit(creatingProfit: CreatingProfit) {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.profitsDao().addProfit(creatingProfit.toProfit(1000000L + Random().nextInt(1000000)).toProfitTable())
-        }
+        profitsRepo.addProfit(creatingProfit)
     }
 
     fun editSpend(spend: Spend) {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.spendsDao().editSpend(spend.toSpendTable())
-        }
+        spendsRepo.editSpend(spend)
     }
 
     fun editProfit(profit: Profit) {
-        Executors.newSingleThreadExecutor().execute {
-            localDB.profitsDao().editProfit(profit.toProfitTable())
-        }
+        profitsRepo.editProfit(profit)
     }
 
     fun sendRecords() {
-        Executors.newSingleThreadExecutor().execute {
-            sendRecords.postValue(getDumpText(
-                    spends = localDB.spendsDao().getAllSpendsList(),
-                    profits = localDB.profitsDao().getAllProfitsList()
-            ))
+        backgroundExecutor.execute {
+            sendRecords.postValue("SPENDS:\n${spendsRepo.getDumpText()}\n\nPROFITS:\n${profitsRepo.getDumpText()}")
         }
     }
 }

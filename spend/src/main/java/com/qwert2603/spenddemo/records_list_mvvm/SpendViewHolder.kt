@@ -8,7 +8,7 @@ import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
-import com.qwert2603.spenddemo.records_list.entity.SpendUI
+import com.qwert2603.spenddemo.records_list_mvvm.entity.SpendUI
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toFormattedString
 import com.qwert2603.spenddemo.utils.toPointedString

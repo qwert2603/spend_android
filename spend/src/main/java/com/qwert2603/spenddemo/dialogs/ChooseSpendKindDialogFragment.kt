@@ -37,8 +37,6 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val kinds = spendKindsRepo.getAllKinds()
-                .firstOrError()
-                .blockingGet()
 
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)

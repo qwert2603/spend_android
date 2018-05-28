@@ -21,8 +21,7 @@ import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.records_list.RecordsListAnimator
-import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -90,7 +89,6 @@ class RecordsListMvvmFragment : Fragment() {
                 records_RecyclerView.layoutAnimation = layoutAnimation
             }
         })
-        viewModel.recordsCounts.observe(this, Observer { toolbar.subtitle = it })
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
             adapter.showDatesInRecords = !it.showDateSums
@@ -119,18 +117,20 @@ class RecordsListMvvmFragment : Fragment() {
         }
         adapter.itemLongClicks = {
             when (it) {
-                is SpendUI -> DeleteSpendDialogFragmentBuilder.newDeleteSpendDialogFragment(it.id)
+                is SpendUI -> DeleteSpendDialogFragmentBuilder
+                        .newDeleteSpendDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}")
                         .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
                         .show(fragmentManager, "delete_record")
                         .also { (context as KeyboardManager).hideKeyboard() }
-                is ProfitUI -> DeleteProfitDialogFragmentBuilder.newDeleteProfitDialogFragment(it.id)
+                is ProfitUI -> DeleteProfitDialogFragmentBuilder
+                        .newDeleteProfitDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}")
                         .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
                         .show(fragmentManager, "delete_profit")
                         .also { (context as KeyboardManager).hideKeyboard() }
             }
         }
 
-        viewModel.balance30Days.observe(this, Observer { toolbar.title = getString(R.string.app_name) + it?.toString() })
+        viewModel.balance30Days.observe(this, Observer { toolbar.subtitle = getString(R.string.text_balance_30_days_format, it?.toPointedString()) })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
 
@@ -275,3 +275,33 @@ class RecordsListMvvmFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 }
+
+/*
+ is RecordsListViewAction.ScrollToSpendAndHighlight -> {
+                currentViewState.records
+                        .indexOfFirst { it is SpendUI && it.id == va.spendId }
+                        .takeIf { it >= 0 }
+                        ?.let {
+                            records_RecyclerView.scrollToPosition(it)
+                            records_RecyclerView.postDelayed(
+                                    { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
+                                    100
+                            )
+                        }
+            }
+            is RecordsListViewAction.ScrollToProfitAndHighlight -> {
+                // todo: remove this delay when profits list will use sync processor like spends list.
+                records_RecyclerView.postDelayed({
+                    currentViewState.records
+                            .indexOfFirst { it is ProfitUI && it.id == va.profitId }
+                            .takeIf { it >= 0 }
+                            ?.let {
+                                records_RecyclerView?.scrollToPosition(it)
+                                records_RecyclerView?.postDelayed(
+                                        { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
+                                        100
+                                )
+                            }
+                }, 500)
+            }
+* */

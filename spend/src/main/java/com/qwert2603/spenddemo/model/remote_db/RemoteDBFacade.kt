@@ -4,8 +4,8 @@ import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.IdSqlWrapper
+import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.RemoteSpend
 import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.RemoteSpendSqlWrapper
-import com.qwert2603.spenddemo.model.syncprocessor.RemoteSpend
 import com.qwert2603.spenddemo.utils.toSqlDate
 import java.sql.Date
 import java.sql.Timestamp

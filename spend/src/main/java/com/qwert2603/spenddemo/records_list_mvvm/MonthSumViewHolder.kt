@@ -3,7 +3,7 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.records_list.entity.MonthSumUI
+import com.qwert2603.spenddemo.records_list_mvvm.entity.MonthSumUI
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_month_sum.view.*

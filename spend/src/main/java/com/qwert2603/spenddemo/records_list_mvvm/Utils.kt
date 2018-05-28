@@ -5,7 +5,7 @@ import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
-import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
 

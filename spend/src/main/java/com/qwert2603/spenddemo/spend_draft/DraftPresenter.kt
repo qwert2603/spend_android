@@ -60,8 +60,8 @@ class DraftPresenter @Inject constructor(
                                                     onKindSelectedIntent,
                                                     onKindSuggestionSelectedIntent
                                             )
-                                            .switchMapSingle { kind ->
-                                                draftInteractor.getLastPriceOfKind(kind).map { Pair(kind, it) }
+                                            .map { kind ->
+                                                Pair(kind, draftInteractor.getLastPriceOfKind(kind))
                                             }
                                             .map { (kind, lastPrice) ->
                                                 { r: CreatingSpend -> r.copy(kind = kind, value = lastPrice) }
@@ -106,10 +106,10 @@ class DraftPresenter @Inject constructor(
                                 .debounce(100, TimeUnit.MILLISECONDS)
                 )
                 .skipUntil(loadDraft)
-                .switchMapSingle { kind ->
+                .doOnNext { kind ->
                     draftInteractor.getSuggestions(kind)
-                            .map { if (it.isNotEmpty()) it else listOf("smth") }
-                            .doOnSuccess {
+                            .let { if (it.isNotEmpty()) it else listOf("smth") }
+                            .also {
                                 if (kind !in it) {
                                     viewActions.onNext(DraftViewAction.ShowKindSuggestions(it, kind))
                                 } else {

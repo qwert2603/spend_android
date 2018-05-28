@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list.entity
+package com.qwert2603.spenddemo.records_list_mvvm.entity
 
 data class TotalsUI(
         val showSpends: Boolean,

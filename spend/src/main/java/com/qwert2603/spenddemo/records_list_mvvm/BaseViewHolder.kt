@@ -5,7 +5,7 @@ import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
+import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 
 abstract class BaseViewHolder<T : RecordsListItem>(
         parent: ViewGroup,

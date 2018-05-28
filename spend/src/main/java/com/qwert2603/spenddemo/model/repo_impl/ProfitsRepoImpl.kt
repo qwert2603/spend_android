@@ -1,63 +1,65 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
 import android.content.Context
-import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
-import com.qwert2603.andrlib.util.mapList
+import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.toProfit
 import com.qwert2603.spenddemo.model.local_db.LocalDB
-import com.qwert2603.spenddemo.model.local_db.tables.toProfit
 import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.PrefsCounter
-import io.reactivex.Completable
-import io.reactivex.Single
+import java.util.concurrent.Executor
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ProfitsRepoImpl @Inject constructor(
         private val localDB: LocalDB,
-        private val modelSchedulersProvider: ModelSchedulersProvider,
+        private val dbExecutor: Executor,
         appContext: Context
 ) : ProfitsRepo {
 
     private val localIdCounter = PrefsCounter(
             prefs = appContext.getSharedPreferences("profits.prefs", Context.MODE_PRIVATE),
-            key = "last_profit_local_id"
+            key = "last_profit_local_id",
+            defaultValue = 1_000_000
     )
 
-    override fun getAllProfits(): Single<List<Profit>> = localDB.profitsDao()
-            .getAllProfits()
-            .mapList { it.toProfit() }
-            .subscribeOn(modelSchedulersProvider.io)
+    override fun addProfits(profits: List<CreatingProfit>) {
+        dbExecutor.execute {
+            localDB.profitsDao().addProfits(profits.map {
+                it.toProfit(localIdCounter.getNext()).toProfitTable()
+            })
+        }
+    }
 
-    override fun addProfit(creatingProfit: CreatingProfit): Single<Long> = Single
-            .fromCallable {
-                val localId = localIdCounter.getNext()
-                val profit = creatingProfit.toProfit(localId).toProfitTable()
-                localDB.profitsDao().addProfit(profit)
-                return@fromCallable localId
-            }
-            .subscribeOn(modelSchedulersProvider.io)
+    override fun addProfit(creatingProfit: CreatingProfit) {
+        dbExecutor.execute {
+            val localId = localIdCounter.getNext()
+            val profit = creatingProfit.toProfit(localId).toProfitTable()
+            localDB.profitsDao().addProfit(profit)
+        }
+    }
 
-    override fun editProfit(profit: Profit): Completable = Completable
-            .fromAction { localDB.profitsDao().editProfit(profit.toProfitTable()) }
-            .subscribeOn(modelSchedulersProvider.io)
+    override fun editProfit(profit: Profit) {
+        dbExecutor.execute { localDB.profitsDao().editProfit(profit.toProfitTable()) }
+    }
 
-    override fun removeProfit(profitId: Long): Completable = Completable
-            .fromAction { localDB.profitsDao().removeProfit(profitId) }
-            .subscribeOn(modelSchedulersProvider.io)
+    override fun removeProfit(profitId: Long) {
+        dbExecutor.execute { localDB.profitsDao().deleteProfit(profitId) }
+    }
 
-    override fun removeAllProfits(): Completable = Completable
-            .fromAction { localDB.profitsDao().removeAllProfits() }
-            .subscribeOn(modelSchedulersProvider.io)
+    override fun removeAllProfits() {
+        dbExecutor.execute { localDB.profitsDao().deleteAllProfits() }
+    }
 
-    override fun getDumpText(): Single<String> = getAllProfits()
-            .map {
-                if (it.isEmpty()) return@map "nth"
+    @WorkerThread
+    override fun getDumpText(): String = localDB.profitsDao()
+            .getAllProfitsList()
+            .let {
+                if (it.isEmpty()) return@let "nth"
                 it
                         .reversed()
                         .map {

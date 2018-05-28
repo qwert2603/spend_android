@@ -3,9 +3,10 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.records_list.entity.*
+import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.FastDiffUtils
 
+// todo: delegate adapters.
 class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true

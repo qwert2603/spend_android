@@ -10,10 +10,6 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.repo.ProfitsRepo
-import com.qwert2603.spenddemo.utils.toFormattedString
-import javax.inject.Inject
 
 @FragmentWithArgs
 class DeleteProfitDialogFragment : DialogFragment() {
@@ -25,29 +21,20 @@ class DeleteProfitDialogFragment : DialogFragment() {
     @Arg
     var id: Long = 0
 
-    @Inject lateinit var profitsRepo: ProfitsRepo
+    @Arg
+    var text: String = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val text = profitsRepo.getAllProfits()
-                .blockingGet()
-                .single { it.id == id }
-                .let { "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}" }
-        return AlertDialog.Builder(requireContext())
-                .setTitle(R.string.delete_profit_text)
-                .setMessage(text)
-                .setPositiveButton(R.string.text_delete, { _, _ ->
-                    targetFragment!!.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent().putExtra(ID_KEY, id)
-                    )
-                })
-                .setNegativeButton(R.string.text_cancel, null)
-                .create()
-    }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+            AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.delete_profit_text)
+                    .setMessage(text)
+                    .setPositiveButton(R.string.text_delete, { _, _ ->
+                        targetFragment!!.onActivityResult(
+                                targetRequestCode,
+                                Activity.RESULT_OK,
+                                Intent().putExtra(ID_KEY, id)
+                        )
+                    })
+                    .setNegativeButton(R.string.text_cancel, null)
+                    .create()
 }
