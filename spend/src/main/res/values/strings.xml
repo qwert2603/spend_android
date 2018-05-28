@@ -69,4 +69,7 @@
 
     <string name="text_source_code">source code</string>
     <string name="text_source_code_long">source code on github.com</string>
+
+    <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
+    <string name="spend_kind_description_format" formatted="true">last: %d @ %s</string>
 </resources>

@@ -11,4 +11,9 @@
         <item quantity="other">%d profits</item>
     </plurals>
 
+    <plurals name="times">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d times</item>
+    </plurals>
+
 </resources>

@@ -60,8 +60,16 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = convertView ?: parent.inflate(R.layout.item_spend_kind)
             val kind = getItem(position)
-            view.kindName_TextView.text = "${kind.kind} (${kind.spendsCount})"//todo: (34 times) . use plurals.
-            view.lastSpend_TextView.text = "${kind.lastPrice} @ ${kind.lastDate.toFormattedString(view.resources)}"
+            view.kindName_TextView.text = view.resources.getString(
+                    R.string.spend_kind_title_format,
+                    kind.kind,
+                    view.resources.getQuantityString(R.plurals.times, kind.spendsCount, kind.spendsCount)
+            )
+            view.lastSpend_TextView.text = view.resources.getString(
+                    R.string.spend_kind_description_format,
+                    kind.lastPrice,
+                    kind.lastDate.toFormattedString(view.resources)
+            )
             return view
         }
     }
