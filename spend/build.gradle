@@ -35,25 +35,19 @@ android {
 
     flavorDimensions "server"
 
-    def SERVER_TYPE_TYPE = "@android.support.annotation.NonNull com.qwert2603.spenddemo.model.ServerType"
-    def SERVER_TYPE = "SERVER_TYPE"
-
     productFlavors {
         noServer {
             dimension "server"
-            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.NO_SERVER"
             applicationIdSuffix ".noServer"
             versionNameSuffix "-noServer"
         }
         serverTest {
             dimension "server"
-            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.SERVER_TEST"
             applicationIdSuffix ".serverTest"
             versionNameSuffix "-serverTest"
         }
         serverProd {
             dimension "server"
-            buildConfigField SERVER_TYPE_TYPE, SERVER_TYPE, "com.qwert2603.spenddemo.model.ServerType.SERVER_PROD"
             applicationIdSuffix ".serverProd"
             versionNameSuffix "-serverProd"
         }

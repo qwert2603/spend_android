@@ -14,9 +14,9 @@ import android.view.animation.AnimationUtils
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.setVisible
-import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
@@ -154,11 +154,7 @@ class RecordsListMvvmFragment : Fragment() {
             }
         }
 
-        toolbar.title = listOfNotNull(
-                getString(R.string.app_name),
-                BuildConfig.FLAVOR,
-                BuildConfig.BUILD_TYPE.takeIf { it != "release" }
-        ).reduce { acc, s -> "$acc $s" }
+        toolbar.title = "${getString(R.string.app_name)} ${E.env.titleSuffix()}"
 
         RxRecyclerView.scrollEvents(records_RecyclerView)
                 .switchMap {
@@ -248,6 +244,14 @@ class RecordsListMvvmFragment : Fragment() {
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
         val showBalanceMenuItem = menu.findItem(R.id.show_balance)
+
+        showIdsMenuItem.isVisible = E.env.showIdsSetting
+        showChangeKindsMenuItem.isVisible = E.env.showChangeKindsSetting
+        menu.findItem(R.id.show_local_changes).isVisible = E.env.showChangeKindsSetting
+        menu.findItem(R.id.add_stub_spends).isVisible = E.env.showTestingButtons()
+        menu.findItem(R.id.add_stub_profits).isVisible = E.env.showTestingButtons()
+        menu.findItem(R.id.clear_all).isVisible = E.env.showTestingButtons()
+
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
         viewModel.showDateSums.observe(this, Observer { showDateSumsMenuItem.isChecked = it == true })

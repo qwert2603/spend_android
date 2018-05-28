@@ -2,9 +2,6 @@ package com.qwert2603.spenddemo.di
 
 import android.arch.persistence.room.Room
 import android.content.Context
-import com.qwert2603.spenddemo.BuildConfig
-import com.qwert2603.spenddemo.di.qualifiers.RemoteTableName
-import com.qwert2603.spenddemo.model.ServerType
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDB
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
@@ -24,19 +21,11 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun remoteDB(): RemoteDB = /*RemoteDBStub()*/ RemoteDBImpl(
+    fun remoteDB(): RemoteDB = RemoteDBImpl(
             "jdbc:postgresql://192.168.1.26:5432/spend",
             "postgres",
             "1234"
     )
-
-    @Provides
-    @RemoteTableName
-    fun remoteTableName(): String = when (BuildConfig.SERVER_TYPE) {
-        ServerType.NO_SERVER -> "nth"
-        ServerType.SERVER_TEST -> "test_spend"
-        ServerType.SERVER_PROD -> "spend"
-    }
 
     @Provides
     @Singleton

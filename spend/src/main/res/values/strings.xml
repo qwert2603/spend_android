@@ -64,7 +64,7 @@
     <string name="text_total_items_format" formatted="true">%s. sum is %s</string>
     <string name="text_total_balance_format" formatted="true">total balance is %s</string>
 
-    <string name="text_add_stub_spends">20 stub spends</string>
+    <string name="text_add_stub_spends">200 stub spends</string>
     <string name="text_add_stub_profits">200 stub profits</string>
     <string name="text_clear_all">clear all</string>
 
