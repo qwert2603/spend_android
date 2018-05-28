@@ -357,13 +357,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                             }
                 }, 500)
             }
-            is RecordsListViewAction.SendRecords -> {
-                Intent(Intent.ACTION_SEND)
-                        .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }
-                        .also { it.type = "text/plain" }
-                        .let { Intent.createChooser(it, context?.getString(R.string.send_title)) }
-                        .apply { requireActivity().startActivity(this) }
-            }
+            is RecordsListViewAction.SendRecords -> Intent(Intent.ACTION_SEND)
+                    .also { it.putExtra(Intent.EXTRA_TEXT, va.text) }
+                    .also { it.type = "text/plain" }
+                    .let { Intent.createChooser(it, context?.getString(R.string.send_title)) }
+                    .apply { requireActivity().startActivity(this) }
             RecordsListViewAction.ShowAbout -> AppInfoDialogFragment()
                     .show(fragmentManager, "app_info")
                     .also { (context as KeyboardManager).hideKeyboard() }

@@ -1,9 +1,7 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
 import android.support.v4.widget.TextViewCompat
-import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
@@ -13,9 +11,7 @@ import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_spend.view.*
 
-class ProfitViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_profit, parent, false)) {
-
-    private var profitId: Long? = null
+class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.layout.item_profit) {
 
     init {
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -27,26 +23,19 @@ class ProfitViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflat
         )
     }
 
-    fun bind(m: ProfitUI?) = with(itemView) {
-        profitId = m?.id
-        val showIds = false
-        val showChangeKinds = false
-        val showDatesInRecords = true
+    override fun bind(t: ProfitUI, adapter: RecordsListAdapter) = with(itemView) {
+        super.bind(t, adapter)
+        val showIds = adapter.showIds
+        val showChangeKinds = adapter.showChangeKinds
+        val showDatesInRecords = adapter.showDatesInRecords
 
         local_ImageView.setVisible(showChangeKinds)
         id_TextView.setVisible(showIds)
         date_TextView.setVisible(showDatesInRecords)
 
-        if (m != null) {
-            id_TextView.text = m.id.toString()
-            date_TextView.text = m.date.toFormattedString(resources)
-            kind_TextView.text = m.kind
-            value_TextView.text = m.value.toLong().toPointedString().zeroToEmpty()
-        } else {
-            id_TextView.text = "..."
-            date_TextView.text = "..."
-            kind_TextView.text = "..."
-            value_TextView.text = "..."
-        }
+        id_TextView.text = t.id.toString()
+        date_TextView.text = t.date.toFormattedString(resources)
+        kind_TextView.text = t.kind
+        value_TextView.text = t.value.toLong().toPointedString().zeroToEmpty()
     }
 }

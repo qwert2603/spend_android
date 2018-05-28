@@ -27,12 +27,18 @@ class RecordsListViewModel(
     val showProfits = MutableLiveData<Boolean>()
     val showDateSums = MutableLiveData<Boolean>()
     val showMonthSums = MutableLiveData<Boolean>()
+    val showIds = MutableLiveData<Boolean>()
+    val showChangeKinds = MutableLiveData<Boolean>()
+
+    val sendRecords = SingleLiveEvent<String>()
 
     init {
         showSpends.value = userSettingsRepo.showSpends
         showProfits.value = userSettingsRepo.showProfits
         showDateSums.value = userSettingsRepo.showDateSums
         showMonthSums.value = userSettingsRepo.showMonthSums
+        showIds.value = userSettingsRepo.showIds
+        showChangeKinds.value = userSettingsRepo.showChangeKinds
     }
 
     data class ShowInfo(
@@ -91,6 +97,16 @@ class RecordsListViewModel(
     fun showMonthSums(show: Boolean) {
         showMonthSums.value = show
         userSettingsRepo.showMonthSums = show
+    }
+
+    fun showIds(show: Boolean) {
+        showIds.value = show
+        userSettingsRepo.showIds = show
+    }
+
+    fun showChangeKinds(show: Boolean) {
+        showChangeKinds.value = show
+        userSettingsRepo.showChangeKinds = show
     }
 
     fun addStubSpends() {
@@ -166,6 +182,15 @@ class RecordsListViewModel(
     fun editProfit(profit: Profit) {
         Executors.newSingleThreadExecutor().execute {
             localDB.profitsDao().editProfit(profit.toProfitTable())
+        }
+    }
+
+    fun sendRecords() {
+        Executors.newSingleThreadExecutor().execute {
+            sendRecords.postValue(getDumpText(
+                    spends = localDB.spendsDao().getAllSpendsList(),
+                    profits = localDB.profitsDao().getAllProfitsList()
+            ))
         }
     }
 }

@@ -3,11 +3,10 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
+import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
+import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 import com.qwert2603.spenddemo.records_list.entity.*
-import com.qwert2603.spenddemo.utils.daysEqual
-import com.qwert2603.spenddemo.utils.monthsEqual
-import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.onlyMonth
+import com.qwert2603.spenddemo.utils.*
 import java.util.*
 
 fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo): List<RecordsListItem> {
@@ -122,4 +121,36 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
     LogUtils.d("List<RecordResult>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
     return result
+}
+
+fun getDumpText(spends: List<SpendTable>, profits: List<ProfitTable>): String {
+    val spendsText = if (spends.isNotEmpty()) {
+        spends
+                .sortedBy { it.date }
+                .map {
+                    listOf(
+                            it.kind,
+                            Const.DATE_FORMAT.format(it.date),
+                            it.value.toString()
+                    ).reduce { s1, s2 -> "$s1,$s2" }
+                }
+                .reduce { s1, s2 -> "$s1\n$s2" }
+    } else {
+        "nth"
+    }
+    val profitsText = if (profits.isNotEmpty()) {
+        profits
+                .sortedBy { it.date }
+                .map {
+                    listOf(
+                            it.kind,
+                            Const.DATE_FORMAT.format(it.date),
+                            it.value.toString()
+                    ).reduce { s1, s2 -> "$s1,$s2" }
+                }
+                .reduce { s1, s2 -> "$s1\n$s2" }
+    } else {
+        "nth"
+    }
+    return "SPENDS:\n$spendsText\n\nPROFITS:\n$profitsText"
 }

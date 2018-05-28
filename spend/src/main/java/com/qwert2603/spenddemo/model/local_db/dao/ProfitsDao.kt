@@ -14,6 +14,9 @@ interface ProfitsDao {
     @Query("SELECT * FROM ProfitTable ORDER BY date DESC, id DESC")
     fun getAllProfits(): Single<List<ProfitTable>>
 
+    @Query("SELECT * FROM ProfitTable ORDER BY date DESC, id DESC")
+    fun getAllProfitsList(): List<ProfitTable>
+
     @Insert
     fun addProfit(profit: ProfitTable)
 

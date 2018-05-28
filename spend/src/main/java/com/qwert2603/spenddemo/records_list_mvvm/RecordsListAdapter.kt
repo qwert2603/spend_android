@@ -8,6 +8,24 @@ import com.qwert2603.spenddemo.utils.FastDiffUtils
 
 class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    var showChangeKinds = true
+        set(value) {
+            field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
+    var showIds = true
+        set(value) {
+            field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
+    var showDatesInRecords = true
+        set(value) {
+            field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
     var list: List<RecordsListItem> = emptyList()
         set(value) {
             val oldList = field
@@ -31,6 +49,9 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     .dispatchToAdapter(this)
         }
 
+    var itemClicks: ((RecordsListItem) -> Unit)? = null
+    var itemLongClicks: ((RecordsListItem) -> Unit)? = null
+
     override fun getItemCount() = list.size
 
     @Suppress("UNCHECKED_CAST")
@@ -44,11 +65,11 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? SpendViewHolder)?.bind(list[position] as? SpendUI)
-        (holder as? ProfitViewHolder)?.bind(list[position] as? ProfitUI)
-        (holder as? TotalsViewHolder)?.bind(list[position] as? TotalsUI)
-        (holder as? DateSumViewHolder)?.bind(list[position] as? DateSumUI)
-        (holder as? MonthSumViewHolder)?.bind(list[position] as? MonthSumUI)
+        (holder as? SpendViewHolder)?.bind(list[position] as SpendUI, this)
+        (holder as? ProfitViewHolder)?.bind(list[position] as ProfitUI, this)
+        (holder as? TotalsViewHolder)?.bind(list[position] as TotalsUI, this)
+        (holder as? DateSumViewHolder)?.bind(list[position] as DateSumUI, this)
+        (holder as? MonthSumViewHolder)?.bind(list[position] as MonthSumUI, this)
     }
 
     override fun getItemViewType(position: Int) = when (list[position]) {

@@ -22,10 +22,7 @@ import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.RecordsListAnimator
-import com.qwert2603.spenddemo.records_list.entity.DateSumUI
-import com.qwert2603.spenddemo.records_list.entity.MonthSumUI
-import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
-import com.qwert2603.spenddemo.records_list.entity.TotalsUI
+import com.qwert2603.spenddemo.records_list.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,6 +47,7 @@ class RecordsListMvvmFragment : Fragment() {
         ViewModelProviders.of(this, ViewModelFactory()).get(RecordsListViewModel::class.java)
     }
 
+    val adapter = RecordsListAdapter()
     private val viewDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +60,6 @@ class RecordsListMvvmFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = RecordsListAdapter()
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)
@@ -96,12 +93,46 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.recordsCounts.observe(this, Observer { toolbar.subtitle = it })
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
+            adapter.showDatesInRecords = !it.showDateSums
             draftPanel_LinearLayout.setVisible(it.newSpendVisible())
             if (!it.newSpendVisible()) (context as KeyboardManager).hideKeyboard()
             showFloatingDate = it.showFloatingDate()
         })
 
+        adapter.itemClicks = {
+            when (it) {
+                is SpendUI -> EditSpendDialogFragmentBuilder
+                        .newEditSpendDialogFragment(it.date.time, it.id, it.kind, it.value)
+                        .also { it.setTargetFragment(this, REQUEST_EDIT_SPEND) }
+                        .show(fragmentManager, "edit_record")
+                        .also { (context as KeyboardManager).hideKeyboard() }
+                is ProfitUI -> AddProfitDialogFragmentBuilder(false)
+                        .id(it.id)
+                        .kind(it.kind)
+                        .value(it.value)
+                        .date(it.date.time)
+                        .build()
+                        .also { it.setTargetFragment(this, REQUEST_EDIT_PROFIT) }
+                        .show(fragmentManager, "edit_profit")
+                        .also { (context as KeyboardManager).hideKeyboard() }
+            }
+        }
+        adapter.itemLongClicks = {
+            when (it) {
+                is SpendUI -> DeleteSpendDialogFragmentBuilder.newDeleteSpendDialogFragment(it.id)
+                        .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
+                        .show(fragmentManager, "delete_record")
+                        .also { (context as KeyboardManager).hideKeyboard() }
+                is ProfitUI -> DeleteProfitDialogFragmentBuilder.newDeleteProfitDialogFragment(it.id)
+                        .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
+                        .show(fragmentManager, "delete_profit")
+                        .also { (context as KeyboardManager).hideKeyboard() }
+            }
+        }
+
         viewModel.balance30Days.observe(this, Observer { toolbar.title = getString(R.string.app_name) + it?.toString() })
+        viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
+        viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
 
         draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
@@ -149,6 +180,15 @@ class RecordsListMvvmFragment : Fragment() {
                     }
                 }
                 .addTo(viewDisposable)
+
+        viewModel.sendRecords.observe(this, Observer { text ->
+            if (text == null) return@Observer
+            Intent(Intent.ACTION_SEND)
+                    .also { it.putExtra(Intent.EXTRA_TEXT, text) }
+                    .also { it.type = "text/plain" }
+                    .let { Intent.createChooser(it, getString(R.string.send_title)) }
+                    .apply { requireActivity().startActivity(this) }
+        })
     }
 
     override fun onDestroyView() {
@@ -193,14 +233,20 @@ class RecordsListMvvmFragment : Fragment() {
         val showProfitsMenuItem = menu.findItem(R.id.show_profits)
         val showDateSumsMenuItem = menu.findItem(R.id.show_date_sums)
         val showMonthSumsMenuItem = menu.findItem(R.id.show_month_sums)
+        val showIdsMenuItem = menu.findItem(R.id.show_ids)
+        val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
         viewModel.showDateSums.observe(this, Observer { showDateSumsMenuItem.isChecked = it == true })
         viewModel.showMonthSums.observe(this, Observer { showMonthSumsMenuItem.isChecked = it == true })
+        viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
+        viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
         showSpendsMenuItem.setOnMenuItemClickListener { viewModel.showSpends(!showSpendsMenuItem.isChecked);true }
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
         showDateSumsMenuItem.setOnMenuItemClickListener { viewModel.showDateSums(!showDateSumsMenuItem.isChecked);true }
         showMonthSumsMenuItem.setOnMenuItemClickListener { viewModel.showMonthSums(!showMonthSumsMenuItem.isChecked);true }
+        showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
+        showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
 
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
@@ -224,9 +270,7 @@ class RecordsListMvvmFragment : Fragment() {
                     .show(fragmentManager, "app_info")
                     .also { (context as KeyboardManager).hideKeyboard() }
             R.id.clear_all -> viewModel.clearAll()
-            R.id.send_records -> TODO()
-            R.id.show_change_kinds -> TODO()
-            R.id.show_ids -> TODO()
+            R.id.send_records -> viewModel.sendRecords()
         }
         return super.onOptionsItemSelected(item)
     }
