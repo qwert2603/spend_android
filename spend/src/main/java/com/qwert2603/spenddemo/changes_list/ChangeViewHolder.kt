@@ -4,12 +4,12 @@ import android.view.ViewGroup
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.model.entity.Change
+import com.qwert2603.spenddemo.model.entity.SpendChange
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import kotlinx.android.synthetic.main.item_change.view.*
 
-class ChangeViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<Change>(parent, R.layout.item_change) {
-    override fun bind(m: Change) = with(itemView) {
+class ChangeViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<SpendChange>(parent, R.layout.item_change) {
+    override fun bind(m: SpendChange) = with(itemView) {
         super.bind(m)
 
         kind_TextView.text = m.changeKind.name

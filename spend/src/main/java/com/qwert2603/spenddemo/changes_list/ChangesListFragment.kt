@@ -8,12 +8,12 @@ import com.qwert2603.andrlib.base.mvi.load_refresh.LoadRefreshPanel
 import com.qwert2603.andrlib.base.mvi.load_refresh.list.ListFragment
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.entity.Change
+import com.qwert2603.spenddemo.model.entity.SpendChange
 import kotlinx.android.synthetic.main.fragment_changes_list.*
 import kotlinx.android.synthetic.main.include_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 
-class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, ChangesListPresenter, Change>(), ChangesListView {
+class ChangesListFragment : ListFragment<ChangesListModel, ChangesListView, ChangesListPresenter, SpendChange>(), ChangesListView {
 
     override fun loadRefreshPanel(): LoadRefreshPanel = changesList_LRPanelImpl
 
