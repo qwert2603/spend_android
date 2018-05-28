@@ -66,14 +66,11 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
         }))
-        records_RecyclerView.itemAnimator = RecordsListAnimator()
-                .also {
-                    it.spendOrigin = object : RecordsListAnimator.SpendOrigin {
-                        override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
-                        override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
-                        override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
-                    }
-                }
+        records_RecyclerView.itemAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
+            override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
+            override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
+            override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
+        })
 
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()

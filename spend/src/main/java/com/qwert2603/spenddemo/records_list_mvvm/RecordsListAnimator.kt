@@ -19,7 +19,7 @@ import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
 import kotlinx.android.synthetic.main.item_spend.view.*
 import java.util.concurrent.ConcurrentHashMap
 
-class RecordsListAnimator : DefaultItemAnimator() {
+class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAnimator() {
 
     companion object {
         const val PAYLOAD_HIGHLIGHT = "PAYLOAD_HIGHLIGHT"
@@ -30,9 +30,6 @@ class RecordsListAnimator : DefaultItemAnimator() {
         fun getKindGlobalVisibleRect(): Rect
         fun getValueGlobalVisibleRect(): Rect
     }
-
-    // todo: move to constructor.
-    var spendOrigin: SpendOrigin? = null
 
     private object CreateSpend : RecyclerView.ItemAnimator.ItemHolderInfo()
 
