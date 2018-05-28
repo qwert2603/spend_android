@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
@@ -31,19 +32,22 @@ class SpendsRepoImpl @Inject constructor(
             defaultValue = 1_000_000
     )
 
+    private val locallyCreatedSpends = MutableLiveData<Spend>()
+
     override fun addSpend(creatingSpend: CreatingSpend) {
         dbExecutor.execute {
             val localId = localIdCounter.getNext()
             val localSpend = creatingSpend.toSpend(localId)
+            locallyCreatedSpends.postValue(localSpend)
             localDB.spendsDao().addSpend(localSpend.toSpendTable())
         }
     }
 
     override fun addSpends(spends: List<CreatingSpend>) {
         dbExecutor.execute {
-            localDB.spendsDao().addSpends(spends.map {
-                it.toSpend(localIdCounter.getNext()).toSpendTable()
-            })
+            localDB.spendsDao().addSpends(spends
+                    .map { it.toSpend(localIdCounter.getNext()).toSpendTable() }
+            )
         }
     }
 
@@ -60,6 +64,8 @@ class SpendsRepoImpl @Inject constructor(
     }
 
     override fun getRecordsList(): LiveData<List<RecordResult>> = localDB.spendsDao().getSpendsAndProfits()
+
+    override fun locallyCreatedSpends(): LiveData<Spend> = locallyCreatedSpends
 
     @WorkerThread
     override fun getDumpText(): String = localDB.spendsDao()

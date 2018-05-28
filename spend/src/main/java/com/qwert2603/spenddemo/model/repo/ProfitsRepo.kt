@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.repo
 
+import android.arch.lifecycle.LiveData
 import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
@@ -14,6 +15,8 @@ interface ProfitsRepo {
     fun removeProfit(profitId: Long)
 
     fun removeAllProfits()
+
+    fun locallyCreatedProfits(): LiveData<Profit>
 
     @WorkerThread
     fun getDumpText(): String

@@ -21,95 +21,86 @@ import java.util.concurrent.ConcurrentHashMap
 
 class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAnimator() {
 
-    companion object {
-        const val PAYLOAD_HIGHLIGHT = "PAYLOAD_HIGHLIGHT"
-    }
-
     interface SpendOrigin {
         fun getDateGlobalVisibleRect(): Rect
         fun getKindGlobalVisibleRect(): Rect
         fun getValueGlobalVisibleRect(): Rect
     }
 
-    private object CreateSpend : RecyclerView.ItemAnimator.ItemHolderInfo()
-
     // pair is <Animator, cancel_action>.
     private val createSpendAnimators = ConcurrentHashMap<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
 
-    override fun recordPreLayoutInformation(state: RecyclerView.State, viewHolder: RecyclerView.ViewHolder, changeFlags: Int, payloads: MutableList<Any>): ItemHolderInfo {
-        if (PAYLOAD_HIGHLIGHT in payloads) return CreateSpend
-        return super.recordPreLayoutInformation(state, viewHolder, changeFlags, payloads)
-    }
+    var pendingCreatedSpendId: Long? = null
+    var pendingCreatedProfitId: Long? = null
 
-    override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder, payloads: MutableList<Any>): Boolean {
-        return PAYLOAD_HIGHLIGHT in payloads || super.canReuseUpdatedViewHolder(viewHolder, payloads)
-    }
+    override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
+        if (holder is SpendViewHolder && holder.t?.id == pendingCreatedSpendId
+                || holder is ProfitViewHolder && holder.t?.id == pendingCreatedProfitId) {
+            pendingCreatedSpendId = null
+            pendingCreatedProfitId = null
 
-    override fun animateChange(oldHolder: RecyclerView.ViewHolder, newHolder: RecyclerView.ViewHolder, preInfo: ItemHolderInfo, postInfo: ItemHolderInfo): Boolean {
-        if (preInfo !== CreateSpend) {
-            return super.animateChange(oldHolder, newHolder, preInfo, postInfo)
-        }
+            endAnimation(holder)
 
-        endAnimation(oldHolder)
+            val animators = mutableListOf<Animator>()
+            val resetActions = mutableListOf<() -> Unit>()
 
-        val animators = mutableListOf<Animator>()
-        val resetActions = mutableListOf<() -> Unit>()
-
-        val prevBackground = oldHolder.itemView.background
-        val resetHighlightAction = { oldHolder.itemView.background = prevBackground }
-        val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
-                .also {
-                    val th = 0.25f
-                    it.setInterpolator {
-                        when {
-                            it < th -> it / th
-                            it > 1f - th -> (1f - it) / th
-                            else -> 1f
+            val prevBackground = holder.itemView.background
+            val resetHighlightAction = { holder.itemView.background = prevBackground }
+            val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
+                    .also {
+                        val th = 0.25f
+                        it.setInterpolator {
+                            when {
+                                it < th -> it / th
+                                it > 1f - th -> (1f - it) / th
+                                else -> 1f
+                            }
                         }
+                        val color = holder.itemView.resources.color(R.color.highlight_created_record)
+                        fun Float.makeColor(): Int {
+                            val alpha = (Color.alpha(color) * this).toInt()
+                            return color and 0x00_ff_ff_ff or (alpha shl 24)
+                        }
+                        it.addUpdateListener { holder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
+                        it.duration = 2000
+                        it.doOnEnd(resetHighlightAction)
                     }
-                    val color = oldHolder.itemView.resources.color(R.color.highlight_created_record)
-                    fun Float.makeColor(): Int {
-                        val alpha = (Color.alpha(color) * this).toInt()
-                        return color and 0x00_ff_ff_ff or (alpha shl 24)
-                    }
-                    it.addUpdateListener { oldHolder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
-                    it.duration = 2000
-                    it.doOnEnd(resetHighlightAction)
+            animators.add(highlightAnimator)
+            resetActions.add(resetHighlightAction)
+
+            val recyclerView = holder.itemView.parent as View
+            val spendOrigin = spendOrigin
+            if (holder is SpendViewHolder && spendOrigin != null) {
+
+                // todo: don't do it.
+                recyclerView.elevation = holder.itemView.resources.toPx(4).toFloat()
+
+                listOf(
+                        createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), holder.itemView.date_TextView, 100),
+                        createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), holder.itemView.kind_TextView, 170),
+                        createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), holder.itemView.value_TextView, 240)
+                ).forEach {
+                    animators.add(it.first)
+                    resetActions.add(it.second)
                 }
-        animators.add(highlightAnimator)
-        resetActions.add(resetHighlightAction)
-
-        val recyclerView = oldHolder.itemView.parent as View
-        val spendOrigin = spendOrigin
-        if (oldHolder is SpendViewHolder && spendOrigin != null) {
-
-            // todo: don't do it.
-            recyclerView.elevation = oldHolder.itemView.resources.toPx(4).toFloat()
-
-            listOf(
-                    createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), oldHolder.itemView.date_TextView, 100),
-                    createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), oldHolder.itemView.kind_TextView, 170),
-                    createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), oldHolder.itemView.value_TextView, 240)
-            ).forEach {
-                animators.add(it.first)
-                resetActions.add(it.second)
             }
-        }
 
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(animators)
-        animatorSet.doOnEnd {
-            dispatchAnimationFinished(oldHolder)
-            createSpendAnimators.remove(oldHolder)
-            recyclerView.elevation = 0f
-        }
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(animators)
+            animatorSet.doOnEnd {
+                dispatchAnimationFinished(holder)
+                createSpendAnimators.remove(holder)
+                recyclerView.elevation = 0f
+            }
 
-        createSpendAnimators[oldHolder] = Pair(
-                animatorSet,
-                { resetActions.forEach { it() } }
-        )
-        animatorSet.start()
-        return false
+            createSpendAnimators[holder] = Pair(
+                    animatorSet,
+                    { resetActions.forEach { it() } }
+            )
+            animatorSet.start()
+            return false
+        }
+        return super.animateAdd(holder)
     }
 
     override fun endAnimation(item: RecyclerView.ViewHolder?) {

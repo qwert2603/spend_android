@@ -1,5 +1,7 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
@@ -27,6 +29,8 @@ class ProfitsRepoImpl @Inject constructor(
             defaultValue = 1_000_000
     )
 
+    private val locallyCreatedProfits = MutableLiveData<Profit>()
+
     override fun addProfits(profits: List<CreatingProfit>) {
         dbExecutor.execute {
             localDB.profitsDao().addProfits(profits.map {
@@ -38,8 +42,9 @@ class ProfitsRepoImpl @Inject constructor(
     override fun addProfit(creatingProfit: CreatingProfit) {
         dbExecutor.execute {
             val localId = localIdCounter.getNext()
-            val profit = creatingProfit.toProfit(localId).toProfitTable()
-            localDB.profitsDao().addProfit(profit)
+            val profit = creatingProfit.toProfit(localId)
+            locallyCreatedProfits.postValue(profit)
+            localDB.profitsDao().addProfit(profit.toProfitTable())
         }
     }
 
@@ -54,6 +59,8 @@ class ProfitsRepoImpl @Inject constructor(
     override fun removeAllProfits() {
         dbExecutor.execute { localDB.profitsDao().deleteAllProfits() }
     }
+
+    override fun locallyCreatedProfits(): LiveData<Profit> = locallyCreatedProfits
 
     @WorkerThread
     override fun getDumpText(): String = localDB.profitsDao()

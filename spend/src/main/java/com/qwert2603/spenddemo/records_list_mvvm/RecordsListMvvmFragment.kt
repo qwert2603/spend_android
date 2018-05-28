@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.view.animation.AnimationUtils
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.BuildConfig
@@ -66,10 +67,19 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
         }))
-        records_RecyclerView.itemAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
+        val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
             override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
             override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
             override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
+        })
+        records_RecyclerView.itemAnimator = recordsListAnimator
+        viewModel.createdSpendsIds.observe(this, Observer {
+            LogUtils.d("RecordsListMvvmFragment pendingCreatedSpendId $it")
+            recordsListAnimator.pendingCreatedSpendId = it
+        })
+        viewModel.createdProfitsIds.observe(this, Observer {
+            LogUtils.d("RecordsListMvvmFragment pendingCreatedProfitId $it")
+            recordsListAnimator.pendingCreatedProfitId = it
         })
 
         var showFloatingDate = false

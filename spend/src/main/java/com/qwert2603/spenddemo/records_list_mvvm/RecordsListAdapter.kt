@@ -11,18 +11,21 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true
         set(value) {
+            if (value == field) return
             field = value
             notifyItemRangeChanged(0, itemCount)
         }
 
     var showIds = true
         set(value) {
+            if (value == field) return
             field = value
             notifyItemRangeChanged(0, itemCount)
         }
 
     var showDatesInRecords = true
         set(value) {
+            if (value == field) return
             field = value
             notifyItemRangeChanged(0, itemCount)
         }

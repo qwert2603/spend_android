@@ -12,7 +12,9 @@ abstract class BaseViewHolder<T : RecordsListItem>(
         @LayoutRes layoutRes: Int
 ) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)) {
 
-    private var t: T? = null
+    var t: T? = null
+        private set
+
     private var adapter: RecordsListAdapter? = null
 
     init {

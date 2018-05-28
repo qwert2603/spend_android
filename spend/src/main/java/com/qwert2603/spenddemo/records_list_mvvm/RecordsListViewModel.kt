@@ -181,4 +181,10 @@ class RecordsListViewModel(
             sendRecords.postValue("SPENDS:\n${spendsRepo.getDumpText()}\n\nPROFITS:\n${profitsRepo.getDumpText()}")
         }
     }
+
+    val createdSpendsIds = spendsRepo.locallyCreatedSpends()
+            .map { it.id }
+
+    val createdProfitsIds = profitsRepo.locallyCreatedProfits()
+            .map { it.id }
 }
