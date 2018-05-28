@@ -3,14 +3,19 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.Profit
+import com.qwert2603.spenddemo.model.entity.Spend
+import com.qwert2603.spenddemo.model.entity.toProfit
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
+import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
+import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.records_list.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
-import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 class RecordsListViewModel(
@@ -18,18 +23,12 @@ class RecordsListViewModel(
         private val userSettingsRepo: UserSettingsRepo
 ) : ViewModel() {
 
-    companion object {
-        lateinit var LOCAL_DB: LocalDB
-        val EXECUTOR: Executor = Executors.newSingleThreadExecutor()
-    }
-
     val showSpends = MutableLiveData<Boolean>()
     val showProfits = MutableLiveData<Boolean>()
     val showDateSums = MutableLiveData<Boolean>()
     val showMonthSums = MutableLiveData<Boolean>()
 
     init {
-        LOCAL_DB = localDB
         showSpends.value = userSettingsRepo.showSpends
         showProfits.value = userSettingsRepo.showProfits
         showDateSums.value = userSettingsRepo.showDateSums
@@ -139,4 +138,34 @@ class RecordsListViewModel(
             localDB.spendsDao().get30DaysSum(),
             { profits, spends -> (profits ?: 0L) - (spends ?: 0L) }
     )
+
+    fun deleteSpend(id: Long) {
+        Executors.newSingleThreadExecutor().execute {
+            localDB.spendsDao().removeSpend(id)
+        }
+    }
+
+    fun deleteProfit(id: Long) {
+        Executors.newSingleThreadExecutor().execute {
+            localDB.profitsDao().removeProfit(id)
+        }
+    }
+
+    fun addProfit(creatingProfit: CreatingProfit) {
+        Executors.newSingleThreadExecutor().execute {
+            localDB.profitsDao().addProfit(creatingProfit.toProfit(1000000L + Random().nextInt(1000000)).toProfitTable())
+        }
+    }
+
+    fun editSpend(spend: Spend) {
+        Executors.newSingleThreadExecutor().execute {
+            localDB.spendsDao().editSpend(spend.toSpendTable())
+        }
+    }
+
+    fun editProfit(profit: Profit) {
+        Executors.newSingleThreadExecutor().execute {
+            localDB.profitsDao().editProfit(profit.toProfitTable())
+        }
+    }
 }

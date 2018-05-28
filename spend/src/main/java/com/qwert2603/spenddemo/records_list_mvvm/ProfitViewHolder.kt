@@ -25,15 +25,6 @@ class ProfitViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflat
                 1,
                 TypedValue.COMPLEX_UNIT_SP
         )
-
-        itemView.setOnLongClickListener {
-            profitId?.let {
-                RecordsListViewModel.EXECUTOR.execute {
-                    RecordsListViewModel.LOCAL_DB.profitsDao().removeProfit(it)
-                }
-            }
-            true
-        }
     }
 
     fun bind(m: ProfitUI?) = with(itemView) {

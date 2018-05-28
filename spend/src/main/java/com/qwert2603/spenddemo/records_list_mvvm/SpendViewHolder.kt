@@ -25,15 +25,6 @@ class SpendViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflate
                 1,
                 TypedValue.COMPLEX_UNIT_SP
         )
-
-        itemView.setOnLongClickListener {
-            spendId?.let {
-                RecordsListViewModel.EXECUTOR.execute {
-                    RecordsListViewModel.LOCAL_DB.spendsDao().removeSpend(it)
-                }
-            }
-            true
-        }
     }
 
     fun bind(m: SpendUI?) = with(itemView) {

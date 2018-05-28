@@ -121,8 +121,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        // todo: don't show RELEASE
-        toolbar.title = "${getString(R.string.app_name)} ${BuildConfig.FLAVOR} ${BuildConfig.BUILD_TYPE}"
+        toolbar.title = listOfNotNull(
+                getString(R.string.app_name),
+                BuildConfig.FLAVOR,
+                BuildConfig.BUILD_TYPE.takeIf { it != "debug" }
+        ).reduce { acc, s -> "$acc $s" }
 
         RxRecyclerView.scrollEvents(records_RecyclerView)
                 .switchMap {
