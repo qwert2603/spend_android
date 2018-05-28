@@ -28,6 +28,7 @@ class RecordsListViewModel(
     val showMonthSums = MutableLiveData<Boolean>()
     val showIds = MutableLiveData<Boolean>()
     val showChangeKinds = MutableLiveData<Boolean>()
+    val showBalance = MutableLiveData<Boolean>()
 
     val sendRecords = SingleLiveEvent<String>()
 
@@ -38,6 +39,7 @@ class RecordsListViewModel(
         showMonthSums.value = userSettingsRepo.showMonthSums
         showIds.value = userSettingsRepo.showIds
         showChangeKinds.value = userSettingsRepo.showChangeKinds
+        showBalance.value = userSettingsRepo.showBalance
     }
 
     data class ShowInfo(
@@ -108,6 +110,11 @@ class RecordsListViewModel(
         userSettingsRepo.showChangeKinds = show
     }
 
+    fun showBalance(show: Boolean) {
+        showBalance.value = show
+        userSettingsRepo.showBalance = show
+    }
+
     fun addStubSpends() {
         val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
         val random = Random()
@@ -140,7 +147,14 @@ class RecordsListViewModel(
         profitsRepo.removeAllProfits()
     }
 
-    val balance30Days = spendsRepo.get30DaysBalance()
+    val balance30Days = showBalance
+            .switchMap {
+                if (it) {
+                    spendsRepo.get30DaysBalance()
+                } else {
+                    MutableLiveData<Long>().also { it.value = null }
+                }
+            }
 
     fun deleteSpend(id: Long) {
         spendsRepo.removeSpend(id)

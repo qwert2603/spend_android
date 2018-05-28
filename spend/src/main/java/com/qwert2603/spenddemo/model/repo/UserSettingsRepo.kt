@@ -7,4 +7,5 @@ interface UserSettingsRepo {
     var showMonthSums: Boolean
     var showSpends: Boolean
     var showProfits: Boolean
+    var showBalance: Boolean
 }

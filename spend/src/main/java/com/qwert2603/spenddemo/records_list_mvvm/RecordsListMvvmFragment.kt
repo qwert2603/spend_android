@@ -130,7 +130,9 @@ class RecordsListMvvmFragment : Fragment() {
             }
         }
 
-        viewModel.balance30Days.observe(this, Observer { toolbar.subtitle = getString(R.string.text_balance_30_days_format, it?.toPointedString()) })
+        viewModel.balance30Days.observe(this, Observer {
+            toolbar.subtitle = it?.toPointedString()?.let { getString(R.string.text_balance_30_days_format, it) }
+        })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
 
@@ -145,7 +147,7 @@ class RecordsListMvvmFragment : Fragment() {
         toolbar.title = listOfNotNull(
                 getString(R.string.app_name),
                 BuildConfig.FLAVOR,
-                BuildConfig.BUILD_TYPE.takeIf { it != "debug" }
+                BuildConfig.BUILD_TYPE.takeIf { it != "release" }
         ).reduce { acc, s -> "$acc $s" }
 
         RxRecyclerView.scrollEvents(records_RecyclerView)
@@ -235,18 +237,21 @@ class RecordsListMvvmFragment : Fragment() {
         val showMonthSumsMenuItem = menu.findItem(R.id.show_month_sums)
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
+        val showBalanceMenuItem = menu.findItem(R.id.show_balance)
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
         viewModel.showDateSums.observe(this, Observer { showDateSumsMenuItem.isChecked = it == true })
         viewModel.showMonthSums.observe(this, Observer { showMonthSumsMenuItem.isChecked = it == true })
         viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
         viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
+        viewModel.showBalance.observe(this, Observer { showBalanceMenuItem.isChecked = it == true })
         showSpendsMenuItem.setOnMenuItemClickListener { viewModel.showSpends(!showSpendsMenuItem.isChecked);true }
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
         showDateSumsMenuItem.setOnMenuItemClickListener { viewModel.showDateSums(!showDateSumsMenuItem.isChecked);true }
         showMonthSumsMenuItem.setOnMenuItemClickListener { viewModel.showMonthSums(!showMonthSumsMenuItem.isChecked);true }
         showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
         showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
+        showBalanceMenuItem.setOnMenuItemClickListener { viewModel.showBalance(!showBalanceMenuItem.isChecked);true }
 
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/new_profit"
@@ -26,10 +25,10 @@
         android:checkable="true"
         android:title="@string/text_show_month_sums" />
 
-    <!--todo: <item-->
-    <!--android:id="@+id/show_balance"-->
-    <!--android:checkable="true"-->
-    <!--android:title="show balance" />-->
+    <item
+        android:id="@+id/show_balance"
+        android:checkable="true"
+        android:title="@string/show_balance_text" />
 
     <item
         android:id="@+id/send_records"
@@ -56,15 +55,11 @@
 
     <item
         android:id="@+id/add_stub_spends"
-        android:icon="@drawable/ic_local"
-        android:title="@string/text_add_stub_spends"
-        app:showAsAction="always" />
+        android:title="@string/text_add_stub_spends" />
 
     <item
         android:id="@+id/add_stub_profits"
-        android:icon="@drawable/ic_syncing"
-        android:title="@string/text_add_stub_profits"
-        app:showAsAction="always" />
+        android:title="@string/text_add_stub_profits" />
 
     <item
         android:id="@+id/clear_all"
