@@ -36,8 +36,9 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
     override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
         if (holder is SpendViewHolder && holder.t?.id == pendingCreatedSpendId
                 || holder is ProfitViewHolder && holder.t?.id == pendingCreatedProfitId) {
-            pendingCreatedSpendId = null
-            pendingCreatedProfitId = null
+
+            if (holder is SpendViewHolder) pendingCreatedSpendId = null
+            if (holder is ProfitViewHolder) pendingCreatedProfitId = null
 
             endAnimation(holder)
 

@@ -86,10 +86,18 @@ class RecordsListMvvmFragment : Fragment() {
         var records = emptyList<RecordsListItem>()
 
         var layoutAnimationShown = false
-        viewModel.recordsLiveData.observe(this, Observer {
-            if (it == null) return@Observer
-            adapter.list = it
-            records = it
+        viewModel.recordsLiveData.observe(this, Observer { list ->
+            if (list == null) return@Observer
+            adapter.list = list
+            recordsListAnimator.pendingCreatedSpendId?.let { createdId ->
+                list.indexOfFirst { it is SpendUI && it.id == createdId }
+                        .let { records_RecyclerView.scrollToPosition(it) }
+            }
+            recordsListAnimator.pendingCreatedProfitId?.let { createdId ->
+                list.indexOfFirst { it is ProfitUI && it.id == createdId }
+                        .let { records_RecyclerView.scrollToPosition(it) }
+            }
+            records = list
             if (savedInstanceState == null && !layoutAnimationShown) {
                 layoutAnimationShown = true
                 val layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
@@ -287,33 +295,3 @@ class RecordsListMvvmFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 }
-
-/*
- is RecordsListViewAction.ScrollToSpendAndHighlight -> {
-                currentViewState.records
-                        .indexOfFirst { it is SpendUI && it.id == va.spendId }
-                        .takeIf { it >= 0 }
-                        ?.let {
-                            records_RecyclerView.scrollToPosition(it)
-                            records_RecyclerView.postDelayed(
-                                    { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
-                                    100
-                            )
-                        }
-            }
-            is RecordsListViewAction.ScrollToProfitAndHighlight -> {
-                // todo: remove this delay when profits list will use sync processor like spends list.
-                records_RecyclerView.postDelayed({
-                    currentViewState.records
-                            .indexOfFirst { it is ProfitUI && it.id == va.profitId }
-                            .takeIf { it >= 0 }
-                            ?.let {
-                                records_RecyclerView?.scrollToPosition(it)
-                                records_RecyclerView?.postDelayed(
-                                        { adapter.notifyItemChanged(it, RecordsListAnimator.PAYLOAD_HIGHLIGHT) },
-                                        100
-                                )
-                            }
-                }, 500)
-            }
-* */
