@@ -182,9 +182,7 @@ class RecordsListViewModel(
         }
     }
 
-    val createdSpendsIds = spendsRepo.locallyCreatedSpends()
-            .map { it.id }
+    val createdSpendsIds: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
 
-    val createdProfitsIds = profitsRepo.locallyCreatedProfits()
-            .map { it.id }
+    val createdProfitsIds: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
 }

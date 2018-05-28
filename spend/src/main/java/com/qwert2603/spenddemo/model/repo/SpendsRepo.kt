@@ -5,6 +5,7 @@ import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
+import com.qwert2603.spenddemo.utils.SingleLiveEvent
 
 interface SpendsRepo {
     fun addSpend(creatingSpend: CreatingSpend)
@@ -23,7 +24,7 @@ interface SpendsRepo {
      */
     fun getRecordsList(): LiveData<List<RecordResult>>
 
-    fun locallyCreatedSpends(): LiveData<Spend>
+    fun locallyCreatedSpends(): SingleLiveEvent<Spend>
 
     @WorkerThread
     fun getDumpText(): String
