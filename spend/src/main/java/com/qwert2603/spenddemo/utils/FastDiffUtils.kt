@@ -18,6 +18,7 @@ object FastDiffUtils {
         }
     }
 
+    // todo: moves are ignored now. Move can happen after changing date of spend or profit.
     /**
      * Optimized version on [DiffUtil].
      * Calculates inserts / removes / changes of items in list.
