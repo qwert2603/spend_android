@@ -119,7 +119,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                     } else {
                         keyboardManager.showKeyboard(value_EditText)
                     }
-                }, 100)
+                }, 200)
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
