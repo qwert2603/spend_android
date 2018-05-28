@@ -72,8 +72,10 @@ class RecordsListMvvmFragment : Fragment() {
             override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
         })
         records_RecyclerView.itemAnimator = recordsListAnimator
-        viewModel.createdSpendsIds.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })
-        viewModel.createdProfitsIds.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
+        viewModel.createdSpendsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })
+        viewModel.createdProfitsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
+        viewModel.editedSpendsEvents.observe(this, Observer { adapter.pendingMovedSpendId = it?.id })
+        viewModel.editedProfitsEvents.observe(this, Observer { adapter.pendingMovedProfitId = it?.id })
 
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()

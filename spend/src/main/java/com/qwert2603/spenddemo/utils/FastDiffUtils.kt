@@ -9,16 +9,17 @@ object FastDiffUtils {
     data class FastDiffResult(
             val inserts: List<Pair<Int, Int>>,
             val removes: List<Pair<Int, Int>>,
-            val changes: List<Int>
+            val changes: List<Int>,
+            val moves: List<Pair<Int, Int>>
     ) {
         fun dispatchToAdapter(adapter: RecyclerView.Adapter<*>) {
+            moves.forEach { adapter.notifyItemMoved(it.first, it.second) }
             changes.forEach { adapter.notifyItemChanged(it) }
             removes.forEach { adapter.notifyItemRangeRemoved(it.first, it.second) }
             inserts.forEach { adapter.notifyItemRangeInserted(it.first, it.second) }
         }
     }
 
-    // todo: moves are ignored now. Move can happen after changing date of spend or profit.
     /**
      * Optimized version on [DiffUtil].
      * Calculates inserts / removes / changes of items in list.
@@ -31,12 +32,29 @@ object FastDiffUtils {
             newList: List<T>,
             crossinline id: T.() -> I,
             crossinline compareOrder: (T, T) -> Int,
-            crossinline isEqual: (T, T) -> Boolean
+            crossinline isEqual: (T, T) -> Boolean,
+            possiblyMovedItemIds: List<I> = emptyList()
     ): FastDiffResult {
+
+        val movedIds = mutableSetOf<I>()
 
         val inserts = mutableListOf<Pair<Int, Int>>()
         val removes = mutableListOf<Pair<Int, Int>>()
         val changes = mutableListOf<Int>()
+
+        val moves = possiblyMovedItemIds.mapNotNull { movedId ->
+            val fromPosition = oldList.indexOfFirst { it.id() == movedId }
+            val toPosition = newList.indexOfFirst { it.id() == movedId }
+            if (fromPosition >= 0 && toPosition >= 0) {
+                movedIds.add(movedId)
+                if (!isEqual(oldList[fromPosition], newList[toPosition])) {
+                    changes.add(toPosition)
+                }
+                fromPosition to toPosition
+            } else {
+                null
+            }
+        }
 
         var oldIndex = 0
         var newIndex = 0
@@ -45,6 +63,14 @@ object FastDiffUtils {
         var removesCount = 0
 
         while (oldIndex < oldList.size && newIndex < newList.size) {
+            if (oldList[oldIndex].id() in movedIds) {
+                ++oldIndex
+                continue
+            }
+            if (newList[newIndex].id() in movedIds) {
+                ++newIndex
+                continue
+            }
             if (oldList[oldIndex].id() == newList[newIndex].id()) {
                 if (!isEqual(oldList[oldIndex], newList[newIndex])) {
                     changes.add(oldIndex)
@@ -80,7 +106,7 @@ object FastDiffUtils {
             inserts.add(oldIndex + insertsCount - removesCount to newList.size - newIndex)
         }
 
-        return FastDiffResult(inserts = inserts, removes = removes, changes = changes)
+        return FastDiffResult(inserts = inserts, removes = removes, changes = changes, moves = moves)
     }
 
 }

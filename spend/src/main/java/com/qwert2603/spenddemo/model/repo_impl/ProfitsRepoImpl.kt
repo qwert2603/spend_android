@@ -30,6 +30,8 @@ class ProfitsRepoImpl @Inject constructor(
 
     private val locallyCreatedProfits = SingleLiveEvent<Profit>()
 
+    private val locallyEditedProfits = SingleLiveEvent<Profit>()
+
     override fun addProfits(profits: List<CreatingProfit>) {
         dbExecutor.execute {
             localDB.profitsDao().addProfits(profits.map {
@@ -48,7 +50,10 @@ class ProfitsRepoImpl @Inject constructor(
     }
 
     override fun editProfit(profit: Profit) {
-        dbExecutor.execute { localDB.profitsDao().editProfit(profit.toProfitTable()) }
+        dbExecutor.execute {
+            locallyEditedProfits.postValue(profit)
+            localDB.profitsDao().editProfit(profit.toProfitTable())
+        }
     }
 
     override fun removeProfit(profitId: Long) {
@@ -60,6 +65,8 @@ class ProfitsRepoImpl @Inject constructor(
     }
 
     override fun locallyCreatedProfits(): SingleLiveEvent<Profit> = locallyCreatedProfits
+
+    override fun locallyEditedProfits(): SingleLiveEvent<Profit> = locallyEditedProfits
 
     @WorkerThread
     override fun getDumpText(): String = localDB.profitsDao()

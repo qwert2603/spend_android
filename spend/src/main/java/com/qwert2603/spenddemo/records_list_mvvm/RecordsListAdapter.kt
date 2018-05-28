@@ -30,6 +30,9 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             notifyItemRangeChanged(0, itemCount)
         }
 
+    var pendingMovedSpendId: Long? = null
+    var pendingMovedProfitId: Long? = null
+
     var list: List<RecordsListItem> = emptyList()
         set(value) {
             val oldList = field
@@ -47,10 +50,16 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                         .takeIf { it != 0 }
                                 ?: r2.id.compareTo(r1.id)
                     },
-                    isEqual = { r1, r2 -> r1 == r2 }
+                    isEqual = { r1, r2 -> r1 == r2 },
+                    possiblyMovedItemIds = listOfNotNull(
+                            pendingMovedSpendId?.plus(ADDENDUM_ID_SPEND),
+                            pendingMovedProfitId?.plus(ADDENDUM_ID_PROFIT)
+                    )
             )
                     .also { LogUtils.d("RecordsListAdapter fastCalculateDiff $it") }
                     .dispatchToAdapter(this)
+
+            pendingMovedSpendId = null
         }
 
     var itemClicks: ((RecordsListItem) -> Unit)? = null
@@ -61,52 +70,58 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         VIEW_TYPE_SPEND -> SpendViewHolder(parent)
-        VIEW_TYPE_DATE_SUM -> DateSumViewHolder(parent)
         VIEW_TYPE_PROFIT -> ProfitViewHolder(parent)
-        VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)
+        VIEW_TYPE_DATE_SUM -> DateSumViewHolder(parent)
         VIEW_TYPE_MONTH_SUM -> MonthSumViewHolder(parent)
+        VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)
         else -> null!!
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as? SpendViewHolder)?.bind(list[position] as SpendUI, this)
         (holder as? ProfitViewHolder)?.bind(list[position] as ProfitUI, this)
-        (holder as? TotalsViewHolder)?.bind(list[position] as TotalsUI, this)
         (holder as? DateSumViewHolder)?.bind(list[position] as DateSumUI, this)
         (holder as? MonthSumViewHolder)?.bind(list[position] as MonthSumUI, this)
+        (holder as? TotalsViewHolder)?.bind(list[position] as TotalsUI, this)
     }
 
     override fun getItemViewType(position: Int) = when (list[position]) {
         is SpendUI -> VIEW_TYPE_SPEND
-        is DateSumUI -> VIEW_TYPE_DATE_SUM
         is ProfitUI -> VIEW_TYPE_PROFIT
-        is TotalsUI -> VIEW_TYPE_TOTALS
+        is DateSumUI -> VIEW_TYPE_DATE_SUM
         is MonthSumUI -> VIEW_TYPE_MONTH_SUM
+        is TotalsUI -> VIEW_TYPE_TOTALS
         else -> null!!
     }
 
     companion object {
         const val VIEW_TYPE_SPEND = 1
-        const val VIEW_TYPE_DATE_SUM = 2
-        const val VIEW_TYPE_PROFIT = 3
-        const val VIEW_TYPE_TOTALS = 4
-        const val VIEW_TYPE_MONTH_SUM = 5
+        const val VIEW_TYPE_PROFIT = 2
+        const val VIEW_TYPE_DATE_SUM = 3
+        const val VIEW_TYPE_MONTH_SUM = 4
+        const val VIEW_TYPE_TOTALS = 5
+
+        private const val ADDENDUM_ID_SPEND = 0L
+        private const val ADDENDUM_ID_PROFIT = 1_000_000_000L
+        private const val ADDENDUM_ID_DATE_SUM = 2_000_000_000L
+        private const val ADDENDUM_ID_MONTH_SUM = 3_000_000_000L
+        private const val ADDENDUM_ID_TOTALS = 4_000_000_000L
 
         private fun RecordsListItem.id() = when (this) {
-            is SpendUI -> this.id + 1_000_000_000L
-            is DateSumUI -> this.id + 3_000_000_000L
-            is ProfitUI -> this.id + 2_000_000_000L
-            is TotalsUI -> 1918L
-            is MonthSumUI -> this.id + 4_000_000_000L
+            is SpendUI -> this.id + ADDENDUM_ID_SPEND
+            is ProfitUI -> this.id + ADDENDUM_ID_PROFIT
+            is DateSumUI -> this.id + ADDENDUM_ID_DATE_SUM
+            is MonthSumUI -> this.id + ADDENDUM_ID_MONTH_SUM
+            is TotalsUI -> this.id + ADDENDUM_ID_TOTALS
             else -> null!!
         }
 
         private fun RecordsListItem.time() = when (this) {
             is SpendUI -> this.date.time
-            is DateSumUI -> this.date.time
             is ProfitUI -> this.date.time
-            is TotalsUI -> Long.MIN_VALUE
+            is DateSumUI -> this.date.time
             is MonthSumUI -> this.date.time
+            is TotalsUI -> Long.MIN_VALUE
             else -> null!!
         }
 

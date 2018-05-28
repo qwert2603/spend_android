@@ -182,7 +182,11 @@ class RecordsListViewModel(
         }
     }
 
-    val createdSpendsIds: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
+    val createdSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
 
-    val createdProfitsIds: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
+    val createdProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
+
+    val editedSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyEditedSpends()
+
+    val editedProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyEditedProfits()
 }

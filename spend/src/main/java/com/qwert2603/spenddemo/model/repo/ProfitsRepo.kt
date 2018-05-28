@@ -18,6 +18,8 @@ interface ProfitsRepo {
 
     fun locallyCreatedProfits(): SingleLiveEvent<Profit>
 
+    fun locallyEditedProfits(): SingleLiveEvent<Profit>
+
     @WorkerThread
     fun getDumpText(): String
 }

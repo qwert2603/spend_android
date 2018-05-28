@@ -30,6 +30,8 @@ class SpendsRepoImpl @Inject constructor(
 
     private val locallyCreatedSpends = SingleLiveEvent<Spend>()
 
+    private val locallyEditedSpends = SingleLiveEvent<Spend>()
+
     override fun addSpend(creatingSpend: CreatingSpend) {
         dbExecutor.execute {
             val localId = localIdCounter.getNext()
@@ -48,7 +50,10 @@ class SpendsRepoImpl @Inject constructor(
     }
 
     override fun editSpend(spend: Spend) {
-        dbExecutor.execute { localDB.spendsDao().editSpend(spend.toSpendTable()) }
+        dbExecutor.execute {
+            locallyEditedSpends.postValue(spend)
+            localDB.spendsDao().editSpend(spend.toSpendTable())
+        }
     }
 
     override fun removeSpend(spendId: Long) {
@@ -62,6 +67,8 @@ class SpendsRepoImpl @Inject constructor(
     override fun getRecordsList(): LiveData<List<RecordResult>> = localDB.spendsDao().getSpendsAndProfits()
 
     override fun locallyCreatedSpends(): SingleLiveEvent<Spend> = locallyCreatedSpends
+
+    override fun locallyEditedSpends(): SingleLiveEvent<Spend> = locallyEditedSpends
 
     @WorkerThread
     override fun getDumpText(): String = localDB.spendsDao()

@@ -26,6 +26,8 @@ interface SpendsRepo {
 
     fun locallyCreatedSpends(): SingleLiveEvent<Spend>
 
+    fun locallyEditedSpends(): SingleLiveEvent<Spend>
+
     @WorkerThread
     fun getDumpText(): String
 
