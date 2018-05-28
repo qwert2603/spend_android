@@ -19,6 +19,13 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
 
     init {
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.id_TextView,
+                12,
+                14,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 itemView.date_TextView,
                 14,
                 16,

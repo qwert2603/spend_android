@@ -9,11 +9,18 @@ import com.qwert2603.spenddemo.records_list_mvvm.entity.ProfitUI
 import com.qwert2603.spenddemo.utils.toFormattedString
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
-import kotlinx.android.synthetic.main.item_spend.view.*
+import kotlinx.android.synthetic.main.item_profit.view.*
 
 class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.layout.item_profit) {
 
     init {
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.id_TextView,
+                12,
+                14,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 itemView.date_TextView,
                 14,
