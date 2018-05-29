@@ -37,6 +37,17 @@
         tools:text="@string/yesterday_text" />
 
     <TextView
+        android:id="@+id/time_TextView"
+        android:layout_width="40sp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="end"
+        android:lines="1"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        tools:text="19:18" />
+
+    <TextView
         android:id="@+id/kind_TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

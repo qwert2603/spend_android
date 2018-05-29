@@ -57,6 +57,7 @@
     <string name="text_show_date_sums">сумма по дням</string>
     <string name="text_show_month_sums">сумма по месяцам</string>
     <string name="text_new_profit">новый доход</string>
+    <string name="show_times_text">время</string>
     <string name="show_balance_text">показывать баланс</string>
 
     <string name="text_all_records_loaded">все записи загружены</string>

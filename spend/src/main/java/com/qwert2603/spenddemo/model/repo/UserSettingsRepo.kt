@@ -8,4 +8,5 @@ interface UserSettingsRepo {
     var showSpends: Boolean
     var showProfits: Boolean
     var showBalance: Boolean
+    var showTimes: Boolean
 }

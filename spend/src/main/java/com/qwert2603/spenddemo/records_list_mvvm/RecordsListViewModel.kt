@@ -29,6 +29,7 @@ class RecordsListViewModel(
     val showIds = MutableLiveData<Boolean>()
     val showChangeKinds = MutableLiveData<Boolean>()
     val showBalance = MutableLiveData<Boolean>()
+    val showTimes = MutableLiveData<Boolean>()
 
     val sendRecords = SingleLiveEvent<String>()
 
@@ -40,6 +41,7 @@ class RecordsListViewModel(
         showIds.value = userSettingsRepo.showIds
         showChangeKinds.value = userSettingsRepo.showChangeKinds
         showBalance.value = userSettingsRepo.showBalance
+        showTimes.value = userSettingsRepo.showTimes
     }
 
     data class ShowInfo(
@@ -113,6 +115,11 @@ class RecordsListViewModel(
     fun showBalance(show: Boolean) {
         showBalance.value = show
         userSettingsRepo.showBalance = show
+    }
+
+    fun showTimes(show: Boolean) {
+        showTimes.value = show
+        userSettingsRepo.showTimes = show
     }
 
     fun addStubSpends() {

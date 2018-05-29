@@ -57,6 +57,7 @@
     <string name="text_show_date_sums">date sums</string>
     <string name="text_show_month_sums">month sums</string>
     <string name="text_new_profit">new profit</string>
+    <string name="show_times_text">times</string>
     <string name="show_balance_text">show balance</string>
 
     <string name="text_all_records_loaded">all records loaded</string>

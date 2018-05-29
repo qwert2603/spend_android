@@ -145,6 +145,7 @@ class RecordsListMvvmFragment : Fragment() {
         })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
+        viewModel.showTimes.observe(this, Observer { adapter.showTimesInRecords = it == true })
 
         draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
@@ -243,6 +244,7 @@ class RecordsListMvvmFragment : Fragment() {
         val showMonthSumsMenuItem = menu.findItem(R.id.show_month_sums)
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
+        val showTimesMenuItem = menu.findItem(R.id.show_times)
         val showBalanceMenuItem = menu.findItem(R.id.show_balance)
 
         showIdsMenuItem.isVisible = E.env.showIdsSetting
@@ -258,6 +260,7 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.showMonthSums.observe(this, Observer { showMonthSumsMenuItem.isChecked = it == true })
         viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
         viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
+        viewModel.showTimes.observe(this, Observer { showTimesMenuItem.isChecked = it == true })
         viewModel.showBalance.observe(this, Observer { showBalanceMenuItem.isChecked = it == true })
         showSpendsMenuItem.setOnMenuItemClickListener { viewModel.showSpends(!showSpendsMenuItem.isChecked);true }
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
@@ -265,6 +268,7 @@ class RecordsListMvvmFragment : Fragment() {
         showMonthSumsMenuItem.setOnMenuItemClickListener { viewModel.showMonthSums(!showMonthSumsMenuItem.isChecked);true }
         showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
         showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
+        showTimesMenuItem.setOnMenuItemClickListener { viewModel.showTimes(!showTimesMenuItem.isChecked);true }
         showBalanceMenuItem.setOnMenuItemClickListener { viewModel.showBalance(!showBalanceMenuItem.isChecked);true }
 
         viewModel.showInfo.observe(this, Observer {

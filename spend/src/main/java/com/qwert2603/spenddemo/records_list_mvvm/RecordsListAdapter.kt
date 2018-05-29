@@ -30,6 +30,13 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             notifyItemRangeChanged(0, itemCount)
         }
 
+    var showTimesInRecords = true
+        set(value) {
+            if (value == field) return
+            field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
     var pendingMovedSpendId: Long? = null
     var pendingMovedProfitId: Long? = null
 
