@@ -30,7 +30,7 @@ class UtilsKtTest {
 
     @Test
     fun toRecordItemsList() {
-        recordResults.toRecordItemsList(true, true, true, true, true, true)
+        recordResults.toRecordItemsList(RecordsListViewModel.ShowInfo(true, true, true, true))
     }
 
 }

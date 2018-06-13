@@ -22,7 +22,7 @@ public class ExampleUnitTest {
                 "jdbc:postgresql://192.168.1.26:5432/spend",
                 "postgres",
                 "1234"
-        ), "");
+        ));
         boolean bb = false;
         Date date = null;
         while ((s = bufferedReader.readLine()) != null) {
