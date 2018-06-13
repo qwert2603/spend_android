@@ -1,9 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
     <string name="app_name">расходы</string>
 
     <string name="kind">вид</string>
     <string name="value">сумма</string>
     <string name="date">дата</string>
+    <string name="time">время</string>
     <string name="show_local_changes">показать изменения</string>
     <string name="local_changes">локальные изменения</string>
     <string name="no_local_changes">нет локальных изменений</string>

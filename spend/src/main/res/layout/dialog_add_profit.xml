@@ -6,23 +6,51 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="@color/anth"
-        app:hintTextAppearance="@color/anth">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/date_EditText"
-            android:layout_width="match_parent"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:focusable="false"
-            android:hint="@string/date"
-            android:longClickable="false"
-            android:singleLine="true"
-            tools:ignore="TextFields" />
+            android:layout_weight="1"
+            android:textColorHint="@color/anth"
+            app:hintTextAppearance="@color/anth">
 
-    </android.support.design.widget.TextInputLayout>
+            <EditText
+                android:id="@+id/date_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="@string/date"
+                android:longClickable="false"
+                android:singleLine="true"
+                tools:ignore="TextFields" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColorHint="@color/anth"
+            app:hintTextAppearance="@color/anth">
+
+            <EditText
+                android:id="@+id/time_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="@string/time"
+                android:longClickable="false"
+                android:singleLine="true"
+                tools:ignore="TextFields" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

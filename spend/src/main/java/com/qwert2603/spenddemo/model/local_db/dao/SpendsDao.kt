@@ -26,7 +26,7 @@ abstract class SpendsDao {
     @Query("SELECT SUM(s.value) FROM SpendTable s WHERE date(s.date/1000, 'unixepoch') > date('now','-30 day')")
     abstract fun get30DaysSum(): LiveData<Long?>
 
-    @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC")
+    @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
     abstract fun getAllKings(): LiveData<List<SpendKindTable>>
 
     @Query("SELECT * FROM SpendKindTable WHERE kind = :kind")

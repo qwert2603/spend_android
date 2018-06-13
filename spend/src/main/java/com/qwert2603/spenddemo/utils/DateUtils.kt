@@ -48,3 +48,33 @@ fun Calendar.monthsEqual(anth: Calendar) = this[Calendar.YEAR] == anth[Calendar.
 
 fun Calendar.onlyDate(): Date = GregorianCalendar(this[Calendar.YEAR], this[Calendar.MONTH], this[Calendar.DAY_OF_MONTH]).time
 fun Calendar.onlyMonth(): Date = GregorianCalendar(this[Calendar.YEAR], this[Calendar.MONTH], 1).time
+
+var Calendar.year
+    get() = this[Calendar.YEAR]
+    set(value) {
+        this[Calendar.YEAR] = value
+    }
+
+var Calendar.month
+    get() = this[Calendar.MONTH]
+    set(value) {
+        this[Calendar.MONTH] = value
+    }
+
+var Calendar.day
+    get() = this[Calendar.DAY_OF_MONTH]
+    set(value) {
+        this[Calendar.DAY_OF_MONTH] = value
+    }
+
+var Calendar.hour
+    get() = this[Calendar.HOUR_OF_DAY]
+    set(value) {
+        this[Calendar.HOUR_OF_DAY] = value
+    }
+
+var Calendar.minute
+    get() = this[Calendar.MINUTE]
+    set(value) {
+        this[Calendar.MINUTE] = value
+    }

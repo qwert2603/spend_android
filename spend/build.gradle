@@ -73,6 +73,7 @@ dependencies {
     def paging_version = "1.0.0"
     def room_version = "1.1.0"
     def lifecycle_version = "1.1.1"
+    def android_test_runner_version = "1.0.2"
 
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
@@ -111,7 +112,7 @@ dependencies {
     implementation "org.postgresql:postgresql:$postgresql_version"
 
     testImplementation "junit:junit:$junit_version"
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation "com.android.support.test:runner:$android_test_runner_version"
 
     implementation "com.facebook.stetho:stetho:$stetho_version"
 }

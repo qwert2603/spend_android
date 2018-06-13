@@ -1,9 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
 
     <string name="kind">kind</string>
     <string name="value">value</string>
     <string name="date">date</string>
+    <string name="time">time</string>
     <string name="show_local_changes">show changes list</string>
     <string name="local_changes">local changes</string>
     <string name="no_local_changes">no local changes</string>
