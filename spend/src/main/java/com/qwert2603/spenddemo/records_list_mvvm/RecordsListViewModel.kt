@@ -10,9 +10,6 @@ import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.id
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.priority
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.time
 import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -95,7 +92,7 @@ class RecordsListViewModel(
                 val fastDiffResult = FastDiffUtils.fastCalculateDiff(
                         oldList = it.first ?: emptyList(),
                         newList = it.second ?: emptyList(),
-                        id = { this.id() },
+                        id = { this.idInList() },
                         compareOrder = { r1, r2 ->
                             return@fastCalculateDiff r2.time().compareTo(r1.time())
                                     .takeIf { it != 0 }
@@ -105,8 +102,8 @@ class RecordsListViewModel(
                         },
                         isEqual = { r1, r2 -> r1 == r2 },
                         possiblyMovedItemIds = listOfNotNull(
-                                pendingMovedSpendId?.plus(RecordsListAdapter.ADDENDUM_ID_SPEND),
-                                pendingMovedProfitId?.plus(RecordsListAdapter.ADDENDUM_ID_PROFIT)
+                                pendingMovedSpendId?.plus(RecordsListItem.ADDENDUM_ID_SPEND),
+                                pendingMovedProfitId?.plus(RecordsListItem.ADDENDUM_ID_PROFIT)
                         )
                 )
                 pendingMovedSpendId = null

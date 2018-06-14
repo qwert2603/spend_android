@@ -75,39 +75,5 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         const val VIEW_TYPE_DATE_SUM = 3
         const val VIEW_TYPE_MONTH_SUM = 4
         const val VIEW_TYPE_TOTALS = 5
-
-        const val ADDENDUM_ID_SPEND = 0L
-        const val ADDENDUM_ID_PROFIT = 1_000_000_000L
-        private const val ADDENDUM_ID_DATE_SUM = 2_000_000_000L
-        private const val ADDENDUM_ID_MONTH_SUM = 3_000_000_000L
-        private const val ADDENDUM_ID_TOTALS = 4_000_000_000L
-
-        fun RecordsListItem.id() = when (this) {
-            is SpendUI -> this.id + ADDENDUM_ID_SPEND
-            is ProfitUI -> this.id + ADDENDUM_ID_PROFIT
-            is DateSumUI -> this.id + ADDENDUM_ID_DATE_SUM
-            is MonthSumUI -> this.id + ADDENDUM_ID_MONTH_SUM
-            is TotalsUI -> this.id + ADDENDUM_ID_TOTALS
-            else -> null!!
-        }
-
-        fun RecordsListItem.time() = when (this) {
-            is SpendUI -> this.date.time
-            is ProfitUI -> this.date.time
-            is DateSumUI -> this.date.time
-            is MonthSumUI -> this.date.time
-            is TotalsUI -> Long.MIN_VALUE
-            else -> null!!
-        }
-
-        fun RecordsListItem.priority() = when (this) {
-            is SpendUI -> 5
-            is ProfitUI -> 4
-            is DateSumUI -> 3
-            is MonthSumUI -> 2
-            is TotalsUI -> 1
-            else -> null!!
-        }
-
     }
 }
