@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.content.res.Resources
 import com.qwert2603.spenddemo.R
+import java.text.SimpleDateFormat
 import java.util.*
 import com.qwert2603.andrlib.util.Const as LibConst
 
@@ -31,11 +32,12 @@ fun Date.isToday() = this.onlyDate() == Date().onlyDate()
 fun Date.isYesterday() = this.onlyDate() == Date(System.currentTimeMillis() - LibConst.MILLIS_PER_DAY).onlyDate()
 fun Date.isTomorrow() = this.onlyDate() == Date(System.currentTimeMillis() + LibConst.MILLIS_PER_DAY).onlyDate()
 
+private val dateFormat = SimpleDateFormat(Const.DATE_FORMAT_PATTERN, Locale.getDefault())
 fun Date.toFormattedString(resources: Resources): String = when {
     isToday() -> resources.getString(R.string.today_text)
     isYesterday() -> resources.getString(R.string.yesterday_text)
     isTomorrow() -> resources.getString(R.string.tomorrow_text)
-    else -> Const.DATE_FORMAT.format(this)
+    else -> dateFormat.format(this)
 }
 
 infix operator fun Date.plus(millis: Long) = Date(time + millis)

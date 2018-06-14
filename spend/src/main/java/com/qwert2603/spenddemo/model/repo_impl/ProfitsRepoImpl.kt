@@ -10,6 +10,8 @@ import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.PrefsCounter
 import com.qwert2603.spenddemo.utils.SingleLiveEvent
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.Executor
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -71,12 +73,13 @@ class ProfitsRepoImpl @Inject constructor(
             .getAllProfitsList()
             .let {
                 if (it.isEmpty()) return@let "nth"
+                val dateFormat = SimpleDateFormat(Const.DATE_FORMAT_PATTERN, Locale.getDefault())
                 it
                         .reversed()
                         .map {
                             listOf(
                                     it.kind,
-                                    Const.DATE_FORMAT.format(it.date),
+                                    dateFormat.format(it.date),
                                     it.value.toString()
                             ).reduce { s1, s2 -> "$s1,$s2" }
                         }
