@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 
-// todo: delegate adapters.
 class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true
@@ -42,7 +41,6 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount() = list.size
 
-    @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         VIEW_TYPE_SPEND -> SpendViewHolder(parent)
         VIEW_TYPE_PROFIT -> ProfitViewHolder(parent)
