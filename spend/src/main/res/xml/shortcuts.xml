@@ -18,7 +18,7 @@
         android:shortcutShortLabel="@string/text_source_code">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="https://github.com/qwert2603/SpendDemo" />
+            android:data="https://github.com/qwert2603/Spend" />
     </shortcut>
 
 </shortcuts>
