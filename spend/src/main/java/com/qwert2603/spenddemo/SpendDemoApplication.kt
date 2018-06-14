@@ -5,6 +5,7 @@ import com.facebook.stetho.Stetho
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.di.DIManager
+import com.qwert2603.spenddemo.env.E
 import io.reactivex.plugins.RxJavaPlugins
 
 class SpendDemoApplication : Application() {
@@ -25,7 +26,7 @@ class SpendDemoApplication : Application() {
             }
         }
 
-        LogUtils.logType = if (BuildConfig.DEBUG) {
+        LogUtils.logType = if (BuildConfig.DEBUG || E.env.buildForTesting()) {
             LogUtils.LogType.ANDROID
         } else {
             LogUtils.LogType.ANDROID_ERRORS

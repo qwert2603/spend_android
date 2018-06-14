@@ -3,7 +3,7 @@ package com.qwert2603.spenddemo.env
 import com.qwert2603.spenddemo.BuildConfig
 
 object E {
-    val env = when (BuildConfig.FLAVOR) {
+    val env = when (BuildConfig.FLAVOR_server) {
         "noServer" -> NoServer
         "serverTest" -> ServerTest
         "serverProd" -> ServerProd
@@ -17,11 +17,12 @@ interface Env {
     val showChangeKindsSetting: Boolean
 
     fun titleSuffix(): String = listOfNotNull(
-            BuildConfig.FLAVOR,
+            BuildConfig.FLAVOR_server,
+            BuildConfig.FLAVOR_aim.takeIf { it != "forMarket" },
             BuildConfig.BUILD_TYPE.takeIf { it != "release" }
     ).reduce { acc, s -> "$acc $s" }
 
-    fun showTestingButtons() = true
+    fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTest"
 }
 
 private object NoServer : Env {

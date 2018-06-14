@@ -18,6 +18,10 @@
             android:strokeLineCap="round"
             android:strokeWidth="1" />
 
+        <path
+            android:fillColor="@color/icon_test_part"
+            android:pathData="m14 0h8v8" />
+
     </group>
 
 </vector>

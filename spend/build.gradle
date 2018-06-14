@@ -33,7 +33,7 @@ android {
         }
     }
 
-    flavorDimensions "server"
+    flavorDimensions "server", "aim"
 
     productFlavors {
         noServer {
@@ -50,6 +50,15 @@ android {
             dimension "server"
             applicationIdSuffix ".serverProd"
             versionNameSuffix "-serverProd"
+        }
+
+        forTest {
+            dimension "aim"
+            applicationIdSuffix ".forTesting"
+            versionNameSuffix "-forTesting"
+        }
+        forMarket {
+            dimension "aim"
         }
     }
 }

@@ -255,9 +255,9 @@ class RecordsListMvvmFragment : Fragment() {
         showIdsMenuItem.isVisible = E.env.showIdsSetting
         showChangeKindsMenuItem.isVisible = E.env.showChangeKindsSetting
         menu.findItem(R.id.show_local_changes).isVisible = E.env.showChangeKindsSetting
-        menu.findItem(R.id.add_stub_spends).isVisible = E.env.showTestingButtons()
-        menu.findItem(R.id.add_stub_profits).isVisible = E.env.showTestingButtons()
-        menu.findItem(R.id.clear_all).isVisible = E.env.showTestingButtons()
+        menu.findItem(R.id.add_stub_spends).isVisible = E.env.buildForTesting()
+        menu.findItem(R.id.add_stub_profits).isVisible = E.env.buildForTesting()
+        menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
 
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
