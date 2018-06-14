@@ -4,6 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('/home/alex/StudioProjects/key.jks')
+            storePassword key_store_password
+            keyAlias 'spend'
+            keyPassword spend_signing_password
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.qwert2603.spenddemo"
@@ -30,6 +38,7 @@ android {
             minifyEnabled true
 //            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 

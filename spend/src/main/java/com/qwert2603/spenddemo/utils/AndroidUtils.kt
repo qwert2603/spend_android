@@ -7,8 +7,10 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.Transformations
 import com.qwert2603.andrlib.util.LogUtils
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.coroutines.experimental.bg
+import kotlinx.coroutines.experimental.newSingleThreadContext
+import java.util.*
 import kotlin.math.absoluteValue
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
@@ -21,9 +23,6 @@ inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDes
             ?: kotlin.comparisons.compareByDescending(second)
                     .compare(i1, i2)
 })
-
-infix fun <T> List<T>?.plusNN(anth: List<T>?): List<T> = (this ?: emptyList()) + (anth
-        ?: emptyList())
 
 inline fun Animator.doOnEnd(crossinline action: () -> Unit): Animator {
     addListener(object : AnimatorListenerAdapter() {
@@ -75,7 +74,7 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
 fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
 fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
 
-fun <T, U> LiveData<T>.mapBG(mapper: (T) -> U): LiveData<U> {
+fun <T, U> LiveData<T>.mapBG(mapper: Mapper<T, U>): LiveData<U> {
     val result = MediatorLiveData<U>()
     LogUtils.d("mapBG qq")
     result.addSource(this) { x ->
@@ -84,7 +83,8 @@ fun <T, U> LiveData<T>.mapBG(mapper: (T) -> U): LiveData<U> {
             return@addSource
         }
         LogUtils.d("mapBG onChanged 1")
-        val job = bg {
+        val coroutineContext = newSingleThreadContext("mapBG ${Random().nextInt()}")
+        val job = async(coroutineContext) {
             LogUtils.d("mapBG bg")
             mapper(x)
                     .also { LogUtils.d("mapBG bg end") }

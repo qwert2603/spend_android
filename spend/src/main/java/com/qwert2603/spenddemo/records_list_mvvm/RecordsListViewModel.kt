@@ -7,6 +7,7 @@ import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
+import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
@@ -83,33 +84,35 @@ class RecordsListViewModel(
     var pendingMovedProfitId: Long? = null
 
     val recordsLiveData: LiveData<Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> = showInfo
-            .switchMap { showInfo ->
-                recordsList
-                        .mapBG { it.toRecordItemsList(showInfo) }
-            }
-            .pairWithPrev()
-            .mapBG {
-                val fastDiffResult = FastDiffUtils.fastCalculateDiff(
-                        oldList = it.first ?: emptyList(),
-                        newList = it.second ?: emptyList(),
-                        id = { this.idInList() },
-                        compareOrder = { r1, r2 ->
-                            return@fastCalculateDiff r2.time().compareTo(r1.time())
-                                    .takeIf { it != 0 }
-                                    ?: r2.priority().compareTo(r1.priority())
-                                            .takeIf { it != 0 }
-                                    ?: r2.id.compareTo(r1.id)
-                        },
-                        isEqual = { r1, r2 -> r1 == r2 },
-                        possiblyMovedItemIds = listOfNotNull(
-                                pendingMovedSpendId?.plus(RecordsListItem.ADDENDUM_ID_SPEND),
-                                pendingMovedProfitId?.plus(RecordsListItem.ADDENDUM_ID_PROFIT)
-                        )
-                )
-                pendingMovedSpendId = null
-                pendingMovedProfitId = null
-                (it.second ?: emptyList()) to fastDiffResult
-            }
+            .switchMap { showInfo -> recordsList.map { it to showInfo } }
+            .mapBG(object : Mapper<Pair<List<RecordResult>, ShowInfo>, Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> {
+                private var prev: List<RecordsListItem>? = null
+                override fun invoke(t: Pair<List<RecordResult>, ShowInfo>): Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult> {
+                    val recordItemsList = t.first.toRecordItemsList(t.second)
+                    val fastDiffResult = FastDiffUtils.fastCalculateDiff(
+                            oldList = prev ?: emptyList(),
+                            newList = recordItemsList,
+                            id = { this.idInList() },
+                            compareOrder = { r1, r2 ->
+                                return@fastCalculateDiff r2.time().compareTo(r1.time())
+                                        .takeIf { it != 0 }
+                                        ?: r2.priority().compareTo(r1.priority())
+                                                .takeIf { it != 0 }
+                                        ?: r2.id.compareTo(r1.id)
+                            },
+                            isEqual = { r1, r2 -> r1 == r2 },
+                            possiblyMovedItemIds = listOfNotNull(
+                                    pendingMovedSpendId?.plus(RecordsListItem.ADDENDUM_ID_SPEND),
+                                    pendingMovedProfitId?.plus(RecordsListItem.ADDENDUM_ID_PROFIT)
+                            )
+                    )
+                    pendingMovedSpendId = null
+                    pendingMovedProfitId = null
+                    prev = recordItemsList
+
+                    return recordItemsList to fastDiffResult
+                }
+            })
 
     fun showSpends(show: Boolean) {
         showSpends.value = show
