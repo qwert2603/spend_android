@@ -71,6 +71,8 @@ class RecordsListMvvmFragment : Fragment() {
             override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
             override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
             override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
+            override fun getTimeGlobalVisibleRect(): Rect? = draftViewImpl.time_EditText.getGlobalVisibleRectRightNow()
+                    .takeIf { draftViewImpl.time_EditText.visibility == View.VISIBLE }
         })
         records_RecyclerView.itemAnimator = recordsListAnimator
         viewModel.createdSpendsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })

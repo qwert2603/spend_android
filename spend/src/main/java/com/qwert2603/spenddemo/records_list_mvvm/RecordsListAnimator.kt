@@ -25,6 +25,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
         fun getDateGlobalVisibleRect(): Rect
         fun getKindGlobalVisibleRect(): Rect
         fun getValueGlobalVisibleRect(): Rect
+        fun getTimeGlobalVisibleRect(): Rect?
     }
 
     // pair is <Animator, cancel_action>.
@@ -76,8 +77,10 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
                 // todo: don't do it.
                 recyclerView.elevation = holder.itemView.resources.toPx(4).toFloat()
 
+                val timeGlobalVisibleRect = (spendOrigin.getTimeGlobalVisibleRect() ?: spendOrigin.getDateGlobalVisibleRect())
                 listOf(
                         createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), holder.itemView.date_TextView, 100),
+                        createTranslationAnimator(timeGlobalVisibleRect, holder.itemView.time_TextView, 130),
                         createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), holder.itemView.kind_TextView, 170),
                         createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), holder.itemView.value_TextView, 240)
                 ).forEach {
