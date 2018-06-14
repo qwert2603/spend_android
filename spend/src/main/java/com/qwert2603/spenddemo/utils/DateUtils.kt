@@ -78,3 +78,26 @@ var Calendar.minute
     set(value) {
         this[Calendar.MINUTE] = value
     }
+
+fun Date.setDayFrom(date: Date): Date {
+    val calendar = Calendar.getInstance()
+            .also { it.timeInMillis = this.time }
+    val anth = Calendar.getInstance()
+            .also { it.timeInMillis = date.time }
+    calendar.year = anth.year
+    calendar.month = anth.month
+    calendar.day = anth.day
+    this.time = calendar.timeInMillis
+    return this
+}
+
+fun Date.setTimeFrom(date: Date): Date {
+    val calendar = Calendar.getInstance()
+            .also { it.timeInMillis = this.time }
+    val anth = Calendar.getInstance()
+            .also { it.timeInMillis = date.time }
+    calendar.hour = anth.hour
+    calendar.minute = anth.minute
+    this.time = calendar.timeInMillis
+    return this
+}

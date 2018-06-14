@@ -8,7 +8,6 @@ import com.qwert2603.spenddemo.model.local_db.dao.ProfitsDao
 import com.qwert2603.spenddemo.model.local_db.dao.SpendsDao
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
-import com.qwert2603.spenddemo.utils.onlyDate
 import com.qwert2603.spenddemo.utils.sumByLong
 import org.junit.After
 import org.junit.Assert
@@ -38,7 +37,7 @@ class RoomTest {
 
     @Test
     fun writeUserAndReadInList() {
-        val spend = SpendTable(12L, "food", 33, Date().onlyDate())
+        val spend = SpendTable(12L, "food", 33, Date())
         spendsDao.addSpend(spend)
         val allSpends = spendsDao.getAllSpendsList()
         Assert.assertEquals(allSpends.size, 1)
@@ -48,9 +47,9 @@ class RoomTest {
     @Test
     fun totalSum() {
         val spends = listOf(
-                SpendTable(12L, "food", 33, Date().onlyDate()),
-                SpendTable(13L, "food", 122, Date().onlyDate()),
-                SpendTable(14L, "food", 44, Date().onlyDate())
+                SpendTable(12L, "food", 33, Date()),
+                SpendTable(13L, "food", 122, Date()),
+                SpendTable(14L, "food", 44, Date())
         )
         spendsDao.addSpends(spends)
         Assert.assertEquals(spendsDao.getTotal(), spends.sumByLong { it.value.toLong() })
@@ -59,9 +58,9 @@ class RoomTest {
     @Test
     fun getAllRecords() {
         val spends = listOf(
-                SpendTable(12L, "food", 33, Date().onlyDate()),
-                SpendTable(13L, "food", 122, Date().onlyDate()),
-                SpendTable(14L, "food", 44, Date().onlyDate())
+                SpendTable(12L, "food", 33, Date()),
+                SpendTable(13L, "food", 122, Date()),
+                SpendTable(14L, "food", 44, Date())
         )
         val profits = listOf(
                 ProfitTable(4L, "salary", 23, Date()),

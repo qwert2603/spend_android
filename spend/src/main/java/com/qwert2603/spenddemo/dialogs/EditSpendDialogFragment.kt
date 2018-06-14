@@ -134,24 +134,15 @@ class EditSpendDialogFragment : DialogFragment() {
                     dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
-                    val calendar = Calendar.getInstance()
-                            .also { it.timeInMillis = selectedDate }
-                    val result = Calendar.getInstance()
-                            .also { it.timeInMillis = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0) }
-                    calendar.year = result.year
-                    calendar.month = result.month
-                    calendar.day = result.day
-                    selectedDate = calendar.timeInMillis
+                    val date = Date(selectedDate)
+                    date.setDayFrom(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
+                    selectedDate = date.time
                     dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
                 }
                 REQUEST_TIME -> {
-                    val calendar = Calendar.getInstance()
-                            .also { it.timeInMillis = selectedDate }
-                    val result = Calendar.getInstance()
-                            .also { it.timeInMillis = data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0) }
-                    calendar.hour = result.hour
-                    calendar.minute = result.minute
-                    selectedDate = calendar.timeInMillis
+                    val date = Date(selectedDate)
+                    date.setTimeFrom(Date(data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0)))
+                    selectedDate = date.time
                     dialogView.time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
                 }
             }

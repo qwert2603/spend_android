@@ -5,6 +5,8 @@ import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.utils.secondOfTwo
+import com.qwert2603.spenddemo.utils.setDayFrom
+import com.qwert2603.spenddemo.utils.setTimeFrom
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -21,7 +23,8 @@ class DraftPresenter @Inject constructor(
                     value = 0,
                     date = null
             ),
-            createEnable = false
+            createEnable = false,
+            showTime = false
     )
 
     private val loadDraft: Observable<CreatingSpend> = intent { it.viewCreated() }
@@ -31,6 +34,7 @@ class DraftPresenter @Inject constructor(
     private val clearDraft = PublishSubject.create<Any>()
 
     private val onDateSelectedIntent = intent { it.onDateSelected() }.share()
+    private val onTimeSelectedIntent = intent { it.onTimeSelected() }.share()
     private val kingChangesIntent = intent { it.kingChanges() }.share()
     private val onKindSelectedIntent = intent { it.onKindSelected() }.share()
     private val onKindSuggestionSelectedIntent = intent { it.onKindSuggestionSelected() }.share()
@@ -45,7 +49,11 @@ class DraftPresenter @Inject constructor(
                             .merge(listOf(
                                     onDateSelectedIntent
                                             .map { date ->
-                                                { r: CreatingSpend -> r.copy(date = date) }
+                                                { r: CreatingSpend -> r.copy(date = r.getDateNN().setDayFrom(date)) }
+                                            },
+                                    onTimeSelectedIntent
+                                            .map { date ->
+                                                { r: CreatingSpend -> r.copy(date = r.getDateNN().setTimeFrom(date)) }
                                             },
                                     kingChangesIntent
                                             .map { kind ->
@@ -80,13 +88,21 @@ class DraftPresenter @Inject constructor(
             .share()
 
 
-    private data class DraftChanged(val draftViewState: DraftViewState) : PartialChange
+    override val partialChanges: Observable<PartialChange> = Observable.merge(
+            draftChanges
+                    .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) },
+            draftInteractor
+                    .showTimesChanges()
+                    .map { DraftPartialChange.ShowTimes(it) }
+    )
 
-    override val partialChanges: Observable<PartialChange> = draftChanges
-            .map { DraftViewState(it, draftInteractor.isCreatable(it)) }
-            .map { DraftChanged(it) }
-
-    override fun stateReducer(vs: DraftViewState, change: PartialChange) = (change as DraftChanged).draftViewState
+    override fun stateReducer(vs: DraftViewState, change: PartialChange): DraftViewState {
+        if (change !is DraftPartialChange) throw Exception()
+        return when (change) {
+            is DraftPartialChange.DraftChanged -> vs.copy(creatingSpend = change.creatingSpend, createEnable = change.createEnable)
+            is DraftPartialChange.ShowTimes -> vs.copy(showTime = change.show)
+        }
+    }
 
     override fun bindIntents() {
         super.bindIntents()
@@ -124,6 +140,11 @@ class DraftPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.getDateNN().time)) }
                 .subscribeToView()
 
+        intent { it.selectTimeClicks() }
+                .withLatestFrom(draftChanges, secondOfTwo())
+                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectTime(it.getDateNN().time)) }
+                .subscribeToView()
+
         intent { it.selectKindClicks() }
                 .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectKind) }
                 .subscribeToView()
@@ -139,7 +160,7 @@ class DraftPresenter @Inject constructor(
                 .toObservable<Any>()
                 .subscribeToView()
 
-        onDateSelectedIntent
+        Observable.merge(onDateSelectedIntent, onTimeSelectedIntent)
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
                 .subscribeToView()
 

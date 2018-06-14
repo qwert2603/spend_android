@@ -13,9 +13,11 @@ interface DraftView : BaseView<DraftViewState> {
     fun saveClicks(): Observable<Any>
 
     fun selectDateClicks(): Observable<Any>
+    fun selectTimeClicks(): Observable<Any>
     fun selectKindClicks(): Observable<Any>
 
     fun onDateSelected(): Observable<Date>
+    fun onTimeSelected(): Observable<Date>
     fun onKindSelected(): Observable<String>
 
     fun onKindInputClicked(): Observable<Any>

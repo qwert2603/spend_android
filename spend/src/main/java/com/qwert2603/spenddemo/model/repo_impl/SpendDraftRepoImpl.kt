@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.repo.SpendDraftRepo
-import com.qwert2603.spenddemo.utils.onlyDate
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.util.*
@@ -41,7 +40,7 @@ class SpendDraftRepoImpl @Inject constructor(
                 getString(DRAFT_KIND_KEY, ""),
                 getInt(DRAFT_VALUE_KEY, 0),
                 if (contains(DRAFT_DATE_KEY)) {
-                    Date(getLong(DRAFT_DATE_KEY, System.currentTimeMillis())).onlyDate()
+                    Date(getLong(DRAFT_DATE_KEY, System.currentTimeMillis()))
                 } else {
                     null
                 }
