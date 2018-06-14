@@ -40,10 +40,6 @@
         android:title="@string/send_records_text" />
 
     <item
-        android:id="@+id/about"
-        android:title="@string/about_text" />
-
-    <item
         android:id="@+id/show_local_changes"
         android:title="@string/show_local_changes" />
 
@@ -57,6 +53,10 @@
         android:layout_height="match_parent"
         android:checkable="true"
         android:title="@string/text_show_change_kinds" />
+
+    <item
+        android:id="@+id/about"
+        android:title="@string/about_text" />
 
     <item
         android:id="@+id/add_stub_spends"
