@@ -76,4 +76,5 @@
     <string name="spend_kind_description_format">последнее: %d @ %s</string>
 
     <string name="text_dumping_records">создается список записей..</string>
+
 </resources>
