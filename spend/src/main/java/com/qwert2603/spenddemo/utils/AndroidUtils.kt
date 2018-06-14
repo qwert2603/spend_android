@@ -2,6 +2,13 @@ package com.qwert2603.spenddemo.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MediatorLiveData
+import android.arch.lifecycle.Transformations
+import com.qwert2603.andrlib.util.LogUtils
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.bg
 import kotlin.math.absoluteValue
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
@@ -53,7 +60,7 @@ fun Long.toPointedString(): String {
         if (index % 3 == 2 && index != absString.lastIndex) stringBuilder.append('.')
     }
     if (negative) stringBuilder.append('-')
-    return stringBuilder.toString().reversed()
+    return stringBuilder.reverse().toString()
 }
 
 fun String.zeroToEmpty() = if (this == "0") "" else this
@@ -63,4 +70,79 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
         if (predicate(this[i])) return i
     }
     return -1
+}
+
+fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
+fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
+
+fun <T, U> LiveData<T>.mapBG(mapper: (T) -> U): LiveData<U> {
+    val result = MediatorLiveData<U>()
+    LogUtils.d("mapBG qq")
+    result.addSource(this) { x ->
+        if (x == null) {
+            result.value = null
+            return@addSource
+        }
+        LogUtils.d("mapBG onChanged 1")
+        val job = bg {
+            LogUtils.d("mapBG bg")
+            mapper(x)
+                    .also { LogUtils.d("mapBG bg end") }
+        }
+        LogUtils.d("mapBG onChanged 2")
+        launch(UI) {
+            LogUtils.d("mapBG launch(UI) 1")
+            result.value = job.await()
+            LogUtils.d("mapBG launch(UI) 2")
+        }
+    }
+    LogUtils.d("mapBG ww")
+    return result
+}
+
+fun <T, U, V> combineLatest(liveDataT: LiveData<T?>, liveDataU: LiveData<U?>, combiner: (T?, U?) -> V?) = MediatorLiveData<V?>()
+        .apply {
+            var lastT: T? = null
+            var lastU: U? = null
+
+            fun update() {
+                val localLastT = lastT
+                val localLastU = lastU
+                value = combiner(localLastT, localLastU)
+            }
+
+            addSource(liveDataT) {
+                lastT = it
+                update()
+            }
+            addSource(liveDataU) {
+                lastU = it
+                update()
+            }
+        }
+
+fun combineLatest(liveDatas: List<LiveData<Boolean>>) = MediatorLiveData<List<Boolean?>>()
+        .apply {
+            val lasts: MutableList<Boolean?> = (1..liveDatas.size).map { null }.toMutableList()
+
+            fun update() {
+                value = lasts.toList()
+            }
+            liveDatas.forEachIndexed { index, liveData ->
+                addSource(liveData) {
+                    lasts[index] = it
+                    update()
+                }
+            }
+        }
+
+/** Pair is <prev, current>. */
+fun <T> LiveData<T>.pairWithPrev(): LiveData<Pair<T?, T?>> {
+    val result = MediatorLiveData<Pair<T?, T?>>()
+    var prev: T? = null
+    result.addSource(this) {
+        result.value = prev to it
+        prev = it
+    }
+    return result
 }

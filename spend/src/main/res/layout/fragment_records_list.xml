@@ -25,6 +25,8 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:scrollbars="vertical"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:reverseLayout="true"
             tools:itemCount="20"
             tools:listitem="@layout/item_spend" />
 

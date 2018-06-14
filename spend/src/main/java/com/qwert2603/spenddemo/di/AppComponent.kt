@@ -9,7 +9,6 @@ import javax.inject.Singleton
 @Component(modules = [
     NavigationModule::class,
     BindReposModule::class,
-    BindSyncDataSourcesModule::class,
     ModelModule::class,
     BindSchedulersModule::class
 ])

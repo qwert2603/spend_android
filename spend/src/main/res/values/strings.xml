@@ -1,9 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
 
     <string name="kind">kind</string>
     <string name="value">value</string>
     <string name="date">date</string>
+    <string name="time">time</string>
     <string name="show_local_changes">show changes list</string>
     <string name="local_changes">local changes</string>
     <string name="no_local_changes">no local changes</string>
@@ -57,13 +58,15 @@
     <string name="text_show_date_sums">date sums</string>
     <string name="text_show_month_sums">month sums</string>
     <string name="text_new_profit">new profit</string>
+    <string name="show_times_text">times</string>
+    <string name="show_balance_text">show balance</string>
 
     <string name="text_all_records_loaded">all records loaded</string>
 
     <string name="text_total_items_format" formatted="true">%s. sum is %s</string>
     <string name="text_total_balance_format" formatted="true">total balance is %s</string>
 
-    <string name="text_add_stub_spends">20 stub spends</string>
+    <string name="text_add_stub_spends">200 stub spends</string>
     <string name="text_add_stub_profits">200 stub profits</string>
     <string name="text_clear_all">clear all</string>
 
@@ -72,4 +75,7 @@
 
     <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
     <string name="spend_kind_description_format" formatted="true">last: %d @ %s</string>
+
+    <string name="text_dumping_records">creating records list..</string>
+
 </resources>

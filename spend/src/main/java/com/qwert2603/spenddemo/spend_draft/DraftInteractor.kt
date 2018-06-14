@@ -4,14 +4,17 @@ import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.repo.SpendDraftRepo
 import com.qwert2603.spenddemo.model.repo.SpendKindsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
+import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
 class DraftInteractor @Inject constructor(
         private val spendDraftRepo: SpendDraftRepo,
         private val spendsRepo: SpendsRepo,
-        private val spendKindsRepo: SpendKindsRepo
+        private val spendKindsRepo: SpendKindsRepo,
+        private val userSettingsRepo: UserSettingsRepo
 ) {
 
     fun getDraft(): Single<CreatingSpend> = spendDraftRepo.getDraft()
@@ -27,9 +30,9 @@ class DraftInteractor @Inject constructor(
 
     fun isCreatable(creatingSpend: CreatingSpend) = creatingSpend.kind.isNotBlank() && creatingSpend.value > 0
 
-    fun getSuggestions(inputKind: String): Single<List<String>> = spendKindsRepo.getKindSuggestions(inputKind)
+    fun getSuggestions(inputKind: String): List<String> = spendKindsRepo.getKindSuggestions(inputKind)
 
-    fun getLastPriceOfKind(kind: String): Single<Int> = spendKindsRepo.getKind(kind)
-            .map { it.lastPrice }
-            .onErrorReturnItem(0)
+    fun getLastPriceOfKind(kind: String): Int = spendKindsRepo.getKind(kind)?.lastPrice ?: 0
+
+    fun showTimesChanges(): Observable<Boolean> = userSettingsRepo.showTimesChanges()
 }

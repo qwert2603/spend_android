@@ -1,18 +1,1 @@
-[
-  {
-    "outputType": {
-      "type": "APK"
-    },
-    "apkInfo": {
-      "type": "MAIN",
-      "splits": [],
-      "versionCode": 12
-    },
-    "path": "spend-noServer-release.apk",
-    "properties": {
-      "packageId": "com.qwert2603.spenddemo.noServer",
-      "split": "",
-      "minSdkVersion": "22"
-    }
-  }
-]
+[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":15,"versionName":"3.0-alpha2-noServer","enabled":true,"outputFile":"spend-noServer-release.apk","fullName":"noServerRelease","baseName":"noServer-release"},"path":"spend-noServer-release.apk","properties":{}}]

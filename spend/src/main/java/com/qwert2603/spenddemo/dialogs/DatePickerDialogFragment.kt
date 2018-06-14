@@ -9,6 +9,9 @@ import android.support.v4.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
+import com.qwert2603.spenddemo.utils.day
+import com.qwert2603.spenddemo.utils.month
+import com.qwert2603.spenddemo.utils.year
 import java.util.*
 
 @FragmentWithArgs
@@ -26,18 +29,18 @@ class DatePickerDialogFragment : DialogFragment() {
         return DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    calendar.set(Calendar.YEAR, year)
-                    calendar.set(Calendar.MONTH, month)
-                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    calendar.year = year
+                    calendar.month = month
+                    calendar.day = dayOfMonth
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
                             Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
                     )
                 },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
+                calendar.year,
+                calendar.month,
+                calendar.day
         )
     }
 }

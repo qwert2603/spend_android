@@ -1,9 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
     <string name="app_name">расходы</string>
 
     <string name="kind">вид</string>
     <string name="value">сумма</string>
     <string name="date">дата</string>
+    <string name="time">время</string>
     <string name="show_local_changes">показать изменения</string>
     <string name="local_changes">локальные изменения</string>
     <string name="no_local_changes">нет локальных изменений</string>
@@ -57,13 +58,15 @@
     <string name="text_show_date_sums">сумма по дням</string>
     <string name="text_show_month_sums">сумма по месяцам</string>
     <string name="text_new_profit">новый доход</string>
+    <string name="show_times_text">время</string>
+    <string name="show_balance_text">показывать баланс</string>
 
     <string name="text_all_records_loaded">все записи загружены</string>
 
     <string name="text_total_items_format" formatted="true">%s. сумма: %s</string>
     <string name="text_total_balance_format" formatted="true">общий баланс: %s</string>
 
-    <string name="text_add_stub_spends">20 рандомных расходов</string>
+    <string name="text_add_stub_spends">200 рандомных расходов</string>
     <string name="text_add_stub_profits">200 рандомных доходов</string>
     <string name="text_clear_all">очистить все</string>
 
@@ -71,4 +74,7 @@
     <string name="text_source_code_long">исходный код на github.com</string>
 
     <string name="spend_kind_description_format">последнее: %d @ %s</string>
+
+    <string name="text_dumping_records">создается список записей..</string>
+
 </resources>

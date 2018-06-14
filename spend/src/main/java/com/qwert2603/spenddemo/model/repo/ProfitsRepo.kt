@@ -2,20 +2,22 @@ package com.qwert2603.spenddemo.model.repo
 
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
-import io.reactivex.Completable
-import io.reactivex.Single
+import com.qwert2603.spenddemo.utils.SingleLiveEvent
 
 interface ProfitsRepo {
-    fun getAllProfits(): Single<List<Profit>>
+    fun addProfit(creatingProfit: CreatingProfit)
 
-    /** #@return id of created profit */
-    fun addProfit(creatingProfit: CreatingProfit): Single<Long>
+    fun addProfits(profits: List<CreatingProfit>)
 
-    fun editProfit(profit: Profit): Completable
+    fun editProfit(profit: Profit)
 
-    fun removeProfit(profitId: Long): Completable
+    fun removeProfit(profitId: Long)
 
-    fun removeAllProfits(): Completable
+    fun removeAllProfits()
 
-    fun getDumpText(): Single<String>
+    fun locallyCreatedProfits(): SingleLiveEvent<Profit>
+
+    fun locallyEditedProfits(): SingleLiveEvent<Profit>
+
+    suspend fun getDumpText(): String
 }

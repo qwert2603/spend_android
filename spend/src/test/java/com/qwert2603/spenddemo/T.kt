@@ -29,7 +29,7 @@ class T {
                 "jdbc:postgresql://192.168.1.26:5432/spend",
                 "postgres",
                 "1234"
-        ), "")
+        ))
         var bb = false
         var date: Date? = null
         while (true) {
@@ -63,7 +63,7 @@ class T {
                 "jdbc:postgresql://192.168.1.26:5432/spend",
                 "postgres",
                 "1234"
-        ), "")
+        ))
 
         remoteDBFacade.insertMother(
                 kind = "kind",

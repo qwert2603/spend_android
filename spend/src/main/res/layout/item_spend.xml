@@ -21,14 +21,12 @@
 
     <TextView
         android:id="@+id/id_TextView"
-        android:layout_width="wrap_content"
+        android:layout_width="56sp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:ems="3"
         android:lines="1"
         android:textColor="#444444"
         android:textSize="14sp"
-        tools:text="918236" />
+        tools:text="1918236" />
 
     <TextView
         android:id="@+id/date_TextView"
@@ -38,7 +36,18 @@
         android:lines="1"
         android:textColor="@color/colorAccent"
         android:textSize="16sp"
-        tools:text="2018-04-28" />
+        tools:text="2018-01-11" />
+
+    <TextView
+        android:id="@+id/time_TextView"
+        android:layout_width="40sp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="end"
+        android:lines="1"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        tools:text="19:18" />
 
     <TextView
         android:id="@+id/kind_TextView"

@@ -19,6 +19,7 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_edit_spend.view.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 @FragmentWithArgs
@@ -34,6 +35,9 @@ class EditSpendDialogFragment : DialogFragment() {
 
         private const val REQUEST_CHOOSE_KIND = 1
         private const val REQUEST_DATE = 2
+        private const val REQUEST_TIME = 3
+
+        private val TIME_FORMAT = SimpleDateFormat("H:mm", Locale.getDefault())
     }
 
     @Arg
@@ -52,7 +56,7 @@ class EditSpendDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
-        selectedDate = date
+        if (savedInstanceState == null) selectedDate = date
     }
 
     @SuppressLint("InflateParams")
@@ -61,6 +65,7 @@ class EditSpendDialogFragment : DialogFragment() {
         dialogView.apply {
             kind_EditText.setText(kind)
             date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+            time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
             value_EditText.setText(value.toString())
 
             kind_EditText.setOnLongClickListener {
@@ -73,6 +78,11 @@ class EditSpendDialogFragment : DialogFragment() {
                 DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
                         .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_DATE) }
                         .show(fragmentManager, "date")
+            }
+            time_EditText.setOnClickListener {
+                TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(selectedDate)
+                        .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_TIME) }
+                        .show(fragmentManager, "time")
             }
             value_EditText.setOnEditorActionListener { _, _, _ ->
                 if ((dialog as AlertDialog).getButton(DialogInterface.BUTTON_POSITIVE).isEnabled) {
@@ -124,8 +134,16 @@ class EditSpendDialogFragment : DialogFragment() {
                     dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
-                    selectedDate = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)
+                    val date = Date(selectedDate)
+                    date.setDayFrom(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
+                    selectedDate = date.time
                     dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+                }
+                REQUEST_TIME -> {
+                    val date = Date(selectedDate)
+                    date.setTimeFrom(Date(data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0)))
+                    selectedDate = date.time
+                    dialogView.time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
                 }
             }
         }

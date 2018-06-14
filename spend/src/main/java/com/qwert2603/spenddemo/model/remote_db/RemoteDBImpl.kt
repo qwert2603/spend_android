@@ -52,7 +52,7 @@ class RemoteDBImpl(
         val preparedStatement = preparedStatements[sql] ?: connection.prepareStatement(sql)
         preparedStatement.queryTimeout = 4 // todo: check
         this.connection = connection
-        preparedStatements.put(sql, preparedStatement)
+        preparedStatements[sql] = preparedStatement
         return preparedStatement
     }
 
