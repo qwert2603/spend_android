@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.setVisible
@@ -74,16 +75,18 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.itemAnimator = recordsListAnimator
         viewModel.createdSpendsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })
         viewModel.createdProfitsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
-        viewModel.editedSpendsEvents.observe(this, Observer { adapter.pendingMovedSpendId = it?.id })
-        viewModel.editedProfitsEvents.observe(this, Observer { adapter.pendingMovedProfitId = it?.id })
+
+        viewModel.creatingRecordsText.observe(this, Observer { Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show() })
 
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()
 
         var layoutAnimationShown = false
-        viewModel.recordsLiveData.observe(this, Observer { list ->
-            if (list == null) return@Observer
+        viewModel.recordsLiveData.observe(this, Observer {
+            if (it == null) return@Observer
+            val (list, diffResult) = it
             adapter.list = list
+            diffResult.dispatchToAdapter(adapter)
             recordsListAnimator.pendingCreatedSpendId?.let { createdId ->
                 list.indexOfFirst { it is SpendUI && it.id == createdId }
                         .let { records_RecyclerView.scrollToPosition(it) }

@@ -10,16 +10,22 @@ import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.id
+import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.priority
+import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter.Companion.time
 import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.asReference
 import java.util.*
-import java.util.concurrent.Executor
 
 class RecordsListViewModel(
         private val spendsRepo: SpendsRepo,
         private val profitsRepo: ProfitsRepo,
-        private val userSettingsRepo: UserSettingsRepo,
-        private val backgroundExecutor: Executor
+        private val userSettingsRepo: UserSettingsRepo
 ) : ViewModel() {
 
     val showSpends = MutableLiveData<Boolean>()
@@ -42,6 +48,9 @@ class RecordsListViewModel(
         showChangeKinds.value = userSettingsRepo.showChangeKinds
         showBalance.value = userSettingsRepo.showBalance
         showTimes.value = userSettingsRepo.showTimes
+
+        spendsRepo.locallyEditedSpends().observeForever { pendingMovedSpendId = it?.id }
+        profitsRepo.locallyEditedProfits().observeForever { pendingMovedProfitId = it?.id }
     }
 
     data class ShowInfo(
@@ -73,13 +82,36 @@ class RecordsListViewModel(
 
     private val recordsList = spendsRepo.getRecordsList()
 
-    val recordsLiveData: LiveData<List<RecordsListItem>> = showInfo
+    var pendingMovedSpendId: Long? = null
+    var pendingMovedProfitId: Long? = null
+
+    val recordsLiveData: LiveData<Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> = showInfo
             .switchMap { showInfo ->
                 recordsList
-                        .map {
-                            // todo: background thread coroutines.
-                            it.toRecordItemsList(showInfo)
-                        }
+                        .mapBG { it.toRecordItemsList(showInfo) }
+            }
+            .pairWithPrev()
+            .mapBG {
+                val fastDiffResult = FastDiffUtils.fastCalculateDiff(
+                        oldList = it.first ?: emptyList(),
+                        newList = it.second ?: emptyList(),
+                        id = { this.id() },
+                        compareOrder = { r1, r2 ->
+                            return@fastCalculateDiff r2.time().compareTo(r1.time())
+                                    .takeIf { it != 0 }
+                                    ?: r2.priority().compareTo(r1.priority())
+                                            .takeIf { it != 0 }
+                                    ?: r2.id.compareTo(r1.id)
+                        },
+                        isEqual = { r1, r2 -> r1 == r2 },
+                        possiblyMovedItemIds = listOfNotNull(
+                                pendingMovedSpendId?.plus(RecordsListAdapter.ADDENDUM_ID_SPEND),
+                                pendingMovedProfitId?.plus(RecordsListAdapter.ADDENDUM_ID_PROFIT)
+                        )
+                )
+                pendingMovedSpendId = null
+                pendingMovedProfitId = null
+                (it.second ?: emptyList()) to fastDiffResult
             }
 
     fun showSpends(show: Boolean) {
@@ -184,8 +216,12 @@ class RecordsListViewModel(
     }
 
     fun sendRecords() {
-        backgroundExecutor.execute {
-            sendRecords.postValue("SPENDS:\n${spendsRepo.getDumpText()}\n\nPROFITS:\n${profitsRepo.getDumpText()}")
+        val vmRef = asReference()
+        launch(UI) {
+            vmRef().creatingRecordsText.value = Unit
+            val spends = async(CommonPool) { spendsRepo.getDumpText() }
+            val profits = async(CommonPool) { profitsRepo.getDumpText() }
+            vmRef().sendRecords.value = "SPENDS:\n${spends.await()}\n\nPROFITS:\n${profits.await()}"
         }
     }
 
@@ -193,7 +229,5 @@ class RecordsListViewModel(
 
     val createdProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
 
-    val editedSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyEditedSpends()
-
-    val editedProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyEditedProfits()
+    val creatingRecordsText = SingleLiveEvent<Unit>()
 }

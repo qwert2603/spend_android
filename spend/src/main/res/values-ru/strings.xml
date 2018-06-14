@@ -74,4 +74,6 @@
     <string name="text_source_code_long">исходный код на github.com</string>
 
     <string name="spend_kind_description_format">последнее: %d @ %s</string>
+
+    <string name="text_dumping_records">создается список записей..</string>
 </resources>

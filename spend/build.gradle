@@ -74,6 +74,7 @@ dependencies {
     def room_version = "1.1.0"
     def lifecycle_version = "1.1.1"
     def android_test_runner_version = "1.0.2"
+    def anko_version = "0.10.5"
 
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
@@ -92,6 +93,8 @@ dependencies {
     implementation "android.arch.paging:runtime:$paging_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
 
     implementation "com.hannesdorfmann.fragmentargs:annotation:$fragmentargs_version"
     kapt "com.hannesdorfmann.fragmentargs:processor:$fragmentargs_version"
@@ -122,4 +125,10 @@ repositories {
     google()
     maven { url "http://repository.jetbrains.com/all" }
     maven { url 'https://www.jitpack.io' }
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

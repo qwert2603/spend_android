@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.model.repo
 
 import android.arch.lifecycle.LiveData
-import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
@@ -28,8 +27,7 @@ interface SpendsRepo {
 
     fun locallyEditedSpends(): SingleLiveEvent<Spend>
 
-    @WorkerThread
-    fun getDumpText(): String
+    suspend fun getDumpText(): String
 
     fun get30DaysBalance(): LiveData<Long>
 }

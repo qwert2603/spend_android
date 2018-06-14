@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
 import android.content.Context
-import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.toProfit
@@ -68,8 +67,7 @@ class ProfitsRepoImpl @Inject constructor(
 
     override fun locallyEditedProfits(): SingleLiveEvent<Profit> = locallyEditedProfits
 
-    @WorkerThread
-    override fun getDumpText(): String = localDB.profitsDao()
+    override suspend fun getDumpText(): String = localDB.profitsDao()
             .getAllProfitsList()
             .let {
                 if (it.isEmpty()) return@let "nth"

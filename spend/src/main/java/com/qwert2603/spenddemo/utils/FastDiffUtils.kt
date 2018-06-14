@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
+import com.qwert2603.andrlib.util.LogUtils
 
 
 object FastDiffUtils {
@@ -35,6 +36,8 @@ object FastDiffUtils {
             crossinline isEqual: (T, T) -> Boolean,
             possiblyMovedItemIds: List<I> = emptyList()
     ): FastDiffResult {
+
+        val currentTimeMillis = System.currentTimeMillis()
 
         val movedIds = mutableSetOf<I>()
 
@@ -105,6 +108,8 @@ object FastDiffUtils {
         if (newIndex < newList.size && oldIndex == oldList.size) {
             inserts.add(oldIndex + insertsCount - removesCount to newList.size - newIndex)
         }
+
+        LogUtils.d("FastDiffUtils.fastCalculateDiff() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
         return FastDiffResult(inserts = inserts, removes = removes, changes = changes, moves = moves)
     }

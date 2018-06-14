@@ -2,9 +2,7 @@ package com.qwert2603.spenddemo.records_list_mvvm
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
-import com.qwert2603.spenddemo.utils.FastDiffUtils
 
 // todo: delegate adapters.
 class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -37,37 +35,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             notifyItemRangeChanged(0, itemCount)
         }
 
-    var pendingMovedSpendId: Long? = null
-    var pendingMovedProfitId: Long? = null
-
     var list: List<RecordsListItem> = emptyList()
-        set(value) {
-            val oldList = field
-            field = value
-
-            // todo: background thread coroutines.
-            FastDiffUtils.fastCalculateDiff(
-                    oldList = oldList,
-                    newList = field,
-                    id = { this.id() },
-                    compareOrder = { r1, r2 ->
-                        return@fastCalculateDiff r2.time().compareTo(r1.time())
-                                .takeIf { it != 0 }
-                                ?: r2.priority().compareTo(r1.priority())
-                                        .takeIf { it != 0 }
-                                ?: r2.id.compareTo(r1.id)
-                    },
-                    isEqual = { r1, r2 -> r1 == r2 },
-                    possiblyMovedItemIds = listOfNotNull(
-                            pendingMovedSpendId?.plus(ADDENDUM_ID_SPEND),
-                            pendingMovedProfitId?.plus(ADDENDUM_ID_PROFIT)
-                    )
-            )
-                    .also { LogUtils.d("RecordsListAdapter fastCalculateDiff $it") }
-                    .dispatchToAdapter(this)
-
-            pendingMovedSpendId = null
-        }
 
     var itemClicks: ((RecordsListItem) -> Unit)? = null
     var itemLongClicks: ((RecordsListItem) -> Unit)? = null
@@ -108,13 +76,13 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         const val VIEW_TYPE_MONTH_SUM = 4
         const val VIEW_TYPE_TOTALS = 5
 
-        private const val ADDENDUM_ID_SPEND = 0L
-        private const val ADDENDUM_ID_PROFIT = 1_000_000_000L
+        const val ADDENDUM_ID_SPEND = 0L
+        const val ADDENDUM_ID_PROFIT = 1_000_000_000L
         private const val ADDENDUM_ID_DATE_SUM = 2_000_000_000L
         private const val ADDENDUM_ID_MONTH_SUM = 3_000_000_000L
         private const val ADDENDUM_ID_TOTALS = 4_000_000_000L
 
-        private fun RecordsListItem.id() = when (this) {
+        fun RecordsListItem.id() = when (this) {
             is SpendUI -> this.id + ADDENDUM_ID_SPEND
             is ProfitUI -> this.id + ADDENDUM_ID_PROFIT
             is DateSumUI -> this.id + ADDENDUM_ID_DATE_SUM
@@ -123,7 +91,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> null!!
         }
 
-        private fun RecordsListItem.time() = when (this) {
+        fun RecordsListItem.time() = when (this) {
             is SpendUI -> this.date.time
             is ProfitUI -> this.date.time
             is DateSumUI -> this.date.time
@@ -132,7 +100,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> null!!
         }
 
-        private fun RecordsListItem.priority() = when (this) {
+        fun RecordsListItem.priority() = when (this) {
             is SpendUI -> 5
             is ProfitUI -> 4
             is DateSumUI -> 3

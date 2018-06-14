@@ -75,4 +75,6 @@
 
     <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
     <string name="spend_kind_description_format" formatted="true">last: %d @ %s</string>
+
+    <string name="text_dumping_records">creating records list..</string>
 </resources>

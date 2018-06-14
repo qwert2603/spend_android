@@ -1,6 +1,5 @@
 package com.qwert2603.spenddemo.model.repo
 
-import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.utils.SingleLiveEvent
@@ -20,6 +19,5 @@ interface ProfitsRepo {
 
     fun locallyEditedProfits(): SingleLiveEvent<Profit>
 
-    @WorkerThread
-    fun getDumpText(): String
+    suspend fun getDumpText(): String
 }

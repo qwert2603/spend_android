@@ -5,6 +5,10 @@ import android.animation.AnimatorListenerAdapter
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.Transformations
+import com.qwert2603.andrlib.util.LogUtils
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.coroutines.experimental.bg
 import kotlin.math.absoluteValue
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
@@ -71,6 +75,31 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
 fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
 fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
 
+fun <T, U> LiveData<T>.mapBG(mapper: (T) -> U): LiveData<U> {
+    val result = MediatorLiveData<U>()
+    LogUtils.d("mapBG qq")
+    result.addSource(this) { x ->
+        if (x == null) {
+            result.value = null
+            return@addSource
+        }
+        LogUtils.d("mapBG onChanged 1")
+        val job = bg {
+            LogUtils.d("mapBG bg")
+            mapper(x)
+                    .also { LogUtils.d("mapBG bg end") }
+        }
+        LogUtils.d("mapBG onChanged 2")
+        launch(UI) {
+            LogUtils.d("mapBG launch(UI) 1")
+            result.value = job.await()
+            LogUtils.d("mapBG launch(UI) 2")
+        }
+    }
+    LogUtils.d("mapBG ww")
+    return result
+}
+
 fun <T, U, V> combineLatest(liveDataT: LiveData<T?>, liveDataU: LiveData<U?>, combiner: (T?, U?) -> V?) = MediatorLiveData<V?>()
         .apply {
             var lastT: T? = null
@@ -106,3 +135,14 @@ fun combineLatest(liveDatas: List<LiveData<Boolean>>) = MediatorLiveData<List<Bo
                 }
             }
         }
+
+/** Pair is <prev, current>. */
+fun <T> LiveData<T>.pairWithPrev(): LiveData<Pair<T?, T?>> {
+    val result = MediatorLiveData<Pair<T?, T?>>()
+    var prev: T? = null
+    result.addSource(this) {
+        result.value = prev to it
+        prev = it
+    }
+    return result
+}

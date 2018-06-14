@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
-import android.support.annotation.WorkerThread
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.entity.toSpend
@@ -70,8 +69,7 @@ class SpendsRepoImpl @Inject constructor(
 
     override fun locallyEditedSpends(): SingleLiveEvent<Spend> = locallyEditedSpends
 
-    @WorkerThread
-    override fun getDumpText(): String = localDB.spendsDao()
+    override suspend fun getDumpText(): String = localDB.spendsDao()
             .getAllSpendsList()
             .let {
                 if (it.isEmpty()) return@let "nth"
