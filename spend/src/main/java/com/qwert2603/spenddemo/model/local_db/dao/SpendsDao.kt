@@ -115,6 +115,9 @@ abstract class SpendsDao {
         doDeleteAllKinds()
     }
 
+    @Query("UPDATE SpendTable SET id=:newId WHERE id=:prevId")
+    abstract fun changeSpendId(prevId: Long, newId: Long)
+
 
     @Query("SELECT * FROM SpendTable WHERE id = :id")
     protected abstract fun doGetSpend(id: Long): SpendTable?

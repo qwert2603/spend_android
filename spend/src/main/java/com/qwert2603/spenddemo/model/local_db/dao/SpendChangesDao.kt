@@ -12,6 +12,9 @@ interface SpendChangesDao {
     @Query("SELECT * FROM SpendChangeTable ORDER BY spendId")
     fun getAllChanges(): Single<List<SpendChangeTable>>
 
+    @Query("SELECT * FROM SpendChangeTable ORDER BY spendId")
+    fun getAllChangesList(): List<SpendChangeTable>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveChange(spendChangeTable: SpendChangeTable)
 
