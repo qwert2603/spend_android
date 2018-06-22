@@ -40,14 +40,14 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
 
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)
-                .setSingleChoiceItems(SpendKindsAdapter(requireContext(), kinds), -1, { _, which ->
+                .setSingleChoiceItems(SpendKindsAdapter(requireContext(), kinds), -1) { _, which ->
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
                             Intent().putExtra(KIND_KEY, kinds[which].kind)
                     )
                     dismiss()
-                })
+                }
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
 

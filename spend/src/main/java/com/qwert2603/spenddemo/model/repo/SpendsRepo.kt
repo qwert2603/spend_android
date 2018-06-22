@@ -27,6 +27,8 @@ interface SpendsRepo {
 
     fun locallyEditedSpends(): SingleLiveEvent<Spend>
 
+    fun syncingSpendIds(): LiveData<Set<Long>>
+
     suspend fun getDumpText(): String
 
     fun get30DaysBalance(): LiveData<Long>

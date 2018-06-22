@@ -69,4 +69,9 @@
     <item
         android:id="@+id/clear_all"
         android:title="@string/text_clear_all" />
+
+    <item
+        android:id="@+id/server_delay"
+        android:checkable="true"
+        android:title="@string/text_server_delay" />
 </menu>

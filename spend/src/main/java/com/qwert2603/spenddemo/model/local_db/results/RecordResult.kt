@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.local_db.results
 
+import com.qwert2603.spenddemo.model.entity.ChangeKind
 import java.util.*
 
 data class RecordResult(
@@ -7,7 +8,8 @@ data class RecordResult(
         val id: Long,
         val kind: String,
         val value: Int,
-        val date: Date
+        val date: Date,
+        val changeKind: ChangeKind?
 ) {
     companion object {
         const val TYPE_SPEND = 1

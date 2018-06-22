@@ -8,10 +8,16 @@ import java.sql.ResultSet
 import java.util.*
 
 class RemoteDBImpl(
-        private val url: String,
+        private val url: String,//todo: from user's settings.
         private val user: String,
         private val password: String
 ) : RemoteDB {
+
+    companion object {
+        var IMITATE_DELAY = false
+        private const val IMITATED_SERVER_DELAY = 3000L
+    }
+
     init {
         Class.forName(org.postgresql.Driver::class.java.name)
     }
@@ -47,6 +53,8 @@ class RemoteDBImpl(
     }
 
     private fun getPreparedStatement(sql: String): PreparedStatement {
+//        return DriverManager.getConnection(url, user, password).prepareStatement(sql)
+
         val connection = connection ?: DriverManager.getConnection(url, user, password)
         DriverManager.setLoginTimeout(3)// todo: check
         val preparedStatement = preparedStatements[sql] ?: connection.prepareStatement(sql)
@@ -58,6 +66,7 @@ class RemoteDBImpl(
 
     private fun <T> sendRequest(uuid: UUID, request: () -> T): T {
         try {
+            if (IMITATE_DELAY) Thread.sleep(IMITATED_SERVER_DELAY)
             return request()
         } catch (e: Exception) {
             LogUtils.d("RemoteDBImpl", "$uuid <<-- error ${e.message}")
@@ -71,7 +80,8 @@ class RemoteDBImpl(
         args.forEachIndexed { i, any ->
             val index = i + 1
             when (any) {
-                is Number -> setLong(index, any.toLong())
+                is Int -> setInt(index, any)
+                is Long -> setLong(index, any)
                 is String -> setString(index, any)
                 is java.sql.Date -> setDate(index, any)
                 is java.sql.Timestamp -> setTimestamp(index, any)

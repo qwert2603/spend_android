@@ -35,57 +35,84 @@ class SpendKindsTest {
 
     @Test
     fun t2() {
+        // one spend
         val date1 = Date() - 2.days
-        spendsDao.addSpend(SpendTable(1L, "kk", 14, date1))
-        Assert.assertEquals(listOf(
+        spendsDao.saveSpend(SpendTable(1L, "kk", 14, date1, null))
+        assertKindsList(
                 SpendKindTable("kk", date1, 14, 1)
-        ), spendsDao.getAllKingsList())
+        )
 
+        // add spend with newer date
         val date2 = Date()
-        spendsDao.addSpend(SpendTable(2L, "kk", 17, date2))
-        Assert.assertEquals(listOf(
+        spendsDao.saveSpend(SpendTable(2L, "kk", 17, date2, null))
+        assertKindsList(
                 SpendKindTable("kk", date2, 17, 2)
-        ), spendsDao.getAllKingsList())
+        )
 
+        // add spend with older date
         val date3 = Date() - 5.days
-        spendsDao.addSpend(SpendTable(3L, "kk", 19, date3))
-        Assert.assertEquals(listOf(
+        spendsDao.saveSpend(SpendTable(3L, "kk", 19, date3, null))
+        assertKindsList(
                 SpendKindTable("kk", date2, 17, 3)
-        ), spendsDao.getAllKingsList())
+        )
 
-        spendsDao.editSpend(SpendTable(2L, "kk", 26, date2))
-        Assert.assertEquals(listOf(
+        // change newest spend's value
+        spendsDao.saveSpend(SpendTable(2L, "kk", 26, date2, null))
+        assertKindsList(
                 SpendKindTable("kk", date2, 26, 3)
-        ), spendsDao.getAllKingsList())
+        )
 
-        spendsDao.editSpend(SpendTable(2L, "kk", 26, date2 - 10.days))
-        Assert.assertEquals(listOf(
+        // change newest spend's date
+        spendsDao.saveSpend(SpendTable(2L, "kk", 26, date2 - 10.days, null))
+        assertKindsList(
                 SpendKindTable("kk", date1, 14, 3)
-        ), spendsDao.getAllKingsList())
+        )
 
+        // change newest spend's kind
+        spendsDao.saveSpend(SpendTable(1L, "tt", 14, date1, null))
+        assertKindsList(
+                SpendKindTable("kk", date3, 19, 2),
+                SpendKindTable("tt", date1, 14, 1)
+        )
+
+        // change kind back
+        spendsDao.saveSpend(SpendTable(1L, "kk", 14, date1, null))
+        assertKindsList(
+                SpendKindTable("kk", date1, 14, 3)
+        )
+
+        // delete newest spend
         spendsDao.deleteSpend(1L)
-        Assert.assertEquals(listOf(
+        assertKindsList(
                 SpendKindTable("kk", date3, 19, 2)
-        ), spendsDao.getAllKingsList())
+        )
 
+        // add spend with another kind
         val dateQ = Date()
-        spendsDao.addSpend(SpendTable(4L, "qq", 37, dateQ))
-        Assert.assertEquals(listOf(
+        spendsDao.saveSpend(SpendTable(4L, "qq", 37, dateQ, null))
+        assertKindsList(
                 SpendKindTable("kk", date3, 19, 2),
                 SpendKindTable("qq", dateQ, 37, 1)
-        ), spendsDao.getAllKingsList())
+        )
 
-        spendsDao.addSpend(SpendTable(5L, "qq", 12, Date() - 20.days))
-        spendsDao.addSpend(SpendTable(6L, "qq", 11, Date() - 20.days))
-        Assert.assertEquals(listOf(
+        // add two more spends of another kind.
+        // so another kind becomes above in list
+        spendsDao.saveSpend(SpendTable(5L, "qq", 12, Date() - 20.days, null))
+        spendsDao.saveSpend(SpendTable(6L, "qq", 11, Date() - 20.days, null))
+        assertKindsList(
                 SpendKindTable("qq", dateQ, 37, 3),
                 SpendKindTable("kk", date3, 19, 2)
-        ), spendsDao.getAllKingsList())
+        )
 
+        // delete all spends of kind "kk"
         spendsDao.deleteSpend(2L)
         spendsDao.deleteSpend(3L)
-        Assert.assertEquals(listOf(
+        assertKindsList(
                 SpendKindTable("qq", dateQ, 37, 3)
-        ), spendsDao.getAllKingsList())
+        )
+    }
+
+    private fun assertKindsList(vararg expected: SpendKindTable) {
+        Assert.assertEquals(expected.toList(), spendsDao.getAllKingsList())
     }
 }

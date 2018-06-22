@@ -11,6 +11,7 @@ import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -18,12 +19,14 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
+import ru.terrakok.cicerone.Router
 import java.util.*
 
 class RecordsListViewModel(
         private val spendsRepo: SpendsRepo,
         private val profitsRepo: ProfitsRepo,
-        private val userSettingsRepo: UserSettingsRepo
+        private val userSettingsRepo: UserSettingsRepo,
+        private val router: Router
 ) : ViewModel() {
 
     val showSpends = MutableLiveData<Boolean>()
@@ -162,7 +165,7 @@ class RecordsListViewModel(
                     CreatingSpend(
                             kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
                             value = random.nextInt(1000) + 1,
-                            date = Date() - (random.nextInt(2100)).days
+                            date = Date().secondsToZero() - (random.nextInt(2100)).days
                     )
                 })
     }
@@ -175,7 +178,7 @@ class RecordsListViewModel(
                     CreatingProfit(
                             kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
                             value = random.nextInt(10000) + 1,
-                            date = Date() - (random.nextInt(2100)).days
+                            date = Date().secondsToZero() - (random.nextInt(2100)).days
                     )
                 }
         )
@@ -225,7 +228,14 @@ class RecordsListViewModel(
         }
     }
 
+    fun moveToChangesList() {
+        router.navigateTo(ScreenKey.CHANGES_LIST.name)
+    }
+
     val createdSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
+
+    val syncingItemIdsInList: LiveData<Set<Long>> = spendsRepo.syncingSpendIds()
+            .map { it.map { it + RecordsListItem.ADDENDUM_ID_SPEND }.toSet() }
 
     val createdProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
 

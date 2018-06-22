@@ -15,7 +15,7 @@ abstract class BaseViewHolder<T : RecordsListItem>(
     var t: T? = null
         private set
 
-    private var adapter: RecordsListAdapter? = null
+    protected var adapter: RecordsListAdapter? = null
 
     init {
         itemView.setOnClickListener {

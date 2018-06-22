@@ -3,25 +3,29 @@ package com.qwert2603.spenddemo.model.local_db.dao
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.support.annotation.VisibleForTesting
-import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.model.entity.SpendChange
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.SpendKindTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
+import io.reactivex.Single
 
 @Dao
 abstract class SpendsDao {
 
     @Query("""
         SELECT * FROM (
-            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date FROM SpendTable
+            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, change_changeKind changeKind FROM SpendTable
         UNION ALL
-            SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date FROM ProfitTable
+            SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date, change_changeKind changeKind FROM ProfitTable
         ) ORDER BY date DESC
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 
     @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
     abstract fun getAllSpendsList(): List<SpendTable>
+
+    @Query("SELECT * FROM SpendTable WHERE id = :id")
+    abstract fun getSpend(id: Long): SpendTable?
 
     @Query("SELECT SUM(s.value) FROM SpendTable s WHERE date(s.date/1000, 'unixepoch') > date('now','-30 day')")
     abstract fun get30DaysSum(): LiveData<Long?>
@@ -33,103 +37,68 @@ abstract class SpendsDao {
     abstract fun getKind(kind: String): SpendKindTable?
 
     @Transaction
-    open fun addSpend(spend: SpendTable) {
-        val prevKind = getKind(spend.kind)
-        doAddSpend(spend)
-        if (prevKind == null) {
-            doUpdateKind(SpendKindTable(
-                    kind = spend.kind,
-                    lastDate = spend.date,
-                    lastPrice = spend.value,
-                    spendsCount = 1
-            ))
-        } else {
-            doUpdateKind(SpendKindTable(
-                    kind = prevKind.kind,
-                    lastDate = maxOf(prevKind.lastDate, spend.date),
-                    lastPrice = if (spend.date > prevKind.lastDate) spend.value else prevKind.lastPrice,
-                    spendsCount = prevKind.spendsCount + 1
-            ))
-        }
-    }
-
-    @Transaction
     open fun addSpends(spends: List<SpendTable>) {
-        spends.forEach { addSpend(it) }
+        spends.forEach { saveSpend(it) }
     }
 
+    /** add or update Spend. */
     @Transaction
-    open fun editSpend(spend: SpendTable) {
-        val prevKind = getKind(spend.kind)
-        if (prevKind == null) {
-            LogUtils.e("SpendsDao editSpend prevKind == null spend=$spend")
-            return
-        }
-        doEditSpend(spend)
-        val lastSpendOfKind = doGetLastSpendOfKind(spend.kind)
-        if (lastSpendOfKind == null) {
-            LogUtils.e("SpendsDao editSpend lastSpendOfKind == null spend=$spend")
-            return
-        }
-        doUpdateKind(SpendKindTable(
-                kind = prevKind.kind,
-                lastDate = lastSpendOfKind.date,
-                lastPrice = lastSpendOfKind.value,
-                spendsCount = prevKind.spendsCount
-        ))
+    open fun saveSpend(spend: SpendTable) {
+        val prevSpend = getSpend(spend.id)
+        doSaveSpend(spend)
+        if (prevSpend != null && spend.kind != prevSpend.kind) updateKind(prevSpend.kind)
+        updateKind(spend.kind)
     }
 
     @Transaction
     open fun deleteSpend(id: Long) {
-        val spend = doGetSpend(id)
-        if (spend == null) {
-            LogUtils.e("SpendsDao editSpend spend == null id=$id")
-            return
-        }
-        val prevKind = getKind(spend.kind)
-        if (prevKind == null) {
-            LogUtils.e("SpendsDao editSpend prevKind == null spend=$spend")
-            return
-        }
+        val spend = getSpend(id) ?: return
         doDeleteSpend(id)
-        if (prevKind.spendsCount == 1) {
-            doDeleteKind(spend.kind)
+        updateKind(spend.kind)
+    }
+
+    private fun updateKind(kind: String) {
+        val spendsCount = doGetSpendCountOfKind(kind)
+        if (spendsCount == 0) {
+            doDeleteKind(kind)
         } else {
-            val lastOfKind = doGetLastSpendOfKind(prevKind.kind)
-            if (lastOfKind == null) {
-                LogUtils.e("SpendsDao editSpend lastOfKind == null spend=$spend prevKind=$prevKind")
-                return
-            }
+            val lastSpendOfKind = doGetLastSpendOfKind(kind)!!
             doUpdateKind(SpendKindTable(
-                    kind = prevKind.kind,
-                    lastDate = lastOfKind.date,
-                    lastPrice = lastOfKind.value,
-                    spendsCount = prevKind.spendsCount - 1
+                    kind = kind,
+                    lastDate = lastSpendOfKind.date,
+                    lastPrice = lastSpendOfKind.value,
+                    spendsCount = spendsCount
             ))
         }
     }
 
     @Transaction
-    open fun deleteAllSpends() {
+    open fun clearAll() {
         doDeleteAllSpends()
         doDeleteAllKinds()
     }
 
-    @Query("UPDATE SpendTable SET id=:newId WHERE id=:prevId")
+    @Query("UPDATE SpendTable SET id = :newId WHERE id = :prevId")
     abstract fun changeSpendId(prevId: Long, newId: Long)
 
+    @Query("UPDATE SpendTable SET change_changeKind = 2, change_id = :changeId WHERE id = :id")
+    abstract fun locallyDeleteSpend(id: Long, changeId: Long)
 
-    @Query("SELECT * FROM SpendTable WHERE id = :id")
-    protected abstract fun doGetSpend(id: Long): SpendTable?
+    @Query("UPDATE SpendTable SET change_changeKind = 1 WHERE id = :spendId")
+    abstract fun setChangeKindToEdit(spendId: Long)
 
-    @Insert
-    protected abstract fun doAddSpend(spend: SpendTable): Long
+    @Query("UPDATE SpendTable SET change_changeKind = NULL, change_id = NULL WHERE id = :spendId")
+    abstract fun clearLocalChange(spendId: Long)
 
-    @Insert
-    protected abstract fun doAddSpends(spends: List<SpendTable>)
+    @Query("SELECT * FROM SpendTable WHERE change_changeKind IS NOT NULL LIMIT :limit")
+    abstract fun getLocallyChangedSpends(limit: Int = 10): List<SpendTable>
+
+    @Query("SELECT id spendId, change_changeKind changeKind, change_id id FROM SpendTable WHERE change_changeKind IS NOT NULL ORDER BY change_id DESC")
+    abstract fun getAllLocallyChangedSpends(): Single<List<SpendChange>>
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    protected abstract fun doEditSpend(spend: SpendTable)
+    protected abstract fun doSaveSpend(spend: SpendTable)
 
     @Query("DELETE FROM SpendTable WHERE id = :spendId")
     protected abstract fun doDeleteSpend(spendId: Long)
@@ -139,6 +108,9 @@ abstract class SpendsDao {
 
     @Query("SELECT * FROM SpendTable WHERE kind = :kind ORDER BY date DESC LIMIT 1")
     protected abstract fun doGetLastSpendOfKind(kind: String): SpendTable?
+
+    @Query("SELECT COUNT(*) FROM SpendTable WHERE kind = :kind")
+    protected abstract fun doGetSpendCountOfKind(kind: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     protected abstract fun doUpdateKind(spendKindTable: SpendKindTable)
@@ -158,6 +130,7 @@ abstract class SpendsDao {
     @Query("SELECT SUM(value) FROM SpendTable")
     abstract fun getTotal(): Long
 
-    @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC")
+    @VisibleForTesting
+    @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
     abstract fun getAllKingsList(): List<SpendKindTable>
 }

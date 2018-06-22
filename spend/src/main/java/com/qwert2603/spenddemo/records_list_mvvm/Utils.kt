@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.daysEqual
@@ -74,14 +73,25 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 monthSpendsSum += tableRow.value
                 ++spendsCount
                 spendsSum += tableRow.value
-                if (showInfo.showSpends) result.add(SpendUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date, SyncStatus.REMOTE, null))
+                if (showInfo.showSpends) result.add(SpendUI(
+                        id = tableRow.id,
+                        kind = tableRow.kind,
+                        value = tableRow.value,
+                        date = tableRow.date,
+                        changeKind = tableRow.changeKind
+                ))
             }
             RecordResult.TYPE_PROFIT -> {
                 dayProfitsSum += tableRow.value
                 monthProfitsSum += tableRow.value
                 ++profitsCount
                 profitsSum += tableRow.value
-                if (showInfo.showProfits) result.add(ProfitUI(tableRow.id, tableRow.kind, tableRow.value, tableRow.date))
+                if (showInfo.showProfits) result.add(ProfitUI(
+                        id = tableRow.id,
+                        kind = tableRow.kind,
+                        value = tableRow.value,
+                        date = tableRow.date
+                ))
             }
         }
     }

@@ -39,6 +39,17 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var itemClicks: ((RecordsListItem) -> Unit)? = null
     var itemLongClicks: ((RecordsListItem) -> Unit)? = null
 
+    var syncingItemIdsInList: Set<Long> = emptySet()
+        set(value) {
+            val changed = value union field
+            field = value
+            list.forEachIndexed { index, recordsListItem ->
+                if (recordsListItem.idInList() in changed) {
+                    notifyItemChanged(index)
+                }
+            }
+        }
+
     override fun getItemCount() = list.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {

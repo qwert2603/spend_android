@@ -21,6 +21,7 @@ import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.Spend
+import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.*
@@ -64,9 +65,9 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
-        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext(), { rv, vh ->
+        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
-        }))
+        })
         val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
             override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
             override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
@@ -77,6 +78,7 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.itemAnimator = recordsListAnimator
         viewModel.createdSpendsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })
         viewModel.createdProfitsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
+        viewModel.syncingItemIdsInList.observe(this, Observer { adapter.syncingItemIdsInList = it ?: emptySet<Long>() })
 
         viewModel.creatingRecordsText.observe(this, Observer { Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show() })
 
@@ -258,6 +260,7 @@ class RecordsListMvvmFragment : Fragment() {
         menu.findItem(R.id.add_stub_spends).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.add_stub_profits).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
+        menu.findItem(R.id.server_delay).isVisible = E.env.buildForTesting()
 
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
@@ -286,8 +289,8 @@ class RecordsListMvvmFragment : Fragment() {
         })
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.new_profit -> AddProfitDialogFragmentBuilder.newAddProfitDialogFragment(true)
                     .also { it.setTargetFragment(this, REQUEST_ADD_PROFIT) }
                     .show(fragmentManager, "add_profit")
@@ -299,6 +302,11 @@ class RecordsListMvvmFragment : Fragment() {
                     .also { (context as KeyboardManager).hideKeyboard() }
             R.id.clear_all -> viewModel.clearAll()
             R.id.send_records -> viewModel.sendRecords()
+            R.id.show_local_changes -> viewModel.moveToChangesList()
+            R.id.server_delay -> {
+                RemoteDBImpl.IMITATE_DELAY = !RemoteDBImpl.IMITATE_DELAY
+                item.isChecked = RemoteDBImpl.IMITATE_DELAY
+            }
         }
         return super.onOptionsItemSelected(item)
     }

@@ -2,6 +2,10 @@ package com.qwert2603.spenddemo
 
 import android.app.Application
 import com.facebook.stetho.Stetho
+import com.qwert2603.andrlib.base.mvi.load_refresh.list.listModelChangerInstance
+import com.qwert2603.andrlib.base.mvi.load_refresh.lrModelChangerInstance
+import com.qwert2603.andrlib.generated.LRModelChangerImpl
+import com.qwert2603.andrlib.generated.ListModelChangerImpl
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.di.DIManager
@@ -26,6 +30,9 @@ class SpendDemoApplication : Application() {
             }
         }
 
+        lrModelChangerInstance = LRModelChangerImpl()
+        listModelChangerInstance = ListModelChangerImpl()
+
         LogUtils.logType = if (BuildConfig.DEBUG || E.env.buildForTesting()) {
             LogUtils.LogType.ANDROID
         } else {
@@ -35,4 +42,5 @@ class SpendDemoApplication : Application() {
 
     // todo: stat screen.
     // todo: App Shortcuts for frequent spends.
+    // todo: widget for adding spends.
 }

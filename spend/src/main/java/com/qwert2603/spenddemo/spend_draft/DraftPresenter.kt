@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.spend_draft
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.utils.secondOfTwo
 import com.qwert2603.spenddemo.utils.setDayFrom
@@ -81,9 +82,9 @@ class DraftPresenter @Inject constructor(
                             ))
                             .delaySubscription(loadDraft)
             )
-            .scan(initialState.creatingSpend, { creatingSpend: CreatingSpend, change: (CreatingSpend) -> CreatingSpend ->
+            .scan(initialState.creatingSpend) { creatingSpend: CreatingSpend, change: (CreatingSpend) -> CreatingSpend ->
                 change(creatingSpend)
-            })
+            }
             .skip(1) // skip initialValue in scan.
             .share()
 
@@ -122,10 +123,10 @@ class DraftPresenter @Inject constructor(
                                 .debounce(100, TimeUnit.MILLISECONDS)
                 )
                 .skipUntil(loadDraft)
-                .doOnNext { kind ->
+                .switchMapSingle { kind ->
                     draftInteractor.getSuggestions(kind)
-                            .let { if (it.isNotEmpty()) it else listOf("smth") }
-                            .also {
+                            .map { if (it.isNotEmpty()) it else listOf("smth") }
+                            .doOnSuccess {
                                 if (kind !in it) {
                                     viewActions.onNext(DraftViewAction.ShowKindSuggestions(it, kind))
                                 } else {

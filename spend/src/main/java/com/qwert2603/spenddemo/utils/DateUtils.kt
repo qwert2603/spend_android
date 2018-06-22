@@ -7,6 +7,7 @@ import java.util.*
 import com.qwert2603.andrlib.util.Const as LibConst
 
 fun java.util.Date.toSqlDate() = java.sql.Date(this.time)
+fun java.util.Date.toSqlTimestamp() = java.sql.Timestamp(this.time)
 fun java.sql.Date.toUtilDate() = java.util.Date(this.time)
 
 fun Date.onlyDate(): Date = Calendar
@@ -103,3 +104,11 @@ fun Date.setTimeFrom(date: Date): Date {
     this.time = calendar.timeInMillis
     return this
 }
+
+fun Date.secondsToZero(): Date = Calendar.getInstance()
+        .also {
+            it.time = this
+            it.set(Calendar.SECOND, 0)
+            it.set(Calendar.MILLISECOND, 0)
+        }
+        .time

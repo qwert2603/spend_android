@@ -36,9 +36,9 @@ class RoomTest {
     }
 
     @Test
-    fun writeUserAndReadInList() {
-        val spend = SpendTable(12L, "food", 33, Date())
-        spendsDao.addSpend(spend)
+    fun writeAndRead() {
+        val spend = SpendTable(12L, "food", 33, Date(), null)
+        spendsDao.saveSpend(spend)
         val allSpends = spendsDao.getAllSpendsList()
         Assert.assertEquals(allSpends.size, 1)
         Assert.assertEquals(allSpends.first(), spend)
@@ -47,9 +47,9 @@ class RoomTest {
     @Test
     fun totalSum() {
         val spends = listOf(
-                SpendTable(12L, "food", 33, Date()),
-                SpendTable(13L, "food", 122, Date()),
-                SpendTable(14L, "food", 44, Date())
+                SpendTable(12L, "food", 33, Date(), null),
+                SpendTable(13L, "food", 122, Date(), null),
+                SpendTable(14L, "food", 44, Date(), null)
         )
         spendsDao.addSpends(spends)
         Assert.assertEquals(spendsDao.getTotal(), spends.sumByLong { it.value.toLong() })
@@ -58,9 +58,9 @@ class RoomTest {
     @Test
     fun getAllRecords() {
         val spends = listOf(
-                SpendTable(12L, "food", 33, Date()),
-                SpendTable(13L, "food", 122, Date()),
-                SpendTable(14L, "food", 44, Date())
+                SpendTable(12L, "food", 33, Date(), null),
+                SpendTable(13L, "food", 122, Date(), null),
+                SpendTable(14L, "food", 44, Date(), null)
         )
         val profits = listOf(
                 ProfitTable(4L, "salary", 23, Date()),

@@ -6,6 +6,7 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
 class ViewModelFactory : ViewModelProvider.Factory {
@@ -19,6 +20,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
     @Inject
     lateinit var profitsRepo: ProfitsRepo
 
+    @Inject
+    lateinit var router: Router
+
     init {
         DIHolder.diManager.viewsComponent.inject(this)
     }
@@ -29,7 +33,8 @@ class ViewModelFactory : ViewModelProvider.Factory {
             return RecordsListViewModel(
                     spendsRepo = spendsRepo,
                     profitsRepo = profitsRepo,
-                    userSettingsRepo = userSettingsRepo
+                    userSettingsRepo = userSettingsRepo,
+                    router = router
             ) as T
         }
         throw Exception()

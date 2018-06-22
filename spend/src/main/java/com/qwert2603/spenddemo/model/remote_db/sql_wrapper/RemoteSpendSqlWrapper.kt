@@ -1,6 +1,8 @@
 package com.qwert2603.spenddemo.model.remote_db.sql_wrapper
 
+import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.util.*
 
 class RemoteSpendSqlWrapper(resultSet: ResultSet) {
@@ -8,8 +10,8 @@ class RemoteSpendSqlWrapper(resultSet: ResultSet) {
             resultSet.getLong("id"),
             resultSet.getString("kind"),
             resultSet.getInt("value"),
-            resultSet.getDate("date"),
-            resultSet.getTimestamp("updated").time,
+            resultSet.getTimestamp("date"),
+            resultSet.getTimestamp("updated"),
             resultSet.getBoolean("deleted")
     )
 }
@@ -19,6 +21,14 @@ data class RemoteSpend(
         val kind: String,
         val value: Int,
         val date: Date,
-        val updated: Long,
+        val updated: Timestamp,
         val deleted: Boolean
+)
+
+fun RemoteSpend.toSpendTable() = SpendTable(
+        id = id,
+        kind = kind,
+        value = value,
+        date = date,
+        change = null
 )

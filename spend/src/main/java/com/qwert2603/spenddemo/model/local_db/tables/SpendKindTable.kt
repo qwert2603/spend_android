@@ -15,4 +15,3 @@ data class SpendKindTable(
 )
 
 fun SpendKindTable.toSpendKind() = SpendKind(kind, spendsCount, lastPrice, lastDate)
-fun SpendKind.toSpendKindTable() = SpendKindTable(kind, lastDate, lastPrice, spendsCount)

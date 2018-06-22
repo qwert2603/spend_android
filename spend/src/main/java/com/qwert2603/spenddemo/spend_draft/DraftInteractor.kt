@@ -30,7 +30,7 @@ class DraftInteractor @Inject constructor(
 
     fun isCreatable(creatingSpend: CreatingSpend) = creatingSpend.kind.isNotBlank() && creatingSpend.value > 0
 
-    fun getSuggestions(inputKind: String): List<String> = spendKindsRepo.getKindSuggestions(inputKind)
+    fun getSuggestions(inputKind: String): Single<List<String>> = spendKindsRepo.getKindSuggestions(inputKind)
 
     fun getLastPriceOfKind(kind: String): Int = spendKindsRepo.getKind(kind)?.lastPrice ?: 0
 

@@ -59,7 +59,7 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
         date_TextView.setVisible(showDatesInRecords)
         time_TextView.setVisible(showTimesInRecords)
 
-        local_ImageView.setImageResource(when (t.syncStatus) {
+        local_ImageView.setImageResource(when (t.syncStatus()) {
             SyncStatus.LOCAL -> R.drawable.ic_local
             SyncStatus.SYNCING -> R.drawable.ic_syncing
             SyncStatus.REMOTE -> R.drawable.ic_done_24dp
@@ -83,7 +83,13 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
         isLongClickable = t.canDelete
 
         val strike = showChangeKinds && t.changeKind == ChangeKind.DELETE
-        listOf(id_TextView, date_TextView, kind_TextView, value_TextView)
+        listOf(id_TextView, date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }
+    }
+
+    private fun SpendUI.syncStatus(): SyncStatus = when {
+        this.idInList() in (adapter?.syncingItemIdsInList ?: emptySet()) -> SyncStatus.SYNCING
+        this.changeKind != null -> SyncStatus.LOCAL
+        else -> SyncStatus.REMOTE
     }
 }

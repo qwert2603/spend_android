@@ -5,8 +5,8 @@ import com.qwert2603.spenddemo.model.entity.ChangeKind
 
 class ChangeKindConverter {
     @TypeConverter
-    fun toChangeKind(index: Int) = ChangeKind.values()[index]
+    fun toChangeKind(index: Int?) = index?.let { ChangeKind.values()[it] }
 
     @TypeConverter
-    fun toIndex(changeKind: ChangeKind) = ChangeKind.values().indexOf(changeKind)
+    fun toIndex(changeKind: ChangeKind?) = changeKind?.ordinal
 }
