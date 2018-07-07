@@ -30,13 +30,13 @@ class ChooseProfitKindDialogFragment : DialogFragment() {
         val kinds = profitKindsRepo.getAllKinds().blockingGet().toTypedArray()
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)
-                .setItems(kinds, { _, which ->
+                .setItems(kinds) { _, which ->
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
                             Intent().putExtra(KIND_KEY, kinds[which])
                     )
-                })
+                }
                 .create()
     }
 }

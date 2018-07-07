@@ -51,7 +51,7 @@ class EditSpendDialogFragment : DialogFragment() {
 
     private lateinit var dialogView: View
 
-    private var selectedDate by BundleLong(SELECTED_DATE_KEY, { arguments!! })
+    private var selectedDate by BundleLong(SELECTED_DATE_KEY) { arguments!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,12 +92,10 @@ class EditSpendDialogFragment : DialogFragment() {
                 true
             }
 
-            val userInputValueEditText = UserInputEditText(value_EditText)
-            userInputValueEditText
-                    .userInputs()
-                    .mapToInt()
-                    .filter { it == 0 }
-                    .subscribe { userInputValueEditText.setText("") }
+            RxTextView.textChanges(value_EditText)
+                    .map { it.toString() }
+                    .filter { it.isNotEmpty() && it.all { it == '0' } }
+                    .subscribe { value_EditText.setText("") }
 
             Observable
                     .combineLatest(
@@ -110,16 +108,16 @@ class EditSpendDialogFragment : DialogFragment() {
                                 kind.isNotBlank() && value > 0
                             }
                     )
-                    .subscribe({
+                    .subscribe {
                         (dialog as? AlertDialog)
                                 ?.getButton(AlertDialog.BUTTON_POSITIVE)
                                 ?.isEnabled = it
-                    })
+                    }
         }
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.edit_spend_text)
                 .setView(dialogView)
-                .setPositiveButton(R.string.text_edit, { _, _ -> sendResult() })
+                .setPositiveButton(R.string.text_edit) { _, _ -> sendResult() }
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
     }

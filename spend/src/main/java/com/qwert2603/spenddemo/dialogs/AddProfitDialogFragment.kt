@@ -96,12 +96,10 @@ class AddProfitDialogFragment : DialogFragment() {
                 true
             }
 
-            val userInputValueEditText = UserInputEditText(value_EditText)
-            userInputValueEditText
-                    .userInputs()
-                    .mapToInt()
-                    .filter { it == 0 }
-                    .subscribe { userInputValueEditText.setText("") }
+            RxTextView.textChanges(value_EditText)
+                    .map { it.toString() }
+                    .filter { it.isNotEmpty() && it.all { it == '0' } }
+                    .subscribe { value_EditText.setText("") }
         }
         return AlertDialog.Builder(requireContext())
                 .setTitle(if (newProfit) R.string.create_profit_text else R.string.edit_profit_text)
