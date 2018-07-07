@@ -17,14 +17,18 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.SpendKind
 import com.qwert2603.spenddemo.model.repo.SpendKindsRepo
+import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.item_spend_kind.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class ChooseSpendKindDialogFragment : DialogFragment() {
 
     companion object {
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
+        private val TIME_FORMAT = SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault())
     }
 
     @Inject
@@ -66,7 +70,8 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
             view.lastSpend_TextView.text = view.resources.getString(
                     R.string.spend_kind_description_format,
                     kind.lastPrice,
-                    kind.lastDate.toFormattedString(view.resources)
+                    kind.lastDate.toFormattedString(view.resources),
+                    TIME_FORMAT.format(kind.lastDate)
             )
             return view
         }

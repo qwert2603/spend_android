@@ -23,7 +23,8 @@ class AppInfoDialogFragment : DialogFragment() {
                 BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE,
                 SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
-                SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME))
+                SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
+                BuildConfig.BIULD_HASH
         ))
         return AlertDialog.Builder(requireContext())
                 .setView(view)

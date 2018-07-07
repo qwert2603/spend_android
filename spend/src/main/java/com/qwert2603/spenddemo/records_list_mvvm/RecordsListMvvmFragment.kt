@@ -78,7 +78,7 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.itemAnimator = recordsListAnimator
         viewModel.createdSpendsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedSpendId = it?.id })
         viewModel.createdProfitsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
-        viewModel.syncingItemIdsInList.observe(this, Observer { adapter.syncingItemIdsInList = it ?: emptySet<Long>() })
+        viewModel.syncingItemIdsInList.observe(this, Observer { adapter.syncingItemIdsInList = it ?: emptySet() })
 
         viewModel.creatingRecordsText.observe(this, Observer { Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show() })
 

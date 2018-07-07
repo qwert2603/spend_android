@@ -11,16 +11,18 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newSingleThreadContext
 import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
 
-inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedByDescending(
+inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedBy(
         crossinline first: (T) -> R1,
         crossinline second: (T) -> R2
 ) = this.sortedWith(kotlin.Comparator { i1, i2 ->
-    kotlin.comparisons.compareByDescending(first)
+    kotlin.comparisons.compareBy(first)
             .compare(i1, i2)
             .takeIf { it != 0 }
-            ?: kotlin.comparisons.compareByDescending(second)
+            ?: kotlin.comparisons.compareBy(second)
                     .compare(i1, i2)
 })
 
@@ -100,14 +102,14 @@ fun <T, U> LiveData<T>.mapBG(mapper: Mapper<T, U>): LiveData<U> {
     return result
 }
 
-fun <T, U, V> combineLatest(liveDataT: LiveData<T?>, liveDataU: LiveData<U?>, combiner: (T?, U?) -> V?) = MediatorLiveData<V?>()
+fun <T, U, V> combineLatest(liveDataT: LiveData<T>, liveDataU: LiveData<U>, combiner: (T, U) -> V, startT: T? = null, startU: U? = null) = MediatorLiveData<V>()
         .apply {
-            var lastT: T? = null
-            var lastU: U? = null
+            var lastT: T? = startT
+            var lastU: U? = startU
 
             fun update() {
-                val localLastT = lastT
-                val localLastU = lastU
+                val localLastT = lastT ?: return
+                val localLastU = lastU ?: return
                 value = combiner(localLastT, localLastU)
             }
 
@@ -146,3 +148,5 @@ fun <T> LiveData<T>.pairWithPrev(): LiveData<Pair<T?, T?>> {
     }
     return result
 }
+
+fun <T> ExecutorService.executeAndWait(action: () -> T): T = submit(Callable<T> { action() }).get()

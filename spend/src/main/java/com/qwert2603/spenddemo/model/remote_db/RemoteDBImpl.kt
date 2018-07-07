@@ -82,6 +82,7 @@ class RemoteDBImpl(
             when (any) {
                 is Int -> setInt(index, any)
                 is Long -> setLong(index, any)
+                is Double -> setDouble(index, any)
                 is String -> setString(index, any)
                 is java.sql.Date -> setDate(index, any)
                 is java.sql.Timestamp -> setTimestamp(index, any)

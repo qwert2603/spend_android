@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.repo
 
+import android.arch.lifecycle.LiveData
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.utils.SingleLiveEvent
@@ -17,7 +18,7 @@ interface ProfitsRepo {
 
     fun locallyCreatedProfits(): SingleLiveEvent<Profit>
 
-    fun locallyEditedProfits(): SingleLiveEvent<Profit>
+    fun syncingProfitIds(): LiveData<Set<Long>>
 
     suspend fun getDumpText(): String
 }

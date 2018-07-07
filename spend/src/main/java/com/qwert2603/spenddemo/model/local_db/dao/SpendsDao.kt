@@ -3,15 +3,20 @@ package com.qwert2603.spenddemo.model.local_db.dao
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.support.annotation.VisibleForTesting
+import com.qwert2603.spenddemo.model.entity.ChangeKind
+import com.qwert2603.spenddemo.model.entity.RecordChange
+import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.entity.SpendChange
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.SpendKindTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
+import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
 import io.reactivex.Single
 
 @Dao
 abstract class SpendsDao {
 
+    @Transaction
     @Query("""
         SELECT * FROM (
             SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, change_changeKind changeKind FROM SpendTable
@@ -21,9 +26,11 @@ abstract class SpendsDao {
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 
+    @Transaction
     @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
     abstract fun getAllSpendsList(): List<SpendTable>
 
+    @Transaction
     @Query("SELECT * FROM SpendTable WHERE id = :id")
     abstract fun getSpend(id: Long): SpendTable?
 
@@ -87,9 +94,10 @@ abstract class SpendsDao {
     @Query("UPDATE SpendTable SET change_changeKind = 1 WHERE id = :spendId")
     abstract fun setChangeKindToEdit(spendId: Long)
 
-    @Query("UPDATE SpendTable SET change_changeKind = NULL, change_id = NULL WHERE id = :spendId")
-    abstract fun clearLocalChange(spendId: Long)
+    @Query("UPDATE SpendTable SET change_changeKind = NULL, change_id = NULL WHERE id = :spendId AND change_id = :changeId")
+    abstract fun clearLocalChange(spendId: Long, changeId: Long)
 
+    @Transaction
     @Query("SELECT * FROM SpendTable WHERE change_changeKind IS NOT NULL LIMIT :limit")
     abstract fun getLocallyChangedSpends(limit: Int = 10): List<SpendTable>
 
@@ -133,4 +141,31 @@ abstract class SpendsDao {
     @VisibleForTesting
     @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
     abstract fun getAllKingsList(): List<SpendKindTable>
+
+    @Query("""
+        UPDATE SpendTable
+        SET
+          id                = :newId,
+          change_id         = CASE WHEN change_id = :changeId THEN NULL ELSE change_id END,
+          change_changeKind = CASE WHEN change_id = :changeId THEN NULL ELSE 1 END
+        WHERE id = :localId
+    """)
+    abstract fun onSpendAddedToServer(localId: Long, newId: Long, changeId: Long)
+
+    @Transaction
+    open fun saveChangeFromServer(spend: Spend) {
+        if (getSpend(spend.id)?.change == null) {
+            saveSpend(spend.toSpendTable(null))
+        }
+    }
+
+    @Transaction
+    open fun onItemEdited(spend: Spend, changeId: Long) {
+        val changeKind = if (getSpend(spend.id)!!.change?.changeKind == ChangeKind.INSERT) {
+            ChangeKind.INSERT
+        } else {
+            ChangeKind.UPDATE
+        }
+        saveSpend(spend.toSpendTable(RecordChange(changeId, changeKind)))
+    }
 }

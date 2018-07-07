@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.records_list_mvvm
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 
 class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -1,37 +1,77 @@
 package com.qwert2603.spenddemo.model.local_db.dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.OnConflictStrategy
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
+import com.qwert2603.spenddemo.model.entity.ChangeKind
+import com.qwert2603.spenddemo.model.entity.Profit
+import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
+import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
 import io.reactivex.Single
 
 @Dao
-interface ProfitsDao {
+abstract class ProfitsDao {
 
+    @Transaction
     @Query("SELECT * FROM ProfitTable ORDER BY date DESC, id DESC")
-    fun getAllProfitsList(): List<ProfitTable>
+    abstract fun getAllProfitsList(): List<ProfitTable>
+
+    @Transaction
+    @Query("SELECT * FROM ProfitTable WHERE id = :id")
+    abstract fun getProfit(id: Long): ProfitTable?
 
     @Insert
-    fun addProfit(profit: ProfitTable)
-
-    @Insert
-    fun addProfits(profits: List<ProfitTable>)
+    abstract fun addProfits(profits: List<ProfitTable>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun editProfit(profit: ProfitTable)
+    abstract fun saveProfit(profit: ProfitTable)
 
     @Query("DELETE FROM ProfitTable WHERE id = :id")
-    fun deleteProfit(id: Long)
+    abstract fun deleteProfit(id: Long)
 
     @Query("DELETE FROM ProfitTable")
-    fun deleteAllProfits()
+    abstract fun deleteAllProfits()
+
+    @Query("UPDATE ProfitTable SET change_changeKind = 2, change_id = :changeId WHERE id = :id")
+    abstract fun locallyDeleteProfit(id: Long, changeId: Long)
+
+    @Query("UPDATE ProfitTable SET change_changeKind = NULL, change_id = NULL WHERE id = :profitId AND change_id = :changeId")
+    abstract fun clearLocalChange(profitId: Long, changeId: Long)
+
+    @Transaction
+    @Query("SELECT * FROM ProfitTable WHERE change_changeKind IS NOT NULL LIMIT :limit")
+    abstract fun getLocallyChangedProfits(limit: Int): List<ProfitTable>
 
     @Query("SELECT kind FROM ProfitTable GROUP BY kind ORDER BY count(id) DESC")
-    fun getKinds(): Single<List<String>>
+    abstract fun getKinds(): Single<List<String>>
 
     @Query("SELECT SUM(p.value) FROM ProfitTable p WHERE date(p.date/1000, 'unixepoch') > date('now','-30 day')")
-    fun get30DaysSum(): LiveData<Long?>
+    abstract fun get30DaysSum(): LiveData<Long?>
+
+    @Query("""
+        UPDATE ProfitTable
+        SET
+          id                = :newId,
+          change_id         = CASE WHEN change_id = :changeId THEN NULL ELSE change_id END,
+          change_changeKind = CASE WHEN change_id = :changeId THEN NULL ELSE 1 END
+        WHERE id = :localId
+    """)
+    abstract fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long)
+
+    @Transaction
+    open fun saveChangeFromServer(profit: Profit) {
+        if (getProfit(profit.id)?.change == null) {
+            saveProfit(profit.toProfitTable(null))
+        }
+    }
+
+    @Transaction
+    open fun onItemEdited(profit: Profit, changeId: Long) {
+        val changeKind = if (getProfit(profit.id)!!.change?.changeKind == ChangeKind.INSERT) {
+            ChangeKind.INSERT
+        } else {
+            ChangeKind.UPDATE
+        }
+        saveProfit(profit.toProfitTable(RecordChange(changeId, changeKind)))
+    }
 }

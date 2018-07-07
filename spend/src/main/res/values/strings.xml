@@ -46,10 +46,11 @@
         version: <b>%1$s</b><br/>
         version code: <b>%2$d</b><br/>
         built: <b>%3$s</b> at <b>%4$s</b><br/>
+        hash: <b>%5$s</b><br/>
         ]]>
     </string>
 
-    <string name="text_balance_30_days_format" formatted="true">30 days balance: %s</string>
+    <string name="text_balance_30_days_format" formatted="true">&#931;(30d) = %s</string>
 
     <string name="text_show_ids">ids</string>
     <string name="text_show_change_kinds">change kinds</string>
@@ -74,7 +75,7 @@
     <string name="text_source_code_long">source code on github.com</string>
 
     <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
-    <string name="spend_kind_description_format" formatted="true">last: %d @ %s</string>
+    <string name="spend_kind_description_format" formatted="true">last: %d @ %s at %s</string>
 
     <string name="text_dumping_records">creating records list..</string>
     <string name="text_server_delay">server delay</string>

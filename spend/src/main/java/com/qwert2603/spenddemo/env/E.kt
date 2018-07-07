@@ -12,9 +12,11 @@ object E {
 }
 
 interface Env {
-    val remoteTableName: String
+    val remoteTableNameSpends: String
+    val remoteTableNameProfits: String
     val showIdsSetting: Boolean
     val showChangeKindsSetting: Boolean
+    val syncWithServer: Boolean
 
     fun titleSuffix(): String = listOfNotNull(
             BuildConfig.FLAVOR_server,
@@ -22,23 +24,29 @@ interface Env {
             BuildConfig.BUILD_TYPE.takeIf { it != "release" }
     ).reduce { acc, s -> "$acc $s" }
 
-    fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTest"
+    fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTesting"
 }
 
 private object NoServer : Env {
-    override val remoteTableName by lazy { null!! } // must never be called.
+    override val remoteTableNameSpends by lazy { null!! } // must never be called.
+    override val remoteTableNameProfits by lazy { null!! } // must never be called.
     override val showIdsSetting = true
     override val showChangeKindsSetting = false
+    override val syncWithServer = false
 }
 
 private object ServerTest : Env {
-    override val remoteTableName = "test_spend"
+    override val remoteTableNameSpends = "test_spend"
+    override val remoteTableNameProfits = "test_profit"
     override val showIdsSetting = true
     override val showChangeKindsSetting = true
+    override val syncWithServer = true
 }
 
 private object ServerProd : Env {
-    override val remoteTableName = "spend"
+    override val remoteTableNameSpends = "spend"
+    override val remoteTableNameProfits = "profit"
     override val showIdsSetting = true
     override val showChangeKindsSetting = true
+    override val syncWithServer = true
 }

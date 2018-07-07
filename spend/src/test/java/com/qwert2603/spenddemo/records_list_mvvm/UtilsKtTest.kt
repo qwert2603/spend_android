@@ -18,7 +18,8 @@ class UtilsKtTest {
                         id = random.nextLong(),
                         kind = "kind",
                         value = 1 + random.nextInt(1000),
-                        date = Date() - (random.nextInt(2100)).days
+                        date = Date() - (random.nextInt(2100)).days,
+                        changeKind = null
                 )
             }
             .sortedByDescending { it.date }

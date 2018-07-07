@@ -4,9 +4,9 @@ import android.arch.persistence.room.Embedded
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
-import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.entity.Spend
+import com.qwert2603.spenddemo.model.sync_processor.LocalItem
 import java.util.*
 
 @Entity(indices = [
@@ -17,12 +17,12 @@ import java.util.*
     Index("change_changeKind")
 ])
 data class SpendTable(
-        @PrimaryKey val id: Long,
+        @PrimaryKey override val id: Long,
         val kind: String,
         val value: Int,
         val date: Date,
-        @Embedded(prefix = "change_") val change: RecordChange?
-)
+        @Embedded(prefix = "change_") override val change: RecordChange?
+) : LocalItem
 
-fun SpendTable.toCreatingSpend() = CreatingSpend(kind, value, date)
+fun SpendTable.toSpend() = Spend(id, kind, value, date)
 fun Spend.toSpendTable(change: RecordChange?) = SpendTable(id, kind, value, date, change)

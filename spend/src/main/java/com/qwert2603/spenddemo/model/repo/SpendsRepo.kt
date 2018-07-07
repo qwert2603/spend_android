@@ -25,8 +25,6 @@ interface SpendsRepo {
 
     fun locallyCreatedSpends(): SingleLiveEvent<Spend>
 
-    fun locallyEditedSpends(): SingleLiveEvent<Spend>
-
     fun syncingSpendIds(): LiveData<Set<Long>>
 
     suspend fun getDumpText(): String

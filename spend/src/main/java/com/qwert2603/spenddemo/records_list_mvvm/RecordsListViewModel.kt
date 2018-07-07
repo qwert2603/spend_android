@@ -49,9 +49,6 @@ class RecordsListViewModel(
         showChangeKinds.value = userSettingsRepo.showChangeKinds
         showBalance.value = userSettingsRepo.showBalance
         showTimes.value = userSettingsRepo.showTimes
-
-        spendsRepo.locallyEditedSpends().observeForever { pendingMovedSpendId = it?.id }
-        profitsRepo.locallyEditedProfits().observeForever { pendingMovedProfitId = it?.id }
     }
 
     data class ShowInfo(
@@ -211,10 +208,12 @@ class RecordsListViewModel(
     }
 
     fun editSpend(spend: Spend) {
+        pendingMovedSpendId = spend.id
         spendsRepo.editSpend(spend)
     }
 
     fun editProfit(profit: Profit) {
+        pendingMovedProfitId = profit.id
         profitsRepo.editProfit(profit)
     }
 
@@ -234,8 +233,15 @@ class RecordsListViewModel(
 
     val createdSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
 
-    val syncingItemIdsInList: LiveData<Set<Long>> = spendsRepo.syncingSpendIds()
-            .map { it.map { it + RecordsListItem.ADDENDUM_ID_SPEND }.toSet() }
+    val syncingItemIdsInList: LiveData<Set<Long>> = combineLatest(
+            liveDataT = spendsRepo.syncingSpendIds()
+                    .map { it.map { it + RecordsListItem.ADDENDUM_ID_SPEND }.toSet() },
+            liveDataU = profitsRepo.syncingProfitIds()
+                    .map { it.map { it + RecordsListItem.ADDENDUM_ID_PROFIT }.toSet() },
+            startT = emptySet(),
+            startU = emptySet(),
+            combiner = { s, p -> s + p }
+    )
 
     val createdProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
 

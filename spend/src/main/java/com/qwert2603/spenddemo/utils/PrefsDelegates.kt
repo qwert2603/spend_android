@@ -1,6 +1,9 @@
 package com.qwert2603.spenddemo.utils
 
 import android.content.SharedPreferences
+import com.qwert2603.spenddemo.model.sync_processor.IdCounter
+import com.qwert2603.spenddemo.model.sync_processor.LastUpdateInfo
+import com.qwert2603.spenddemo.model.sync_processor.LastUpdateStorage
 import java.sql.Timestamp
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -58,13 +61,25 @@ class PrefsTimestamp(
     }
 }
 
+class PrefsLastUpdateStorage(prefs: SharedPreferences, key: String) : LastUpdateStorage {
+    private var timestamp by PrefsTimestamp(prefs, "$key timestamp")
+    private var id by PrefsLong(prefs, "$key id")
+
+    override var lastUpdateInfo: LastUpdateInfo
+        get() = LastUpdateInfo(timestamp, id)
+        set(value) {
+            timestamp = value.lastUpdateTimestamp
+            id = value.lastUpdatedId
+        }
+}
+
 class PrefsCounter(
         private val prefs: SharedPreferences,
         private val key: String,
         private val defaultValue: Long = 0
-) {
+) : IdCounter {
 
-    fun getNext(): Long {
+    override fun getNext(): Long {
         val next = prefs.getLong(key, defaultValue) + 1
         prefs.edit().putLong(key, next).apply()
         return next

@@ -53,7 +53,7 @@ class AddProfitDialogFragment : DialogFragment() {
 
     private lateinit var dialogView: View
 
-    private var selectedDate by BundleLong(SELECTED_DATE_KEY, { arguments!! })
+    private var selectedDate by BundleLong(SELECTED_DATE_KEY) { arguments!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +106,7 @@ class AddProfitDialogFragment : DialogFragment() {
         return AlertDialog.Builder(requireContext())
                 .setTitle(if (newProfit) R.string.create_profit_text else R.string.edit_profit_text)
                 .setView(dialogView)
-                .setPositiveButton(if (newProfit) R.string.text_create else R.string.text_edit, { _, _ -> sendResult() })
+                .setPositiveButton(if (newProfit) R.string.text_create else R.string.text_edit) { _, _ -> sendResult() }
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
                 .also {
@@ -122,11 +122,11 @@ class AddProfitDialogFragment : DialogFragment() {
                                             kind.isNotBlank() && value > 0
                                         }
                                 )
-                                .subscribe({
+                                .subscribe {
                                     (dialog as? AlertDialog)
                                             ?.getButton(AlertDialog.BUTTON_POSITIVE)
                                             ?.isEnabled = it
-                                })
+                                }
                     }
                 }
     }

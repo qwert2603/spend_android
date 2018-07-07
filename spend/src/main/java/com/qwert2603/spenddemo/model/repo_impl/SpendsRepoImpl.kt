@@ -1,24 +1,27 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
-import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.model.entity.Spend
+import com.qwert2603.spenddemo.model.entity.toSpend
 import com.qwert2603.spenddemo.model.local_db.LocalDB
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
-import com.qwert2603.spenddemo.model.local_db.tables.toCreatingSpend
+import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
+import com.qwert2603.spenddemo.model.local_db.tables.toSpend
 import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
-import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.toSpendTable
+import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.RemoteSpend
+import com.qwert2603.spenddemo.model.remote_db.sql_wrapper.toSpend
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
+import com.qwert2603.spenddemo.model.sync_processor.LocalDataSource
+import com.qwert2603.spenddemo.model.sync_processor.RemoteDataSource
+import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
 import com.qwert2603.spenddemo.utils.*
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,154 +32,75 @@ class SpendsRepoImpl @Inject constructor(
         appContext: Context
 ) : SpendsRepo {
 
-    companion object {
-        private const val TAG = "SpendsRepoImpl"
-        private const val LOCAL_ID_START = 1_000_000L
-    }
-
     private val prefs = appContext.getSharedPreferences("spends.prefs", Context.MODE_PRIVATE)
 
     private val localIdCounter = PrefsCounter(
             prefs = prefs,
             key = "last_spend_local_id",
-            defaultValue = LOCAL_ID_START
+            defaultValue = 1_000_000L
     )
 
-    private val changeIdCounter = PrefsCounter(
-            prefs = prefs,
-            key = "last_change_id"
+    private val syncProcessor: SyncProcessor<Spend, RemoteSpend, SpendTable> = SyncProcessor(
+            remoteDBExecutor = Executors.newSingleThreadExecutor(),
+            localDBExecutor = Executors.newSingleThreadExecutor(),
+            lastUpdateStorage = PrefsLastUpdateStorage(prefs, "last_update"),
+            remoteDataSource = object : RemoteDataSource<Spend, RemoteSpend> {
+                override fun getUpdates(lastUpdateMillis: Timestamp, lastUpdatedId: Long, count: Int): List<RemoteSpend> = remoteDbFacade.getSpends(lastUpdateMillis, lastUpdatedId, count)
+                override fun addItem(t: Spend): Long = remoteDbFacade.insertSpend(t)
+                override fun editItem(t: Spend) = remoteDbFacade.updateSpend(t)
+                override fun deleteItem(id: Long) = remoteDbFacade.deleteSpend(id)
+            },
+            localDataSource = object : LocalDataSource<Spend, SpendTable> {
+                override fun saveItem(t: SpendTable) = localDB.spendsDao().saveSpend(t)
+                override fun addItems(ts: List<SpendTable>) = localDB.spendsDao().addSpends(ts)
+                override fun deleteItem(id: Long) = localDB.spendsDao().deleteSpend(id)
+                override fun clearLocalChange(itemId: Long, changeId: Long) = localDB.spendsDao().clearLocalChange(itemId, changeId)
+                override fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.spendsDao().onSpendAddedToServer(localId, newId, changeId)
+                override fun getLocallyChangedItems(count: Int): List<SpendTable> = localDB.spendsDao().getLocallyChangedSpends(count)
+                override fun locallyDeleteSpend(id: Long, changeId: Long) = localDB.spendsDao().locallyDeleteSpend(id, changeId)
+                override fun clearAll() = localDB.spendsDao().clearAll()
+                override fun saveChangeFromServer(t: Spend) = localDB.spendsDao().saveChangeFromServer(t)
+                override fun onItemEdited(t: Spend, changeId: Long) = localDB.spendsDao().onItemEdited(t, changeId)
+            },
+            changeIdCounter = PrefsCounter(prefs = prefs, key = "last_change_id"),
+            r2t = RemoteSpend::toSpend,
+            l2t = SpendTable::toSpend,
+            t2l = Spend::toSpendTable
     )
-
-    private var lastUpdateTimestamp by PrefsTimestamp(prefs, "lastUpdateTimestamp")
-    private var lastUpdatedId by PrefsLong(prefs, "lastUpdatedId")
 
     private val locallyCreatedSpends = SingleLiveEvent<Spend>()
 
-    private val locallyEditedSpends = SingleLiveEvent<Spend>()
-
-    private val localDBContext = newSingleThreadContext("localDB")
-    private val remoteDBContext = newSingleThreadContext("remoteDB")
-
-    private val syncingSpendIds = MutableLiveData<Set<Long>>()
-
     init {
-        launch(remoteDBContext) {
-            while (true) {
-                try {
-                    while (true) {
-                        val spends = remoteDbFacade.getSpends(lastUpdateMillis = lastUpdateTimestamp, lastUpdatedId = lastUpdatedId)
-                        if (spends.isEmpty()) break
-                        async(localDBContext) {
-                            spends.forEach {
-                                if (it.deleted) {
-                                    localDB.spendsDao().deleteSpend(it.id)
-                                } else {
-                                    if (localDB.spendsDao().getSpend(it.id)?.change == null) {
-                                        localDB.spendsDao().saveSpend(it.toSpendTable())
-                                    }
-                                }
-                            }
-                        }.await()
-                        lastUpdateTimestamp = spends.last().updated
-                        lastUpdatedId = spends.last().id
-                    }
-
-                    localDB.spendsDao().getLocallyChangedSpends()
-                            .forEach { spend ->
-                                spend.change!!
-                                syncingSpendIds.postValue(setOf(spend.id))
-                                when (spend.change.changeKind) {
-                                    ChangeKind.INSERT -> {
-                                        val remoteId = remoteDbFacade.insertSpend(spend.toCreatingSpend())
-                                        async(localDBContext) {
-                                            localDB.spendsDao().changeSpendId(spend.id, remoteId)
-                                            val currentChange = localDB.spendsDao().getSpend(remoteId)!!.change
-                                            if (currentChange!!.id == spend.change.id) {
-                                                localDB.spendsDao().clearLocalChange(remoteId)
-                                            } else {
-                                                localDB.spendsDao().setChangeKindToEdit(remoteId)
-                                            }
-                                        }.await()
-                                    }
-                                    ChangeKind.UPDATE -> {
-                                        remoteDbFacade.updateSpend(Spend(spend.id, spend.kind, spend.value, spend.date))
-                                        async(localDBContext) {
-                                            val currentChangeId = localDB.spendsDao().getSpend(spend.id)!!.change!!.id
-                                            if (currentChangeId == spend.change.id) {
-                                                localDB.spendsDao().clearLocalChange(spend.id)
-                                            }
-                                        }.await()
-                                    }
-                                    ChangeKind.DELETE -> {
-                                        remoteDbFacade.deleteSpend(spend.id)
-                                        async(localDBContext) {
-                                            localDB.spendsDao().deleteSpend(spend.id)
-                                        }.await()
-                                    }
-                                }
-                                syncingSpendIds.postValue(emptySet())
-                            }
-
-                } catch (t: Throwable) {
-                    LogUtils.e(TAG, "launch(remoteDBContext)", t)
-                }
-            }
-        }
+        syncProcessor.start()
     }
 
     override fun addSpend(creatingSpend: CreatingSpend) {
-        launch(localDBContext) {
-            val localId = localIdCounter.getNext()
-            val localSpend = creatingSpend.toSpend(localId)
-            locallyCreatedSpends.postValue(localSpend)
-            localDB.spendsDao().saveSpend(localSpend.toSpendTable(RecordChange(changeIdCounter.getNext(), ChangeKind.INSERT)))
-        }
+        val spend = creatingSpend.toSpend(localIdCounter.getNext())
+        locallyCreatedSpends.value = spend
+        syncProcessor.addItem(spend)
     }
 
     override fun addSpends(spends: List<CreatingSpend>) {
-        launch(localDBContext) {
-            val spendTables = spends.map {
-                it
-                        .toSpend(localIdCounter.getNext())
-                        .toSpendTable(RecordChange(changeIdCounter.getNext(), ChangeKind.INSERT))
-            }
-            localDB.spendsDao().addSpends(spendTables)
-        }
+        syncProcessor.addItems(spends.map { it.toSpend(localIdCounter.getNext()) })
     }
 
     override fun editSpend(spend: Spend) {
-        launch(localDBContext) {
-            locallyEditedSpends.postValue(spend)
-            val changeKind = if (localDB.spendsDao().getSpend(spend.id)!!.change?.changeKind == ChangeKind.INSERT) {
-                ChangeKind.INSERT
-            } else {
-                ChangeKind.UPDATE
-            }
-            localDB.spendsDao().saveSpend(spend.toSpendTable(RecordChange(changeIdCounter.getNext(), changeKind)))
-        }
+        syncProcessor.editItem(spend)
     }
 
     override fun removeSpend(spendId: Long) {
-        launch(localDBContext) {
-            localDB.spendsDao().locallyDeleteSpend(spendId, changeIdCounter.getNext())
-        }
+        syncProcessor.removeItem(spendId)
     }
 
     override fun removeAllSpends() {
-        launch(localDBContext) {
-            localDB.spendsDao().clearAll()
-            lastUpdateTimestamp = Timestamp(0)
-            lastUpdatedId = 0
-        }
+        syncProcessor.clear()
     }
 
     override fun getRecordsList(): LiveData<List<RecordResult>> = localDB.spendsDao().getSpendsAndProfits()
 
     override fun locallyCreatedSpends(): SingleLiveEvent<Spend> = locallyCreatedSpends
 
-    override fun locallyEditedSpends(): SingleLiveEvent<Spend> = locallyEditedSpends
-
-    override fun syncingSpendIds(): LiveData<Set<Long>> = syncingSpendIds
+    override fun syncingSpendIds(): LiveData<Set<Long>> = syncProcessor.syncingItemIds
 
     override suspend fun getDumpText(): String = localDB.spendsDao()
             .getAllSpendsList()
@@ -196,8 +120,8 @@ class SpendsRepoImpl @Inject constructor(
             }
 
     override fun get30DaysBalance(): LiveData<Long> = combineLatest(
-            localDB.profitsDao().get30DaysSum(),
-            localDB.spendsDao().get30DaysSum(),
-            { profits, spends -> (profits ?: 0L) - (spends ?: 0L) }
+            localDB.profitsDao().get30DaysSum().map { it ?: 0 },
+            localDB.spendsDao().get30DaysSum().map { it ?: 0 },
+            { profits, spends -> profits - spends }
     ).map { it ?: 0 }
 }
