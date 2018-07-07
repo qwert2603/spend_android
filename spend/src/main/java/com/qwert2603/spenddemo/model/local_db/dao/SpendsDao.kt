@@ -19,10 +19,10 @@ abstract class SpendsDao {
     @Transaction
     @Query("""
         SELECT * FROM (
-            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, change_changeKind changeKind FROM SpendTable
-        UNION ALL
             SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date, change_changeKind changeKind FROM ProfitTable
-        ) ORDER BY date DESC
+        UNION ALL
+            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, change_changeKind changeKind FROM SpendTable
+        ) ORDER BY date DESC, type DESC, id DESC
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 
@@ -34,7 +34,7 @@ abstract class SpendsDao {
     @Query("SELECT * FROM SpendTable WHERE id = :id")
     abstract fun getSpend(id: Long): SpendTable?
 
-    @Query("SELECT SUM(s.value) FROM SpendTable s WHERE date(s.date/1000, 'unixepoch') > date('now','-30 day')")
+    @Query("SELECT SUM(s.value) FROM SpendTable s WHERE change_changeKind != 2 AND date(s.date/1000, 'unixepoch') > date('now','-30 day')")
     abstract fun get30DaysSum(): LiveData<Long?>
 
     @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")

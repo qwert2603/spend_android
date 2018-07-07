@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
 import com.qwert2603.spenddemo.utils.daysEqual
@@ -69,10 +70,12 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
         calendarPrev.time = calendarIndex.time
         when (tableRow.type) {
             RecordResult.TYPE_SPEND -> {
-                daySpendsSum += tableRow.value
-                monthSpendsSum += tableRow.value
-                ++spendsCount
-                spendsSum += tableRow.value
+                if (tableRow.changeKind != ChangeKind.DELETE) {
+                    daySpendsSum += tableRow.value
+                    monthSpendsSum += tableRow.value
+                    ++spendsCount
+                    spendsSum += tableRow.value
+                }
                 if (showInfo.showSpends) result.add(SpendUI(
                         id = tableRow.id,
                         kind = tableRow.kind,
@@ -82,10 +85,12 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 ))
             }
             RecordResult.TYPE_PROFIT -> {
-                dayProfitsSum += tableRow.value
-                monthProfitsSum += tableRow.value
-                ++profitsCount
-                profitsSum += tableRow.value
+                if (tableRow.changeKind != ChangeKind.DELETE) {
+                    dayProfitsSum += tableRow.value
+                    monthProfitsSum += tableRow.value
+                    ++profitsCount
+                    profitsSum += tableRow.value
+                }
                 if (showInfo.showProfits) result.add(ProfitUI(
                         id = tableRow.id,
                         kind = tableRow.kind,

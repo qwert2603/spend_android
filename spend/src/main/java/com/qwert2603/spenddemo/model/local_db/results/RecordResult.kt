@@ -12,7 +12,7 @@ data class RecordResult(
         val changeKind: ChangeKind?
 ) {
     companion object {
-        const val TYPE_SPEND = 1
-        const val TYPE_PROFIT = 2
+        const val TYPE_PROFIT = 1
+        const val TYPE_SPEND = 2
     }
 }

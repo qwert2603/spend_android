@@ -45,7 +45,7 @@ abstract class ProfitsDao {
     @Query("SELECT kind FROM ProfitTable GROUP BY kind ORDER BY count(id) DESC")
     abstract fun getKinds(): Single<List<String>>
 
-    @Query("SELECT SUM(p.value) FROM ProfitTable p WHERE date(p.date/1000, 'unixepoch') > date('now','-30 day')")
+    @Query("SELECT SUM(p.value) FROM ProfitTable p WHERE change_changeKind != 2 AND date(p.date/1000, 'unixepoch') > date('now','-30 day')")
     abstract fun get30DaysSum(): LiveData<Long?>
 
     @Query("""
