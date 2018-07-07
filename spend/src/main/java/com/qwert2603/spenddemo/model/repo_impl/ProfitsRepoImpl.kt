@@ -17,10 +17,7 @@ import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.sync_processor.LocalDataSource
 import com.qwert2603.spenddemo.model.sync_processor.RemoteDataSource
 import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
-import com.qwert2603.spenddemo.utils.Const
-import com.qwert2603.spenddemo.utils.PrefsCounter
-import com.qwert2603.spenddemo.utils.PrefsLastUpdateStorage
-import com.qwert2603.spenddemo.utils.SingleLiveEvent
+import com.qwert2603.spenddemo.utils.*
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -119,4 +116,10 @@ class ProfitsRepoImpl @Inject constructor(
                         }
                         .reduce { s1, s2 -> "$s1\n$s2" }
             }
+
+    override fun getSumLastDays(days: Int): LiveData<Long>  = localDB.profitsDao().get30DaysSum().map { it ?: 0 }
+
+    override fun getSumLastMinutes(minutes: Int): LiveData<Long> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

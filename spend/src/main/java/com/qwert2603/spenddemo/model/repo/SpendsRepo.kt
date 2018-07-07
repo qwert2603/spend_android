@@ -19,7 +19,7 @@ interface SpendsRepo {
 
     /**
      * Spends and Profits merged.
-     * Must be sorted be date DECS.
+     * Must be sorted be [RecordResult.date] DESC, [RecordResult.type] DESC, [RecordResult.id] DESC
      */
     fun getRecordsList(): LiveData<List<RecordResult>>
 
@@ -29,6 +29,8 @@ interface SpendsRepo {
 
     suspend fun getDumpText(): String
 
-    fun get30DaysBalance(): LiveData<Long>
+    fun getSumLastDays(days: Int): LiveData<Long>
+
+    fun getSumLastMinutes(minutes: Int): LiveData<Long>
 }
 

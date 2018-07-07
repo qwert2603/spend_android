@@ -189,7 +189,24 @@ class RecordsListViewModel(
     val balance30Days = showBalance
             .switchMap {
                 if (it) {
-                    spendsRepo.get30DaysBalance()
+                    combineLatest(listOf(showProfits, showSpends))
+                            .switchMap {
+                                val showProfits = it[0] == true
+                                val showSpends = it[1] == true
+                                combineLatest(
+                                        liveDataT = if (showProfits || !showSpends) {
+                                            profitsRepo.getSumLastDays(30)
+                                        } else {
+                                            MutableLiveData<Long>().also { it.value = 0 }
+                                        },
+                                        liveDataU = if (showSpends || !showProfits) {
+                                            spendsRepo.getSumLastDays(30)
+                                        } else {
+                                            MutableLiveData<Long>().also { it.value = 0 }
+                                        },
+                                        combiner = { p, s -> p - s }
+                                )
+                            }
                 } else {
                     MutableLiveData<Long>().also { it.value = null }
                 }

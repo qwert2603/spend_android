@@ -21,4 +21,8 @@ interface ProfitsRepo {
     fun syncingProfitIds(): LiveData<Set<Long>>
 
     suspend fun getDumpText(): String
+
+    fun getSumLastDays(days: Int): LiveData<Long>
+
+    fun getSumLastMinutes(minutes: Int): LiveData<Long>
 }
