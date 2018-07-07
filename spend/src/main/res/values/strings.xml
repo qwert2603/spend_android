@@ -46,7 +46,7 @@
         version: <b>%1$s</b><br/>
         version code: <b>%2$d</b><br/>
         built: <b>%3$s</b> at <b>%4$s</b><br/>
-        hash: <b>%5$s</b><br/>
+        hash:<br/><b>%5$s</b><br/>
         ]]>
     </string>
 
@@ -62,10 +62,10 @@
     <string name="show_times_text">times</string>
     <string name="show_balance_text">show balance</string>
 
-    <string name="text_all_records_loaded">all records loaded</string>
+    <string name="text_all_records_loaded">&#8704; records loaded</string>
 
-    <string name="text_total_items_format" formatted="true">%s. sum is %s</string>
-    <string name="text_total_balance_format" formatted="true">total balance is %s</string>
+    <string name="text_total_items_format" formatted="true" translatable="false">&#931;(%s) = %s</string>
+    <string name="text_total_balance_format" formatted="true" translatable="false">&#931;(&#8704;) = %s</string>
 
     <string name="text_add_stub_spends">200 stub spends</string>
     <string name="text_add_stub_profits">200 stub profits</string>

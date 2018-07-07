@@ -62,10 +62,7 @@
     <string name="show_times_text">время</string>
     <string name="show_balance_text">показывать баланс</string>
 
-    <string name="text_all_records_loaded">все записи загружены</string>
-
-    <string name="text_total_items_format" formatted="true">%s. сумма: %s</string>
-    <string name="text_total_balance_format" formatted="true">общий баланс: %s</string>
+    <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
     <string name="text_add_stub_spends">200 рандомных расходов</string>
     <string name="text_add_stub_profits">200 рандомных доходов</string>
