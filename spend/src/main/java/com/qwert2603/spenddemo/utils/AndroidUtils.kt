@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import com.qwert2603.andrlib.util.LogUtils
 import kotlinx.coroutines.experimental.android.UI
@@ -65,6 +66,8 @@ fun Long.toPointedString(): String {
 }
 
 fun String.zeroToEmpty() = if (this == "0") "" else this
+
+fun String.pointedToInt() = this.filter { it != '.' }.toInt()
 
 fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
     for (i in startIndex..lastIndex) {
@@ -147,6 +150,10 @@ fun <T> LiveData<T>.pairWithPrev(): LiveData<Pair<T?, T?>> {
         prev = it
     }
     return result
+}
+
+object LDUtils {
+    fun <T> just(t: T): LiveData<T> = MutableLiveData<T>().also { it.value = t }
 }
 
 fun <T> ExecutorService.executeAndWait(action: () -> T): T = submit(Callable<T> { action() }).get()

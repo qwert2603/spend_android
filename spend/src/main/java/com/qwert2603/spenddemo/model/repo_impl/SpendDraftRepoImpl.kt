@@ -40,7 +40,7 @@ class SpendDraftRepoImpl @Inject constructor(
                 getString(DRAFT_KIND_KEY, ""),
                 getInt(DRAFT_VALUE_KEY, 0),
                 if (contains(DRAFT_DATE_KEY)) {
-                    Date(getLong(DRAFT_DATE_KEY, System.currentTimeMillis()))
+                    Date(getLong(DRAFT_DATE_KEY, 0))
                 } else {
                     null
                 }

@@ -19,6 +19,7 @@ import com.qwert2603.spenddemo.model.entity.SpendKind
 import com.qwert2603.spenddemo.model.repo.SpendKindsRepo
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.toPointedString
 import kotlinx.android.synthetic.main.item_spend_kind.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -69,7 +70,7 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
             )
             view.lastSpend_TextView.text = view.resources.getString(
                     R.string.spend_kind_description_format,
-                    kind.lastPrice,
+                    kind.lastPrice.toLong().toPointedString(),
                     kind.lastDate.toFormattedString(view.resources),
                     TIME_FORMAT.format(kind.lastDate)
             )

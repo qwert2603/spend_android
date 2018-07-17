@@ -60,7 +60,7 @@
     <string name="text_show_month_sums">сумма по месяцам</string>
     <string name="text_new_profit">новый доход</string>
     <string name="show_times_text">время</string>
-    <string name="show_balance_text">показывать баланс</string>
+    <string name="show_balance_text">&#931; 30 дней</string>
 
     <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
@@ -71,9 +71,11 @@
     <string name="text_source_code">исходный код</string>
     <string name="text_source_code_long">исходный код на github.com</string>
 
-    <string name="spend_kind_description_format">последнее: %d @ %s в %s</string>
+    <string name="spend_kind_description_format">последнее: %1$s @ %2$s в %3$s</string>
 
     <string name="text_dumping_records">создается список записей..</string>
     <string name="text_server_delay">задержка сервера</string>
+
+    <string name="and_text">и</string>
 
 </resources>

@@ -12,5 +12,8 @@ interface UserSettingsRepo {
     var showBalance: Boolean
     var showTimes: Boolean
 
+    var longSumPeriodDays: Int
+    var shortSumPeriodMinutes: Int
+
     fun showTimesChanges(): Observable<Boolean>
 }

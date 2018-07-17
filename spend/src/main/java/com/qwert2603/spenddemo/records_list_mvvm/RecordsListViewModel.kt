@@ -14,13 +14,12 @@ import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.asReference
 import ru.terrakok.cicerone.Router
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class RecordsListViewModel(
         private val spendsRepo: SpendsRepo,
@@ -35,10 +34,15 @@ class RecordsListViewModel(
     val showMonthSums = MutableLiveData<Boolean>()
     val showIds = MutableLiveData<Boolean>()
     val showChangeKinds = MutableLiveData<Boolean>()
-    val showBalance = MutableLiveData<Boolean>()
+    val longSumPeriodDays = MutableLiveData<Int>()
+    val shortSumPeriodMinutes = MutableLiveData<Int>()
     val showTimes = MutableLiveData<Boolean>()
 
     val sendRecords = SingleLiveEvent<String>()
+
+    private val minuteChangesEvents = SingleLiveEvent<Unit>()
+    private val dayChangesEvents = SingleLiveEvent<Unit>()
+    private val timeChangesJob: Job
 
     init {
         showSpends.value = userSettingsRepo.showSpends
@@ -47,8 +51,22 @@ class RecordsListViewModel(
         showMonthSums.value = userSettingsRepo.showMonthSums
         showIds.value = userSettingsRepo.showIds
         showChangeKinds.value = userSettingsRepo.showChangeKinds
-        showBalance.value = userSettingsRepo.showBalance
+        longSumPeriodDays.value = userSettingsRepo.longSumPeriodDays
+        shortSumPeriodMinutes.value = userSettingsRepo.shortSumPeriodMinutes
         showTimes.value = userSettingsRepo.showTimes
+
+        minuteChangesEvents.value = Unit
+        dayChangesEvents.value = Unit
+        timeChangesJob = launch(CommonPool) {
+            var prevCalendar = Calendar.getInstance()
+            while (isActive) {
+                delay(300, TimeUnit.MILLISECONDS)
+                val currentCalendar = Calendar.getInstance()
+                if (currentCalendar.minute != prevCalendar.minute) launch(UI) { minuteChangesEvents.value = Unit }
+                if (currentCalendar.day != prevCalendar.day) launch(UI) { dayChangesEvents.value = Unit }
+                prevCalendar = currentCalendar
+            }
+        }
     }
 
     data class ShowInfo(
@@ -114,6 +132,8 @@ class RecordsListViewModel(
                 }
             })
 
+    val redrawAllRecords = dayChangesEvents
+
     fun showSpends(show: Boolean) {
         showSpends.value = show
         userSettingsRepo.showSpends = show
@@ -144,9 +164,14 @@ class RecordsListViewModel(
         userSettingsRepo.showChangeKinds = show
     }
 
-    fun showBalance(show: Boolean) {
-        showBalance.value = show
-        userSettingsRepo.showBalance = show
+    fun setLongSumPeriodDays(days: Int) {
+        longSumPeriodDays.value = days
+        userSettingsRepo.longSumPeriodDays = days
+    }
+
+    fun setShortSumPeriodMinutes(minutes: Int) {
+        shortSumPeriodMinutes.value = minutes
+        userSettingsRepo.shortSumPeriodMinutes = minutes
     }
 
     fun showTimes(show: Boolean) {
@@ -186,30 +211,66 @@ class RecordsListViewModel(
         profitsRepo.removeAllProfits()
     }
 
-    val balance30Days = showBalance
-            .switchMap {
-                if (it) {
-                    combineLatest(listOf(showProfits, showSpends))
-                            .switchMap {
-                                val showProfits = it[0] == true
-                                val showSpends = it[1] == true
-                                combineLatest(
-                                        liveDataT = if (showProfits || !showSpends) {
-                                            profitsRepo.getSumLastDays(30)
-                                        } else {
-                                            MutableLiveData<Long>().also { it.value = 0 }
-                                        },
-                                        liveDataU = if (showSpends || !showProfits) {
-                                            spendsRepo.getSumLastDays(30)
-                                        } else {
-                                            MutableLiveData<Long>().also { it.value = 0 }
-                                        },
-                                        combiner = { p, s -> p - s }
-                                )
-                            }
+    data class SumsInfo(
+            val longPeriodDays: Int,
+            val longPeriodSum: Long,
+            val shortPeriodMinutes: Int,
+            val shortPeriodSum: Long
+    )
+
+    val periodSums: LiveData<SumsInfo> = combineLatest(longSumPeriodDays, shortSumPeriodMinutes, ::Pair)
+            .switchMap { (longPeriodDays, shortPeriodMinutes) ->
+                val longSum = if (longPeriodDays > 0) {
+                    dayChangesEvents.switchMap {
+                        combineLatest(listOf(showProfits, showSpends))
+                                .switchMap {
+                                    val showProfits = it[0] == true
+                                    val showSpends = it[1] == true
+                                    combineLatest(
+                                            liveDataT = if (showProfits || !showSpends) {
+                                                profitsRepo.getSumLastDays(longPeriodDays)
+                                            } else {
+                                                LDUtils.just(0L)
+                                            },
+                                            liveDataU = if (showSpends || !showProfits) {
+                                                spendsRepo.getSumLastDays(longPeriodDays)
+                                            } else {
+                                                LDUtils.just(0L)
+                                            },
+                                            combiner = { p, s -> p - s }
+                                    )
+                                }
+                    }
                 } else {
-                    MutableLiveData<Long>().also { it.value = null }
+                    LDUtils.just(0L)
                 }
+                val shortSum = if (shortPeriodMinutes > 0) {
+                    minuteChangesEvents.switchMap {
+                        combineLatest(listOf(showProfits, showSpends))
+                                .switchMap {
+                                    val showProfits = it[0] == true
+                                    val showSpends = it[1] == true
+                                    combineLatest(
+                                            liveDataT = if (showProfits || !showSpends) {
+                                                profitsRepo.getSumLastMinutes(shortPeriodMinutes)
+                                            } else {
+                                                LDUtils.just(0L)
+                                            },
+                                            liveDataU = if (showSpends || !showProfits) {
+                                                spendsRepo.getSumLastMinutes(shortPeriodMinutes)
+                                            } else {
+                                                LDUtils.just(0L)
+                                            },
+                                            combiner = { p, s -> p - s }
+                                    )
+                                }
+                    }
+                } else {
+                    LDUtils.just(0L)
+                }
+                combineLatest(longSum, shortSum, { longPeriodSum, shortPeriodSum ->
+                    SumsInfo(longPeriodDays, longPeriodSum, shortPeriodMinutes, shortPeriodSum)
+                })
             }
 
     fun deleteSpend(id: Long) {

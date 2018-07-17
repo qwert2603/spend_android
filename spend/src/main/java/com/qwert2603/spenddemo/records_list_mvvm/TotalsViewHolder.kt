@@ -23,6 +23,6 @@ class TotalsViewHolder(parent: ViewGroup) : BaseViewHolder<TotalsUI>(parent, R.l
                 resources.getQuantityString(R.plurals.spends, t.spendsCount, t.spendsCount),
                 t.spendsSum.toPointedString()
         )
-        total_TextView.text = resources.getString(R.string.text_total_balance_format, t.totalBalance.toPointedString())
+        total_TextView.text = resources.getString(R.string.text_total_sum_format, t.totalBalance.toPointedString())
     }
 }

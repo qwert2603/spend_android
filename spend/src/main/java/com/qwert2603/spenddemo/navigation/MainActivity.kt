@@ -8,11 +8,11 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.qwert2603.andrlib.base.mvi.BaseFragment
+import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.AppInfoDialogFragment
@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun isKeyBoardShown(): Boolean {
-        return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels -
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30f, resources.displayMetrics)
+        return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels - resources.toPx(30)
     }
 }

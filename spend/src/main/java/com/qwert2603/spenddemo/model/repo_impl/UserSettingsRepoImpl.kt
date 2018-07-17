@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.PrefsBoolean
+import com.qwert2603.spenddemo.utils.PrefsInt
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
@@ -27,7 +28,8 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
     override var showProfits by PrefsBoolean(prefs, "showProfits", true)
     override var showBalance by PrefsBoolean(prefs, "showBalance", true)
     override var showTimes by PrefsBoolean(prefs, KEY_SHOW_TIMES, true)
-
+    override var longSumPeriodDays by PrefsInt(prefs, "longSumPeriodDays", 30)
+    override var shortSumPeriodMinutes by PrefsInt(prefs, "shortSumPeriodMinutes", 5)
     private val showTimesChanges = BehaviorSubject.createDefault(showTimes)
 
     private val listener = object : SharedPreferences.OnSharedPreferenceChangeListener {

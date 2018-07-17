@@ -1,7 +1,5 @@
 package com.qwert2603.spenddemo.utils
 
-import android.view.MenuItem
-import com.jakewharton.rxbinding2.view.RxMenuItem
 import com.qwert2603.andrlib.util.Quint
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -16,7 +14,7 @@ fun <T : Any, R> Observable<T>.castAndFilter(toClass: Class<R>): Observable<R> =
 
 fun Observable<String>.mapToInt(): Observable<Int> = this.map {
     try {
-        it.toInt()
+        it.pointedToInt()
     } catch (e: NumberFormatException) {
         0
     }
@@ -28,5 +26,3 @@ fun <T, U> secondOfTwo() = BiFunction { _: T, u: U -> u }
 fun <T, U, V> makeTriple() = Function3 { t: T, u: U, v: V -> Triple(t, u, v) }
 fun <T, U, V, W, X> makeQuint() = Function5 { t: T, u: U, v: V, w: W, x: X -> Quint(t, u, v, w, x) }
 fun <T, U, V, W, X, Y> makeSextuple() = Function6 { t: T, u: U, v: V, w: W, x: X, y: Y -> Sextuple(t, u, v, w, x, y) }
-
-fun MenuItem.checkedChanges(): Observable<Boolean> = RxMenuItem.clicks(this).map { !this.isChecked }

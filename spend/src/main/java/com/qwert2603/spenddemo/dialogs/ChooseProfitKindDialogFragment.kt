@@ -37,6 +37,7 @@ class ChooseProfitKindDialogFragment : DialogFragment() {
                             Intent().putExtra(KIND_KEY, kinds[which])
                     )
                 }
+                .setNegativeButton(R.string.text_cancel, null)
                 .create()
     }
 }

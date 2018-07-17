@@ -31,9 +31,12 @@
         android:title="@string/show_times_text" />
 
     <item
-        android:id="@+id/show_balance"
-        android:checkable="true"
-        android:title="@string/show_balance_text" />
+        android:id="@+id/long_sum"
+        android:title="@string/long_sum_text_format" />
+
+    <item
+        android:id="@+id/short_sum"
+        android:title="@string/short_sum_text_format" />
 
     <item
         android:id="@+id/send_records"

@@ -13,6 +13,7 @@ import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
+import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
@@ -42,6 +43,8 @@ class RecordsListMvvmFragment : Fragment() {
         private const val REQUEST_ADD_PROFIT = 3
         private const val REQUEST_EDIT_PROFIT = 4
         private const val REQUEST_DELETE_PROFIT = 5
+        private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
+        private const val REQUEST_CHOOSE_SHORT_SUM_PERIOD = 7
     }
 
     private val viewModel by lazy {
@@ -106,6 +109,7 @@ class RecordsListMvvmFragment : Fragment() {
                 records_RecyclerView.layoutAnimation = layoutAnimation
             }
         })
+        viewModel.redrawAllRecords.observe(this, Observer { adapter.notifyDataSetChanged() })
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
             adapter.showDatesInRecords = !it.showDateSums
@@ -119,8 +123,7 @@ class RecordsListMvvmFragment : Fragment() {
                 is SpendUI -> EditSpendDialogFragmentBuilder
                         .newEditSpendDialogFragment(it.date.time, it.id, it.kind, it.value)
                         .also { it.setTargetFragment(this, REQUEST_EDIT_SPEND) }
-                        .show(fragmentManager, "edit_record")
-                        .also { (context as KeyboardManager).hideKeyboard() }
+                        .makeShow()
                 is ProfitUI -> AddProfitDialogFragmentBuilder(false)
                         .id(it.id)
                         .kind(it.kind)
@@ -128,27 +131,46 @@ class RecordsListMvvmFragment : Fragment() {
                         .date(it.date.time)
                         .build()
                         .also { it.setTargetFragment(this, REQUEST_EDIT_PROFIT) }
-                        .show(fragmentManager, "edit_profit")
-                        .also { (context as KeyboardManager).hideKeyboard() }
+                        .makeShow()
             }
         }
         adapter.itemLongClicks = {
             when (it) {
                 is SpendUI -> DeleteSpendDialogFragmentBuilder
-                        .newDeleteSpendDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}")
+                        .newDeleteSpendDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value.toLong().toPointedString()}")
                         .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
-                        .show(fragmentManager, "delete_record")
-                        .also { (context as KeyboardManager).hideKeyboard() }
+                        .makeShow()
                 is ProfitUI -> DeleteProfitDialogFragmentBuilder
-                        .newDeleteProfitDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value}")
+                        .newDeleteProfitDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value.toLong().toPointedString()}")
                         .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
-                        .show(fragmentManager, "delete_profit")
-                        .also { (context as KeyboardManager).hideKeyboard() }
+                        .makeShow()
             }
         }
 
-        viewModel.balance30Days.observe(this, Observer {
-            toolbar.subtitle = it?.toPointedString()?.let { getString(R.string.text_balance_30_days_format, it) }
+        viewModel.periodSums.observe(this, Observer { sumsInfo ->
+            sumsInfo!!
+            val longSumText = sumsInfo.longPeriodDays
+                    .takeIf { it > 0 }
+                    ?.let { longPeriodDays ->
+                        resources.getString(
+                                R.string.text_period_sum_format,
+                                resources.formatTimeLetters(longPeriodDays * Const.MINUTES_PER_DAY),
+                                sumsInfo.longPeriodSum.toPointedString()
+                        )
+                    }
+            val shortSumText = sumsInfo.shortPeriodMinutes
+                    .takeIf { it > 0 }
+                    ?.let { shortPeriodMinutes ->
+                        resources.getString(
+                                R.string.text_period_sum_format,
+                                resources.formatTimeLetters(shortPeriodMinutes),
+                                sumsInfo.shortPeriodSum.toPointedString()
+                        )
+                    }
+            toolbar.subtitle = when {
+                longSumText == null && shortSumText == null -> null
+                else -> listOfNotNull(longSumText, shortSumText).reduce { acc, s -> "$acc    $s" }
+            }
         })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
@@ -223,20 +245,22 @@ class RecordsListMvvmFragment : Fragment() {
                         data.getLongExtra(EditSpendDialogFragment.ID_KEY, 0),
                         data.getStringExtra(EditSpendDialogFragment.KIND_KEY),
                         data.getIntExtra(EditSpendDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(EditSpendDialogFragment.DATE_KEY, 0L))
+                        Date(data.getLongExtra(EditSpendDialogFragment.DATE_KEY, 0L)).secondsToZero()
                 ))
                 REQUEST_ADD_PROFIT -> viewModel.addProfit(CreatingProfit(
                         data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
                         data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0))
+                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0)).secondsToZero()
                 ))
                 REQUEST_EDIT_PROFIT -> viewModel.editProfit(Profit(
                         data.getLongExtra(AddProfitDialogFragment.ID_KEY, 0),
                         data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
                         data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0L))
+                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0L)).secondsToZero()
                 ))
                 REQUEST_DELETE_PROFIT -> viewModel.deleteProfit(data.getLongExtra(DeleteProfitDialogFragment.ID_KEY, 0))
+                REQUEST_CHOOSE_LONG_SUM_PERIOD -> viewModel.setLongSumPeriodDays(data.getIntExtra(ChooseLongSumPeriodDialog.DAYS_KEY, 0))
+                REQUEST_CHOOSE_SHORT_SUM_PERIOD -> viewModel.setShortSumPeriodMinutes(data.getIntExtra(ChooseShortSumPeriodDialog.MINUTES_KEY, 0))
             }
         }
     }
@@ -252,7 +276,8 @@ class RecordsListMvvmFragment : Fragment() {
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
         val showTimesMenuItem = menu.findItem(R.id.show_times)
-        val showBalanceMenuItem = menu.findItem(R.id.show_balance)
+        val longSumMenuItem = menu.findItem(R.id.long_sum)
+        val shortSumMenuItem = menu.findItem(R.id.short_sum)
 
         showIdsMenuItem.isVisible = E.env.showIdsSetting
         showChangeKindsMenuItem.isVisible = E.env.showChangeKindsSetting
@@ -269,7 +294,19 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
         viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
         viewModel.showTimes.observe(this, Observer { showTimesMenuItem.isChecked = it == true })
-        viewModel.showBalance.observe(this, Observer { showBalanceMenuItem.isChecked = it == true })
+        viewModel.longSumPeriodDays.observe(this, Observer {
+            longSumMenuItem.title = resources.getString(
+                    R.string.long_sum_text_format,
+                    ChooseLongSumPeriodDialog.variantToString(it!!, resources)
+            )
+        })
+        viewModel.shortSumPeriodMinutes.observe(this, Observer {
+            shortSumMenuItem.title = resources.getString(
+                    R.string.short_sum_text_format,
+                    ChooseShortSumPeriodDialog.variantToString(it!!, resources)
+            )
+        })
+
         showSpendsMenuItem.setOnMenuItemClickListener { viewModel.showSpends(!showSpendsMenuItem.isChecked);true }
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
         showDateSumsMenuItem.setOnMenuItemClickListener { viewModel.showDateSums(!showDateSumsMenuItem.isChecked);true }
@@ -277,7 +314,6 @@ class RecordsListMvvmFragment : Fragment() {
         showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
         showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
         showTimesMenuItem.setOnMenuItemClickListener { viewModel.showTimes(!showTimesMenuItem.isChecked);true }
-        showBalanceMenuItem.setOnMenuItemClickListener { viewModel.showBalance(!showBalanceMenuItem.isChecked);true }
 
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
@@ -293,13 +329,10 @@ class RecordsListMvvmFragment : Fragment() {
         when (item.itemId) {
             R.id.new_profit -> AddProfitDialogFragmentBuilder.newAddProfitDialogFragment(true)
                     .also { it.setTargetFragment(this, REQUEST_ADD_PROFIT) }
-                    .show(fragmentManager, "add_profit")
-                    .also { (context as KeyboardManager).hideKeyboard() }
+                    .makeShow()
             R.id.add_stub_spends -> viewModel.addStubSpends()
             R.id.add_stub_profits -> viewModel.addStubProfits()
-            R.id.about -> AppInfoDialogFragment()
-                    .show(fragmentManager, "app_info")
-                    .also { (context as KeyboardManager).hideKeyboard() }
+            R.id.about -> AppInfoDialogFragment().makeShow()
             R.id.clear_all -> viewModel.clearAll()
             R.id.send_records -> viewModel.sendRecords()
             R.id.show_local_changes -> viewModel.moveToChangesList()
@@ -307,7 +340,19 @@ class RecordsListMvvmFragment : Fragment() {
                 RemoteDBImpl.IMITATE_DELAY = !RemoteDBImpl.IMITATE_DELAY
                 item.isChecked = RemoteDBImpl.IMITATE_DELAY
             }
+            R.id.short_sum -> ChooseShortSumPeriodDialogBuilder
+                    .newChooseShortSumPeriodDialog(viewModel.shortSumPeriodMinutes.value!!)
+                    .also { it.setTargetFragment(this, REQUEST_CHOOSE_SHORT_SUM_PERIOD) }
+                    .makeShow()
+            R.id.long_sum -> ChooseLongSumPeriodDialogBuilder
+                    .newChooseLongSumPeriodDialog(viewModel.longSumPeriodDays.value!!)
+                    .also { it.setTargetFragment(this, REQUEST_CHOOSE_LONG_SUM_PERIOD) }
+                    .makeShow()
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun DialogFragment.makeShow() = this
+            .show(this@RecordsListMvvmFragment.fragmentManager, null)
+            .also { (this@RecordsListMvvmFragment.context as KeyboardManager).hideKeyboard() }
 }

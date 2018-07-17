@@ -119,9 +119,19 @@ class SpendsRepoImpl @Inject constructor(
                         .reduce { s1, s2 -> "$s1\n$s2" }
             }
 
-    override fun getSumLastDays(days: Int): LiveData<Long> = localDB.spendsDao().get30DaysSum().map { it ?: 0 }
+    override fun getSumLastDays(days: Int): LiveData<Long> {
+        val startMillis = Calendar.getInstance()
+                .also { it.time = Date().onlyDate() }
+                .also { it.add(Calendar.DAY_OF_MONTH, -days + 1) }
+                .timeInMillis
+        return localDB.spendsDao().getSum(startMillis).map { it ?: 0 }
+    }
 
     override fun getSumLastMinutes(minutes: Int): LiveData<Long> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val startMillis = Calendar.getInstance()
+                .also { it.time = Date().secondsToZero() }
+                .also { it.add(Calendar.MINUTE, -minutes + 1) }
+                .timeInMillis
+        return localDB.spendsDao().getSum(startMillis).map { it ?: 0 }
     }
 }

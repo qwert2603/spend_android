@@ -34,8 +34,12 @@ abstract class SpendsDao {
     @Query("SELECT * FROM SpendTable WHERE id = :id")
     abstract fun getSpend(id: Long): SpendTable?
 
-    @Query("SELECT SUM(s.value) FROM SpendTable s WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND date(s.date/1000, 'unixepoch') > date('now','-30 day')")
-    abstract fun get30DaysSum(): LiveData<Long?>
+    @Query("""
+        SELECT SUM(s.value)
+        FROM SpendTable s
+        WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND s.date >= :startMillis
+    """)
+    abstract fun getSum(startMillis: Long): LiveData<Long?>
 
     @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
     abstract fun getAllKings(): LiveData<List<SpendKindTable>>

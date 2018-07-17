@@ -8,7 +8,6 @@ import com.qwert2603.andrlib.util.Const as LibConst
 
 fun java.util.Date.toSqlDate() = java.sql.Date(this.time)
 fun java.util.Date.toSqlTimestamp() = java.sql.Timestamp(this.time)
-fun java.sql.Date.toUtilDate() = java.util.Date(this.time)
 
 fun Date.onlyDate(): Date = Calendar
         .getInstance()
