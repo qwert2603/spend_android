@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.repo
 
+import com.qwert2603.spenddemo.model.entity.ServerInfo
 import io.reactivex.Observable
 
 interface UserSettingsRepo {
@@ -15,5 +16,8 @@ interface UserSettingsRepo {
     var longSumPeriodDays: Int
     var shortSumPeriodMinutes: Int
 
+    var serverInfo: ServerInfo
+
     fun showTimesChanges(): Observable<Boolean>
+    fun serverInfoChanges(): Observable<ServerInfo>
 }

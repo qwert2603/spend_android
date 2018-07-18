@@ -21,6 +21,7 @@
     <string name="text_edit">edit</string>
     <string name="text_delete">delete</string>
     <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
+    <string name="text_save">save</string>
 
     <string name="error_text">error</string>
     <string name="retry_text">retry</string>
@@ -58,6 +59,7 @@
     <string name="text_show_month_sums">month sums</string>
     <string name="text_new_profit">new profit</string>
     <string name="show_times_text">times</string>
+    <string name="text_server_info">server info</string>
     <string name="short_sum_text_format" formatted="true">short &#931;: %s</string>
     <string name="long_sum_text_format" formatted="true">long &#931;: %s</string>
     <string name="text_period_sum_format" formatted="true" translatable="false">&#931;(%1$s) = %2$s</string>
@@ -87,5 +89,9 @@
     <string name="letter_days">d</string>
     <string name="letter_hours">h</string>
     <string name="letter_minutes">m</string>
+
+    <string name="text_url">url</string>
+    <string name="text_user">user</string>
+    <string name="text_password">password</string>
 
 </resources>

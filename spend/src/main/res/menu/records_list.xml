@@ -58,6 +58,10 @@
         android:title="@string/text_show_change_kinds" />
 
     <item
+        android:id="@+id/server_info"
+        android:title="@string/text_server_info" />
+
+    <item
         android:id="@+id/about"
         android:title="@string/about_text" />
 

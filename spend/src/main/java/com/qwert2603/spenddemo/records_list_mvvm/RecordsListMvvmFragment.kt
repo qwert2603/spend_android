@@ -348,6 +348,7 @@ class RecordsListMvvmFragment : Fragment() {
                     .newChooseLongSumPeriodDialog(viewModel.longSumPeriodDays.value!!)
                     .also { it.setTargetFragment(this, REQUEST_CHOOSE_LONG_SUM_PERIOD) }
                     .makeShow()
+            R.id.server_info -> ServerInfoDialog().makeShow()
         }
         return super.onOptionsItemSelected(item)
     }

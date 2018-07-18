@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.utils
 
 import android.content.SharedPreferences
+import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateInfo
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateStorage
@@ -56,8 +57,10 @@ class PrefsTimestamp(
             .also { it.nanos = prefs.getInt(keyNanos, defaultValue.nanos) }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Timestamp) {
-        prefs.edit().putLong(keyMillis, value.time).apply()
-        prefs.edit().putInt(keyNanos, value.nanos).apply()
+        prefs.edit()
+                .putLong(keyMillis, value.time)
+                .putInt(keyNanos, value.nanos)
+                .apply()
     }
 }
 
@@ -83,5 +86,34 @@ class PrefsCounter(
         val next = prefs.getLong(key, defaultValue) + 1
         prefs.edit().putLong(key, next).apply()
         return next
+    }
+}
+
+class PrefsServerInfo(
+        private val prefs: SharedPreferences,
+        key: String,
+        private val defaultValue: ServerInfo,
+        private val onChange: (ServerInfo) -> Unit
+) : ReadWriteProperty<Any, ServerInfo> {
+    private val keyUrl = "$key url"
+    private val keyUser = "$key user"
+    private val keyPassword = "$key password"
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): ServerInfo = when {
+        prefs.contains(keyUrl) -> ServerInfo(
+                url = prefs.getString(keyUrl, ""),
+                user = prefs.getString(keyUser, ""),
+                password = prefs.getString(keyPassword, "")
+        )
+        else -> defaultValue
+    }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: ServerInfo) {
+        prefs.edit()
+                .putString(keyUrl, value.url)
+                .putString(keyUser, value.user)
+                .putString(keyPassword, value.password)
+                .apply()
+        onChange(value)
     }
 }

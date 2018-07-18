@@ -1,25 +1,29 @@
 package com.qwert2603.spenddemo.model.remote_db
 
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.model.entity.ServerInfo
+import io.reactivex.Observable
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.util.*
 
-class RemoteDBImpl(
-        private val url: String,//todo: from user's settings.
-        private val user: String,
-        private val password: String
-) : RemoteDB {
+class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
     companion object {
         var IMITATE_DELAY = false
         private const val IMITATED_SERVER_DELAY = 3000L
     }
 
+    private lateinit var serverInfo: ServerInfo
+
     init {
         Class.forName(org.postgresql.Driver::class.java.name)
+        serverInfoChanges.subscribe {
+            serverInfo = it
+            clearCachedStatements()
+        }
     }
 
     private var connection: Connection? = null
@@ -55,7 +59,7 @@ class RemoteDBImpl(
     private fun getPreparedStatement(sql: String): PreparedStatement {
 //        return DriverManager.getConnection(url, user, password).prepareStatement(sql)
 
-        val connection = connection ?: DriverManager.getConnection(url, user, password)
+        val connection = connection ?: DriverManager.getConnection(serverInfo.url, serverInfo.user, serverInfo.password)
         DriverManager.setLoginTimeout(3)// todo: check
         val preparedStatement = preparedStatements[sql] ?: connection.prepareStatement(sql)
         preparedStatement.queryTimeout = 4 // todo: check
@@ -70,10 +74,14 @@ class RemoteDBImpl(
             return request()
         } catch (e: Exception) {
             LogUtils.d("RemoteDBImpl", "$uuid <<-- error ${e.message}")
-            connection = null
-            preparedStatements.clear()
+            clearCachedStatements()
             throw e
         }
+    }
+
+    private fun clearCachedStatements() {
+        connection = null
+        preparedStatements.clear()
     }
 
     private fun PreparedStatement.setArgs(args: List<Any>) {

@@ -3,9 +3,11 @@ package com.qwert2603.spenddemo.model.repo_impl
 import android.content.Context
 import android.content.SharedPreferences
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.PrefsBoolean
 import com.qwert2603.spenddemo.utils.PrefsInt
+import com.qwert2603.spenddemo.utils.PrefsServerInfo
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
@@ -30,11 +32,14 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
     override var showTimes by PrefsBoolean(prefs, KEY_SHOW_TIMES, true)
     override var longSumPeriodDays by PrefsInt(prefs, "longSumPeriodDays", 30)
     override var shortSumPeriodMinutes by PrefsInt(prefs, "shortSumPeriodMinutes", 5)
+    override var serverInfo by PrefsServerInfo(prefs, "serverInfo", ServerInfo.DEFAULT, onChange = { serverInfoChanges.onNext(it) })
+
     private val showTimesChanges = BehaviorSubject.createDefault(showTimes)
+    private val serverInfoChanges: BehaviorSubject<ServerInfo> = BehaviorSubject.createDefault(serverInfo)
 
     private val listener = object : SharedPreferences.OnSharedPreferenceChangeListener {
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-            LogUtils.d("UserSettingsRepoImpl registerOnSharedPreferenceChangeListener $key ${prefs.getBoolean(KEY_SHOW_TIMES, false)}")
+            LogUtils.d("UserSettingsRepoImpl registerOnSharedPreferenceChangeListener $key ${prefs.all[key]}")
             if (key == KEY_SHOW_TIMES) {
                 showTimesChanges.onNext(prefs.getBoolean(KEY_SHOW_TIMES, false))
             }
@@ -46,4 +51,5 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
     }
 
     override fun showTimesChanges(): Observable<Boolean> = showTimesChanges
+    override fun serverInfoChanges(): Observable<ServerInfo> = serverInfoChanges
 }
