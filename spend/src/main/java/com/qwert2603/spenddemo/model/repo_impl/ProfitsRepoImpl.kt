@@ -56,9 +56,9 @@ class ProfitsRepoImpl @Inject constructor(
                 override fun deleteItem(id: Long) = localDB.profitsDao().deleteProfit(id)
                 override fun clearLocalChange(itemId: Long, changeId: Long) = localDB.profitsDao().clearLocalChange(itemId, changeId)
                 override fun getLocallyChangedItems(count: Int): List<ProfitTable> = localDB.profitsDao().getLocallyChangedProfits(count)
-                override fun locallyDeleteSpend(id: Long, changeId: Long) = localDB.profitsDao().locallyDeleteProfit(id, changeId)
+                override fun locallyDeleteItem(itemId: Long, changeId: Long) = localDB.profitsDao().locallyDeleteProfit(itemId, changeId)
                 override fun clearAll() = localDB.profitsDao().deleteAllProfits()
-                override fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.profitsDao().onProfitAddedToServer(localId, newId, changeId)
+                override fun onItemAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.profitsDao().onProfitAddedToServer(localId, newId, changeId)
                 override fun saveChangeFromServer(t: Profit) = localDB.profitsDao().saveChangeFromServer(t)
                 override fun onItemEdited(t: Profit, changeId: Long) = localDB.profitsDao().onItemEdited(t, changeId)
             },
@@ -132,4 +132,7 @@ class ProfitsRepoImpl @Inject constructor(
                 .timeInMillis
         return localDB.profitsDao().getSum(startMillis).map { it ?: 0 }
     }
+
+    override fun getChangesCount(): LiveData<Int> = localDB.profitsDao().getChangesCount()
+            .map { it ?: 0 }
 }

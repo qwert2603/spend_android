@@ -147,8 +147,12 @@ class RecordsListMvvmFragment : Fragment() {
             }
         }
 
-        viewModel.periodSums.observe(this, Observer { sumsInfo ->
+        viewModel.sumsInfo.observe(this, Observer { sumsInfo ->
             sumsInfo!!
+            val changesCountText = when {
+                sumsInfo.changesCount == 0 -> getString(R.string.no_changes_text)
+                else -> getString(R.string.changes_count_format, sumsInfo.changesCount)
+            }
             val longSumText = sumsInfo.longPeriodDays
                     .takeIf { it > 0 }
                     ?.let { longPeriodDays ->
@@ -167,10 +171,8 @@ class RecordsListMvvmFragment : Fragment() {
                                 sumsInfo.shortPeriodSum.toPointedString()
                         )
                     }
-            toolbar.subtitle = when {
-                longSumText == null && shortSumText == null -> null
-                else -> listOfNotNull(longSumText, shortSumText).reduce { acc, s -> "$acc    $s" }
-            }
+            toolbar.subtitle = listOfNotNull(longSumText, shortSumText, changesCountText)
+                    .reduce { acc, s -> "$acc    $s" }
         })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })

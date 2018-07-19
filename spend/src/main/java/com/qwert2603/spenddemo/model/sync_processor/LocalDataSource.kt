@@ -8,9 +8,9 @@ interface LocalDataSource<T : IdentifiableLong, L : LocalItem> {
     fun deleteItem(id: Long)
     fun clearLocalChange(itemId: Long, changeId: Long)
     fun getLocallyChangedItems(count: Int): List<L>
-    fun locallyDeleteSpend(id: Long, changeId: Long)
+    fun locallyDeleteItem(itemId: Long, changeId: Long)
     fun clearAll()
-    fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long)
+    fun onItemAddedToServer(localId: Long, newId: Long, changeId: Long)
     fun saveChangeFromServer(t: T)
     fun onItemEdited(t: T, changeId: Long)
 }

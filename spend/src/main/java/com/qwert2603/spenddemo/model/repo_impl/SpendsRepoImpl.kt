@@ -55,9 +55,9 @@ class SpendsRepoImpl @Inject constructor(
                 override fun addItems(ts: List<SpendTable>) = localDB.spendsDao().addSpends(ts)
                 override fun deleteItem(id: Long) = localDB.spendsDao().deleteSpend(id)
                 override fun clearLocalChange(itemId: Long, changeId: Long) = localDB.spendsDao().clearLocalChange(itemId, changeId)
-                override fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.spendsDao().onSpendAddedToServer(localId, newId, changeId)
+                override fun onItemAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.spendsDao().onSpendAddedToServer(localId, newId, changeId)
                 override fun getLocallyChangedItems(count: Int): List<SpendTable> = localDB.spendsDao().getLocallyChangedSpends(count)
-                override fun locallyDeleteSpend(id: Long, changeId: Long) = localDB.spendsDao().locallyDeleteSpend(id, changeId)
+                override fun locallyDeleteItem(itemId: Long, changeId: Long) = localDB.spendsDao().locallyDeleteSpend(itemId, changeId)
                 override fun clearAll() = localDB.spendsDao().clearAll()
                 override fun saveChangeFromServer(t: Spend) = localDB.spendsDao().saveChangeFromServer(t)
                 override fun onItemEdited(t: Spend, changeId: Long) = localDB.spendsDao().onItemEdited(t, changeId)
@@ -134,4 +134,7 @@ class SpendsRepoImpl @Inject constructor(
                 .timeInMillis
         return localDB.spendsDao().getSum(startMillis).map { it ?: 0 }
     }
+
+    override fun getChangesCount(): LiveData<Int> = localDB.spendsDao().getChangesCount()
+            .map { it ?: 0 }
 }

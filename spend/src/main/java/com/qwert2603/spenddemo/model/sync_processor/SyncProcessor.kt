@@ -76,7 +76,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                                         ChangeKind.INSERT -> {
                                             val newId = remoteDataSource.addItem(localItem.l2t())
                                             localDBExecutor.executeAndWait {
-                                                localDataSource.onProfitAddedToServer(localItem.id, newId, change.id)
+                                                localDataSource.onItemAddedToServer(localItem.id, newId, change.id)
                                             }
                                         }
                                         ChangeKind.UPDATE -> {
@@ -126,7 +126,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
     fun removeItem(itemId: Long) {
         localDBExecutor.execute {
             if (E.env.syncWithServer) {
-                localDataSource.locallyDeleteSpend(itemId, changeIdCounter.getNext())
+                localDataSource.locallyDeleteItem(itemId, changeIdCounter.getNext())
             } else {
                 localDataSource.deleteItem(itemId)
             }

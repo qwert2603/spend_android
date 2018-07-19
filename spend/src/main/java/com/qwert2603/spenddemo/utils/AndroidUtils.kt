@@ -126,12 +126,14 @@ fun <T, U, V> combineLatest(liveDataT: LiveData<T>, liveDataU: LiveData<U>, comb
             }
         }
 
-fun combineLatest(liveDatas: List<LiveData<Boolean>>) = MediatorLiveData<List<Boolean?>>()
+fun <T> combineLatest(liveDatas: List<LiveData<T>>) = MediatorLiveData<List<T>>()
         .apply {
-            val lasts: MutableList<Boolean?> = (1..liveDatas.size).map { null }.toMutableList()
+            val lasts: MutableList<T?> = (1..liveDatas.size).map { null }.toMutableList()
 
             fun update() {
-                value = lasts.toList()
+                lasts.toList()
+                        .takeIf { it.all { it != null } }
+                        ?.let { value = it.map { it!! } }
             }
             liveDatas.forEachIndexed { index, liveData ->
                 addSource(liveData) {

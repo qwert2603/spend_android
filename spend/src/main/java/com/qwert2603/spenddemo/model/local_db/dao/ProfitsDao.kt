@@ -52,6 +52,9 @@ abstract class ProfitsDao {
     """)
     abstract fun getSum(startMillis: Long): LiveData<Long?>
 
+    @Query("SELECT COUNT(*) FROM ProfitTable WHERE change_id IS NOT NULL")
+    abstract fun getChangesCount(): LiveData<Int?>
+
     @Query("""
         UPDATE ProfitTable
         SET

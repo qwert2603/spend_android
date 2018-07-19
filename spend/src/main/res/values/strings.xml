@@ -94,4 +94,7 @@
     <string name="text_user">user</string>
     <string name="text_password">password</string>
 
+    <string name="changes_count_format" translatable="false">%d&#916;</string>
+    <string name="no_changes_text" translatable="false">&#8709;&#916;</string>
+
 </resources>

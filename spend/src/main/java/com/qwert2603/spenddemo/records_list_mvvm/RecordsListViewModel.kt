@@ -212,14 +212,33 @@ class RecordsListViewModel(
     }
 
     data class SumsInfo(
+            val changesCount: Int,
             val longPeriodDays: Int,
             val longPeriodSum: Long,
             val shortPeriodMinutes: Int,
             val shortPeriodSum: Long
     )
 
-    val periodSums: LiveData<SumsInfo> = combineLatest(longSumPeriodDays, shortSumPeriodMinutes, ::Pair)
+    val sumsInfo: LiveData<SumsInfo> = combineLatest(longSumPeriodDays, shortSumPeriodMinutes, ::Pair)
             .switchMap { (longPeriodDays, shortPeriodMinutes) ->
+                val changesCount = combineLatest(listOf(showProfits, showSpends))
+                        .switchMap {
+                            val showProfits = it[0] == true
+                            val showSpends = it[1] == true
+                            combineLatest(
+                                    liveDataT = if (showProfits || !showSpends) {
+                                        profitsRepo.getChangesCount()
+                                    } else {
+                                        LDUtils.just(0)
+                                    },
+                                    liveDataU = if (showSpends || !showProfits) {
+                                        spendsRepo.getChangesCount()
+                                    } else {
+                                        LDUtils.just(0)
+                                    },
+                                    combiner = { p, s -> p + s }
+                            )
+                        }
                 val longSum = if (longPeriodDays > 0) {
                     dayChangesEvents.switchMap {
                         combineLatest(listOf(showProfits, showSpends))
@@ -268,9 +287,16 @@ class RecordsListViewModel(
                 } else {
                     LDUtils.just(0L)
                 }
-                combineLatest(longSum, shortSum, { longPeriodSum, shortPeriodSum ->
-                    SumsInfo(longPeriodDays, longPeriodSum, shortPeriodMinutes, shortPeriodSum)
-                })
+                combineLatest(listOf(changesCount.map { it.toLong() }, longSum, shortSum))
+                        .map {
+                            SumsInfo(
+                                    changesCount = it[0].toInt(),
+                                    longPeriodDays = longPeriodDays,
+                                    longPeriodSum = it[1],
+                                    shortPeriodMinutes = shortPeriodMinutes,
+                                    shortPeriodSum = it[2]
+                            )
+                        }
             }
 
     fun deleteSpend(id: Long) {

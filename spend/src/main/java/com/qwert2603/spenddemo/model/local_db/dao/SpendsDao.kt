@@ -41,6 +41,9 @@ abstract class SpendsDao {
     """)
     abstract fun getSum(startMillis: Long): LiveData<Long?>
 
+    @Query("SELECT COUNT(*) FROM SpendTable WHERE change_id IS NOT NULL")
+    abstract fun getChangesCount(): LiveData<Int?>
+
     @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
     abstract fun getAllKings(): LiveData<List<SpendKindTable>>
 

@@ -32,5 +32,7 @@ interface SpendsRepo {
     fun getSumLastDays(days: Int): LiveData<Long>
 
     fun getSumLastMinutes(minutes: Int): LiveData<Long>
+
+    fun getChangesCount(): LiveData<Int>
 }
 
