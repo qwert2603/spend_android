@@ -8,6 +8,7 @@ import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
@@ -18,16 +19,21 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
     private lateinit var serverInfo: ServerInfo
 
+    private var connection: Connection? = null
+        @Synchronized set(value) {
+            field = value
+            preparedStatements.clear()
+        }
+
+    private val preparedStatements = ConcurrentHashMap<String, PreparedStatement>()
+
     init {
         Class.forName(org.postgresql.Driver::class.java.name)
         serverInfoChanges.subscribe {
             serverInfo = it
-            clearCachedStatements()
+            connection = null
         }
     }
-
-    private var connection: Connection? = null
-    private val preparedStatements = mutableMapOf<String, PreparedStatement>()
 
     override fun <T> query(sql: String, mapper: (resultSet: ResultSet) -> T, args: List<Any>): List<T> {
         val uuid = UUID.randomUUID()
@@ -56,16 +62,16 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
         }
     }
 
+    @Synchronized
     private fun getPreparedStatement(sql: String): PreparedStatement {
-//        return DriverManager.getConnection(url, user, password).prepareStatement(sql)
+        val connection = connection
+                ?: DriverManager
+                        .getConnection(serverInfo.url, serverInfo.user, serverInfo.password)
+                        .also { connection = it }
 
-        val connection = connection ?: DriverManager.getConnection(serverInfo.url, serverInfo.user, serverInfo.password)
-        DriverManager.setLoginTimeout(3)// todo: check
-        val preparedStatement = preparedStatements[sql] ?: connection.prepareStatement(sql)
-        preparedStatement.queryTimeout = 4 // todo: check
-        this.connection = connection
-        preparedStatements[sql] = preparedStatement
-        return preparedStatement
+        return preparedStatements[sql]
+                ?: connection.prepareStatement(sql)
+                        .also { preparedStatements[sql] = it }
     }
 
     private fun <T> sendRequest(uuid: UUID, request: () -> T): T {
@@ -74,14 +80,9 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
             return request()
         } catch (e: Exception) {
             LogUtils.d("RemoteDBImpl", "$uuid <<-- error ${e.message}")
-            clearCachedStatements()
+            connection = null
             throw e
         }
-    }
-
-    private fun clearCachedStatements() {
-        connection = null
-        preparedStatements.clear()
     }
 
     private fun PreparedStatement.setArgs(args: List<Any>) {

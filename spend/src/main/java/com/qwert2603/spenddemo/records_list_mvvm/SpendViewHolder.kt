@@ -82,7 +82,7 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
         isClickable = t.canEdit
         isLongClickable = t.canDelete
 
-        val strike = showChangeKinds && t.changeKind == ChangeKind.DELETE
+        val strike = t.changeKind == ChangeKind.DELETE
         listOf(id_TextView, date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }
     }

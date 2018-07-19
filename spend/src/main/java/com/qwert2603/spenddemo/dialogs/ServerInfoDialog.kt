@@ -34,7 +34,6 @@ class ServerInfoDialog : DialogFragment() {
 
             password_EditText.setOnEditorActionListener { _, _, _ ->
                 saveServerInfo(view)
-                dismiss()
                 true
             }
         }
@@ -53,5 +52,6 @@ class ServerInfoDialog : DialogFragment() {
                 user = user_EditText.text.toString(),
                 password = password_EditText.text.toString()
         )
+        dismiss()
     }
 }
