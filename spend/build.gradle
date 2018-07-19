@@ -79,7 +79,7 @@ dependencies {
     def support_version = '27.1.1'
     def andrlib_version = '1.7.4'
     def andrlib_generator_version = '1.0.10'
-    def rxjava_version = '2.1.13'
+    def rxjava_version = '2.1.16'
     def rxandroid_version = '2.0.2'
     def rxbinding_version = '2.1.1'
     def mosby_version = '3.1.0'
