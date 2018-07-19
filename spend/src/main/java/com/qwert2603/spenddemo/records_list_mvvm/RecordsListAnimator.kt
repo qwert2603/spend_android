@@ -14,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.spend_draft.DraftViewImpl
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
 import kotlinx.android.synthetic.main.item_spend.view.*
@@ -74,8 +75,8 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             val spendOrigin = spendOrigin
             if (holder is SpendViewHolder && spendOrigin != null) {
 
-                // todo: don't do it.
-                recyclerView.elevation = holder.itemView.resources.toPx(4).toFloat()
+                /** created item should be above spendOrigin ([DraftViewImpl]) */
+                recyclerView.elevation = holder.itemView.resources.toPx(12).toFloat()
 
                 val timeGlobalVisibleRect = (spendOrigin.getTimeGlobalVisibleRect() ?: spendOrigin.getDateGlobalVisibleRect())
                 listOf(

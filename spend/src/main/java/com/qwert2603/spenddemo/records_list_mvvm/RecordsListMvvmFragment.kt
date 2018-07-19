@@ -113,7 +113,7 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer
             adapter.showDatesInRecords = !it.showDateSums
-            draftPanel_LinearLayout.setVisible(it.newSpendVisible())
+            draftViewImpl.setVisible(it.newSpendVisible())
             if (!it.newSpendVisible()) (context as KeyboardManager).hideKeyboard()
             showFloatingDate = it.showFloatingDate()
         })

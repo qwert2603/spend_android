@@ -30,25 +30,12 @@
             tools:itemCount="20"
             tools:listitem="@layout/item_spend" />
 
-        <LinearLayout
-            android:id="@+id/draftPanel_LinearLayout"
+        <com.qwert2603.spenddemo.spend_draft.DraftViewImpl
+            android:id="@+id/draftViewImpl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-2dp"
-            android:orientation="vertical">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@drawable/shadow" />
-
-            <com.qwert2603.spenddemo.spend_draft.DraftViewImpl
-                android:id="@+id/draftViewImpl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:colorBackground" />
-
-        </LinearLayout>
+            android:background="@android:color/white"
+            android:elevation="8dp" />
 
     </LinearLayout>
 

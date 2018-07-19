@@ -19,10 +19,14 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
     private lateinit var serverInfo: ServerInfo
 
+    private val changeConnectionLock = Any()
+
     private var connection: Connection? = null
-        @Synchronized set(value) {
-            field = value
-            preparedStatements.clear()
+        set(value) {
+            synchronized(changeConnectionLock) {
+                field = value
+                preparedStatements.clear()
+            }
         }
 
     private val preparedStatements = ConcurrentHashMap<String, PreparedStatement>()
