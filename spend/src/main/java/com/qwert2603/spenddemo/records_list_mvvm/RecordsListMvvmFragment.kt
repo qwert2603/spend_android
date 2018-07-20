@@ -90,8 +90,7 @@ class RecordsListMvvmFragment : Fragment() {
 
         var layoutAnimationShown = false
         viewModel.recordsLiveData.observe(this, Observer {
-            if (it == null) return@Observer
-            val (list, diffResult) = it
+            val (list, diffResult) = it ?: return@Observer
             adapter.list = list
             diffResult.dispatchToAdapter(adapter)
             recordsListAnimator.pendingCreatedSpendId?.let { createdId ->
