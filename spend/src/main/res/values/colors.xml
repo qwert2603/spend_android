@@ -18,4 +18,6 @@
     <color name="profit">#12a022</color>
 
     <color name="highlight_created_record">#AADCCF20</color>
+
+    <color name="month_sum_background">#DDDDDD</color>
 </resources>

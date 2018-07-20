@@ -13,6 +13,7 @@ import java.util.*
 class MonthSumViewHolder(parent: ViewGroup) : BaseViewHolder<MonthSumUI>(parent, R.layout.item_month_sum) {
 
     companion object {
+        // todo: неправильный падеж в русском языке.
         private val MONTH_FORMAT = SimpleDateFormat("yyyy MMMM", Locale.getDefault())
     }
 

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#EEEEEE"
+    android:background="@color/month_sum_background"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="6dp">

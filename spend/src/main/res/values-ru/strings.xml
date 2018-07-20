@@ -54,8 +54,8 @@
     <string name="text_show_change_kinds">виды изменений</string>
     <string name="text_show_spends">расходы</string>
     <string name="text_show_profits">доходы</string>
-    <string name="text_show_date_sums">сумма по дням</string>
-    <string name="text_show_month_sums">сумма по месяцам</string>
+    <string name="text_show_date_sums">&#931; по дням</string>
+    <string name="text_show_month_sums">&#931; по месяцам</string>
     <string name="text_new_profit">новый доход</string>
     <string name="show_times_text">время</string>
 
@@ -84,5 +84,6 @@
     <string name="text_save">сохранить</string>
     <string name="short_sum_text_format">короткая &#931;: %s</string>
     <string name="long_sum_text_format">длинная &#931;: %s</string>
+    <string name="text_show_deleted">удаленные</string>
 
 </resources>
