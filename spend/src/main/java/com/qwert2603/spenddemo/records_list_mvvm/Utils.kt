@@ -76,13 +76,15 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                     ++spendsCount
                     spendsSum += tableRow.value
                 }
-                if (showInfo.showSpends) result.add(SpendUI(
-                        id = tableRow.id,
-                        kind = tableRow.kind,
-                        value = tableRow.value,
-                        date = tableRow.date,
-                        changeKind = tableRow.changeKind
-                ))
+                if (showInfo.showSpends && (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted)) {
+                    result.add(SpendUI(
+                            id = tableRow.id,
+                            kind = tableRow.kind,
+                            value = tableRow.value,
+                            date = tableRow.date,
+                            changeKind = tableRow.changeKind
+                    ))
+                }
             }
             RecordResult.TYPE_PROFIT -> {
                 if (tableRow.changeKind != ChangeKind.DELETE) {
@@ -91,13 +93,15 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                     ++profitsCount
                     profitsSum += tableRow.value
                 }
-                if (showInfo.showProfits) result.add(ProfitUI(
-                        id = tableRow.id,
-                        kind = tableRow.kind,
-                        value = tableRow.value,
-                        date = tableRow.date,
-                        changeKind = tableRow.changeKind
-                ))
+                if (showInfo.showProfits && (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted)) {
+                    result.add(ProfitUI(
+                            id = tableRow.id,
+                            kind = tableRow.kind,
+                            value = tableRow.value,
+                            date = tableRow.date,
+                            changeKind = tableRow.changeKind
+                    ))
+                }
             }
         }
     }
@@ -133,7 +137,15 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
             ))
         }
     }
-    result.add(TotalsUI(showInfo.showSpends, showInfo.showProfits, spendsCount, spendsSum, profitsCount, profitsSum, profitsSum - spendsSum))
+    result.add(TotalsUI(
+            showSpends = showInfo.showSpends,
+            showProfits = showInfo.showProfits,
+            spendsCount = spendsCount,
+            spendsSum = spendsSum,
+            profitsCount = profitsCount,
+            profitsSum = profitsSum,
+            totalBalance = profitsSum - spendsSum
+    ))
 
     LogUtils.d("List<RecordResult>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
 

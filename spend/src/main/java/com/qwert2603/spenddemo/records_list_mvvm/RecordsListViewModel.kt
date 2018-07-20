@@ -37,6 +37,7 @@ class RecordsListViewModel(
     val longSumPeriodDays = MutableLiveData<Int>()
     val shortSumPeriodMinutes = MutableLiveData<Int>()
     val showTimes = MutableLiveData<Boolean>()
+    val showDeleted = MutableLiveData<Boolean>()
 
     val sendRecords = SingleLiveEvent<String>()
 
@@ -54,6 +55,7 @@ class RecordsListViewModel(
         longSumPeriodDays.value = userSettingsRepo.longSumPeriodDays
         shortSumPeriodMinutes.value = userSettingsRepo.shortSumPeriodMinutes
         showTimes.value = userSettingsRepo.showTimes
+        showDeleted.value = userSettingsRepo.showDeleted
 
         minuteChangesEvents.value = Unit
         dayChangesEvents.value = Unit
@@ -73,7 +75,8 @@ class RecordsListViewModel(
             val showSpends: Boolean,
             val showProfits: Boolean,
             val showDateSums: Boolean,
-            val showMonthSums: Boolean
+            val showMonthSums: Boolean,
+            val showDeleted: Boolean
     ) {
         fun showSpendSum() = showSpends || !showProfits
         fun showProfitSum() = showProfits || !showSpends
@@ -86,13 +89,14 @@ class RecordsListViewModel(
         fun showFloatingDate() = showDateSums && (showSpends || showProfits)
     }
 
-    val showInfo = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums))
+    val showInfo = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums, showDeleted))
             .map {
                 ShowInfo(
                         showSpends = it[0] == true,
                         showProfits = it[1] == true,
                         showDateSums = it[2] == true,
-                        showMonthSums = it[3] == true
+                        showMonthSums = it[3] == true,
+                        showDeleted = it[4] == true
                 )
             }
 
@@ -177,6 +181,11 @@ class RecordsListViewModel(
     fun showTimes(show: Boolean) {
         showTimes.value = show
         userSettingsRepo.showTimes = show
+    }
+
+    fun showDeleted(show: Boolean) {
+        showDeleted.value = show
+        userSettingsRepo.showDeleted = show
     }
 
     fun addStubSpends() {

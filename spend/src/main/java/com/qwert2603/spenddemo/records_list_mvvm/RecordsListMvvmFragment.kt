@@ -278,6 +278,7 @@ class RecordsListMvvmFragment : Fragment() {
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
         val showTimesMenuItem = menu.findItem(R.id.show_times)
+        val showDeletedMenuItem = menu.findItem(R.id.show_deleted)
         val longSumMenuItem = menu.findItem(R.id.long_sum)
         val shortSumMenuItem = menu.findItem(R.id.short_sum)
 
@@ -296,6 +297,7 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
         viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
         viewModel.showTimes.observe(this, Observer { showTimesMenuItem.isChecked = it == true })
+        viewModel.showDeleted.observe(this, Observer { showDeletedMenuItem.isChecked = it == true })
         viewModel.longSumPeriodDays.observe(this, Observer {
             longSumMenuItem.title = resources.getString(
                     R.string.long_sum_text_format,
@@ -316,6 +318,7 @@ class RecordsListMvvmFragment : Fragment() {
         showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
         showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
         showTimesMenuItem.setOnMenuItemClickListener { viewModel.showTimes(!showTimesMenuItem.isChecked);true }
+        showDeletedMenuItem.setOnMenuItemClickListener { viewModel.showDeleted(!showDeletedMenuItem.isChecked);true }
 
         viewModel.showInfo.observe(this, Observer {
             if (it == null) return@Observer

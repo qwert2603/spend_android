@@ -10,8 +10,8 @@ interface UserSettingsRepo {
     var showMonthSums: Boolean
     var showSpends: Boolean
     var showProfits: Boolean
-    var showBalance: Boolean
     var showTimes: Boolean
+    var showDeleted: Boolean
 
     var longSumPeriodDays: Int
     var shortSumPeriodMinutes: Int

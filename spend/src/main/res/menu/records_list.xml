@@ -53,9 +53,13 @@
 
     <item
         android:id="@+id/show_change_kinds"
-        android:layout_height="match_parent"
         android:checkable="true"
         android:title="@string/text_show_change_kinds" />
+
+    <item
+        android:id="@+id/show_deleted"
+        android:checkable="true"
+        android:title="@string/text_show_deleted" />
 
     <item
         android:id="@+id/server_info"
