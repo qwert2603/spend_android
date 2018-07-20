@@ -52,9 +52,12 @@
     <TextView
         android:id="@+id/kind_TextView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginStart="4dp"
         android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="2"
         android:textColor="@color/spend"
         android:textSize="18sp"
         android:textStyle="bold"

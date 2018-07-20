@@ -45,6 +45,13 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
                 1,
                 TypedValue.COMPLEX_UNIT_SP
         )
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.kind_TextView,
+                8,
+                18,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
     }
 
     override fun bind(t: SpendUI, adapter: RecordsListAdapter) = with(itemView) {

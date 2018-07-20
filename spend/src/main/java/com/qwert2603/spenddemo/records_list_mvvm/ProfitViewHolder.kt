@@ -45,6 +45,13 @@ class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.l
                 1,
                 TypedValue.COMPLEX_UNIT_SP
         )
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                itemView.kind_TextView,
+                8,
+                18,
+                1,
+                TypedValue.COMPLEX_UNIT_SP
+        )
     }
 
     override fun bind(t: ProfitUI, adapter: RecordsListAdapter) = with(itemView) {
