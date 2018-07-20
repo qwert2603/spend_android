@@ -50,8 +50,6 @@
         ]]>
     </string>
 
-    <string name="text_balance_30_days_format" formatted="true">&#931;(30д) = %s</string>
-
     <string name="text_show_ids">id записей</string>
     <string name="text_show_change_kinds">виды изменений</string>
     <string name="text_show_spends">расходы</string>
@@ -60,7 +58,6 @@
     <string name="text_show_month_sums">сумма по месяцам</string>
     <string name="text_new_profit">новый доход</string>
     <string name="show_times_text">время</string>
-    <string name="show_balance_text">&#931; 30 дней</string>
 
     <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
@@ -77,5 +74,15 @@
     <string name="text_server_delay">задержка сервера</string>
 
     <string name="and_text">и</string>
+    <string name="letter_days">д</string>
+    <string name="letter_hours">ч</string>
+    <string name="letter_minutes">м</string>
+    <string name="text_user">пользователь</string>
+    <string name="text_password">пароль</string>
+    <string name="text_server_info">настройки подключения</string>
+    <string name="no_sum_text">нет</string>
+    <string name="text_save">сохранить</string>
+    <string name="short_sum_text_format">короткая &#931;: %s</string>
+    <string name="long_sum_text_format">длинная &#931;: %s</string>
 
 </resources>
