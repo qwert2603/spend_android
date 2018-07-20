@@ -36,5 +36,5 @@ fun Resources.formatTimeLetters(timeInMinutes: Int): String {
     val minutesString = minutes.takeIf { it > 0 }?.let { "$it${getString(R.string.letter_minutes)}" }
 
     return listOfNotNull(daysString, hoursString, minutesString)
-            .reduce { acc, s -> "$acc $s" }
+            .reduce { acc, s -> "$acc$s" }
 }

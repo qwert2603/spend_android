@@ -14,7 +14,7 @@ import com.qwert2603.spenddemo.R
 @FragmentWithArgs
 class ChooseLongSumPeriodDialog : DialogFragment() {
     companion object {
-        private val VARIANTS = listOf(0, 1, 2, 3, 5, 7, 10, 14, 15, 21, 30, 60, 90, 120, 182, 365)
+        private val VARIANTS = listOf(0, 1, 2, 3, 5, 7, 10, 14, 15, 21, 30, 42, 60, 90, 120, 182, 365)
 
         const val DAYS_KEY = "DAYS_KEY"
 
