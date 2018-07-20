@@ -20,9 +20,13 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
 
     var daySpendsSum = 0L
     var dayProfitsSum = 0L
+    var daySpendsCountNotDeleted = 0
+    var dayProfitsCountNotDeleted = 0
 
     var monthSpendsSum = 0L
     var monthProfitsSum = 0L
+    var monthSpendsCountNotDeleted = 0
+    var monthProfitsCountNotDeleted = 0
 
     val result = ArrayList<RecordsListItem>(this.size * 2 + 1)
     val calendarPrev = Calendar.getInstance()
@@ -32,9 +36,9 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
         if (index > 0) {
             if (showInfo.showDateSums
                     && when {
-                        showInfo.showSpends == showInfo.showProfits -> true
-                        showInfo.showSpends -> daySpendsSum > 0
-                        else -> dayProfitsSum > 0
+                        showInfo.showSpends == showInfo.showProfits -> daySpendsCountNotDeleted > 0 || dayProfitsCountNotDeleted > 0
+                        showInfo.showSpends -> daySpendsCountNotDeleted > 0
+                        else -> dayProfitsCountNotDeleted > 0
                     }
                     && !calendarPrev.daysEqual(calendarIndex)
             ) {
@@ -47,12 +51,14 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 ))
                 daySpendsSum = 0L
                 dayProfitsSum = 0L
+                daySpendsCountNotDeleted = 0
+                dayProfitsCountNotDeleted = 0
             }
             if (showInfo.showMonthSums
                     && when {
-                        showInfo.showSpends == showInfo.showProfits -> true
-                        showInfo.showSpends -> monthSpendsSum > 0
-                        else -> monthProfitsSum > 0
+                        showInfo.showSpends == showInfo.showProfits -> monthSpendsCountNotDeleted > 0 || monthProfitsCountNotDeleted > 0
+                        showInfo.showSpends -> monthSpendsCountNotDeleted > 0
+                        else -> monthProfitsCountNotDeleted > 0
                     }
                     && !calendarPrev.monthsEqual(calendarIndex)
             ) {
@@ -65,6 +71,8 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 ))
                 monthSpendsSum = 0L
                 monthProfitsSum = 0L
+                monthSpendsCountNotDeleted = 0
+                monthProfitsCountNotDeleted = 0
             }
         }
         calendarPrev.time = calendarIndex.time
@@ -85,6 +93,10 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                             changeKind = tableRow.changeKind
                     ))
                 }
+                if (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted) {
+                    ++daySpendsCountNotDeleted
+                    ++monthSpendsCountNotDeleted
+                }
             }
             RecordResult.TYPE_PROFIT -> {
                 if (tableRow.changeKind != ChangeKind.DELETE) {
@@ -102,15 +114,19 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                             changeKind = tableRow.changeKind
                     ))
                 }
+                if (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted) {
+                    ++dayProfitsCountNotDeleted
+                    ++monthProfitsCountNotDeleted
+                }
             }
         }
     }
     if (this.isNotEmpty()) {
         if (showInfo.showDateSums
                 && when {
-                    showInfo.showSpends == showInfo.showProfits -> true
-                    showInfo.showSpends -> daySpendsSum > 0
-                    else -> dayProfitsSum > 0
+                    showInfo.showSpends == showInfo.showProfits -> daySpendsCountNotDeleted > 0 || dayProfitsCountNotDeleted > 0
+                    showInfo.showSpends -> daySpendsCountNotDeleted > 0
+                    else -> dayProfitsCountNotDeleted > 0
                 }
         ) {
             result.add(DateSumUI(
@@ -123,9 +139,9 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
         }
         if (showInfo.showMonthSums
                 && when {
-                    showInfo.showSpends == showInfo.showProfits -> true
-                    showInfo.showSpends -> monthSpendsSum > 0
-                    else -> monthProfitsSum > 0
+                    showInfo.showSpends == showInfo.showProfits -> monthSpendsCountNotDeleted > 0 || monthProfitsCountNotDeleted > 0
+                    showInfo.showSpends -> monthSpendsCountNotDeleted > 0
+                    else -> monthProfitsCountNotDeleted > 0
                 }
         ) {
             result.add(MonthSumUI(
