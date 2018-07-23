@@ -7,6 +7,7 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import com.qwert2603.andrlib.util.LogUtils
+import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
@@ -15,6 +16,7 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
+import kotlin.reflect.KFunction2
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedBy(
         crossinline first: (T) -> R1,
@@ -161,3 +163,5 @@ object LDUtils {
 fun <T> ExecutorService.executeAndWait(action: () -> T): T = submit(Callable<T> { action() }).get()
 
 fun <T> List<T>.reduceEmptyToNull(reducer: (T, T) -> T): T? = if (this.isEmpty()) null else this.reduce(reducer)
+
+fun <T, U, R> KFunction2<T, U, R>.toRxBiFunction() = BiFunction { t: T, u: U -> this.invoke(t, u) }

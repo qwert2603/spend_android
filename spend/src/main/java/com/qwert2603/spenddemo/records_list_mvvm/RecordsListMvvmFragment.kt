@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.Toast
@@ -191,27 +192,36 @@ class RecordsListMvvmFragment : Fragment() {
 
         toolbar.title = "${getString(R.string.app_name)} ${E.env.titleSuffix()}"
 
-        RxRecyclerView.scrollEvents(records_RecyclerView)
-                .switchMap {
-                    Observable.interval(0, 1, TimeUnit.SECONDS)
-                            .take(2)
-                            .map { it == 0L }
-                }
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
+        Observable
+                .combineLatest(
+                        RxRecyclerView.scrollEvents(records_RecyclerView)
+                                .switchMap {
+                                    Observable.interval(0, 1, TimeUnit.SECONDS)
+                                            .take(2)
+                                            .map { it == 0L }
+                                }
+                                .distinctUntilChanged()
+                                .observeOn(AndroidSchedulers.mainThread()),
+                        RxRecyclerView.scrollEvents(records_RecyclerView)
+                                .map {
+                                    val lastVisiblePosition = (records_RecyclerView.layoutManager as LinearLayoutManager)
+                                            .findLastVisibleItemPosition()
+                                    val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
+                                            && records[lastVisiblePosition] is TotalsUI
+                                    return@map !lastIsTotal
+                                },
+                        Boolean::and.toRxBiFunction()
+                )
                 .subscribe {
-                    floatingDate_TextView.animate()
-                            .setStartDelay(0L)
-                            .setDuration(250L)
-                            .alpha(if (it && showFloatingDate && records.any { it is DateSumUI }) 1f else 0f)
+                    floatingDate_TextView.setVisible(it && showFloatingDate && records.any { it is DateSumUI })
                 }
                 .addTo(viewDisposable)
         RxRecyclerView.scrollEvents(records_RecyclerView)
                 .subscribe {
                     if (!showFloatingDate) return@subscribe
                     var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    val floatingTop = floatingDate_TextView.getGlobalVisibleRectRightNow().bottom
-                    val vhTop = records_RecyclerView.findViewHolderForAdapterPosition(i).itemView.getGlobalVisibleRectRightNow().bottom
+                    val floatingTop = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
+                    val vhTop = records_RecyclerView.findViewHolderForAdapterPosition(i).itemView.getGlobalVisibleRectRightNow().top
                     if (i > 0 && vhTop < floatingTop) --i
                     if (i in 1..records.lastIndex && records[i] is TotalsUI) --i
                     if (i in 1..records.lastIndex && records[i] is MonthSumUI) --i
