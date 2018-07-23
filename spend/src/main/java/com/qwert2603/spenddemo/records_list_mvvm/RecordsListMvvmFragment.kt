@@ -148,10 +148,14 @@ class RecordsListMvvmFragment : Fragment() {
 
         viewModel.sumsInfo.observe(this, Observer { sumsInfo ->
             sumsInfo!!
-            val changesCountText = when {
-                sumsInfo.changesCount == 0 -> getString(R.string.no_changes_text)
-                else -> getString(R.string.changes_count_format, sumsInfo.changesCount)
-            }
+            val changesCountText = sumsInfo.changesCount
+                    .takeIf { E.env.syncWithServer }
+                    ?.let {
+                        when (it) {
+                            0 -> getString(R.string.no_changes_text)
+                            else -> getString(R.string.changes_count_format, it)
+                        }
+                    }
             val longSumText = sumsInfo.longPeriodDays
                     .takeIf { it > 0 }
                     ?.let { longPeriodDays ->
@@ -171,7 +175,7 @@ class RecordsListMvvmFragment : Fragment() {
                         )
                     }
             toolbar.subtitle = listOfNotNull(longSumText, shortSumText, changesCountText)
-                    .reduce { acc, s -> "$acc    $s" }
+                    .reduceEmptyToNull { acc, s -> "$acc    $s" }
         })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
         viewModel.showChangeKinds.observe(this, Observer { adapter.showChangeKinds = it == true })
@@ -287,7 +291,9 @@ class RecordsListMvvmFragment : Fragment() {
         menu.findItem(R.id.add_stub_spends).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.add_stub_profits).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
-        menu.findItem(R.id.server_delay).isVisible = E.env.buildForTesting()
+        menu.findItem(R.id.server_delay).isVisible = E.env.buildForTesting() && E.env.syncWithServer
+        showDeletedMenuItem.isVisible = E.env.syncWithServer
+        menu.findItem(R.id.server_info).isVisible = E.env.syncWithServer
 
         viewModel.showSpends.observe(this, Observer { showSpendsMenuItem.isChecked = it == true })
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })

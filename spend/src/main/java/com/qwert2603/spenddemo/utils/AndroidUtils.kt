@@ -159,3 +159,5 @@ object LDUtils {
 }
 
 fun <T> ExecutorService.executeAndWait(action: () -> T): T = submit(Callable<T> { action() }).get()
+
+fun <T> List<T>.reduceEmptyToNull(reducer: (T, T) -> T): T? = if (this.isEmpty()) null else this.reduce(reducer)
