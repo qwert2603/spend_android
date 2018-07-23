@@ -53,13 +53,13 @@ class ProfitsRepoImpl @Inject constructor(
             localDataSource = object : LocalDataSource<Profit, ProfitTable> {
                 override fun saveItem(t: ProfitTable) = localDB.profitsDao().saveProfit(t)
                 override fun addItems(ts: List<ProfitTable>) = localDB.profitsDao().addProfits(ts)
-                override fun deleteItem(id: Long) = localDB.profitsDao().deleteProfit(id)
+                override fun deleteItems(ids: List<Long>) = localDB.profitsDao().deleteProfits(ids)
                 override fun clearLocalChange(itemId: Long, changeId: Long) = localDB.profitsDao().clearLocalChange(itemId, changeId)
                 override fun getLocallyChangedItems(count: Int): List<ProfitTable> = localDB.profitsDao().getLocallyChangedProfits(count)
                 override fun locallyDeleteItem(itemId: Long, changeId: Long) = localDB.profitsDao().locallyDeleteProfit(itemId, changeId)
                 override fun clearAll() = localDB.profitsDao().deleteAllProfits()
                 override fun onItemAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.profitsDao().onProfitAddedToServer(localId, newId, changeId)
-                override fun saveChangeFromServer(t: Profit) = localDB.profitsDao().saveChangeFromServer(t)
+                override fun saveChangesFromServer(ts: List<Profit>) = localDB.profitsDao().saveChangesFromServer(ts)
                 override fun onItemEdited(t: Profit, changeId: Long) = localDB.profitsDao().onItemEdited(t, changeId)
             },
             changeIdCounter = PrefsCounter(prefs = prefs, key = "last_change_id"),

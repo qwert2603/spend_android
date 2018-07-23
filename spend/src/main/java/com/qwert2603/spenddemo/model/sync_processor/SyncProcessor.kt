@@ -50,17 +50,16 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                         val items = remoteDataSource.getUpdates(
                                 lastUpdateMillis = lastUpdateTimestamp,
                                 lastUpdatedId = lastUpdatedId,
-                                count = 10
+                                count = 50
                         )
                         if (items.isEmpty()) break
                         localDBExecutor.executeAndWait {
-                            items.forEach {
-                                if (it.deleted) {
-                                    localDataSource.deleteItem(it.id)
-                                } else {
-                                    localDataSource.saveChangeFromServer(it.r2t())
-                                }
-                            }
+                            localDataSource.deleteItems(items
+                                    .filter { it.deleted }
+                                    .map { it.id })
+                            localDataSource.saveChangesFromServer(items
+                                    .filter { !it.deleted }
+                                    .map(r2t))
                             lastUpdateStorage.lastUpdateInfo = items.last().let { LastUpdateInfo(it.updated, it.id) }
                         }
                     }
@@ -88,7 +87,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                                         ChangeKind.DELETE -> {
                                             remoteDataSource.deleteItem(localItem.id)
                                             localDBExecutor.executeAndWait {
-                                                localDataSource.deleteItem(localItem.id)
+                                                localDataSource.deleteItems(listOf(localItem.id))
                                             }
                                         }
                                     }
@@ -128,7 +127,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
             if (E.env.syncWithServer) {
                 localDataSource.locallyDeleteItem(itemId, changeIdCounter.getNext())
             } else {
-                localDataSource.deleteItem(itemId)
+                localDataSource.deleteItems(listOf(itemId))
             }
         }
     }

@@ -71,6 +71,11 @@ abstract class SpendsDao {
         updateKind(spend.kind)
     }
 
+    @Transaction
+    open fun deleteSpends(ids: List<Long>) {
+        ids.forEach { deleteSpend(it) }
+    }
+
     private fun updateKind(kind: String) {
         val spendsCount = doGetSpendCountOfKind(kind)
         if (spendsCount == 0) {
@@ -160,9 +165,11 @@ abstract class SpendsDao {
     abstract fun onSpendAddedToServer(localId: Long, newId: Long, changeId: Long)
 
     @Transaction
-    open fun saveChangeFromServer(spend: Spend) {
-        if (getSpend(spend.id)?.change == null) {
-            saveSpend(spend.toSpendTable(null))
+    open fun saveChangesFromServer(spends: List<Spend>) {
+        spends.forEach {
+            if (getSpend(it.id)?.change == null) {
+                saveSpend(it.toSpendTable(null))
+            }
         }
     }
 

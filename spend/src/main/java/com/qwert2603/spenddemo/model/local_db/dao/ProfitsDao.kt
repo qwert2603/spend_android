@@ -26,8 +26,8 @@ abstract class ProfitsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun saveProfit(profit: ProfitTable)
 
-    @Query("DELETE FROM ProfitTable WHERE id = :id")
-    abstract fun deleteProfit(id: Long)
+    @Query("DELETE FROM ProfitTable WHERE id IN (:ids)")
+    abstract fun deleteProfits(ids: List<Long>)
 
     @Query("DELETE FROM ProfitTable")
     abstract fun deleteAllProfits()
@@ -66,9 +66,11 @@ abstract class ProfitsDao {
     abstract fun onProfitAddedToServer(localId: Long, newId: Long, changeId: Long)
 
     @Transaction
-    open fun saveChangeFromServer(profit: Profit) {
-        if (getProfit(profit.id)?.change == null) {
-            saveProfit(profit.toProfitTable(null))
+    open fun saveChangesFromServer(profits: List<Profit>) {
+        profits.forEach {
+            if (getProfit(it.id)?.change == null) {
+                saveProfit(it.toProfitTable(null))
+            }
         }
     }
 

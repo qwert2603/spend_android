@@ -53,13 +53,13 @@ class SpendsRepoImpl @Inject constructor(
             localDataSource = object : LocalDataSource<Spend, SpendTable> {
                 override fun saveItem(t: SpendTable) = localDB.spendsDao().saveSpend(t)
                 override fun addItems(ts: List<SpendTable>) = localDB.spendsDao().addSpends(ts)
-                override fun deleteItem(id: Long) = localDB.spendsDao().deleteSpend(id)
+                override fun deleteItems(ids: List<Long>) = localDB.spendsDao().deleteSpends(ids)
                 override fun clearLocalChange(itemId: Long, changeId: Long) = localDB.spendsDao().clearLocalChange(itemId, changeId)
                 override fun onItemAddedToServer(localId: Long, newId: Long, changeId: Long) = localDB.spendsDao().onSpendAddedToServer(localId, newId, changeId)
                 override fun getLocallyChangedItems(count: Int): List<SpendTable> = localDB.spendsDao().getLocallyChangedSpends(count)
                 override fun locallyDeleteItem(itemId: Long, changeId: Long) = localDB.spendsDao().locallyDeleteSpend(itemId, changeId)
                 override fun clearAll() = localDB.spendsDao().clearAll()
-                override fun saveChangeFromServer(t: Spend) = localDB.spendsDao().saveChangeFromServer(t)
+                override fun saveChangesFromServer(ts: List<Spend>) = localDB.spendsDao().saveChangesFromServer(ts)
                 override fun onItemEdited(t: Spend, changeId: Long) = localDB.spendsDao().onItemEdited(t, changeId)
             },
             changeIdCounter = PrefsCounter(prefs = prefs, key = "last_change_id"),

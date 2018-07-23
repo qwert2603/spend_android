@@ -154,8 +154,8 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
         }
     }
     result.add(TotalsUI(
-            showSpends = showInfo.showSpends,
-            showProfits = showInfo.showProfits,
+            showSpends = showInfo.showSpendSum(),
+            showProfits = showInfo.showProfitSum(),
             spendsCount = spendsCount,
             spendsSum = spendsSum,
             profitsCount = profitsCount,
