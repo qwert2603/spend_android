@@ -133,6 +133,12 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
     }
 
     fun clear() {
-        pendingClearAll.set(true)
+        if (E.env.syncWithServer) {
+            pendingClearAll.set(true)
+        } else {
+            localDBExecutor.execute {
+                localDataSource.clearAll()
+            }
+        }
     }
 }
