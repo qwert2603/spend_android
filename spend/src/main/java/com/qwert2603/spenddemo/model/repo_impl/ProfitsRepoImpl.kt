@@ -105,12 +105,14 @@ class ProfitsRepoImpl @Inject constructor(
             .let {
                 if (it.isEmpty()) return@let "nth"
                 val dateFormat = SimpleDateFormat(Const.DATE_FORMAT_PATTERN, Locale.getDefault())
+                val timeFormat = SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault())
                 it
                         .reversed()
                         .map {
                             listOf(
                                     it.kind,
                                     dateFormat.format(it.date),
+                                    it.time?.let { timeFormat.format(it) }.toString(),
                                     it.value.toString()
                             ).reduce { s1, s2 -> "$s1,$s2" }
                         }
@@ -122,7 +124,7 @@ class ProfitsRepoImpl @Inject constructor(
                 .also { it.time = Date().onlyDate() }
                 .also { it.add(Calendar.DAY_OF_MONTH, -days + 1) }
                 .timeInMillis
-        return localDB.profitsDao().getSum(startMillis).map { it ?: 0 }
+        return localDB.profitsDao().getSumDays(startMillis).map { it ?: 0 }
     }
 
     override fun getSumLastMinutes(minutes: Int): LiveData<Long> {

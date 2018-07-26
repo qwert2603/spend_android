@@ -18,6 +18,5 @@ interface UserSettingsRepo {
 
     var serverInfo: ServerInfo
 
-    fun showTimesChanges(): Observable<Boolean>
     fun serverInfoChanges(): Observable<ServerInfo>
 }

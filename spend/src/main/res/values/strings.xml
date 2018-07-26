@@ -34,6 +34,8 @@
     <string name="today_text">today</string>
     <string name="yesterday_text">yesterday</string>
     <string name="tomorrow_text">tomorrow</string>
+    <string name="now_text">now</string>
+    <string name="no_time_text">no&#9719;</string>
 
     <string name="app_info_text_format">
         <![CDATA[

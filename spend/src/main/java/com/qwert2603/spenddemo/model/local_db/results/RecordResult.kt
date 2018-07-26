@@ -9,6 +9,7 @@ data class RecordResult(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         val changeKind: ChangeKind?
 ) {
     companion object {

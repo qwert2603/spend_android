@@ -12,6 +12,7 @@ import com.qwert2603.spenddemo.model.local_db.tables.SpendKindTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
 import io.reactivex.Single
+import java.util.*
 
 @Dao
 abstract class SpendsDao {
@@ -19,15 +20,15 @@ abstract class SpendsDao {
     @Transaction
     @Query("""
         SELECT * FROM (
-            SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date, change_changeKind changeKind FROM ProfitTable
+            SELECT ${RecordResult.TYPE_PROFIT} type, id, kind, value, date, time, change_changeKind changeKind FROM ProfitTable
         UNION ALL
-            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, change_changeKind changeKind FROM SpendTable
-        ) ORDER BY date DESC, type DESC, id DESC
+            SELECT ${RecordResult.TYPE_SPEND} type, id, kind, value, date, time, change_changeKind changeKind FROM SpendTable
+        ) ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, type DESC, id DESC
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 
     @Transaction
-    @Query("SELECT * FROM SpendTable ORDER BY date DESC, id DESC")
+    @Query("SELECT * FROM SpendTable ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC")
     abstract fun getAllSpendsList(): List<SpendTable>
 
     @Transaction
@@ -37,9 +38,20 @@ abstract class SpendsDao {
     @Query("""
         SELECT SUM(s.value)
         FROM SpendTable s
+        WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND s.time IS NOT NULL
+            AND (s.date + s.time) >= (:startMillis - :offset)
+    """)
+    abstract fun getSum(
+            startMillis: Long,
+            offset: Int = TimeZone.getDefault().getOffset(System.currentTimeMillis())
+    ): LiveData<Long?>
+
+    @Query("""
+        SELECT SUM(s.value)
+        FROM SpendTable s
         WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND s.date >= :startMillis
     """)
-    abstract fun getSum(startMillis: Long): LiveData<Long?>
+    abstract fun getSumDays(startMillis: Long): LiveData<Long?>
 
     @Query("SELECT COUNT(*) FROM SpendTable WHERE change_id IS NOT NULL")
     abstract fun getChangesCount(): LiveData<Int?>
@@ -126,7 +138,12 @@ abstract class SpendsDao {
     @Query("DELETE FROM SpendTable")
     protected abstract fun doDeleteAllSpends()
 
-    @Query("SELECT * FROM SpendTable WHERE kind = :kind ORDER BY date DESC LIMIT 1")
+    @Query("""
+        SELECT *
+        FROM SpendTable
+        WHERE kind = :kind
+        ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC LIMIT 1
+        """)
     protected abstract fun doGetLastSpendOfKind(kind: String): SpendTable?
 
     @Query("SELECT COUNT(*) FROM SpendTable WHERE kind = :kind")
@@ -143,7 +160,7 @@ abstract class SpendsDao {
 
 
     @VisibleForTesting
-    @Query("select id from (SELECT * from SpendTable UNION SELECT * from ProfitTable) order by id")
+    @Query("select id from (SELECT id from SpendTable UNION SELECT id from ProfitTable) order by id")
     abstract fun getAllRecordsIds(): List<Long>
 
     @VisibleForTesting

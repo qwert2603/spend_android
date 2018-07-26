@@ -19,7 +19,6 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_add_profit.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @FragmentWithArgs
@@ -29,15 +28,15 @@ class AddProfitDialogFragment : DialogFragment() {
         const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
         const val DATE_KEY = "${BuildConfig.APPLICATION_ID}.DATE_KEY"
+        const val TIME_KEY = "${BuildConfig.APPLICATION_ID}.TIME_KEY"
         const val VALUE_KEY = "${BuildConfig.APPLICATION_ID}.VALUE_KEY"
 
         private const val SELECTED_DATE_KEY = "SELECTED_DATE_KEY"
+        private const val SELECTED_TIME_KEY = "SELECTED_TIME_KEY"
 
         private const val REQUEST_KIND = 1
         private const val REQUEST_DATE = 2
         private const val REQUEST_TIME = 3
-
-        private val TIME_FORMAT = SimpleDateFormat("H:mm", Locale.getDefault())
     }
 
     @Arg(required = true)
@@ -47,26 +46,37 @@ class AddProfitDialogFragment : DialogFragment() {
     @Arg(required = false)
     var kind: String = ""
     @Arg(required = false)
-    var date: Long = 0
+    var date: Long? = null
+    @Arg(required = false)
+    var time: Long? = null
     @Arg(required = false)
     var value: Int = 0
 
     private lateinit var dialogView: View
 
-    private var selectedDate by BundleLong(SELECTED_DATE_KEY) { arguments!! }
+    private var selectedDate by BundleLongNullable(SELECTED_DATE_KEY) { arguments!! }
+    private var selectedTime by BundleLongNullable(SELECTED_TIME_KEY) { arguments!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
-        if (savedInstanceState == null) selectedDate = if (newProfit) System.currentTimeMillis() else date
+        if (!newProfit && savedInstanceState == null) {
+            selectedDate = date
+            selectedTime = time
+        }
     }
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_profit, null)
         dialogView.apply {
-            date_EditText.setText(Date(selectedDate).toFormattedString(resources))
-            time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
+            DateTimeTextViews.render(
+                    dateTextView = date_EditText,
+                    timeTextView = time_EditText,
+                    date = selectedDate?.let { Date(it) },
+                    time = selectedTime?.let { Date(it) },
+                    timePanel = time_TextInputLayout
+            )
             if (!newProfit) {
                 kind_EditText.setText(kind)
                 value_EditText.setText(value.toString())
@@ -79,12 +89,17 @@ class AddProfitDialogFragment : DialogFragment() {
                 true
             }
             date_EditText.setOnClickListener {
-                DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
+                DatePickerDialogFragmentBuilder
+                        .newDatePickerDialogFragment(
+                                selectedDate ?: Date().onlyDate().time,
+                                newProfit
+                        )
                         .also { it.setTargetFragment(this@AddProfitDialogFragment, REQUEST_DATE) }
                         .show(fragmentManager, "date")
             }
             time_EditText.setOnClickListener {
-                TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(selectedDate)
+                TimePickerDialogFragmentBuilder
+                        .newTimePickerDialogFragment(selectedTime ?: Date().onlyTime().time)
                         .also { it.setTargetFragment(this@AddProfitDialogFragment, REQUEST_TIME) }
                         .show(fragmentManager, "time")
             }
@@ -139,16 +154,28 @@ class AddProfitDialogFragment : DialogFragment() {
                     dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
-                    val date = Date(selectedDate)
-                    date.setDayFrom(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
-                    selectedDate = date.time
-                    dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+                    selectedDate = data.getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)
+                    if (selectedDate == null) {
+                        selectedTime = null
+                    }
+                    DateTimeTextViews.render(
+                            dateTextView = dialogView.date_EditText,
+                            timeTextView = dialogView.time_EditText,
+                            date = selectedDate?.let { Date(it) },
+                            time = selectedTime?.let { Date(it) },
+                            timePanel = dialogView.time_TextInputLayout
+                    )
                 }
                 REQUEST_TIME -> {
-                    val date = Date(selectedDate)
-                    date.setTimeFrom(Date(data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0)))
-                    selectedDate = date.time
-                    dialogView.time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
+                    selectedTime = data.getLongExtraNullable(TimePickerDialogFragment.MILLIS_KEY)
+                            .takeIf { selectedDate != null }
+                    DateTimeTextViews.render(
+                            dateTextView = dialogView.date_EditText,
+                            timeTextView = dialogView.time_EditText,
+                            date = selectedDate?.let { Date(it) },
+                            time = selectedTime?.let { Date(it) },
+                            timePanel = dialogView.time_TextInputLayout
+                    )
                 }
             }
         }
@@ -161,7 +188,8 @@ class AddProfitDialogFragment : DialogFragment() {
                 Activity.RESULT_OK,
                 Intent()
                         .putExtra(KIND_KEY, dialogView.kind_EditText.text.toString())
-                        .putExtra(DATE_KEY, selectedDate)
+                        .also { intent -> selectedDate?.let { intent.putExtra(DATE_KEY, it) } }
+                        .also { intent -> selectedTime?.let { intent.putExtra(TIME_KEY, it) } }
                         .putExtra(VALUE_KEY, dialogView.value_EditText.text.toString().toInt())
                         .also { if (!newProfit) it.putExtra(ID_KEY, id) }
         )

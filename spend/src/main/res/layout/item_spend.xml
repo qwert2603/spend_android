@@ -24,7 +24,7 @@
         android:layout_width="56sp"
         android:layout_height="wrap_content"
         android:lines="1"
-        android:textColor="#444444"
+        android:textColor="@android:color/black"
         android:textSize="14sp"
         tools:text="1918236" />
 
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:lines="1"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         tools:text="2018-01-11" />
 
@@ -45,9 +45,9 @@
         android:layout_marginStart="4dp"
         android:gravity="end"
         android:lines="1"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
-        tools:text="19:18" />
+        tools:text="@string/no_time_text" />
 
     <TextView
         android:id="@+id/kind_TextView"
@@ -68,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         tools:text="175" />
 

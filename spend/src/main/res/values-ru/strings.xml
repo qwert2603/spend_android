@@ -85,5 +85,7 @@
     <string name="short_sum_text_format">короткая &#931;: %s</string>
     <string name="long_sum_text_format">длинная &#931;: %s</string>
     <string name="text_show_deleted">удаленные</string>
+    <string name="now_text">сейчас</string>
+    <string name="no_time_text">без&#9719;</string>
 
 </resources>

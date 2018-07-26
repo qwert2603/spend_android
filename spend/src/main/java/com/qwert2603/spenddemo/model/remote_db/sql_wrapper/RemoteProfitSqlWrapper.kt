@@ -11,7 +11,8 @@ class RemoteProfitSqlWrapper(resultSet: ResultSet) {
             id = resultSet.getLong("id"),
             kind = resultSet.getString("kind"),
             value = resultSet.getInt("value"),
-            date = resultSet.getTimestamp("date"),
+            date = resultSet.getDate("date"),
+            time = resultSet.getTime("time"),
             updated = resultSet.getTimestamp("updated"),
             deleted = resultSet.getBoolean("deleted")
     )
@@ -22,6 +23,7 @@ data class RemoteProfit(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         override val updated: Timestamp,
         override val deleted: Boolean
 ) : RemoteItem
@@ -30,5 +32,6 @@ fun RemoteProfit.toProfit() = Profit(
         id = id,
         kind = kind,
         value = value,
-        date = date
+        date = date,
+        time = time
 )

@@ -90,6 +90,7 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                             kind = tableRow.kind,
                             value = tableRow.value,
                             date = tableRow.date,
+                            time = tableRow.time,
                             changeKind = tableRow.changeKind
                     ))
                 }
@@ -111,6 +112,7 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                             kind = tableRow.kind,
                             value = tableRow.value,
                             date = tableRow.date,
+                            time = tableRow.time,
                             changeKind = tableRow.changeKind
                     ))
                 }

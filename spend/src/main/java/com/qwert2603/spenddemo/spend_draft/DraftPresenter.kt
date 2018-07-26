@@ -3,13 +3,13 @@ package com.qwert2603.spenddemo.spend_draft
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.utils.onlyDate
+import com.qwert2603.spenddemo.utils.onlyTime
 import com.qwert2603.spenddemo.utils.secondOfTwo
-import com.qwert2603.spenddemo.utils.setDayFrom
-import com.qwert2603.spenddemo.utils.setTimeFrom
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -19,13 +19,8 @@ class DraftPresenter @Inject constructor(
 ) : BasePresenter<DraftView, DraftViewState>(uiSchedulerProvider) {
 
     override val initialState = DraftViewState(
-            creatingSpend = CreatingSpend(
-                    kind = "",
-                    value = 0,
-                    date = null
-            ),
-            createEnable = false,
-            showTime = false
+            creatingSpend = CreatingSpend.EMPTY,
+            createEnable = false
     )
 
     private val loadDraft: Observable<CreatingSpend> = intent { it.viewCreated() }
@@ -49,12 +44,17 @@ class DraftPresenter @Inject constructor(
                     Observable
                             .merge(listOf(
                                     onDateSelectedIntent
-                                            .map { date ->
-                                                { r: CreatingSpend -> r.copy(date = r.getDateNN().setDayFrom(date)) }
+                                            .map { newDate ->
+                                                { r: CreatingSpend ->
+                                                    r.copy(
+                                                            date = newDate.t,
+                                                            time = if (newDate.t == null) null else r.time
+                                                    )
+                                                }
                                             },
                                     onTimeSelectedIntent
-                                            .map { date ->
-                                                { r: CreatingSpend -> r.copy(date = r.getDateNN().setTimeFrom(date)) }
+                                            .map { newTime ->
+                                                { r: CreatingSpend -> r.copy(time = newTime.t.takeIf { r.date != null }) }
                                             },
                                     kingChangesIntent
                                             .map { kind ->
@@ -89,19 +89,13 @@ class DraftPresenter @Inject constructor(
             .share()
 
 
-    override val partialChanges: Observable<PartialChange> = Observable.merge(
-            draftChanges
-                    .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) },
-            draftInteractor
-                    .showTimesChanges()
-                    .map { DraftPartialChange.ShowTimes(it) }
-    )
+    override val partialChanges: Observable<PartialChange> = draftChanges
+            .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) }
 
     override fun stateReducer(vs: DraftViewState, change: PartialChange): DraftViewState {
         if (change !is DraftPartialChange) throw Exception()
         return when (change) {
             is DraftPartialChange.DraftChanged -> vs.copy(creatingSpend = change.creatingSpend, createEnable = change.createEnable)
-            is DraftPartialChange.ShowTimes -> vs.copy(showTime = change.show)
         }
     }
 
@@ -138,12 +132,20 @@ class DraftPresenter @Inject constructor(
 
         intent { it.selectDateClicks() }
                 .withLatestFrom(draftChanges, secondOfTwo())
-                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectDate(it.getDateNN().time)) }
+                .doOnNext {
+                    viewActions.onNext(DraftViewAction.AskToSelectDate(
+                            (it.date ?: Date().onlyDate()).time
+                    ))
+                }
                 .subscribeToView()
 
         intent { it.selectTimeClicks() }
                 .withLatestFrom(draftChanges, secondOfTwo())
-                .doOnNext { viewActions.onNext(DraftViewAction.AskToSelectTime(it.getDateNN().time)) }
+                .doOnNext {
+                    viewActions.onNext(DraftViewAction.AskToSelectTime(
+                            (it.time ?: Date().onlyTime()).time
+                    ))
+                }
                 .subscribeToView()
 
         intent { it.selectKindClicks() }

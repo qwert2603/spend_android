@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.qwert2603.andrlib.util.Const
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Profit
@@ -196,7 +197,9 @@ class RecordsListViewModel(
                     CreatingSpend(
                             kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
                             value = random.nextInt(1000) + 1,
-                            date = Date().secondsToZero() - (random.nextInt(2100)).days
+                            date = Date().onlyDate() - (random.nextInt(2100)).days,
+                            time = (Date().onlyDate().onlyTime() + (random.nextInt(Const.MINUTES_PER_DAY).minutes))
+                                    .takeIf { random.nextBoolean() }
                     )
                 })
     }
@@ -209,7 +212,9 @@ class RecordsListViewModel(
                     CreatingProfit(
                             kind = stubSpendKinds[random.nextInt(stubSpendKinds.size)],
                             value = random.nextInt(10000) + 1,
-                            date = Date().secondsToZero() - (random.nextInt(2100)).days
+                            date = Date().onlyDate() - (random.nextInt(2100)).days,
+                            time = (Date().onlyDate().onlyTime() + (random.nextInt(Const.MINUTES_PER_DAY).minutes))
+                                    .takeIf { random.nextBoolean() }
                     )
                 }
         )

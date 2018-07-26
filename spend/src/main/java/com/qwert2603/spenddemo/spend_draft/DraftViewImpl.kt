@@ -13,19 +13,14 @@ import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.inflate
-import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.utils.DialogAwareView
-import com.qwert2603.spenddemo.utils.UserInputEditText
-import com.qwert2603.spenddemo.utils.mapToInt
-import com.qwert2603.spenddemo.utils.toFormattedString
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
@@ -34,8 +29,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
         private const val REQUEST_CODE_DATE = 11
         private const val REQUEST_CODE_TIME = 12
         private const val REQUEST_CODE_KIND = 13
-
-        private val TIME_FORMAT = SimpleDateFormat("H:mm", Locale.getDefault())
     }
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
@@ -48,8 +41,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
-    private val onDateSelected = PublishSubject.create<Date>()
-    private val onTimeSelected = PublishSubject.create<Date>()
+    private val onDateSelected = PublishSubject.create<Wrapper<Date>>()
+    private val onTimeSelected = PublishSubject.create<Wrapper<Date>>()
     private val onKindSelected = PublishSubject.create<String>()
 
     override lateinit var dialogShower: DialogAwareView.DialogShower
@@ -62,8 +55,18 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
-            REQUEST_CODE_DATE -> onDateSelected.onNext(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
-            REQUEST_CODE_TIME -> onTimeSelected.onNext(Date(data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0)))
+            REQUEST_CODE_DATE -> onDateSelected.onNext(
+                    data
+                            .getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)
+                            ?.let { Date(it) }
+                            .wrap()
+            )
+            REQUEST_CODE_TIME -> onTimeSelected.onNext(
+                    data
+                            .getLongExtraNullable(TimePickerDialogFragment.MILLIS_KEY)
+                            ?.let { Date(it) }
+                            .wrap()
+            )
             REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseSpendKindDialogFragment.KIND_KEY))
         }
     }
@@ -86,9 +89,9 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
 
-    override fun onDateSelected(): Observable<Date> = onDateSelected
+    override fun onDateSelected(): Observable<Wrapper<Date>> = onDateSelected
 
-    override fun onTimeSelected(): Observable<Date> = onTimeSelected
+    override fun onTimeSelected(): Observable<Wrapper<Date>> = onTimeSelected
 
     override fun onKindSelected(): Observable<String> = onKindSelected
 
@@ -102,10 +105,14 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
         super.render(vs)
         kindEditText.setText(vs.creatingSpend.kind)
         valueEditText.setText(vs.valueString)
-        date_EditText.setText(vs.creatingSpend.getDateNN().toFormattedString(resources))
-        date_EditText.setTextColor(resources.color(if (vs.creatingSpend.date != null) android.R.color.black else R.color.date_default))
-        time_EditText.setVisible(vs.showTime && vs.creatingSpend.date != null)
-        time_EditText.setText(TIME_FORMAT.format(vs.creatingSpend.getDateNN()))
+
+        DateTimeTextViews.render(
+                dateTextView = date_EditText,
+                timeTextView = time_EditText,
+                date = vs.creatingSpend.date,
+                time = vs.creatingSpend.time
+        )
+
         save_Button.isEnabled = vs.createEnable
         save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
     }
@@ -132,10 +139,12 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                     }
                 }, 200)
             }
-            is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.millis)
+            is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
+                    .newDatePickerDialogFragment(va.millis, true)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
-            is DraftViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(va.millis)
+            is DraftViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
+                    .newTimePickerDialogFragment(va.millis)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_TIME) }
                     .also { keyboardManager.hideKeyboard() }
             DraftViewAction.AskToSelectKind -> ChooseSpendKindDialogFragment()

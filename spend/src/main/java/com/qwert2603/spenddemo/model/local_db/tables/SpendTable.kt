@@ -13,6 +13,7 @@ import java.util.*
     Index("id", unique = true),
     Index("kind"),
     Index("date"),
+    Index("time"),
     Index("change_id", unique = true),
     Index("change_changeKind")
 ])
@@ -21,8 +22,9 @@ data class SpendTable(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         @Embedded(prefix = "change_") override val change: RecordChange?
 ) : LocalItem
 
-fun SpendTable.toSpend() = Spend(id, kind, value, date)
-fun Spend.toSpendTable(change: RecordChange?) = SpendTable(id, kind, value, date, change)
+fun SpendTable.toSpend() = Spend(id, kind, value, date, time)
+fun Spend.toSpendTable(change: RecordChange?) = SpendTable(id, kind, value, date, time, change)

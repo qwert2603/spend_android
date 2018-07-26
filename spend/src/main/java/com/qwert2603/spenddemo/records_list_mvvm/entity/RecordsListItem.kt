@@ -22,8 +22,8 @@ interface RecordsListItem : IdentifiableLong {
     }
 
     fun time() = when (this) {
-        is SpendUI -> this.date.time
-        is ProfitUI -> this.date.time
+        is SpendUI -> this.date.time + (this.time?.time ?: 0)
+        is ProfitUI -> this.date.time + (this.time?.time ?: 0)
         is DateSumUI -> this.date.time
         is MonthSumUI -> this.date.time
         is TotalsUI -> Long.MIN_VALUE

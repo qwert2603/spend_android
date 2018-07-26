@@ -13,6 +13,7 @@ import java.util.*
     Index("id", unique = true),
     Index("kind"),
     Index("date"),
+    Index("time"),
     Index("change_id", unique = true),
     Index("change_changeKind")
 ])
@@ -21,8 +22,9 @@ data class ProfitTable(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         @Embedded(prefix = "change_") override val change: RecordChange?
 ) : LocalItem
 
-fun ProfitTable.toProfit() = Profit(id, kind, value, date)
-fun Profit.toProfitTable(change: RecordChange?) = ProfitTable(id, kind, value, date, change)
+fun ProfitTable.toProfit() = Profit(id, kind, value, date, time)
+fun Profit.toProfitTable(change: RecordChange?) = ProfitTable(id, kind, value, date, time, change)

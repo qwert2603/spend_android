@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
+import android.content.Intent
 import com.qwert2603.andrlib.util.LogUtils
 import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.experimental.android.UI
@@ -160,8 +161,15 @@ object LDUtils {
     fun <T> just(t: T): LiveData<T> = MutableLiveData<T>().also { it.value = t }
 }
 
-fun <T> ExecutorService.executeAndWait(action: () -> T): T = submit(Callable<T> { action() }).get()
+inline fun <T> ExecutorService.executeAndWait(crossinline action: () -> T): T = submit(Callable<T> { action() }).get()
 
 fun <T> List<T>.reduceEmptyToNull(reducer: (T, T) -> T): T? = if (this.isEmpty()) null else this.reduce(reducer)
 
 fun <T, U, R> KFunction2<T, U, R>.toRxBiFunction() = BiFunction { t: T, u: U -> this.invoke(t, u) }
+
+fun Intent.getLongExtraNullable(key: String) =
+        if (hasExtra(key)) {
+            getLongExtra(key, 0)
+        } else {
+            null
+        }

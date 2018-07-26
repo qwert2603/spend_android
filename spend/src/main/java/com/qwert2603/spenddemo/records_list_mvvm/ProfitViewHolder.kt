@@ -9,19 +9,13 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.entity.SyncStatus
 import com.qwert2603.spenddemo.records_list_mvvm.entity.ProfitUI
+import com.qwert2603.spenddemo.utils.DateTimeTextViews
 import com.qwert2603.spenddemo.utils.setStrike
-import com.qwert2603.spenddemo.utils.toFormattedString
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_profit.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.layout.item_profit) {
-
-    companion object {
-        private val TIME_FORMAT = SimpleDateFormat("H:mm", Locale.getDefault())
-    }
 
     init {
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -56,15 +50,10 @@ class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.l
 
     override fun bind(t: ProfitUI, adapter: RecordsListAdapter) = with(itemView) {
         super.bind(t, adapter)
-        val showIds = adapter.showIds
-        val showChangeKinds = adapter.showChangeKinds
-        val showDatesInRecords = adapter.showDatesInRecords
-        val showTimesInRecords = adapter.showTimesInRecords
 
-        local_ImageView.setVisible(showChangeKinds)
-        id_TextView.setVisible(showIds)
-        date_TextView.setVisible(showDatesInRecords)
-        time_TextView.setVisible(showTimesInRecords)
+        local_ImageView.setVisible(adapter.showChangeKinds)
+        id_TextView.setVisible(adapter.showIds)
+        date_TextView.setVisible(adapter.showDatesInRecords)
 
         local_ImageView.setImageResource(when (t.syncStatus()) {
             SyncStatus.LOCAL -> R.drawable.ic_local
@@ -81,8 +70,13 @@ class ProfitViewHolder(parent: ViewGroup) : BaseViewHolder<ProfitUI>(parent, R.l
             local_ImageView.setColorFilter(resources.color(R.color.anth))
         }
         id_TextView.text = t.id.toString()
-        date_TextView.text = t.date.toFormattedString(resources)
-        time_TextView.text = TIME_FORMAT.format(t.date)
+        DateTimeTextViews.render(
+                dateTextView = date_TextView,
+                timeTextView = time_TextView,
+                date = t.date,
+                time = t.time,
+                showTimeAtAll = adapter.showTimesInRecords
+        )
         kind_TextView.text = t.kind
         value_TextView.text = t.value.toLong().toPointedString().zeroToEmpty()
 

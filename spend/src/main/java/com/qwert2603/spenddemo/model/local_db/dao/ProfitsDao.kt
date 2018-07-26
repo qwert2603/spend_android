@@ -8,12 +8,13 @@ import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
 import io.reactivex.Single
+import java.util.*
 
 @Dao
 abstract class ProfitsDao {
 
     @Transaction
-    @Query("SELECT * FROM ProfitTable ORDER BY date DESC, id DESC")
+    @Query("SELECT * FROM ProfitTable ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC")
     abstract fun getAllProfitsList(): List<ProfitTable>
 
     @Transaction
@@ -48,9 +49,20 @@ abstract class ProfitsDao {
     @Query("""
         SELECT SUM(p.value)
         FROM ProfitTable p
+        WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND p.time IS NOT NULL
+            AND (p.date + p.time) >= (:startMillis - :offset)
+    """)
+    abstract fun getSum(
+            startMillis: Long,
+            offset: Int = TimeZone.getDefault().getOffset(System.currentTimeMillis())
+    ): LiveData<Long?>
+
+    @Query("""
+        SELECT SUM(p.value)
+        FROM ProfitTable p
         WHERE (change_changeKind IS NULL OR change_changeKind != 2) AND p.date >= :startMillis
     """)
-    abstract fun getSum(startMillis: Long): LiveData<Long?>
+    abstract fun getSumDays(startMillis: Long): LiveData<Long?>
 
     @Query("SELECT COUNT(*) FROM ProfitTable WHERE change_id IS NOT NULL")
     abstract fun getChangesCount(): LiveData<Int?>

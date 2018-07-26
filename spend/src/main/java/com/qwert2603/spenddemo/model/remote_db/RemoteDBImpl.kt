@@ -93,11 +93,13 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
         args.forEachIndexed { i, any ->
             val index = i + 1
             when (any) {
+                is NullSqlArg -> setNull(index, any.type)
                 is Int -> setInt(index, any)
                 is Long -> setLong(index, any)
                 is Double -> setDouble(index, any)
                 is String -> setString(index, any)
                 is java.sql.Date -> setDate(index, any)
+                is java.sql.Time -> setTime(index, any)
                 is java.sql.Timestamp -> setTimestamp(index, any)
                 is Boolean -> setBoolean(index, any)
                 else -> LogUtils.e("RemoteDBImpl unknown arg ${any.javaClass} $any")

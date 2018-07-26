@@ -23,3 +23,22 @@ class BundleLong(private val key: String, argsProvider: () -> Bundle) : ReadWrit
         args.putLong(key, value)
     }
 }
+
+class BundleLongNullable(private val key: String, argsProvider: () -> Bundle) : ReadWriteProperty<Any, Long?> {
+    private val args by lazy(argsProvider)
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): Long? =
+            if (args.containsKey(key)) {
+                args.getLong(key)
+            } else {
+                null
+            }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Long?) {
+        if (value != null) {
+            args.putLong(key, value)
+        } else {
+            args.remove(key)
+        }
+    }
+}

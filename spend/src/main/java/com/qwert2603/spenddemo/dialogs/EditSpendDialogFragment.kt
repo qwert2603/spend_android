@@ -19,7 +19,6 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_edit_spend.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @FragmentWithArgs
@@ -29,15 +28,15 @@ class EditSpendDialogFragment : DialogFragment() {
         const val ID_KEY = "${BuildConfig.APPLICATION_ID}.ID_KEY"
         const val KIND_KEY = "${BuildConfig.APPLICATION_ID}.KIND_KEY"
         const val DATE_KEY = "${BuildConfig.APPLICATION_ID}.DATE_KEY"
+        const val TIME_KEY = "${BuildConfig.APPLICATION_ID}.TIME_KEY"
         const val VALUE_KEY = "${BuildConfig.APPLICATION_ID}.VALUE_KEY"
 
         private const val SELECTED_DATE_KEY = "SELECTED_DATE_KEY"
+        private const val SELECTED_TIME_KEY = "SELECTED_TIME_KEY"
 
         private const val REQUEST_CHOOSE_KIND = 1
         private const val REQUEST_DATE = 2
         private const val REQUEST_TIME = 3
-
-        private val TIME_FORMAT = SimpleDateFormat("H:mm", Locale.getDefault())
     }
 
     @Arg
@@ -46,17 +45,23 @@ class EditSpendDialogFragment : DialogFragment() {
     lateinit var kind: String
     @Arg
     var date: Long = 0
+    @Arg(required = false)
+    var time: Long? = null
     @Arg
     var value: Int = 0
 
     private lateinit var dialogView: View
 
     private var selectedDate by BundleLong(SELECTED_DATE_KEY) { arguments!! }
+    private var selectedTime by BundleLongNullable(SELECTED_TIME_KEY) { arguments!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
-        if (savedInstanceState == null) selectedDate = date
+        if (savedInstanceState == null) {
+            selectedDate = date
+            selectedTime = time
+        }
     }
 
     @SuppressLint("InflateParams")
@@ -64,8 +69,12 @@ class EditSpendDialogFragment : DialogFragment() {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_spend, null)
         dialogView.apply {
             kind_EditText.setText(kind)
-            date_EditText.setText(Date(selectedDate).toFormattedString(resources))
-            time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
+            DateTimeTextViews.render(
+                    dialogView.date_EditText,
+                    dialogView.time_EditText,
+                    Date(selectedDate),
+                    selectedTime?.let { Date(it) }
+            )
             value_EditText.setText(value.toString())
 
             kind_EditText.setOnLongClickListener {
@@ -75,12 +84,13 @@ class EditSpendDialogFragment : DialogFragment() {
                 true
             }
             date_EditText.setOnClickListener {
-                DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate)
+                DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(selectedDate, false)
                         .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_DATE) }
                         .show(fragmentManager, "date")
             }
             time_EditText.setOnClickListener {
-                TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(selectedDate)
+                TimePickerDialogFragmentBuilder
+                        .newTimePickerDialogFragment(selectedTime ?: Date().onlyTime().time)
                         .also { it.setTargetFragment(this@EditSpendDialogFragment, REQUEST_TIME) }
                         .show(fragmentManager, "time")
             }
@@ -132,16 +142,22 @@ class EditSpendDialogFragment : DialogFragment() {
                     dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
-                    val date = Date(selectedDate)
-                    date.setDayFrom(Date(data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)))
-                    selectedDate = date.time
-                    dialogView.date_EditText.setText(Date(selectedDate).toFormattedString(resources))
+                    selectedDate = data.getLongExtra(DatePickerDialogFragment.MILLIS_KEY, 0)
+                    DateTimeTextViews.render(
+                            dialogView.date_EditText,
+                            dialogView.time_EditText,
+                            Date(selectedDate),
+                            selectedTime?.let { Date(it) }
+                    )
                 }
                 REQUEST_TIME -> {
-                    val date = Date(selectedDate)
-                    date.setTimeFrom(Date(data.getLongExtra(TimePickerDialogFragment.MILLIS_KEY, 0)))
-                    selectedDate = date.time
-                    dialogView.time_EditText.setText(TIME_FORMAT.format(Date(selectedDate)))
+                    selectedTime = data.getLongExtraNullable(TimePickerDialogFragment.MILLIS_KEY)
+                    DateTimeTextViews.render(
+                            dialogView.date_EditText,
+                            dialogView.time_EditText,
+                            Date(selectedDate),
+                            selectedTime?.let { Date(it) }
+                    )
                 }
             }
         }
@@ -156,6 +172,7 @@ class EditSpendDialogFragment : DialogFragment() {
                         .putExtra(ID_KEY, id)
                         .putExtra(KIND_KEY, dialogView.kind_EditText.text.toString())
                         .putExtra(DATE_KEY, selectedDate)
+                        .also { intent -> selectedTime?.let { intent.putExtra(TIME_KEY, it) } }
                         .putExtra(VALUE_KEY, dialogView.value_EditText.text.toString().toInt())
         )
     }

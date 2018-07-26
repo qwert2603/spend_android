@@ -33,6 +33,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -84,7 +85,9 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.createdProfitsEvents.observe(this, Observer { recordsListAnimator.pendingCreatedProfitId = it?.id })
         viewModel.syncingItemIdsInList.observe(this, Observer { adapter.syncingItemIdsInList = it ?: emptySet() })
 
-        viewModel.creatingRecordsText.observe(this, Observer { Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show() })
+        viewModel.creatingRecordsText.observe(this, Observer {
+            Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show()
+        })
 
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()
@@ -120,8 +123,9 @@ class RecordsListMvvmFragment : Fragment() {
 
         adapter.itemClicks = {
             when (it) {
-                is SpendUI -> EditSpendDialogFragmentBuilder
-                        .newEditSpendDialogFragment(it.date.time, it.id, it.kind, it.value)
+                is SpendUI -> EditSpendDialogFragmentBuilder(it.date.time, it.id, it.kind, it.value)
+                        .also { builder -> if (it.time != null) builder.time(it.time.time) }
+                        .build()
                         .also { it.setTargetFragment(this, REQUEST_EDIT_SPEND) }
                         .makeShow()
                 is ProfitUI -> AddProfitDialogFragmentBuilder(false)
@@ -129,19 +133,29 @@ class RecordsListMvvmFragment : Fragment() {
                         .kind(it.kind)
                         .value(it.value)
                         .date(it.date.time)
+                        .also { builder -> if (it.time != null) builder.time(it.time.time) }
                         .build()
                         .also { it.setTargetFragment(this, REQUEST_EDIT_PROFIT) }
                         .makeShow()
             }
         }
         adapter.itemLongClicks = {
+            val timeFormat = SimpleDateFormat(com.qwert2603.spenddemo.utils.Const.TIME_FORMAT_PATTERN, Locale.getDefault())
             when (it) {
                 is SpendUI -> DeleteSpendDialogFragmentBuilder
-                        .newDeleteSpendDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value.toLong().toPointedString()}")
+                        .newDeleteSpendDialogFragment(it.id,
+                                it.date.toFormattedString(resources) +
+                                        " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
+                                        "\n${it.kind}\n${it.value.toLong().toPointedString()}"
+                        )
                         .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
                         .makeShow()
                 is ProfitUI -> DeleteProfitDialogFragmentBuilder
-                        .newDeleteProfitDialogFragment(it.id, "${it.date.toFormattedString(resources)}\n${it.kind}\n${it.value.toLong().toPointedString()}")
+                        .newDeleteProfitDialogFragment(it.id,
+                                it.date.toFormattedString(resources) +
+                                        " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
+                                        "\n${it.kind}\n${it.value.toLong().toPointedString()}"
+                        )
                         .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
                         .makeShow()
             }
@@ -257,21 +271,24 @@ class RecordsListMvvmFragment : Fragment() {
             when (requestCode) {
                 REQUEST_DELETE_SPEND -> viewModel.deleteSpend(data.getLongExtra(DeleteSpendDialogFragment.ID_KEY, 0))
                 REQUEST_EDIT_SPEND -> viewModel.editSpend(Spend(
-                        data.getLongExtra(EditSpendDialogFragment.ID_KEY, 0),
-                        data.getStringExtra(EditSpendDialogFragment.KIND_KEY),
-                        data.getIntExtra(EditSpendDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(EditSpendDialogFragment.DATE_KEY, 0L)).secondsToZero()
+                        id = data.getLongExtra(EditSpendDialogFragment.ID_KEY, 0),
+                        kind = data.getStringExtra(EditSpendDialogFragment.KIND_KEY),
+                        value = data.getIntExtra(EditSpendDialogFragment.VALUE_KEY, 0),
+                        date = Date(data.getLongExtra(EditSpendDialogFragment.DATE_KEY, 0L)),
+                        time = data.getLongExtraNullable(EditSpendDialogFragment.TIME_KEY)?.let { Date(it) }
                 ))
                 REQUEST_ADD_PROFIT -> viewModel.addProfit(CreatingProfit(
-                        data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
-                        data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0)).secondsToZero()
+                        kind = data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
+                        value = data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
+                        date = data.getLongExtraNullable(AddProfitDialogFragment.DATE_KEY)?.let { Date(it) },
+                        time = data.getLongExtraNullable(AddProfitDialogFragment.TIME_KEY)?.let { Date(it) }
                 ))
                 REQUEST_EDIT_PROFIT -> viewModel.editProfit(Profit(
-                        data.getLongExtra(AddProfitDialogFragment.ID_KEY, 0),
-                        data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
-                        data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
-                        Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0L)).secondsToZero()
+                        id = data.getLongExtra(AddProfitDialogFragment.ID_KEY, 0),
+                        kind = data.getStringExtra(AddProfitDialogFragment.KIND_KEY),
+                        value = data.getIntExtra(AddProfitDialogFragment.VALUE_KEY, 0),
+                        date = Date(data.getLongExtra(AddProfitDialogFragment.DATE_KEY, 0L)),
+                        time = data.getLongExtraNullable(AddProfitDialogFragment.TIME_KEY)?.let { Date(it) }
                 ))
                 REQUEST_DELETE_PROFIT -> viewModel.deleteProfit(data.getLongExtra(DeleteProfitDialogFragment.ID_KEY, 0))
                 REQUEST_CHOOSE_LONG_SUM_PERIOD -> viewModel.setLongSumPeriodDays(data.getIntExtra(ChooseLongSumPeriodDialog.DAYS_KEY, 0))

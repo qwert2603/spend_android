@@ -7,5 +7,6 @@ data class Profit(
         override val id: Long,
         val kind: String,
         val value: Int,
-        val date: Date
+        val date: Date,
+        val time: Date?
 ) : IdentifiableLong

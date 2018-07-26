@@ -1,13 +1,21 @@
 package com.qwert2603.spenddemo.utils
 
 import android.content.SharedPreferences
+import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateInfo
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateStorage
 import java.sql.Timestamp
+import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+private inline fun SharedPreferences.makeEdit(crossinline editAction: SharedPreferences.Editor.() -> Unit) {
+    this.edit()
+            .apply(editAction)
+            .apply()
+}
 
 class PrefsBoolean(
         private val prefs: SharedPreferences,
@@ -17,7 +25,7 @@ class PrefsBoolean(
     override fun getValue(thisRef: Any, property: KProperty<*>): Boolean = prefs.getBoolean(key, defaultValue)
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
-        prefs.edit().putBoolean(key, value).apply()
+        prefs.makeEdit { putBoolean(key, value) }
     }
 }
 
@@ -29,7 +37,7 @@ class PrefsInt(
     override fun getValue(thisRef: Any, property: KProperty<*>): Int = prefs.getInt(key, defaultValue)
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Int) {
-        prefs.edit().putInt(key, value).apply()
+        prefs.makeEdit { putInt(key, value) }
     }
 }
 
@@ -41,7 +49,29 @@ class PrefsLong(
     override fun getValue(thisRef: Any, property: KProperty<*>): Long = prefs.getLong(key, defaultValue)
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Long) {
-        prefs.edit().putLong(key, value).apply()
+        prefs.makeEdit { putLong(key, value) }
+    }
+}
+
+class PrefsLongNullable(
+        private val prefs: SharedPreferences,
+        private val key: String
+) : ReadWriteProperty<Any, Long?> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): Long? =
+            if (key in prefs) {
+                prefs.getLong(key, 0)
+            } else {
+                null
+            }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Long?) {
+        prefs.makeEdit {
+            if (value != null) {
+                putLong(key, value)
+            } else {
+                remove(key)
+            }
+        }
     }
 }
 
@@ -57,10 +87,10 @@ class PrefsTimestamp(
             .also { it.nanos = prefs.getInt(keyNanos, defaultValue.nanos) }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Timestamp) {
-        prefs.edit()
-                .putLong(keyMillis, value.time)
-                .putInt(keyNanos, value.nanos)
-                .apply()
+        prefs.makeEdit {
+            putLong(keyMillis, value.time)
+            putInt(keyNanos, value.nanos)
+        }
     }
 }
 
@@ -84,7 +114,7 @@ class PrefsCounter(
 
     override fun getNext(): Long {
         val next = prefs.getLong(key, defaultValue) + 1
-        prefs.edit().putLong(key, next).apply()
+        prefs.makeEdit { putLong(key, next) }
         return next
     }
 }
@@ -109,11 +139,44 @@ class PrefsServerInfo(
     }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: ServerInfo) {
-        prefs.edit()
-                .putString(keyUrl, value.url)
-                .putString(keyUser, value.user)
-                .putString(keyPassword, value.password)
-                .apply()
+        prefs.makeEdit {
+            putString(keyUrl, value.url)
+            putString(keyUser, value.user)
+            putString(keyPassword, value.password)
+        }
         onChange(value)
+    }
+}
+
+class PrefsCreatingSpend(
+        private val prefs: SharedPreferences,
+        key: String,
+        private val defaultValue: CreatingSpend
+) : ReadWriteProperty<Any, CreatingSpend> {
+    private val keyDate = "$key date"
+    private val keyTime = "$key time"
+    private val keyKind = "$key kind"
+    private val keyValue = "$key value"
+
+    private var dateMillis by PrefsLongNullable(prefs, keyDate)
+    private var timeMillis by PrefsLongNullable(prefs, keyTime)
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): CreatingSpend = when {
+        prefs.contains(keyKind) -> CreatingSpend(
+                kind = prefs.getString(keyKind, ""),
+                value = prefs.getInt(keyValue, 0),
+                date = dateMillis?.let { Date(it) },
+                time = timeMillis?.let { Date(it) }
+        )
+        else -> defaultValue
+    }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: CreatingSpend) {
+        prefs.makeEdit {
+            dateMillis = value.date?.time
+            timeMillis = value.time?.time
+            putString(keyKind, value.kind)
+            putInt(keyValue, value.value)
+        }
     }
 }

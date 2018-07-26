@@ -7,5 +7,4 @@ import io.reactivex.Single
 interface SpendDraftRepo {
     fun saveDraft(creatingSpend: CreatingSpend): Completable
     fun getDraft(): Single<CreatingSpend>
-    fun removeDraft(): Completable
 }

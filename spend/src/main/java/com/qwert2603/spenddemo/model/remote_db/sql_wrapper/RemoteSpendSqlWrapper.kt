@@ -8,12 +8,13 @@ import java.util.*
 
 class RemoteSpendSqlWrapper(resultSet: ResultSet) {
     val spend = RemoteSpend(
-            resultSet.getLong("id"),
-            resultSet.getString("kind"),
-            resultSet.getInt("value"),
-            resultSet.getTimestamp("date"),
-            resultSet.getTimestamp("updated"),
-            resultSet.getBoolean("deleted")
+            id = resultSet.getLong("id"),
+            kind = resultSet.getString("kind"),
+            value = resultSet.getInt("value"),
+            date = resultSet.getDate("date"),
+            time = resultSet.getTime("time"),
+            updated = resultSet.getTimestamp("updated"),
+            deleted = resultSet.getBoolean("deleted")
     )
 }
 
@@ -22,6 +23,7 @@ data class RemoteSpend(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         override val updated: Timestamp,
         override val deleted: Boolean
 ) : RemoteItem
@@ -30,5 +32,6 @@ fun RemoteSpend.toSpend() = Spend(
         id = id,
         kind = kind,
         value = value,
-        date = date
+        date = date,
+        time = time
 )

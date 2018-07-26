@@ -8,6 +8,7 @@ data class ProfitUI(
         val kind: String,
         val value: Int,
         val date: Date,
+        val time: Date?,
         val changeKind: ChangeKind?
 ) : RecordsListItem {
     val canEdit = changeKind != ChangeKind.DELETE
