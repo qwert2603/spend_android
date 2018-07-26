@@ -87,5 +87,6 @@
     <string name="text_show_deleted">удаленные</string>
     <string name="now_text">сейчас</string>
     <string name="no_time_text">без&#9719;</string>
+    <string name="spend_kind_description_no_time_format">последнее: %1$s @ %2$s</string>
 
 </resources>

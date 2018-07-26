@@ -56,7 +56,11 @@ abstract class SpendsDao {
     @Query("SELECT COUNT(*) FROM SpendTable WHERE change_id IS NOT NULL")
     abstract fun getChangesCount(): LiveData<Int?>
 
-    @Query("SELECT * FROM SpendKindTable ORDER BY spendsCount DESC, lastDate DESC")
+    @Query("""
+        SELECT *
+        FROM SpendKindTable
+        ORDER BY spendsCount DESC, lastDate DESC, coalesce(lastTime, ${Long.MIN_VALUE}) DESC
+    """)
     abstract fun getAllKings(): LiveData<List<SpendKindTable>>
 
     @Query("SELECT * FROM SpendKindTable WHERE kind = :kind")
@@ -88,6 +92,12 @@ abstract class SpendsDao {
         ids.forEach { deleteSpend(it) }
     }
 
+    @Transaction
+    open fun locallyDeleteSpend(id: Long, changeId: Long) {
+        doLocallyDeleteSpend(id, changeId)
+        updateKind(getSpend(id)!!.kind)
+    }
+
     private fun updateKind(kind: String) {
         val spendsCount = doGetSpendCountOfKind(kind)
         if (spendsCount == 0) {
@@ -97,6 +107,7 @@ abstract class SpendsDao {
             doUpdateKind(SpendKindTable(
                     kind = kind,
                     lastDate = lastSpendOfKind.date,
+                    lastTime = lastSpendOfKind.time,
                     lastPrice = lastSpendOfKind.value,
                     spendsCount = spendsCount
             ))
@@ -112,9 +123,6 @@ abstract class SpendsDao {
     @Query("UPDATE SpendTable SET id = :newId WHERE id = :prevId")
     abstract fun changeSpendId(prevId: Long, newId: Long)
 
-    @Query("UPDATE SpendTable SET change_changeKind = 2, change_id = :changeId WHERE id = :id")
-    abstract fun locallyDeleteSpend(id: Long, changeId: Long)
-
     @Query("UPDATE SpendTable SET change_changeKind = 1 WHERE id = :spendId")
     abstract fun setChangeKindToEdit(spendId: Long)
 
@@ -125,7 +133,12 @@ abstract class SpendsDao {
     @Query("SELECT * FROM SpendTable WHERE change_changeKind IS NOT NULL LIMIT :limit")
     abstract fun getLocallyChangedSpends(limit: Int = 10): List<SpendTable>
 
-    @Query("SELECT id spendId, change_changeKind changeKind, change_id id FROM SpendTable WHERE change_changeKind IS NOT NULL ORDER BY change_id DESC")
+    @Query("""
+        SELECT id spendId, change_changeKind changeKind, change_id id
+        FROM SpendTable
+        WHERE change_changeKind IS NOT NULL
+        ORDER BY change_id DESC
+    """)
     abstract fun getAllLocallyChangedSpends(): Single<List<SpendChange>>
 
 
@@ -135,18 +148,26 @@ abstract class SpendsDao {
     @Query("DELETE FROM SpendTable WHERE id = :spendId")
     protected abstract fun doDeleteSpend(spendId: Long)
 
+    @Query("UPDATE SpendTable SET change_changeKind = 2, change_id = :changeId WHERE id = :id")
+    protected abstract fun doLocallyDeleteSpend(id: Long, changeId: Long)
+
     @Query("DELETE FROM SpendTable")
     protected abstract fun doDeleteAllSpends()
 
     @Query("""
         SELECT *
         FROM SpendTable
-        WHERE kind = :kind
-        ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC LIMIT 1
+        WHERE kind = :kind AND (change_changeKind IS NULL OR change_changeKind != 2)
+        ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC
+        LIMIT 1
         """)
     protected abstract fun doGetLastSpendOfKind(kind: String): SpendTable?
 
-    @Query("SELECT COUNT(*) FROM SpendTable WHERE kind = :kind")
+    @Query("""
+        SELECT COUNT(*)
+        FROM SpendTable
+        WHERE kind = :kind AND (change_changeKind IS NULL OR change_changeKind != 2)
+    """)
     protected abstract fun doGetSpendCountOfKind(kind: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

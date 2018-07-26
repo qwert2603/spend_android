@@ -68,12 +68,20 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
                     kind.kind,
                     view.resources.getQuantityString(R.plurals.times, kind.spendsCount, kind.spendsCount)
             )
-            view.lastSpend_TextView.text = view.resources.getString(
-                    R.string.spend_kind_description_format,
-                    kind.lastPrice.toLong().toPointedString(),
-                    kind.lastDate.toFormattedString(view.resources),
-                    TIME_FORMAT.format(kind.lastDate)
-            )
+            view.lastSpend_TextView.text = if (kind.lastTime != null) {
+                view.resources.getString(
+                        R.string.spend_kind_description_format,
+                        kind.lastPrice.toLong().toPointedString(),
+                        kind.lastDate.toFormattedString(view.resources),
+                        TIME_FORMAT.format(kind.lastTime)
+                )
+            } else {
+                view.resources.getString(
+                        R.string.spend_kind_description_no_time_format,
+                        kind.lastPrice.toLong().toPointedString(),
+                        kind.lastDate.toFormattedString(view.resources)
+                )
+            }
             return view
         }
     }

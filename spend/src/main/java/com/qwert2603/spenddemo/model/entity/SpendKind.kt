@@ -8,7 +8,8 @@ data class SpendKind(
         val kind: String,
         val spendsCount: Int,
         val lastPrice: Int,
-        val lastDate: Date
+        val lastDate: Date,
+        val lastTime: Date?
 ) : IdentifiableLong {
     override val id = kind.hashCodeLong()
 }

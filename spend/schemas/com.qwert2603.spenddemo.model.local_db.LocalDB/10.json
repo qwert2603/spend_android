@@ -1,0 +1,276 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 10,
+    "identityHash": "9d7d81b008550934240359d2cc0cdca1",
+    "entities": [
+      {
+        "tableName": "SpendTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `kind` TEXT NOT NULL, `value` INTEGER NOT NULL, `date` INTEGER NOT NULL, `time` INTEGER, `change_id` INTEGER, `change_changeKind` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "change.id",
+            "columnName": "change_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "change.changeKind",
+            "columnName": "change_changeKind",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_SpendTable_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_SpendTable_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_SpendTable_kind",
+            "unique": false,
+            "columnNames": [
+              "kind"
+            ],
+            "createSql": "CREATE  INDEX `index_SpendTable_kind` ON `${TABLE_NAME}` (`kind`)"
+          },
+          {
+            "name": "index_SpendTable_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE  INDEX `index_SpendTable_date` ON `${TABLE_NAME}` (`date`)"
+          },
+          {
+            "name": "index_SpendTable_time",
+            "unique": false,
+            "columnNames": [
+              "time"
+            ],
+            "createSql": "CREATE  INDEX `index_SpendTable_time` ON `${TABLE_NAME}` (`time`)"
+          },
+          {
+            "name": "index_SpendTable_change_id",
+            "unique": true,
+            "columnNames": [
+              "change_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_SpendTable_change_id` ON `${TABLE_NAME}` (`change_id`)"
+          },
+          {
+            "name": "index_SpendTable_change_changeKind",
+            "unique": false,
+            "columnNames": [
+              "change_changeKind"
+            ],
+            "createSql": "CREATE  INDEX `index_SpendTable_change_changeKind` ON `${TABLE_NAME}` (`change_changeKind`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ProfitTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `kind` TEXT NOT NULL, `value` INTEGER NOT NULL, `date` INTEGER NOT NULL, `time` INTEGER, `change_id` INTEGER, `change_changeKind` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "change.id",
+            "columnName": "change_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "change.changeKind",
+            "columnName": "change_changeKind",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_ProfitTable_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_ProfitTable_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_ProfitTable_kind",
+            "unique": false,
+            "columnNames": [
+              "kind"
+            ],
+            "createSql": "CREATE  INDEX `index_ProfitTable_kind` ON `${TABLE_NAME}` (`kind`)"
+          },
+          {
+            "name": "index_ProfitTable_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE  INDEX `index_ProfitTable_date` ON `${TABLE_NAME}` (`date`)"
+          },
+          {
+            "name": "index_ProfitTable_time",
+            "unique": false,
+            "columnNames": [
+              "time"
+            ],
+            "createSql": "CREATE  INDEX `index_ProfitTable_time` ON `${TABLE_NAME}` (`time`)"
+          },
+          {
+            "name": "index_ProfitTable_change_id",
+            "unique": true,
+            "columnNames": [
+              "change_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_ProfitTable_change_id` ON `${TABLE_NAME}` (`change_id`)"
+          },
+          {
+            "name": "index_ProfitTable_change_changeKind",
+            "unique": false,
+            "columnNames": [
+              "change_changeKind"
+            ],
+            "createSql": "CREATE  INDEX `index_ProfitTable_change_changeKind` ON `${TABLE_NAME}` (`change_changeKind`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "SpendKindTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`kind` TEXT NOT NULL, `lastDate` INTEGER NOT NULL, `lastTime` INTEGER, `lastPrice` INTEGER NOT NULL, `spendsCount` INTEGER NOT NULL, PRIMARY KEY(`kind`))",
+        "fields": [
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastDate",
+            "columnName": "lastDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastTime",
+            "columnName": "lastTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastPrice",
+            "columnName": "lastPrice",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spendsCount",
+            "columnName": "spendsCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "kind"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_SpendKindTable_kind",
+            "unique": false,
+            "columnNames": [
+              "kind"
+            ],
+            "createSql": "CREATE  INDEX `index_SpendKindTable_kind` ON `${TABLE_NAME}` (`kind`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"9d7d81b008550934240359d2cc0cdca1\")"
+    ]
+  }
+}

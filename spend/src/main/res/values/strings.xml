@@ -80,6 +80,7 @@
 
     <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
     <string name="spend_kind_description_format" formatted="true">last: %1$s @ %2$s at %3$s</string>
+    <string name="spend_kind_description_no_time_format" formatted="true">last: %1$s @ %2$s</string>
 
     <string name="text_dumping_records">creating records list..</string>
     <string name="text_server_delay">server delay</string>

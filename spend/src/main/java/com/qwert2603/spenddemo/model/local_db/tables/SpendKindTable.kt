@@ -10,8 +10,15 @@ import java.util.*
 data class SpendKindTable(
         @PrimaryKey @ColumnInfo(index = true) val kind: String,
         val lastDate: Date,
+        val lastTime: Date?,
         val lastPrice: Int,
         val spendsCount: Int
 )
 
-fun SpendKindTable.toSpendKind() = SpendKind(kind, spendsCount, lastPrice, lastDate)
+fun SpendKindTable.toSpendKind() = SpendKind(
+        kind = kind,
+        spendsCount = spendsCount,
+        lastPrice = lastPrice,
+        lastDate = lastDate,
+        lastTime = lastTime
+)
