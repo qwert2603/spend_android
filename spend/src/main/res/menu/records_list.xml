@@ -26,6 +26,11 @@
         android:title="@string/text_show_month_sums" />
 
     <item
+        android:id="@+id/show_empty_sums"
+        android:checkable="true"
+        android:title="@string/text_show_empty_sums" />
+
+    <item
         android:id="@+id/show_times"
         android:checkable="true"
         android:title="@string/show_times_text" />

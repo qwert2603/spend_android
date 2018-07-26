@@ -8,6 +8,7 @@ interface UserSettingsRepo {
     var showChangeKinds: Boolean
     var showDateSums: Boolean
     var showMonthSums: Boolean
+    var showEmptySums: Boolean
     var showSpends: Boolean
     var showProfits: Boolean
     var showTimes: Boolean

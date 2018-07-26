@@ -33,6 +33,7 @@ class RecordsListViewModel(
     val showProfits = MutableLiveData<Boolean>()
     val showDateSums = MutableLiveData<Boolean>()
     val showMonthSums = MutableLiveData<Boolean>()
+    val showEmptySums = MutableLiveData<Boolean>()
     val showIds = MutableLiveData<Boolean>()
     val showChangeKinds = MutableLiveData<Boolean>()
     val longSumPeriodDays = MutableLiveData<Int>()
@@ -51,6 +52,7 @@ class RecordsListViewModel(
         showProfits.value = userSettingsRepo.showProfits
         showDateSums.value = userSettingsRepo.showDateSums
         showMonthSums.value = userSettingsRepo.showMonthSums
+        showEmptySums.value = userSettingsRepo.showEmptySums
         showIds.value = userSettingsRepo.showIds
         showChangeKinds.value = userSettingsRepo.showChangeKinds
         longSumPeriodDays.value = userSettingsRepo.longSumPeriodDays
@@ -77,6 +79,7 @@ class RecordsListViewModel(
             val showProfits: Boolean,
             val showDateSums: Boolean,
             val showMonthSums: Boolean,
+            val showEmptySums: Boolean,
             val showDeleted: Boolean
     ) {
         fun showSpendSum() = showSpends || !showProfits
@@ -88,16 +91,18 @@ class RecordsListViewModel(
         fun newProfitEnable() = showProfits
         fun newSpendVisible() = showSpends
         fun showFloatingDate() = showDateSums && (showSpends || showProfits)
+        fun addEmptySumsToList() = showEmptySums && !showSpends && !showProfits
     }
 
-    val showInfo = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums, showDeleted))
+    val showInfo = combineLatest(listOf(showSpends, showProfits, showDateSums, showMonthSums, showEmptySums, showDeleted))
             .map {
                 ShowInfo(
                         showSpends = it[0] == true,
                         showProfits = it[1] == true,
                         showDateSums = it[2] == true,
                         showMonthSums = it[3] == true,
-                        showDeleted = it[4] == true
+                        showEmptySums = it[4] == true,
+                        showDeleted = it[5] == true
                 )
             }
 
@@ -157,6 +162,11 @@ class RecordsListViewModel(
     fun showMonthSums(show: Boolean) {
         showMonthSums.value = show
         userSettingsRepo.showMonthSums = show
+    }
+
+    fun showEmptySums(show: Boolean) {
+        showEmptySums.value = show
+        userSettingsRepo.showEmptySums = show
     }
 
     fun showIds(show: Boolean) {

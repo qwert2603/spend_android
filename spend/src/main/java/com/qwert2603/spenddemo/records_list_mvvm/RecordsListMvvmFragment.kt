@@ -305,6 +305,7 @@ class RecordsListMvvmFragment : Fragment() {
         val showProfitsMenuItem = menu.findItem(R.id.show_profits)
         val showDateSumsMenuItem = menu.findItem(R.id.show_date_sums)
         val showMonthSumsMenuItem = menu.findItem(R.id.show_month_sums)
+        val showEmptySumsMenuItem = menu.findItem(R.id.show_empty_sums)
         val showIdsMenuItem = menu.findItem(R.id.show_ids)
         val showChangeKindsMenuItem = menu.findItem(R.id.show_change_kinds)
         val showTimesMenuItem = menu.findItem(R.id.show_times)
@@ -326,6 +327,7 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.showProfits.observe(this, Observer { showProfitsMenuItem.isChecked = it == true })
         viewModel.showDateSums.observe(this, Observer { showDateSumsMenuItem.isChecked = it == true })
         viewModel.showMonthSums.observe(this, Observer { showMonthSumsMenuItem.isChecked = it == true })
+        viewModel.showEmptySums.observe(this, Observer { showEmptySumsMenuItem.isChecked = it == true })
         viewModel.showIds.observe(this, Observer { showIdsMenuItem.isChecked = it == true })
         viewModel.showChangeKinds.observe(this, Observer { showChangeKindsMenuItem.isChecked = it == true })
         viewModel.showTimes.observe(this, Observer { showTimesMenuItem.isChecked = it == true })
@@ -347,6 +349,7 @@ class RecordsListMvvmFragment : Fragment() {
         showProfitsMenuItem.setOnMenuItemClickListener { viewModel.showProfits(!showProfitsMenuItem.isChecked);true }
         showDateSumsMenuItem.setOnMenuItemClickListener { viewModel.showDateSums(!showDateSumsMenuItem.isChecked);true }
         showMonthSumsMenuItem.setOnMenuItemClickListener { viewModel.showMonthSums(!showMonthSumsMenuItem.isChecked);true }
+        showEmptySumsMenuItem.setOnMenuItemClickListener { viewModel.showEmptySums(!showEmptySumsMenuItem.isChecked);true }
         showIdsMenuItem.setOnMenuItemClickListener { viewModel.showIds(!showIdsMenuItem.isChecked);true }
         showChangeKindsMenuItem.setOnMenuItemClickListener { viewModel.showChangeKinds(!showChangeKindsMenuItem.isChecked);true }
         showTimesMenuItem.setOnMenuItemClickListener { viewModel.showTimes(!showTimesMenuItem.isChecked);true }

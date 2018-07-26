@@ -58,7 +58,8 @@
     <string name="text_show_spends">spends</string>
     <string name="text_show_profits">profits</string>
     <string name="text_show_date_sums">&#931; by days</string>
-    <string name="text_show_month_sums">&#931; by months </string>
+    <string name="text_show_month_sums">&#931; by months</string>
+    <string name="text_show_empty_sums" translatable="false">&#931;(&#8709;)</string>
     <string name="text_new_profit">new profit</string>
     <string name="show_times_text">times</string>
     <string name="text_server_info">connection settings</string>

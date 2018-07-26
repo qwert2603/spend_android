@@ -20,6 +20,7 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
     override var showChangeKinds by PrefsBoolean(prefs, "showChangeKinds")
     override var showDateSums by PrefsBoolean(prefs, "showDateSums")
     override var showMonthSums by PrefsBoolean(prefs, "showMonthSums")
+    override var showEmptySums by PrefsBoolean(prefs, "showEmptySums")
     override var showSpends by PrefsBoolean(prefs, "showSpends", true)
     override var showProfits by PrefsBoolean(prefs, "showProfits", true)
     override var showTimes by PrefsBoolean(prefs, "showTimes", true)
