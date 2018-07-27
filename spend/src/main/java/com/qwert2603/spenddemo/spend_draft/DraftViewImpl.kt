@@ -113,8 +113,10 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                 time = vs.creatingSpend.time
         )
 
-        save_Button.isEnabled = vs.createEnable
-        save_Button.setColorFilter(resources.color(if (vs.createEnable) R.color.colorAccentDark else R.color.button_disabled))
+        renderIfChanged({ createEnable }) {
+            save_Button.isEnabled = it
+            save_Button.setColorFilter(resources.color(if (it) R.color.colorAccentDark else R.color.button_disabled))
+        }
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")

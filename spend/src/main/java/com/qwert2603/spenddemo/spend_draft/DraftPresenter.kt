@@ -89,13 +89,20 @@ class DraftPresenter @Inject constructor(
             .share()
 
 
-    override val partialChanges: Observable<PartialChange> = draftChanges
-            .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) }
+    override val partialChanges: Observable<PartialChange> = Observable.merge(
+            draftChanges
+                    .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) },
+            Observable.interval(300, TimeUnit.MILLISECONDS)
+                    .map { Date().onlyDate() }
+                    .distinctUntilChanged()
+                    .map { DraftPartialChange.CurrentDateChanged }
+    )
 
     override fun stateReducer(vs: DraftViewState, change: PartialChange): DraftViewState {
         if (change !is DraftPartialChange) throw Exception()
         return when (change) {
             is DraftPartialChange.DraftChanged -> vs.copy(creatingSpend = change.creatingSpend, createEnable = change.createEnable)
+            DraftPartialChange.CurrentDateChanged -> vs
         }
     }
 
