@@ -9,6 +9,7 @@ import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.utils.executeAndWait
 import java.sql.Timestamp
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
@@ -34,7 +35,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
     fun start() {
         if (!E.env.syncWithServer) return
 
-        remoteDBExecutor.execute {
+        Executors.newSingleThreadExecutor().execute {
             while (true) {
                 Thread.sleep(10)
                 if (pendingClearAll.compareAndSet(true, false)) {
@@ -47,11 +48,13 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                 try {
                     while (true) {
                         val (lastUpdateTimestamp, lastUpdatedId) = lastUpdateStorage.lastUpdateInfo
-                        val items = remoteDataSource.getUpdates(
-                                lastUpdateMillis = lastUpdateTimestamp,
-                                lastUpdatedId = lastUpdatedId,
-                                count = 50
-                        )
+                        val items = remoteDBExecutor.executeAndWait {
+                            remoteDataSource.getUpdates(
+                                    lastUpdateMillis = lastUpdateTimestamp,
+                                    lastUpdatedId = lastUpdatedId,
+                                    count = 50
+                            )
+                        }
                         if (items.isEmpty()) break
                         localDBExecutor.executeAndWait {
                             localDataSource.deleteItems(items
@@ -65,7 +68,9 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                     }
 
                     while (true) {
-                        val locallyChangedItems = localDBExecutor.executeAndWait { localDataSource.getLocallyChangedItems(10) }
+                        val locallyChangedItems = localDBExecutor.executeAndWait {
+                            localDataSource.getLocallyChangedItems(10)
+                        }
                         if (locallyChangedItems.isEmpty()) break
                         locallyChangedItems
                                 .forEach { localItem ->
@@ -73,19 +78,25 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                                     syncingItemIds.postValue(setOf(localItem.id))
                                     when (change.changeKind) {
                                         ChangeKind.INSERT -> {
-                                            val newId = remoteDataSource.addItem(localItem.l2t())
+                                            val newId = remoteDBExecutor.executeAndWait {
+                                                remoteDataSource.addItem(localItem.l2t())
+                                            }
                                             localDBExecutor.executeAndWait {
                                                 localDataSource.onItemAddedToServer(localItem.id, newId, change.id)
                                             }
                                         }
                                         ChangeKind.UPDATE -> {
-                                            remoteDataSource.editItem(localItem.l2t())
+                                            remoteDBExecutor.executeAndWait {
+                                                remoteDataSource.editItem(localItem.l2t())
+                                            }
                                             localDBExecutor.executeAndWait {
                                                 localDataSource.clearLocalChange(localItem.id, change.id)
                                             }
                                         }
                                         ChangeKind.DELETE -> {
-                                            remoteDataSource.deleteItem(localItem.id)
+                                            remoteDBExecutor.executeAndWait {
+                                                remoteDataSource.deleteItem(localItem.id)
+                                            }
                                             localDBExecutor.executeAndWait {
                                                 localDataSource.deleteItems(listOf(localItem.id))
                                             }

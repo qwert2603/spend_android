@@ -2,6 +2,8 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
+import com.qwert2603.spenddemo.di.LocalDBExecutor
+import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.entity.toSpend
@@ -21,7 +23,7 @@ import com.qwert2603.spenddemo.utils.*
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,7 +31,9 @@ import javax.inject.Singleton
 class SpendsRepoImpl @Inject constructor(
         private val localDB: LocalDB,
         private val remoteDbFacade: RemoteDBFacade,
-        appContext: Context
+        appContext: Context,
+        @RemoteDBExecutor remoteDBExecutor: ExecutorService,
+        @LocalDBExecutor localDBExecutor: ExecutorService
 ) : SpendsRepo {
 
     private val prefs = appContext.getSharedPreferences("spends.prefs", Context.MODE_PRIVATE)
@@ -41,8 +45,8 @@ class SpendsRepoImpl @Inject constructor(
     )
 
     private val syncProcessor: SyncProcessor<Spend, RemoteSpend, SpendTable> = SyncProcessor(
-            remoteDBExecutor = Executors.newSingleThreadExecutor(),
-            localDBExecutor = Executors.newSingleThreadExecutor(),
+            remoteDBExecutor = remoteDBExecutor,
+            localDBExecutor = localDBExecutor,
             lastUpdateStorage = PrefsLastUpdateStorage(prefs, "last_update"),
             remoteDataSource = object : RemoteDataSource<Spend, RemoteSpend> {
                 override fun getUpdates(lastUpdateMillis: Timestamp, lastUpdatedId: Long, count: Int): List<RemoteSpend> = remoteDbFacade.getSpends(lastUpdateMillis, lastUpdatedId, count)

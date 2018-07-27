@@ -5,8 +5,8 @@ import java.util.*
 
 class DateConverter {
     @TypeConverter
-    fun toDate(millis: Long?) = millis?.let { Date(it) }
+    fun toDate(millis: Long?): Date? = millis?.let { Date(it) }
 
     @TypeConverter
-    fun toMillis(date: Date?) = date?.time
+    fun toMillis(date: Date?): Long? = date?.time
 }
