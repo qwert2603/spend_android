@@ -50,7 +50,10 @@ infix operator fun Date.minus(millis: Long) = this + -millis
 val Int.days get() = this * LibConst.MILLIS_PER_DAY
 val Int.minutes get() = this * LibConst.MILLIS_PER_MINUTE
 
-fun Calendar.daysEqual(anth: Calendar) = this[Calendar.YEAR] == anth.get(Calendar.YEAR) && this[Calendar.DAY_OF_YEAR] == anth[Calendar.DAY_OF_YEAR]
+fun Calendar.minutesEqual(anth: Calendar) = listOf(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR, Calendar.MINUTE)
+        .all { this[it] == anth[it] }
+
+fun Calendar.daysEqual(anth: Calendar) = this[Calendar.YEAR] == anth[Calendar.YEAR] && this[Calendar.DAY_OF_YEAR] == anth[Calendar.DAY_OF_YEAR]
 fun Calendar.monthsEqual(anth: Calendar) = this[Calendar.YEAR] == anth[Calendar.YEAR] && this[Calendar.MONTH] == anth[Calendar.MONTH]
 
 fun Calendar.onlyDate(): Date = GregorianCalendar(this[Calendar.YEAR], this[Calendar.MONTH], this[Calendar.DAY_OF_MONTH]).time

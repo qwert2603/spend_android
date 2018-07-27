@@ -67,8 +67,8 @@ class RecordsListViewModel(
             while (isActive) {
                 delay(300, TimeUnit.MILLISECONDS)
                 val currentCalendar = Calendar.getInstance()
-                if (currentCalendar.minute != prevCalendar.minute) launch(UI) { minuteChangesEvents.value = Unit }
-                if (currentCalendar.day != prevCalendar.day) launch(UI) { dayChangesEvents.value = Unit }
+                if (!currentCalendar.minutesEqual(prevCalendar)) launch(UI) { minuteChangesEvents.value = Unit }
+                if (!currentCalendar.daysEqual(prevCalendar)) launch(UI) { dayChangesEvents.value = Unit }
                 prevCalendar = currentCalendar
             }
         }
