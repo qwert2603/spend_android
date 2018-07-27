@@ -374,4 +374,9 @@ class RecordsListViewModel(
     val createdProfitsEvents: SingleLiveEvent<Profit> = profitsRepo.locallyCreatedProfits()
 
     val creatingRecordsText = SingleLiveEvent<Unit>()
+
+    override fun onCleared() {
+        super.onCleared()
+        timeChangesJob.cancel()
+    }
 }
