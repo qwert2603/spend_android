@@ -7,12 +7,11 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Intent
-import com.qwert2603.andrlib.util.LogUtils
 import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newSingleThreadContext
+import kotlinx.coroutines.experimental.withContext
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -84,27 +83,13 @@ fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transf
 
 fun <T, U> LiveData<T>.mapBG(mapper: Mapper<T, U>): LiveData<U> {
     val result = MediatorLiveData<U>()
-    LogUtils.d("mapBG qq")
+    val coroutineContext = newSingleThreadContext("mapBG ${UUID.randomUUID()}")
     result.addSource(this) { x ->
-        if (x == null) {
-            result.value = null
-            return@addSource
-        }
-        LogUtils.d("mapBG onChanged 1")
-        val coroutineContext = newSingleThreadContext("mapBG ${Random().nextInt()}")
-        val job = async(coroutineContext) {
-            LogUtils.d("mapBG bg")
-            mapper(x)
-                    .also { LogUtils.d("mapBG bg end") }
-        }
-        LogUtils.d("mapBG onChanged 2")
+        x ?: return@addSource
         launch(UI) {
-            LogUtils.d("mapBG launch(UI) 1")
-            result.value = job.await()
-            LogUtils.d("mapBG launch(UI) 2")
+            result.value = withContext(coroutineContext) { mapper(x) }
         }
     }
-    LogUtils.d("mapBG ww")
     return result
 }
 

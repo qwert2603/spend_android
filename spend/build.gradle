@@ -79,20 +79,20 @@ dependencies {
     def support_version = '27.1.1'
     def andrlib_version = '1.7.4'
     def andrlib_generator_version = '1.0.10'
-    def rxjava_version = '2.1.16'
+    def rxjava_version = '2.1.17'
     def rxandroid_version = '2.0.2'
     def rxbinding_version = '2.1.1'
     def mosby_version = '3.1.0'
     def fragmentargs_version = '3.0.2'
     def cicerone_version = '3.0.0'
     def postgresql_version = '42.1.4.jre7'
-    def dagger_version = '2.15'
+    def dagger_version = '2.16'
     def junit_version = '4.12'
     def stetho_version = '1.5.0'
     def room_version = "1.1.1"
     def lifecycle_version = "1.1.1"
     def android_test_runner_version = "1.0.2"
-    def anko_version = "0.10.5"
+    def kotlin_coroutines_version = "0.24.0"
 
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
@@ -110,7 +110,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     implementation "com.hannesdorfmann.fragmentargs:annotation:$fragmentargs_version"
     kapt "com.hannesdorfmann.fragmentargs:processor:$fragmentargs_version"

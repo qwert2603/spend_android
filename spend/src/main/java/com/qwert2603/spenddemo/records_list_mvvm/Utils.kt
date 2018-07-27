@@ -5,10 +5,7 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.ChangeKind
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.records_list_mvvm.entity.*
-import com.qwert2603.spenddemo.utils.daysEqual
-import com.qwert2603.spenddemo.utils.monthsEqual
-import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.onlyMonth
+import com.qwert2603.spenddemo.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -40,7 +37,7 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
     var monthSpendsCountNotDeleted = 0
     var monthProfitsCountNotDeleted = 0
 
-    val result = ArrayList<RecordsListItem>(this.size * 2 + 1)
+    var result = ArrayList<RecordsListItem>(this.size * 2 + 1)
     val calendarPrev = Calendar.getInstance()
     val calendarIndex = Calendar.getInstance()
     (0..this.lastIndex + 1).forEach { index ->
@@ -138,6 +135,59 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
             RecordResult.TYPE_FAKE -> {
                 // nth
             }
+        }
+    }
+    if (showInfo.addEmptySumsToList() && result.isNotEmpty()) {
+        val calendar = Calendar.getInstance().also {
+            it.timeInMillis = result.first().time()
+            if (showInfo.showMonthSums) {
+                it.add(Calendar.MONTH, 1)
+                it.day = 1
+                it.add(Calendar.DAY_OF_MONTH, -1)
+            }
+        }
+        val endCalendar = Calendar.getInstance().also {
+            it.timeInMillis = result.last().time()
+            if (showInfo.showMonthSums) {
+                it.day = 1
+            }
+            it.add(Calendar.DAY_OF_MONTH, -1)
+        }
+        val notEmptyList = result
+        var notEmptyIndex = 0
+        result = ArrayList(result.size * 3)
+        while (!calendar.daysEqual(endCalendar)) {
+            if (showInfo.showDateSums) {
+                val item = notEmptyList.getOrNull(notEmptyIndex)
+                if (item is DateSumUI && item.date == calendar.time) {
+                    result.add(item)
+                    ++notEmptyIndex
+                } else {
+                    result.add(DateSumUI(
+                            date = calendar.onlyDate(),
+                            showSpends = showInfo.showSpendSum(),
+                            showProfits = showInfo.showProfitSum(),
+                            spends = 0,
+                            profits = 0
+                    ))
+                }
+            }
+            if (showInfo.showMonthSums && calendar.day == 1) {
+                val item = notEmptyList.getOrNull(notEmptyIndex)
+                if (item is MonthSumUI && item.date == calendar.time) {
+                    result.add(item)
+                    ++notEmptyIndex
+                } else {
+                    result.add(MonthSumUI(
+                            date = calendar.onlyMonth(),
+                            showSpends = showInfo.showSpendSum(),
+                            showProfits = showInfo.showProfitSum(),
+                            spends = 0,
+                            profits = 0
+                    ))
+                }
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
     }
     result.add(TotalsUI(

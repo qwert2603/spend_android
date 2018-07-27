@@ -17,7 +17,6 @@ import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import org.jetbrains.anko.coroutines.experimental.asReference
 import ru.terrakok.cicerone.Router
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -45,7 +44,8 @@ class RecordsListViewModel(
 
     private val minuteChangesEvents = SingleLiveEvent<Unit>()
     private val dayChangesEvents = SingleLiveEvent<Unit>()
-    private val timeChangesJob: Job
+
+    private val vmJob: Job = Job()
 
     init {
         showSpends.value = userSettingsRepo.showSpends
@@ -62,7 +62,7 @@ class RecordsListViewModel(
 
         minuteChangesEvents.value = Unit
         dayChangesEvents.value = Unit
-        timeChangesJob = launch(CommonPool) {
+        launch(CommonPool, parent = vmJob) {
             var prevCalendar = Calendar.getInstance()
             while (isActive) {
                 delay(300, TimeUnit.MILLISECONDS)
@@ -346,12 +346,11 @@ class RecordsListViewModel(
     }
 
     fun sendRecords() {
-        val vmRef = asReference()
-        launch(UI) {
-            vmRef().creatingRecordsText.value = Unit
+        launch(UI, parent = vmJob) {
+            creatingRecordsText.value = Unit
             val spends = async(CommonPool) { spendsRepo.getDumpText() }
             val profits = async(CommonPool) { profitsRepo.getDumpText() }
-            vmRef().sendRecords.value = "SPENDS:\n${spends.await()}\n\nPROFITS:\n${profits.await()}"
+            sendRecords.value = "SPENDS:\n${spends.await()}\n\nPROFITS:\n${profits.await()}"
         }
     }
 
@@ -377,6 +376,6 @@ class RecordsListViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        timeChangesJob.cancel()
+        vmJob.cancel()
     }
 }
