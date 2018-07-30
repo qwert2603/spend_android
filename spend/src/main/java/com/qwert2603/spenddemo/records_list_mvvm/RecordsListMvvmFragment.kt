@@ -200,7 +200,7 @@ class RecordsListMvvmFragment : Fragment() {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
                 dialogFragment
                         .also { it.setTargetFragment(this@RecordsListMvvmFragment, requestCode) }
-                        .show(fragmentManager, dialogFragment.toString())
+                        .makeShow()
             }
         }
 
