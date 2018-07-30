@@ -19,7 +19,8 @@ interface SpendsRepo {
 
     /**
      * Spends and Profits merged.
-     * Must be sorted be [RecordResult.date] DESC, [RecordResult.type] DESC, [RecordResult.id] DESC
+     * Must be sorted be [RecordResult.date] DESC, [RecordResult.time] DECS NULLS LAST,
+     * [RecordResult.type] DESC, [RecordResult.id] DESC
      */
     fun getRecordsList(): LiveData<List<RecordResult>>
 

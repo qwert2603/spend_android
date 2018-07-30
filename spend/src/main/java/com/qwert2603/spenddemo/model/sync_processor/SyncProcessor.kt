@@ -38,14 +38,15 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
         Executors.newSingleThreadExecutor().execute {
             while (true) {
                 Thread.sleep(10)
-                if (pendingClearAll.compareAndSet(true, false)) {
-                    localDBExecutor.executeAndWait {
-                        localDataSource.clearAll()
-                        lastUpdateStorage.lastUpdateInfo = LastUpdateInfo(Timestamp(0), IdentifiableLong.NO_ID)
-                    }
-                }
 
                 try {
+                    if (pendingClearAll.compareAndSet(true, false)) {
+                        localDBExecutor.executeAndWait {
+                            localDataSource.clearAll()
+                            lastUpdateStorage.lastUpdateInfo = LastUpdateInfo(Timestamp(0), IdentifiableLong.NO_ID)
+                        }
+                    }
+
                     while (true) {
                         val (lastUpdateTimestamp, lastUpdatedId) = lastUpdateStorage.lastUpdateInfo
                         val items = remoteDBExecutor.executeAndWait {
@@ -57,12 +58,9 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                         }
                         if (items.isEmpty()) break
                         localDBExecutor.executeAndWait {
-                            localDataSource.deleteItems(items
-                                    .filter { it.deleted }
-                                    .map { it.id })
-                            localDataSource.saveChangesFromServer(items
-                                    .filter { !it.deleted }
-                                    .map(r2t))
+                            val (deleted, changed) = items.partition { it.deleted }
+                            localDataSource.deleteItems(deleted.map { it.id })
+                            localDataSource.saveChangesFromServer(changed.map(r2t))
                             lastUpdateStorage.lastUpdateInfo = items.last().let { LastUpdateInfo(it.updated, it.id) }
                         }
                     }
