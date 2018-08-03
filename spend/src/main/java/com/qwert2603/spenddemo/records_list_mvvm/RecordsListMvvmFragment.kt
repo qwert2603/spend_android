@@ -96,7 +96,7 @@ class RecordsListMvvmFragment : Fragment() {
         viewModel.recordsLiveData.observe(this, Observer {
             val (list, diffResult) = it ?: return@Observer
             adapter.list = list
-            diffResult.dispatchToAdapter(adapter)
+            diffResult.dispatchToAdapter(adapter)// todo: check if it is ok after view's recreation.
             recordsListAnimator.pendingCreatedSpendId?.let { createdId ->
                 list.indexOfFirst { it is SpendUI && it.id == createdId }
                         .let { records_RecyclerView.scrollToPosition(it) }
