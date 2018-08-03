@@ -93,7 +93,13 @@ fun <T, U> LiveData<T>.mapBG(mapper: Mapper<T, U>): LiveData<U> {
     return result
 }
 
-fun <T, U, V> combineLatest(liveDataT: LiveData<T>, liveDataU: LiveData<U>, combiner: (T, U) -> V, startT: T? = null, startU: U? = null) = MediatorLiveData<V>()
+fun <T, U, V> combineLatest(
+        liveDataT: LiveData<T>,
+        liveDataU: LiveData<U>,
+        combiner: (T, U) -> V,
+        startT: T? = null,
+        startU: U? = null
+) = MediatorLiveData<V>()
         .apply {
             var lastT: T? = startT
             var lastU: U? = startU
