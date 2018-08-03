@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.Transformations
 import android.content.Intent
 import io.reactivex.functions.BiFunction
@@ -81,15 +82,15 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
 fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
 fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
 
-fun <T, U> LiveData<T>.mapBG(mapper: Mapper<T, U>): LiveData<U> {
+fun <T, U> LiveData<T>.mapBG(suspendMapper: SuspendMapper<T, U>): LiveData<U> {
     val result = MediatorLiveData<U>()
     val coroutineContext = newSingleThreadContext("mapBG ${UUID.randomUUID()}")
-    result.addSource(this) { x ->
-        x ?: return@addSource
+    result.addSource(this, Observer { x ->
+        x ?: return@Observer
         launch(UI) {
-            result.value = withContext(coroutineContext) { mapper(x) }
+            result.value = withContext(coroutineContext) { suspendMapper(x) }
         }
-    }
+    })
     return result
 }
 
@@ -136,17 +137,6 @@ fun <T> combineLatest(liveDatas: List<LiveData<T>>) = MediatorLiveData<List<T>>(
                 }
             }
         }
-
-/** Pair is <prev, current>. */
-fun <T> LiveData<T>.pairWithPrev(): LiveData<Pair<T?, T?>> {
-    val result = MediatorLiveData<Pair<T?, T?>>()
-    var prev: T? = null
-    result.addSource(this) {
-        result.value = prev to it
-        prev = it
-    }
-    return result
-}
 
 object LDUtils {
     fun <T> just(t: T): LiveData<T> = MutableLiveData<T>().also { it.value = t }

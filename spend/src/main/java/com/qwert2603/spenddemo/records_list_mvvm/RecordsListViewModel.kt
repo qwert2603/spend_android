@@ -113,7 +113,7 @@ class RecordsListViewModel(
 
     val recordsLiveData: LiveData<Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> = showInfo
             .switchMap { showInfo -> recordsList.map { it to showInfo } }
-            .mapBG(object : Mapper<Pair<List<RecordResult>, ShowInfo>, Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> {
+            .mapBG(object : SuspendMapper<Pair<List<RecordResult>, ShowInfo>, Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult>> {
                 private var prev: List<RecordsListItem>? = null
                 override suspend fun invoke(t: Pair<List<RecordResult>, ShowInfo>): Pair<List<RecordsListItem>, FastDiffUtils.FastDiffResult> {
                     val recordItemsList = t.first.toRecordItemsList(t.second)
