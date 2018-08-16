@@ -2,6 +2,12 @@ package com.qwert2603.spenddemo.records_list_mvvm.entity
 
 import com.qwert2603.andrlib.model.IdentifiableLong
 
+/*
+todo:
+показывать в списке разделители:
+* "последние 5 минут"
+* "последние 30 дней"
+ */
 interface RecordsListItem : IdentifiableLong {
 
     companion object {
@@ -27,6 +33,16 @@ interface RecordsListItem : IdentifiableLong {
         is DateSumUI -> this.date.time
         is MonthSumUI -> this.date.time
         is TotalsUI -> Long.MIN_VALUE
+        else -> null!!
+    }
+
+    // todo: use it.
+    fun hasTime() = when (this) {
+        is SpendUI -> time != null
+        is ProfitUI -> time != null
+        is DateSumUI -> false
+        is MonthSumUI -> false
+        is TotalsUI -> false
         else -> null!!
     }
 

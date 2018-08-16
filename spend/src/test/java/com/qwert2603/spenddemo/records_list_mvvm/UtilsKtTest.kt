@@ -19,6 +19,7 @@ class UtilsKtTest {
                         kind = "kind",
                         value = 1 + random.nextInt(1000),
                         date = Date() - (random.nextInt(2100)).days,
+                        time = null,
                         changeKind = null
                 )
             }
@@ -31,7 +32,7 @@ class UtilsKtTest {
 
     @Test
     fun toRecordItemsList() {
-        recordResults.toRecordItemsList(RecordsListViewModel.ShowInfo(true, true, true, true))
+        recordResults.toRecordItemsList(RecordsListViewModel.ShowInfo(true, true, true, true, true, true))
     }
 
 }

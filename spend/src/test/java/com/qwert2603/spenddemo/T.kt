@@ -1,10 +1,13 @@
 package com.qwert2603.spenddemo
 
-import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
+import com.qwert2603.spenddemo.utils.days
+import com.qwert2603.spenddemo.utils.minus
 import com.qwert2603.spenddemo.utils.toSqlDate
+import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Test
 import java.io.BufferedReader
@@ -25,11 +28,11 @@ class T {
         val bufferedReader = BufferedReader(FileReader("/home/alex/StudioProjects/SpendDemo/spend/src/test/r.txt"))
         var s: String?
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(
+        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(Observable.just(ServerInfo(
                 "jdbc:postgresql://192.168.1.26:5432/spend",
                 "postgres",
                 "1234"
-        ))
+        ))))
         var bb = false
         var date: Date? = null
         while (true) {
@@ -59,18 +62,18 @@ class T {
 
     @Test
     fun r() {
-        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(
+        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(Observable.just(ServerInfo(
                 "jdbc:postgresql://192.168.1.26:5432/spend",
                 "postgres",
                 "1234"
-        ))
+        ))))
 
         remoteDBFacade.insertMother(
                 kind = "kind",
                 subkind = "subkind",
                 value = 1918.0,
-                date = Date().also { it.time = it.time - 3 * Const.MILLIS_PER_DAY }.toSqlDate(),
-                alex = false
+                date = (Date() - 3.days).toSqlDate(),
+                alex = true
         )
     }
 }

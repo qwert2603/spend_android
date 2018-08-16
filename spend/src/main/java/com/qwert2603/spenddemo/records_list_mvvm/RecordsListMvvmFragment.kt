@@ -66,6 +66,22 @@ class RecordsListMvvmFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        /* todo: fast scroll.
+        https://blog.stylingandroid.com/recyclerview-fastscroll-part-1/
+        https://github.com/danoz73/RecyclerViewFastScroller
+        https://github.com/timusus/RecyclerView-FastScrollll
+        */
+
+        /*todo
+        выделение записей.
+        отображение кол-ва и суммы выделенных записей,
+        удаление выделенных с подтверждением
+         */
+
+        // todo: show sync_status in toolbar's subtitle.
+        // and last full sync time if sync was more than 1 sec ago.
+
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)

@@ -181,7 +181,7 @@ abstract class SpendsDao {
 
 
     @VisibleForTesting
-    @Query("select id from (SELECT id from SpendTable UNION SELECT id from ProfitTable) order by id")
+    @Query("SELECT id FROM (SELECT id from SpendTable UNION SELECT id from ProfitTable) ORDER BY id")
     abstract fun getAllRecordsIds(): List<Long>
 
     @VisibleForTesting

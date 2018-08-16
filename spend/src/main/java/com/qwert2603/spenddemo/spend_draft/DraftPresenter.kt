@@ -46,6 +46,11 @@ class DraftPresenter @Inject constructor(
                                     onDateSelectedIntent
                                             .map { newDate ->
                                                 { r: CreatingSpend ->
+                                                    /* todo:
+                                                    в черновике расхода при выборе даты после now ставить текущее время,
+                                                    если today, а иначе -- no 🕙
+                                                    в диалоге создания дохода -- также
+                                                     */
                                                     r.copy(
                                                             date = newDate.t,
                                                             time = if (newDate.t == null) null else r.time
