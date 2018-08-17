@@ -74,6 +74,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             val recyclerView = holder.itemView.parent as View
             val spendOrigin = spendOrigin
             if (holder is SpendViewHolder && spendOrigin != null) {
+                // todo: если созданная запись отправилась быстро, то начинается новая анимация, и анимация создания сбрасывается.
 
                 /** created item should be above spendOrigin ([DraftViewImpl]) */
                 recyclerView.elevation = holder.itemView.resources.toPx(12).toFloat()
