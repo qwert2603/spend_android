@@ -4,6 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.utils.isToday
 import com.qwert2603.spenddemo.utils.onlyDate
 import com.qwert2603.spenddemo.utils.onlyTime
 import com.qwert2603.spenddemo.utils.secondOfTwo
@@ -46,15 +47,17 @@ class DraftPresenter @Inject constructor(
                                     onDateSelectedIntent
                                             .map { newDate ->
                                                 { r: CreatingSpend ->
-                                                    /* todo:
-                                                    в черновике расхода при выборе даты после now ставить текущее время,
-                                                    если today, а иначе -- no 🕙
-                                                    в диалоге создания дохода -- также
-                                                     */
-                                                    r.copy(
-                                                            date = newDate.t,
-                                                            time = if (newDate.t == null) null else r.time
-                                                    )
+                                                    if (r.date == null && newDate.t?.isToday() == true) {
+                                                        r.copy(
+                                                                date = newDate.t,
+                                                                time = Date().onlyTime()
+                                                        )
+                                                    } else {
+                                                        r.copy(
+                                                                date = newDate.t,
+                                                                time = if (newDate.t == null) null else r.time
+                                                        )
+                                                    }
                                                 }
                                             },
                                     onTimeSelectedIntent

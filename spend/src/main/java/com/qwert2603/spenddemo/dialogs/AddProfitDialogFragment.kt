@@ -154,10 +154,15 @@ class AddProfitDialogFragment : DialogFragment() {
                     dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
-                    selectedDate = data.getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)
-                    if (selectedDate == null) {
+                    val dateResult = data.getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)
+                    if (dateResult == null) {
                         selectedTime = null
+                    } else {
+                        if (this.selectedDate == null && Date(dateResult).isToday()) {
+                            selectedTime = Date().onlyTime().time
+                        }
                     }
+                    selectedDate = dateResult
                     DateTimeTextViews.render(
                             dateTextView = dialogView.date_EditText,
                             timeTextView = dialogView.time_EditText,
