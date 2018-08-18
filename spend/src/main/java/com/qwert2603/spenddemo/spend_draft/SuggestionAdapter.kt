@@ -13,7 +13,6 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-// todo: ArrayAdapter<SpendKind> and show count / last_price.
 class SuggestionAdapter(context: Context, suggestions: List<String>, s: String? = null) : ArrayAdapter<String>(context, 0, suggestions) {
 
     private val search = s?.toLowerCase()
