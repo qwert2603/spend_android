@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
 import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
+import com.qwert2603.spenddemo.model.sync_processor.LastFullSyncStorage
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateInfo
 import com.qwert2603.spenddemo.model.sync_processor.LastUpdateStorage
 import java.sql.Timestamp
@@ -117,6 +118,13 @@ class PrefsCounter(
         prefs.makeEdit { putLong(key, next) }
         return next
     }
+}
+
+class PrefsLastFullSyncStorage(
+        prefs: SharedPreferences,
+        key: String
+) : LastFullSyncStorage {
+    override var millis: Long? by PrefsLongNullable(prefs, key)
 }
 
 class PrefsServerInfo(

@@ -240,7 +240,8 @@ class RecordsListViewModel(
             val longPeriodDays: Int,
             val longPeriodSum: Long,
             val shortPeriodMinutes: Int,
-            val shortPeriodSum: Long
+            val shortPeriodSum: Long,
+            val isSynced: Boolean
     )
 
     val sumsInfo: LiveData<SumsInfo> = combineLatest(longSumPeriodDays, shortSumPeriodMinutes, ::Pair)
@@ -311,14 +312,33 @@ class RecordsListViewModel(
                 } else {
                     LDUtils.just(0L)
                 }
-                combineLatest(listOf(changesCount.map { it.toLong() }, longSum, shortSum))
+                val isSynced = combineLatest(listOf(showProfits, showSpends))
+                        .switchMap {
+                            val showProfits = it[0] == true
+                            val showSpends = it[1] == true
+                            combineLatest(
+                                    liveDataT = if (showProfits || !showSpends) {
+                                        profitsRepo.syncStatus().map { it.isSynced }
+                                    } else {
+                                        LDUtils.just(false)
+                                    },
+                                    liveDataU = if (showSpends || !showProfits) {
+                                        spendsRepo.syncStatus().map { it.isSynced }
+                                    } else {
+                                        LDUtils.just(false)
+                                    },
+                                    combiner = { p, s -> p || s }
+                            )
+                        }
+                combineLatest(listOf(changesCount.map { it.toLong() }, longSum, shortSum, isSynced.map { if (it) 1L else 0L }))
                         .map {
                             SumsInfo(
                                     changesCount = it[0].toInt(),
                                     longPeriodDays = longPeriodDays,
                                     longPeriodSum = it[1],
                                     shortPeriodMinutes = shortPeriodMinutes,
-                                    shortPeriodSum = it[2]
+                                    shortPeriodSum = it[2],
+                                    isSynced = it[3] != 0L
                             )
                         }
             }

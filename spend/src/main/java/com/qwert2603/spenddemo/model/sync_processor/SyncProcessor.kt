@@ -2,14 +2,18 @@ package com.qwert2603.spenddemo.model.sync_processor
 
 import android.arch.lifecycle.MutableLiveData
 import com.qwert2603.andrlib.model.IdentifiableLong
+import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.ChangeKind
+import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.utils.executeAndWait
+import com.qwert2603.spenddemo.utils.switchMap
 import java.sql.Timestamp
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
@@ -19,6 +23,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
         private val remoteDataSource: RemoteDataSource<T, R>,
         private val localDataSource: LocalDataSource<T, L>,
         private val changeIdCounter: IdCounter,
+        private val lastFullSyncStorage: LastFullSyncStorage,
         private val r2t: R.() -> T,
         private val l2t: L.() -> T,
         private val t2l: T.(change: RecordChange?) -> L
@@ -30,7 +35,24 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
 
     val syncingItemIds = MutableLiveData<Set<Long>>()
 
+    private val lastFullSyncMillis = MutableLiveData<Long>()
+
+    private val syncStatusExecutor = Executors.newSingleThreadScheduledExecutor()
+
+    val syncStatus = lastFullSyncMillis
+            .switchMap { millis ->
+                lastFullSyncStorage.millis = millis
+                val mutableLiveData = MutableLiveData<FullSyncStatus>()
+                mutableLiveData.postValue(FullSyncStatus(millis, millis != null && millis > System.currentTimeMillis() - Const.MILLIS_PER_SECOND))
+                syncStatusExecutor.schedule({ mutableLiveData.postValue(FullSyncStatus(millis, false)) }, 1, TimeUnit.SECONDS)
+                mutableLiveData
+            }
+
     private val pendingClearAll = AtomicBoolean(false)
+
+    init {
+        lastFullSyncMillis.postValue(lastFullSyncStorage.millis)
+    }
 
     fun start() {
         if (!E.env.syncWithServer) return
@@ -44,6 +66,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                         localDBExecutor.executeAndWait {
                             localDataSource.clearAll()
                             lastUpdateStorage.lastUpdateInfo = LastUpdateInfo(Timestamp(0), IdentifiableLong.NO_ID)
+                            lastFullSyncMillis.postValue(null)
                         }
                     }
 
@@ -56,7 +79,10 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                                     count = 50
                             )
                         }
-                        if (items.isEmpty()) break
+                        if (items.isEmpty()) {
+                            lastFullSyncMillis.postValue(System.currentTimeMillis())
+                            break
+                        }
                         localDBExecutor.executeAndWait {
                             val (deleted, changed) = items.partition { it.deleted }
                             localDataSource.deleteItems(deleted.map { it.id })

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
+import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.toProfit
 import com.qwert2603.spenddemo.model.local_db.LocalDB
@@ -67,6 +68,7 @@ class ProfitsRepoImpl @Inject constructor(
                 override fun onItemEdited(t: Profit, changeId: Long) = localDB.profitsDao().onItemEdited(t, changeId)
             },
             changeIdCounter = PrefsCounter(prefs = prefs, key = "last_change_id"),
+            lastFullSyncStorage = PrefsLastFullSyncStorage(prefs, "last_full_sync"),
             r2t = RemoteProfit::toProfit,
             l2t = ProfitTable::toProfit,
             t2l = Profit::toProfitTable
@@ -103,6 +105,8 @@ class ProfitsRepoImpl @Inject constructor(
     override fun locallyCreatedProfits(): SingleLiveEvent<Profit> = locallyCreatedProfits
 
     override fun syncingProfitIds(): LiveData<Set<Long>> = syncProcessor.syncingItemIds
+
+    override fun syncStatus(): LiveData<FullSyncStatus> = syncProcessor.syncStatus
 
     override suspend fun getDumpText(): String = localDB.profitsDao()
             .getAllProfitsList()

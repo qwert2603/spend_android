@@ -9,6 +9,7 @@ import android.text.Html
 import android.view.LayoutInflater
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.utils.Const
 import kotlinx.android.synthetic.main.dialog_about.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,7 +24,7 @@ class AppInfoDialogFragment : DialogFragment() {
                 BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE,
                 SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
-                SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
+                SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
                 BuildConfig.BIULD_HASH
         ))
         return AlertDialog.Builder(requireContext())

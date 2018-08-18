@@ -5,6 +5,7 @@ import android.content.Context
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.entity.toSpend
 import com.qwert2603.spenddemo.model.local_db.LocalDB
@@ -67,6 +68,7 @@ class SpendsRepoImpl @Inject constructor(
                 override fun onItemEdited(t: Spend, changeId: Long) = localDB.spendsDao().onItemEdited(t, changeId)
             },
             changeIdCounter = PrefsCounter(prefs = prefs, key = "last_change_id"),
+            lastFullSyncStorage = PrefsLastFullSyncStorage(prefs, "last_full_sync"),
             r2t = RemoteSpend::toSpend,
             l2t = SpendTable::toSpend,
             t2l = Spend::toSpendTable
@@ -105,6 +107,8 @@ class SpendsRepoImpl @Inject constructor(
     override fun locallyCreatedSpends(): SingleLiveEvent<Spend> = locallyCreatedSpends
 
     override fun syncingSpendIds(): LiveData<Set<Long>> = syncProcessor.syncingItemIds
+
+    override fun syncStatus(): LiveData<FullSyncStatus> = syncProcessor.syncStatus
 
     override suspend fun getDumpText(): String = localDB.spendsDao()
             .getAllSpendsList()

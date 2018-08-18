@@ -88,5 +88,8 @@
     <string name="now_text">сейчас</string>
     <string name="no_time_text">без&#9719;</string>
     <string name="spend_kind_description_no_time_format">последнее: %1$s @ %2$s</string>
+    <string name="last_sync_time_format">%s в %s</string>
+    <string name="text_last_full_spends_sync">последняя полная синхронизация расходов:</string>
+    <string name="text_last_full_profits_sync">последняя полная синхронизация доходов:</string>
 
 </resources>

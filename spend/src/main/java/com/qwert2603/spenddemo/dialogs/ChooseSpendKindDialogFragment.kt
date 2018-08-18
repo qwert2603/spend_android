@@ -43,6 +43,7 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val kinds = spendKindsRepo.getAllKinds()
 
+        // todo: search.
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.choose_kind_text)
                 .setSingleChoiceItems(SpendKindsAdapter(requireContext(), kinds), -1) { _, which ->

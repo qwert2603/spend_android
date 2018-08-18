@@ -28,13 +28,13 @@ class DeleteProfitDialogFragment : DialogFragment() {
             AlertDialog.Builder(requireContext())
                     .setTitle(R.string.delete_profit_text)
                     .setMessage(text)
-                    .setPositiveButton(R.string.text_delete, { _, _ ->
+                    .setPositiveButton(R.string.text_delete) { _, _ ->
                         targetFragment!!.onActivityResult(
                                 targetRequestCode,
                                 Activity.RESULT_OK,
                                 Intent().putExtra(ID_KEY, id)
                         )
-                    })
+                    }
                     .setNegativeButton(R.string.text_cancel, null)
                     .create()
 }

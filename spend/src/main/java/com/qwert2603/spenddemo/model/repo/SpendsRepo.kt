@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.model.repo
 
 import android.arch.lifecycle.LiveData
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.utils.SingleLiveEvent
@@ -27,6 +28,8 @@ interface SpendsRepo {
     fun locallyCreatedSpends(): SingleLiveEvent<Spend>
 
     fun syncingSpendIds(): LiveData<Set<Long>>
+
+    fun syncStatus(): LiveData<FullSyncStatus>
 
     suspend fun getDumpText(): String
 

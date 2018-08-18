@@ -142,8 +142,7 @@ class RecordsListMvvmFragment : Fragment() {
                 is SpendUI -> EditSpendDialogFragmentBuilder(it.date.time, it.id, it.kind, it.value)
                         .also { builder -> if (it.time != null) builder.time(it.time.time) }
                         .build()
-                        .also { it.setTargetFragment(this, REQUEST_EDIT_SPEND) }
-                        .makeShow()
+                        .makeShow(REQUEST_EDIT_SPEND)
                 is ProfitUI -> AddProfitDialogFragmentBuilder(false)
                         .id(it.id)
                         .kind(it.kind)
@@ -151,8 +150,7 @@ class RecordsListMvvmFragment : Fragment() {
                         .date(it.date.time)
                         .also { builder -> if (it.time != null) builder.time(it.time.time) }
                         .build()
-                        .also { it.setTargetFragment(this, REQUEST_EDIT_PROFIT) }
-                        .makeShow()
+                        .makeShow(REQUEST_EDIT_PROFIT)
             }
         }
         adapter.itemLongClicks = {
@@ -164,16 +162,14 @@ class RecordsListMvvmFragment : Fragment() {
                                         " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
                                         "\n${it.kind}\n${it.value.toLong().toPointedString()}"
                         )
-                        .also { it.setTargetFragment(this, REQUEST_DELETE_SPEND) }
-                        .makeShow()
+                        .makeShow(REQUEST_DELETE_SPEND)
                 is ProfitUI -> DeleteProfitDialogFragmentBuilder
                         .newDeleteProfitDialogFragment(it.id,
                                 it.date.toFormattedString(resources) +
                                         " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
                                         "\n${it.kind}\n${it.value.toLong().toPointedString()}"
                         )
-                        .also { it.setTargetFragment(this, REQUEST_DELETE_PROFIT) }
-                        .makeShow()
+                        .makeShow(REQUEST_DELETE_PROFIT)
             }
         }
 
@@ -186,6 +182,14 @@ class RecordsListMvvmFragment : Fragment() {
                             0 -> getString(R.string.no_changes_text)
                             else -> getString(R.string.changes_count_format, it)
                         }
+                    }
+            val isSyncedText = sumsInfo.isSynced
+                    .takeIf { E.env.syncWithServer }
+                    ?.let {
+                        getString(
+                                if (it) R.string.text_synced
+                                else R.string.text_not_sync
+                        )
                     }
             val longSumText = sumsInfo.longPeriodDays
                     .takeIf { it > 0 }
@@ -205,7 +209,7 @@ class RecordsListMvvmFragment : Fragment() {
                                 sumsInfo.shortPeriodSum.toPointedString()
                         )
                     }
-            toolbar.subtitle = listOfNotNull(longSumText, shortSumText, changesCountText)
+            toolbar.subtitle = listOfNotNull(longSumText, shortSumText, changesCountText, isSyncedText)
                     .reduceEmptyToNull { acc, s -> "$acc    $s" }
         })
         viewModel.showIds.observe(this, Observer { adapter.showIds = it == true })
@@ -215,12 +219,12 @@ class RecordsListMvvmFragment : Fragment() {
         draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
                 dialogFragment
-                        .also { it.setTargetFragment(this@RecordsListMvvmFragment, requestCode) }
-                        .makeShow()
+                        .makeShow(requestCode)
             }
         }
 
         toolbar.title = "${getString(R.string.app_name)} ${E.env.titleSuffix()}"
+        if (E.env.syncWithServer) toolbar.setOnClickListener { LastFullSyncDialog().makeShow() }
 
         Observable
                 .combineLatest(
@@ -384,8 +388,7 @@ class RecordsListMvvmFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.new_profit -> AddProfitDialogFragmentBuilder.newAddProfitDialogFragment(true)
-                    .also { it.setTargetFragment(this, REQUEST_ADD_PROFIT) }
-                    .makeShow()
+                    .makeShow(REQUEST_ADD_PROFIT)
             R.id.add_stub_spends -> viewModel.addStubSpends()
             R.id.add_stub_profits -> viewModel.addStubProfits()
             R.id.about -> AppInfoDialogFragment().makeShow()
@@ -398,18 +401,17 @@ class RecordsListMvvmFragment : Fragment() {
             }
             R.id.short_sum -> ChooseShortSumPeriodDialogBuilder
                     .newChooseShortSumPeriodDialog(viewModel.shortSumPeriodMinutes.value!!)
-                    .also { it.setTargetFragment(this, REQUEST_CHOOSE_SHORT_SUM_PERIOD) }
-                    .makeShow()
+                    .makeShow(REQUEST_CHOOSE_SHORT_SUM_PERIOD)
             R.id.long_sum -> ChooseLongSumPeriodDialogBuilder
                     .newChooseLongSumPeriodDialog(viewModel.longSumPeriodDays.value!!)
-                    .also { it.setTargetFragment(this, REQUEST_CHOOSE_LONG_SUM_PERIOD) }
-                    .makeShow()
+                    .makeShow(REQUEST_CHOOSE_LONG_SUM_PERIOD)
             R.id.server_info -> ServerInfoDialog().makeShow()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun DialogFragment.makeShow() = this
+    private fun DialogFragment.makeShow(requestCode: Int? = null) = this
+            .also { if (requestCode != null) it.setTargetFragment(this@RecordsListMvvmFragment, requestCode) }
             .show(this@RecordsListMvvmFragment.fragmentManager, null)
             .also { (this@RecordsListMvvmFragment.context as KeyboardManager).hideKeyboard() }
 }

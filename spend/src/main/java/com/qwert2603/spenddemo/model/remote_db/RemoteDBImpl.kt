@@ -33,6 +33,7 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
     init {
         Class.forName(org.postgresql.Driver::class.java.name)
+        DriverManager.setLoginTimeout(5)
         serverInfoChanges.subscribe {
             serverInfo = it
             connection = null
@@ -75,6 +76,7 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
 
         return preparedStatements[sql]
                 ?: connection.prepareStatement(sql)
+                        .also { it.queryTimeout = 5 }
                         .also { preparedStatements[sql] = it }
     }
 

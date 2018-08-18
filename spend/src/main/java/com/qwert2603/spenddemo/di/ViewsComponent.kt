@@ -14,4 +14,5 @@ interface ViewsComponent {
     fun inject(serverInfoDialog: ServerInfoDialog)
     fun inject(chooseLongSumPeriodDialog: ChooseLongSumPeriodDialog)
     fun inject(chooseShortSumPeriodDialog: ChooseShortSumPeriodDialog)
+    fun inject(lastFullSyncDialog: LastFullSyncDialog)
 }
