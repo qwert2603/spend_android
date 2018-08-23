@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.arch.lifecycle.Observer
+import android.content.res.Resources
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
-import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.toFormattedString
 import kotlinx.android.synthetic.main.dialog_last_full_sync.view.*
@@ -27,8 +27,6 @@ class LastFullSyncDialog : DialogFragment() {
     lateinit var spendsRepo: SpendsRepo
     @Inject
     lateinit var profitsRepo: ProfitsRepo
-    @Inject
-    lateinit var userSettingsRepo: UserSettingsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +42,12 @@ class LastFullSyncDialog : DialogFragment() {
         profitsRepo.syncStatus().observe(this@LastFullSyncDialog, Observer {
             view.profitsLastSyncTime_TextView.text = getDateString(it!!)
         })
+        spendsRepo.getChangesCount().observe(this@LastFullSyncDialog, Observer {
+            view.spendsLocalChangesCount_TextView.text = it!!.toChangesCount(resources)
+        })
+        profitsRepo.getChangesCount().observe(this@LastFullSyncDialog, Observer {
+            view.profitsLocalChangesCount_TextView.text = it!!.toChangesCount(resources)
+        })
         return AlertDialog.Builder(requireContext())
                 .setView(view)
                 .setPositiveButton(R.string.text_ok, null)
@@ -51,12 +55,17 @@ class LastFullSyncDialog : DialogFragment() {
     }
 
     private fun getDateString(fullSyncStatus: FullSyncStatus) = when {
-        fullSyncStatus.millis == null -> getString(R.string.text_not_sync)
-        fullSyncStatus.millis > System.currentTimeMillis() - 1 * LibConst.MILLIS_PER_SECOND -> getString(R.string.now_text)
+        fullSyncStatus.millis == null -> getString(R.string.text_never)
+        fullSyncStatus.isSynced -> getString(R.string.now_text)
         else -> getString(
                 R.string.last_sync_time_format,
                 Date(fullSyncStatus.millis).toFormattedString(resources),
                 SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(Date(fullSyncStatus.millis))
         )
+    }
+
+    private fun Int.toChangesCount(resources: Resources) = when (this) {
+        0 -> resources.getString(R.string.symbol_empty_set)
+        else -> toString()
     }
 }

@@ -6,16 +6,25 @@
     android:orientation="vertical"
     android:padding="12dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_last_full_sync"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/text_last_full_spends_sync"
+            android:text="@string/text_show_spends"
+            android:textColor="@color/spend"
             android:textSize="16sp" />
 
         <TextView
@@ -39,7 +48,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/text_last_full_profits_sync"
+            android:text="@string/text_show_profits"
+            android:textColor="@color/profit"
             android:textSize="16sp" />
 
         <TextView
@@ -50,6 +60,65 @@
             android:layout_weight="1"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            tools:text="@string/text_not_sync" />
+            tools:text="@string/now_text" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/text_local_changes_count"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/text_show_spends"
+            android:textColor="@color/spend"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/spendsLocalChangesCount_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="4" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/text_show_profits"
+            android:textColor="@color/profit"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/profitsLocalChangesCount_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="@string/symbol_empty_set" />
+    </LinearLayout>
+
 </LinearLayout>

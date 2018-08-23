@@ -89,7 +89,8 @@
     <string name="no_time_text">без&#9719;</string>
     <string name="spend_kind_description_no_time_format">последнее: %1$s @ %2$s</string>
     <string name="last_sync_time_format">%s в %s</string>
-    <string name="text_last_full_spends_sync">последняя полная синхронизация расходов:</string>
-    <string name="text_last_full_profits_sync">последняя полная синхронизация доходов:</string>
+    <string name="text_last_full_sync">&#10003; последняя полная синхронизация</string>
+    <string name="text_local_changes_count">&#916; количество локальных изменений</string>
+    <string name="text_never">никогда</string>
 
 </resources>

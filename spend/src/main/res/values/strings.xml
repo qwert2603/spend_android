@@ -105,10 +105,12 @@
     <string name="variant_sum_format" formatted="true" translatable="false">&#931; = %s</string>
     <string name="text_variant_sum_loading" translatable="false">~</string>
 
-    <string name="text_synced" translatable="false">synced</string> <!--todo: too long-->
-    <string name="text_not_sync" translatable="false">not synced</string>
+    <string name="text_synced" translatable="false">&#10003;</string>
+    <string name="text_not_sync" translatable="false">!&#10003;</string>
+    <string name="text_never">never</string>
     <string name="last_sync_time_format" formatted="true">%s at %s</string>
-    <string name="text_last_full_spends_sync">last full spends sync:</string>
-    <string name="text_last_full_profits_sync">last full profits sync:</string>
+    <string name="text_last_full_sync">&#10003; last full sync</string>
+    <string name="text_local_changes_count">&#916; local changes count</string>
+    <string name="symbol_empty_set" translatable="false">&#8709;</string>
 
 </resources>
