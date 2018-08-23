@@ -24,6 +24,10 @@ class DeleteSpendDialogFragment : DialogFragment() {
     @Arg
     var text: String = ""
 
+    // todo: auto-update on spend-change with highlighting.
+    // todo: close dialog, if spend is deleted on server.
+
+    // in DeleteProfitDialogFragment too.
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
             AlertDialog.Builder(requireContext())
                     .setTitle(R.string.delete_spend_text)
