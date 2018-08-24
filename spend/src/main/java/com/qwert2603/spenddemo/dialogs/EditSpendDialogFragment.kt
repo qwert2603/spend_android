@@ -55,6 +55,11 @@ class EditSpendDialogFragment : DialogFragment() {
     private var selectedDate by BundleLong(SELECTED_DATE_KEY) { arguments!! }
     private var selectedTime by BundleLongNullable(SELECTED_TIME_KEY) { arguments!! }
 
+    // todo: auto-update on spend-change with highlighting.
+    // todo: close dialog, if spend is deleted on server.
+
+    // in AddProfitDialogFragment when editing too.
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
