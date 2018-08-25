@@ -6,6 +6,8 @@ import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.Spend
 import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.utils.SingleLiveEvent
+import com.qwert2603.spenddemo.utils.Wrapper
+import io.reactivex.Observable
 
 interface SpendsRepo {
     fun addSpend(creatingSpend: CreatingSpend)
@@ -24,6 +26,8 @@ interface SpendsRepo {
      * [RecordResult.type] DESC, [RecordResult.id] DESC
      */
     fun getRecordsList(): LiveData<List<RecordResult>>
+
+    fun getSpend(id: Long): Observable<Wrapper<Spend>>
 
     fun locallyCreatedSpends(): SingleLiveEvent<Spend>
 

@@ -56,6 +56,8 @@ inline fun <T> Iterable<T>.sumByLong(crossinline selector: (T) -> Long): Long {
     return sum
 }
 
+fun Int.toPointedString() = toLong().toPointedString()
+
 fun Long.toPointedString(): String {
     val negative = this < 0
     val absString = this.absoluteValue.toString().reversed()

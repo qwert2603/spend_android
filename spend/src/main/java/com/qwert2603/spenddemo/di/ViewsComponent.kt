@@ -15,4 +15,6 @@ interface ViewsComponent {
     fun inject(chooseLongSumPeriodDialog: ChooseLongSumPeriodDialog)
     fun inject(chooseShortSumPeriodDialog: ChooseShortSumPeriodDialog)
     fun inject(lastFullSyncDialog: LastFullSyncDialog)
+    fun inject(deleteSpendDialogFragment: DeleteSpendDialogFragment)
+    fun inject(deleteProfitDialogFragment: DeleteProfitDialogFragment)
 }

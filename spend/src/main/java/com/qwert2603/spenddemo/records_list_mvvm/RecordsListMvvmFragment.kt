@@ -33,7 +33,6 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -154,21 +153,12 @@ class RecordsListMvvmFragment : Fragment() {
             }
         }
         adapter.itemLongClicks = {
-            val timeFormat = SimpleDateFormat(com.qwert2603.spenddemo.utils.Const.TIME_FORMAT_PATTERN, Locale.getDefault())
             when (it) {
                 is SpendUI -> DeleteSpendDialogFragmentBuilder
-                        .newDeleteSpendDialogFragment(it.id,
-                                it.date.toFormattedString(resources) +
-                                        " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
-                                        "\n${it.kind}\n${it.value.toLong().toPointedString()}"
-                        )
+                        .newDeleteSpendDialogFragment(it.id)
                         .makeShow(REQUEST_DELETE_SPEND)
                 is ProfitUI -> DeleteProfitDialogFragmentBuilder
-                        .newDeleteProfitDialogFragment(it.id,
-                                it.date.toFormattedString(resources) +
-                                        " ${it.time?.let { timeFormat.format(it) } ?: ""}" +
-                                        "\n${it.kind}\n${it.value.toLong().toPointedString()}"
-                        )
+                        .newDeleteProfitDialogFragment(it.id)
                         .makeShow(REQUEST_DELETE_PROFIT)
             }
         }

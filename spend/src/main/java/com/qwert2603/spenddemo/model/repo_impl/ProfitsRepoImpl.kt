@@ -21,6 +21,7 @@ import com.qwert2603.spenddemo.model.sync_processor.LocalDataSource
 import com.qwert2603.spenddemo.model.sync_processor.RemoteDataSource
 import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
 import com.qwert2603.spenddemo.utils.*
+import io.reactivex.Observable
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -101,6 +102,12 @@ class ProfitsRepoImpl @Inject constructor(
     override fun removeAllProfits() {
         syncProcessor.clear()
     }
+
+    override fun getProfit(id: Long): Observable<Wrapper<Profit>> = localDB.profitsDao()
+            .getProfit(id)
+            .onBackpressureLatest()
+            .toObservable()
+            .map { it.firstOrNull()?.toProfit().wrap() }
 
     override fun locallyCreatedProfits(): SingleLiveEvent<Profit> = locallyCreatedProfits
 

@@ -21,6 +21,7 @@ import com.qwert2603.spenddemo.model.sync_processor.LocalDataSource
 import com.qwert2603.spenddemo.model.sync_processor.RemoteDataSource
 import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
 import com.qwert2603.spenddemo.utils.*
+import io.reactivex.Observable
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -103,6 +104,12 @@ class SpendsRepoImpl @Inject constructor(
     }
 
     override fun getRecordsList(): LiveData<List<RecordResult>> = localDB.spendsDao().getSpendsAndProfits()
+
+    override fun getSpend(id: Long): Observable<Wrapper<Spend>> = localDB.spendsDao()
+            .getSpend(id)
+            .onBackpressureLatest()
+            .toObservable()
+            .map { it.firstOrNull()?.toSpend().wrap() }
 
     override fun locallyCreatedSpends(): SingleLiveEvent<Spend> = locallyCreatedSpends
 

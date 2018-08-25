@@ -92,5 +92,7 @@
     <string name="text_last_full_sync">&#10003; последняя полная синхронизация</string>
     <string name="text_local_changes_count">&#916; количество локальных изменений</string>
     <string name="text_never">никогда</string>
+    <string name="text_deleted_while_deleted_profit">Удаляемый расход был удален на сервере</string>
+    <string name="text_deleted_while_deleted_spend">Удаляемый доход был удален на сервере</string>
 
 </resources>

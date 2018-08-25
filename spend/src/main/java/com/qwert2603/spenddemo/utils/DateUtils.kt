@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.utils
 
 import android.content.res.Resources
+import android.support.annotation.MainThread
 import com.qwert2603.spenddemo.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,6 +38,8 @@ fun Date.isYesterday() = this.onlyDate() == Date().onlyDate() - 1.days
 fun Date.isTomorrow() = this.onlyDate() == Date().onlyDate() + 1.days
 
 private val dateFormat = SimpleDateFormat(Const.DATE_FORMAT_PATTERN, Locale.getDefault())
+
+@MainThread
 fun Date.toFormattedString(resources: Resources): String = when {
     isToday() -> resources.getString(R.string.today_text)
     isYesterday() -> resources.getString(R.string.yesterday_text)

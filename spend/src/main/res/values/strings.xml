@@ -112,5 +112,7 @@
     <string name="text_last_full_sync">&#10003; last full sync</string>
     <string name="text_local_changes_count">&#916; local changes count</string>
     <string name="symbol_empty_set" translatable="false">&#8709;</string>
+    <string name="text_deleted_while_deleted_profit">deleting profit was deleted on server</string>
+    <string name="text_deleted_while_deleted_spend">deleting spend was deleted on server</string>
 
 </resources>

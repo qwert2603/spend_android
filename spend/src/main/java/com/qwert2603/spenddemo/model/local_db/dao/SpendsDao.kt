@@ -11,6 +11,7 @@ import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.local_db.tables.SpendKindTable
 import com.qwert2603.spenddemo.model.local_db.tables.SpendTable
 import com.qwert2603.spenddemo.model.local_db.tables.toSpendTable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.*
 
@@ -27,13 +28,12 @@ abstract class SpendsDao {
         """)
     abstract fun getSpendsAndProfits(): LiveData<List<RecordResult>>
 
+    @Query("SELECT * FROM SpendTable WHERE id=:id")
+    abstract fun getSpend(id: Long): Flowable<List<SpendTable>>
+
     @Transaction
     @Query("SELECT * FROM SpendTable ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC")
     abstract fun getAllSpendsList(): List<SpendTable>
-
-    @Transaction
-    @Query("SELECT * FROM SpendTable WHERE id = :id")
-    abstract fun getSpend(id: Long): SpendTable?
 
     @Query("""
         SELECT SUM(s.value)
@@ -74,7 +74,7 @@ abstract class SpendsDao {
     /** add or update Spend. */
     @Transaction
     open fun saveSpend(spend: SpendTable) {
-        val prevSpend = getSpend(spend.id)
+        val prevSpend = doGetSpend(spend.id)
         doSaveSpend(spend)
         if (prevSpend != null && spend.kind != prevSpend.kind) updateKind(prevSpend.kind)
         updateKind(spend.kind)
@@ -82,7 +82,7 @@ abstract class SpendsDao {
 
     @Transaction
     open fun deleteSpend(id: Long) {
-        val spend = getSpend(id) ?: return
+        val spend = doGetSpend(id) ?: return
         doDeleteSpend(id)
         updateKind(spend.kind)
     }
@@ -95,7 +95,7 @@ abstract class SpendsDao {
     @Transaction
     open fun locallyDeleteSpend(id: Long, changeId: Long) {
         doLocallyDeleteSpend(id, changeId)
-        updateKind(getSpend(id)!!.kind)
+        updateKind(doGetSpend(id)!!.kind)
     }
 
     private fun updateKind(kind: String) {
@@ -141,6 +141,8 @@ abstract class SpendsDao {
     """)
     abstract fun getAllLocallyChangedSpends(): Single<List<SpendChange>>
 
+    @Query("SELECT * FROM SpendTable WHERE id = :id")
+    protected abstract fun doGetSpend(id: Long): SpendTable?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     protected abstract fun doSaveSpend(spend: SpendTable)
@@ -205,7 +207,7 @@ abstract class SpendsDao {
     @Transaction
     open fun saveChangesFromServer(spends: List<Spend>) {
         spends.forEach {
-            if (getSpend(it.id)?.change == null) {
+            if (doGetSpend(it.id)?.change == null) {
                 saveSpend(it.toSpendTable(null))
             }
         }
@@ -213,7 +215,7 @@ abstract class SpendsDao {
 
     @Transaction
     open fun onItemEdited(spend: Spend, changeId: Long) {
-        val changeKind = if (getSpend(spend.id)!!.change?.changeKind == ChangeKind.INSERT) {
+        val changeKind = if (doGetSpend(spend.id)!!.change?.changeKind == ChangeKind.INSERT) {
             ChangeKind.INSERT
         } else {
             ChangeKind.UPDATE

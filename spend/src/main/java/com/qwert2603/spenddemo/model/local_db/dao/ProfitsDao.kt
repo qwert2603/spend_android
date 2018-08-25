@@ -7,19 +7,19 @@ import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.local_db.tables.ProfitTable
 import com.qwert2603.spenddemo.model.local_db.tables.toProfitTable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import java.util.*
 
 @Dao
 abstract class ProfitsDao {
 
+    @Query("SELECT * FROM ProfitTable WHERE id=:id")
+    abstract fun getProfit(id: Long): Flowable<List<ProfitTable>>
+
     @Transaction
     @Query("SELECT * FROM ProfitTable ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, id DESC")
     abstract fun getAllProfitsList(): List<ProfitTable>
-
-    @Transaction
-    @Query("SELECT * FROM ProfitTable WHERE id = :id")
-    abstract fun getProfit(id: Long): ProfitTable?
 
     @Insert
     abstract fun addProfits(profits: List<ProfitTable>)
@@ -80,7 +80,7 @@ abstract class ProfitsDao {
     @Transaction
     open fun saveChangesFromServer(profits: List<Profit>) {
         profits.forEach {
-            if (getProfit(it.id)?.change == null) {
+            if (doGetProfit(it.id)?.change == null) {
                 saveProfit(it.toProfitTable(null))
             }
         }
@@ -88,11 +88,14 @@ abstract class ProfitsDao {
 
     @Transaction
     open fun onItemEdited(profit: Profit, changeId: Long) {
-        val changeKind = if (getProfit(profit.id)!!.change?.changeKind == ChangeKind.INSERT) {
+        val changeKind = if (doGetProfit(profit.id)!!.change?.changeKind == ChangeKind.INSERT) {
             ChangeKind.INSERT
         } else {
             ChangeKind.UPDATE
         }
         saveProfit(profit.toProfitTable(RecordChange(changeId, changeKind)))
     }
+
+    @Query("SELECT * FROM ProfitTable WHERE id = :id")
+    protected abstract fun doGetProfit(id: Long): ProfitTable?
 }
