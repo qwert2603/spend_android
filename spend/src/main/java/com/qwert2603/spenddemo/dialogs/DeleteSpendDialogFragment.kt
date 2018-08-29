@@ -25,7 +25,6 @@ import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_delete.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -77,8 +76,9 @@ class DeleteSpendDialogFragment : DialogFragment() {
 
     override fun onResume() {
         val spendChanges = spendsRepo.getSpend(id)
-                .subscribeOn(Schedulers.newThread())
-                .share()
+                .distinctUntilChanged()
+                .replay(1)
+                .refCount()
         spendChanges
                 .filter { it.t == null }
                 .firstOrError()

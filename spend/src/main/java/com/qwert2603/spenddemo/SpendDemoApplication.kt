@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo
 
 import android.app.Application
+import android.os.Looper
 import com.facebook.stetho.Stetho
 import com.qwert2603.andrlib.base.mvi.load_refresh.list.listModelChangerInstance
 import com.qwert2603.andrlib.base.mvi.load_refresh.lrModelChangerInstance
@@ -10,6 +11,8 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.di.DIManager
 import com.qwert2603.spenddemo.env.E
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
 
 class SpendDemoApplication : Application() {
@@ -28,6 +31,10 @@ class SpendDemoApplication : Application() {
                 LogUtils.e("RxJavaPlugins.setErrorHandler", cause)
                 cause = cause.cause
             }
+        }
+
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler {
+            AndroidSchedulers.from(Looper.getMainLooper(), true)
         }
 
         lrModelChangerInstance = LRModelChangerImpl()
