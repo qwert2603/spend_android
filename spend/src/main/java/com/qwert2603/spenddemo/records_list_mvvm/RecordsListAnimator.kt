@@ -3,18 +3,16 @@ package com.qwert2603.spenddemo.records_list_mvvm
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
-import android.graphics.Color
 import android.graphics.Path
 import android.graphics.Rect
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.spend_draft.DraftViewImpl
+import com.qwert2603.spenddemo.utils.AnimatorUtils
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
 import kotlinx.android.synthetic.main.item_spend.view.*
@@ -26,7 +24,6 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
         fun getDateGlobalVisibleRect(): Rect
         fun getKindGlobalVisibleRect(): Rect
         fun getValueGlobalVisibleRect(): Rect
-        fun getTimeGlobalVisibleRect(): Rect?
     }
 
     // pair is <Animator, cancel_action>.
@@ -47,29 +44,13 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             val animators = mutableListOf<Animator>()
             val resetActions = mutableListOf<() -> Unit>()
 
-            val prevBackground = holder.itemView.background
-            val resetHighlightAction = { holder.itemView.background = prevBackground }
-            val highlightAnimator = ValueAnimator.ofFloat(0f, 1f)
-                    .also {
-                        val th = 0.25f
-                        it.setInterpolator {
-                            when {
-                                it < th -> it / th
-                                it > 1f - th -> (1f - it) / th
-                                else -> 1f
-                            }
-                        }
-                        val color = holder.itemView.resources.color(R.color.highlight_created_record)
-                        fun Float.makeColor(): Int {
-                            val alpha = (Color.alpha(color) * this).toInt()
-                            return color and 0x00_ff_ff_ff or (alpha shl 24)
-                        }
-                        it.addUpdateListener { holder.itemView.setBackgroundColor((it.animatedValue as Float).makeColor()) }
-                        it.duration = 2000
-                        it.doOnEnd(resetHighlightAction)
-                    }
-            animators.add(highlightAnimator)
-            resetActions.add(resetHighlightAction)
+            AnimatorUtils.animateHighlight(
+                    view = holder.itemView,
+                    colorRes = R.color.highlight_created_record
+            ).also {
+                animators.add(it.animator)
+                resetActions.add(it.resetAction)
+            }
 
             val recyclerView = holder.itemView.parent as View
             val spendOrigin = spendOrigin
@@ -79,10 +60,9 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
                 /** created item should be above spendOrigin ([DraftViewImpl]) */
                 recyclerView.elevation = holder.itemView.resources.toPx(12).toFloat()
 
-                val timeGlobalVisibleRect = (spendOrigin.getTimeGlobalVisibleRect() ?: spendOrigin.getDateGlobalVisibleRect())
                 listOf(
                         createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), holder.itemView.date_TextView, 100),
-                        createTranslationAnimator(timeGlobalVisibleRect, holder.itemView.time_TextView, 130),
+                        createTranslationAnimator(spendOrigin.getDateGlobalVisibleRect(), holder.itemView.time_TextView, 130),
                         createTranslationAnimator(spendOrigin.getKindGlobalVisibleRect(), holder.itemView.kind_TextView, 170),
                         createTranslationAnimator(spendOrigin.getValueGlobalVisibleRect(), holder.itemView.value_TextView, 240)
                 ).forEach {

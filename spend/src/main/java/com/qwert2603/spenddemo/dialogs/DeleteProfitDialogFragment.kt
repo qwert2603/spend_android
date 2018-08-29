@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.dialogs
 
+import android.animation.Animator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
@@ -22,9 +23,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.Profit
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
-import com.qwert2603.spenddemo.utils.Const
-import com.qwert2603.spenddemo.utils.toFormattedString
-import com.qwert2603.spenddemo.utils.toPointedString
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_delete.view.*
@@ -72,6 +71,7 @@ class DeleteProfitDialogFragment : DialogFragment() {
                             Activity.RESULT_OK,
                             Intent().putExtra(ID_KEY, id)
                     )
+                    resumedDisposable.clear()
                 }
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
@@ -92,16 +92,27 @@ class DeleteProfitDialogFragment : DialogFragment() {
                 .toObservable()
                 .subscribeUntilPaused()
 
-        fun subscribeFieldUpdates(fieldExtractor: (Profit) -> String, textView: TextView) = profitChanges
-                .filter { it.t != null }
-                .map { fieldExtractor(it.t!!) }
-                .distinctUntilChanged()
-                .observeOn(uiSchedulerProvider.ui)
-                .doOnNext {
-                    // todo: highlighting.
-                    textView.text = it
-                }
-                .subscribeUntilPaused()
+        fun subscribeFieldUpdates(fieldExtractor: (Profit) -> String, textView: TextView) {
+            var highlightAnimator: Animator? = null
+            profitChanges
+                    .filter { it.t != null }
+                    .map { fieldExtractor(it.t!!) }
+                    .distinctUntilChanged()
+                    .observeOn(uiSchedulerProvider.ui)
+                    .doOnNextIndexed { text, index ->
+                        textView.text = text
+                        if (index > 0) {
+                            val animator = AnimatorUtils
+                                    .animateHighlight(textView, R.color.colorPrimary)
+                                    .animator
+                            highlightAnimator?.cancel()
+                            highlightAnimator = animator
+                            animator.start()
+                        }
+                    }
+                    .doOnDispose { highlightAnimator?.cancel() }
+                    .subscribeUntilPaused()
+        }
 
         subscribeFieldUpdates({ it.kind }, dialogView.kind_TextView)
         subscribeFieldUpdates({ it.value.toPointedString() }, dialogView.value_TextView)
