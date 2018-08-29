@@ -14,7 +14,6 @@ import android.widget.TextView
 import android.widget.Toast
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
@@ -26,9 +25,11 @@ import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.dialog_delete.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentWithArgs
@@ -46,9 +47,6 @@ class DeleteProfitDialogFragment : DialogFragment() {
 
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
-
-    @Inject
-    lateinit var modelSchedulerProvider: ModelSchedulersProvider
 
     private lateinit var dialogView: View
 
@@ -79,7 +77,7 @@ class DeleteProfitDialogFragment : DialogFragment() {
 
     override fun onResume() {
         val profitChanges = profitsRepo.getProfit(id)
-                .subscribeOn(modelSchedulerProvider.io)
+                .subscribeOn(Schedulers.newThread())
                 .share()
         profitChanges
                 .filter { it.t == null }
@@ -90,6 +88,16 @@ class DeleteProfitDialogFragment : DialogFragment() {
                     dismiss()
                 }
                 .toObservable()
+                .subscribeUntilPaused()
+        profitChanges
+                .skip(1)
+                .switchMap { _ ->
+                    Observable.interval(0, 700, TimeUnit.MILLISECONDS)
+                            .take(2)
+                            .map { it != 0L }
+                }
+                .observeOn(uiSchedulerProvider.ui)
+                .doOnNext { (dialog as AlertDialog).positiveButton.isEnabled = it }
                 .subscribeUntilPaused()
 
         fun subscribeFieldUpdates(fieldExtractor: (Profit) -> String, textView: TextView) {

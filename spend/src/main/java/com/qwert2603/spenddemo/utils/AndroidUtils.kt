@@ -7,7 +7,10 @@ import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.Transformations
+import android.content.DialogInterface
 import android.content.Intent
+import android.support.v7.app.AlertDialog
+import android.widget.Button
 import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -156,3 +159,6 @@ fun Intent.getLongExtraNullable(key: String) =
         } else {
             null
         }
+
+val AlertDialog.positiveButton: Button
+    get() = getButton(DialogInterface.BUTTON_POSITIVE)

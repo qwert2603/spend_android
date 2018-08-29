@@ -217,7 +217,7 @@ class RecordsListMvvmFragment : Fragment() {
         Observable
                 .combineLatest(
                         RxRecyclerView.scrollEvents(records_RecyclerView)
-                                .switchMap {
+                                .switchMap { _ ->
                                     Observable.interval(0, 1, TimeUnit.SECONDS)
                                             .take(2)
                                             .map { it == 0L }
