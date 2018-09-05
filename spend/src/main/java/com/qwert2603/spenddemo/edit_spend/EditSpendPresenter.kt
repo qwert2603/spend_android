@@ -90,10 +90,7 @@ class EditSpendPresenter @Inject constructor(
             intent { it.onTimeSelected() }
                     .doOnNext { viewActions.onNext(EditSpendViewAction.FocusOnKindInput) }
                     .map { EditSpendPartialChange.TimeSelected(it.t) },
-            Observable.interval(300, TimeUnit.MILLISECONDS)
-                    .map { Date().onlyDate() }
-                    .distinctUntilChanged()
-                    .skip(1)
+            RxUtils.dateChanges()
                     .map { EditSpendPartialChange.CurrentDateChanged }
     ))
 

@@ -4,7 +4,17 @@ import com.qwert2603.andrlib.util.Quint
 import io.reactivex.Observable
 import io.reactivex.functions.*
 import java.lang.NumberFormatException
+import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+
+object RxUtils {
+    fun dateChanges(): Observable<Date> = Observable
+            .interval(300, TimeUnit.MILLISECONDS)
+            .map { Date().onlyDate() }
+            .distinctUntilChanged()
+            .skip(1)
+}
 
 fun <T : Any, R> Observable<T>.castAndFilter(toClass: Class<R>): Observable<R> = this
         .filter { it.javaClass.isAssignableFrom(toClass) }

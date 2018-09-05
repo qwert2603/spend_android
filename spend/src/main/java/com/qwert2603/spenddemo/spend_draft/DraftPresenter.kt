@@ -4,10 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.CreatingSpend
-import com.qwert2603.spenddemo.utils.isToday
-import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.onlyTime
-import com.qwert2603.spenddemo.utils.secondOfTwo
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.*
@@ -100,10 +97,7 @@ class DraftPresenter @Inject constructor(
     override val partialChanges: Observable<PartialChange> = Observable.merge(
             draftChanges
                     .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) },
-            Observable.interval(300, TimeUnit.MILLISECONDS)
-                    .map { Date().onlyDate() }
-                    .distinctUntilChanged()
-                    .skip(1)
+            RxUtils.dateChanges()
                     .map { DraftPartialChange.CurrentDateChanged }
     )
 

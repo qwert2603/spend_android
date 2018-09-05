@@ -129,10 +129,7 @@ class DeleteProfitDialogFragment : DialogFragment() {
         subscribeFieldUpdates({ it.value.toPointedString() }, dialogView.value_TextView)
         subscribeFieldUpdates({ it.dateTimeString() }, dialogView.date_TextView)
 
-        Observable.interval(300, TimeUnit.MILLISECONDS)
-                .map { Date().onlyDate() }
-                .distinctUntilChanged()
-                .skip(1)
+        RxUtils.dateChanges()
                 .withLatestFrom(profitChanges, secondOfTwo())
                 .mapNotNull { it.t }
                 .observeOn(uiSchedulerProvider.ui)
