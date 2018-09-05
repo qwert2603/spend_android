@@ -110,11 +110,16 @@ class RecordsListMvvmFragment : Fragment() {
 
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()
-
-        viewModel.recordsLiveData.observe(this, Observer {
-            val (list, diffResult) = it ?: return@Observer
+        var everChanged = false
+        viewModel.recordsLiveData.observe(this, Observer { pair ->
+            val (list, diffResult) = pair ?: return@Observer
             adapter.list = list
-            diffResult.dispatchToAdapter(adapter)// todo: check if it is ok after view's recreation.
+            if (!everChanged) {
+                everChanged = true
+                adapter.notifyItemRangeInserted(0, list.size)
+            } else {
+                diffResult.dispatchToAdapter(adapter)
+            }
             recordsListAnimator.pendingCreatedSpendId?.let { createdId ->
                 list.indexOfFirst { it is SpendUI && it.id == createdId }
                         .let { records_RecyclerView.scrollToPosition(it) }
@@ -237,12 +242,12 @@ class RecordsListMvvmFragment : Fragment() {
                                 },
                         Boolean::and.toRxBiFunction()
                 )
-                .subscribe {
-                    floatingDate_TextView.setVisible(it && showFloatingDate && records.any { it is DateSumUI })
+                .subscribe { showFromScroll ->
+                    floatingDate_TextView.setVisible(showFromScroll && showFloatingDate && records.any { it is DateSumUI })
                 }
                 .addTo(viewDisposable)
         RxRecyclerView.scrollEvents(records_RecyclerView)
-                .subscribe {
+                .subscribe { _ ->
                     if (!showFloatingDate) return@subscribe
                     var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val floatingTop = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
