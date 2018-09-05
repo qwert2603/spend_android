@@ -37,7 +37,7 @@
     <string name="now_text">now</string>
     <string name="no_time_text">no&#9719;</string>
 
-    <string name="app_info_text_format">
+    <string name="app_info_text_format" formatted="true">
         <![CDATA[
         <b>spend</b> application<br/>
         <br/>
@@ -81,9 +81,9 @@
     <string name="text_source_code">source code</string>
     <string name="text_source_code_long">source code on github.com</string>
 
-    <string name="spend_kind_title_format" formatted="true" translatable="false">%s (%s)</string>
-    <string name="spend_kind_description_format" formatted="true">last: %1$s @ %2$s at %3$s</string>
-    <string name="spend_kind_description_no_time_format" formatted="true">last: %1$s @ %2$s</string>
+    <string name="spend_kind_title_format" formatted="true" translatable="false"><![CDATA[<b>%s</b> (%s)]]></string>
+    <string name="spend_kind_description_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b> at <b>%3$s</b>]]></string>
+    <string name="spend_kind_description_no_time_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b>]]></string>
 
     <string name="text_dumping_records">creating records list..</string>
     <string name="text_server_delay">server delay</string>
@@ -100,7 +100,7 @@
     <string name="text_user">user</string>
     <string name="text_password">password</string>
 
-    <string name="changes_count_format" translatable="false">%d&#916;</string>
+    <string name="changes_count_format" formatted="true" translatable="false">%d&#916;</string>
     <string name="no_changes_text" translatable="false">&#8709;&#916;</string>
     <string name="text_show_deleted">deleted</string>
 
