@@ -69,6 +69,7 @@ class ChooseSpendKindDialogFragment : DialogFragment() {
                     kind.kind,
                     view.resources.getQuantityString(R.plurals.times, kind.spendsCount, kind.spendsCount)
             )
+            // todo: bold via html.
             view.lastSpend_TextView.text = if (kind.lastTime != null) {
                 view.resources.getString(
                         R.string.spend_kind_description_format,

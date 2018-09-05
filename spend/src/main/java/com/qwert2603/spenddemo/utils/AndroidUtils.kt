@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.app.Dialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
@@ -9,7 +10,9 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.Transformations
 import android.content.DialogInterface
 import android.content.Intent
-import android.support.v7.app.AlertDialog
+import android.content.res.Resources
+import android.support.annotation.ColorRes
+import android.support.v4.content.res.ResourcesCompat
 import android.widget.Button
 import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.experimental.android.UI
@@ -21,6 +24,8 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
 import kotlin.reflect.KFunction2
+import android.app.AlertDialog as SystemDialog
+import android.support.v7.app.AlertDialog as AppCompatDialog
 
 inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedBy(
         crossinline first: (T) -> R1,
@@ -160,5 +165,30 @@ fun Intent.getLongExtraNullable(key: String) =
             null
         }
 
-val AlertDialog.positiveButton: Button
+val AppCompatDialog.positiveButton: Button
     get() = getButton(DialogInterface.BUTTON_POSITIVE)
+
+val SystemDialog.positiveButton: Button
+    get() = getButton(DialogInterface.BUTTON_POSITIVE)
+
+val AppCompatDialog.neutralButton: Button
+    get() = getButton(DialogInterface.BUTTON_NEUTRAL)
+
+val SystemDialog.neutralButton: Button
+    get() = getButton(DialogInterface.BUTTON_NEUTRAL)
+
+val Dialog.positiveButton: Button
+    get() = when (this) {
+        is AppCompatDialog -> this.positiveButton
+        is SystemDialog -> this.positiveButton
+        else -> null!!
+    }
+val Dialog.neutralButton: Button
+    get() = when (this) {
+        is AppCompatDialog -> this.neutralButton
+        is SystemDialog -> this.neutralButton
+        else -> null!!
+    }
+
+fun Resources.colorStateList(@ColorRes colorRes: Int, theme: Resources.Theme? = null) = ResourcesCompat
+        .getColorStateList(this, colorRes, theme)

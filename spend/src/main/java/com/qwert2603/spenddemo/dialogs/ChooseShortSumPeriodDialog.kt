@@ -128,6 +128,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
                                 .indexOfFirst { it == selectedMinutes }
                                 .let { if (it >= 0) it else -1 }
                 ) { _, _ -> }
+                .setTitle(R.string.title_short_sum_dialog)
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
     }

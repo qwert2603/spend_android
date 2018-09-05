@@ -103,6 +103,7 @@ class DraftPresenter @Inject constructor(
             Observable.interval(300, TimeUnit.MILLISECONDS)
                     .map { Date().onlyDate() }
                     .distinctUntilChanged()
+                    .skip(1)
                     .map { DraftPartialChange.CurrentDateChanged }
     )
 

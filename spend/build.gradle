@@ -77,7 +77,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     def support_version = '27.1.1'
-    def andrlib_version = '1.7.4'
+    def andrlib_version = '1.9.3'
     def andrlib_generator_version = '1.0.10'
     def rxjava_version = '2.2.0'
     def rxandroid_version = '2.1.0'

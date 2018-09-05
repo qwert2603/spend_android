@@ -11,9 +11,7 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.utils.hour
-import com.qwert2603.spenddemo.utils.minute
-import com.qwert2603.spenddemo.utils.onlyTime
+import com.qwert2603.spenddemo.utils.*
 import java.util.*
 
 @FragmentWithArgs
@@ -52,5 +50,11 @@ class TimePickerDialogFragment : DialogFragment() {
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        dialog.neutralButton.setTextColor(resources.colorStateList(R.color.dialog_neutral_button))
     }
 }

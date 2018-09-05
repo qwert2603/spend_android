@@ -19,6 +19,8 @@ import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.edit_spend.EditSpendDialogFragment
+import com.qwert2603.spenddemo.edit_spend.EditSpendDialogFragmentBuilder
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.CreatingProfit
 import com.qwert2603.spenddemo.model.entity.Profit
@@ -78,8 +80,9 @@ class RecordsListMvvmFragment : Fragment() {
         удаление выделенных с подтверждением
          */
 
-        // todo: show sync_status in toolbar's subtitle.
-        // and last full sync time if sync was more than 1 sec ago.
+        // todo: sort by value and set dates range.
+
+        // todo: search by kind.
 
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
@@ -136,9 +139,8 @@ class RecordsListMvvmFragment : Fragment() {
 
         adapter.itemClicks = {
             when (it) {
-                is SpendUI -> EditSpendDialogFragmentBuilder(it.date.time, it.id, it.kind, it.value)
-                        .also { builder -> if (it.time != null) builder.time(it.time.time) }
-                        .build()
+                is SpendUI -> EditSpendDialogFragmentBuilder
+                        .newEditSpendDialogFragment(it.id)
                         .makeShow(REQUEST_EDIT_SPEND)
                 is ProfitUI -> AddProfitDialogFragmentBuilder(false)
                         .id(it.id)

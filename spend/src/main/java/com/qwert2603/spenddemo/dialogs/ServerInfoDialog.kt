@@ -10,6 +10,8 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import com.qwert2603.spenddemo.utils.colorStateList
+import com.qwert2603.spenddemo.utils.positiveButton
 import kotlinx.android.synthetic.main.dialog_server_info.view.*
 import javax.inject.Inject
 
@@ -44,6 +46,11 @@ class ServerInfoDialog : DialogFragment() {
                 .setPositiveButton(R.string.text_save) { _, _ -> saveServerInfo(view) }
                 .setNegativeButton(R.string.text_cancel, null)
                 .create()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
     }
 
     private fun saveServerInfo(view: View) = with(view) {

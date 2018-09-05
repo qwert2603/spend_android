@@ -12,7 +12,6 @@ import com.qwert2603.spenddemo.records_list_mvvm.entity.SpendUI
 import com.qwert2603.spenddemo.utils.DateTimeTextViews
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toPointedString
-import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_spend.view.*
 
 class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.layout.item_spend) {
@@ -78,7 +77,7 @@ class SpendViewHolder(parent: ViewGroup) : BaseViewHolder<SpendUI>(parent, R.lay
                 showTimeAtAll = adapter.showTimesInRecords
         )
         kind_TextView.text = t.kind
-        value_TextView.text = t.value.toLong().toPointedString().zeroToEmpty()
+        value_TextView.text = t.value.toLong().toPointedString()
 
         isClickable = t.canEdit
         isLongClickable = t.canDelete

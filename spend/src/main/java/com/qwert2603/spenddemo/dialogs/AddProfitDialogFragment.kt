@@ -144,6 +144,11 @@ class AddProfitDialogFragment : DialogFragment() {
                 }
     }
 
+    override fun onResume() {
+        super.onResume()
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
@@ -151,7 +156,6 @@ class AddProfitDialogFragment : DialogFragment() {
                     val kind = data.getStringExtra(ChooseProfitKindDialogFragment.KIND_KEY)
                     dialogView.kind_EditText.setText(kind)
                     dialogView.value_EditText.requestFocus()
-                    dialogView.value_EditText.selectEnd()
                 }
                 REQUEST_DATE -> {
                     val dateResult = data.getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)

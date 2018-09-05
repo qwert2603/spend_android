@@ -11,10 +11,7 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.utils.day
-import com.qwert2603.spenddemo.utils.month
-import com.qwert2603.spenddemo.utils.onlyDate
-import com.qwert2603.spenddemo.utils.year
+import com.qwert2603.spenddemo.utils.*
 import java.util.*
 
 @FragmentWithArgs
@@ -60,5 +57,11 @@ class DatePickerDialogFragment : DialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        dialog.neutralButton.setTextColor(resources.colorStateList(R.color.dialog_neutral_button))
     }
 }

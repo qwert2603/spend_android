@@ -105,6 +105,7 @@ class ProfitsRepoImpl @Inject constructor(
 
     override fun getProfit(id: Long): Observable<Wrapper<Profit>> = localDB.profitsDao()
             .getProfit(id)
+            .distinctUntilChanged()
             .onBackpressureLatest()
             .toObservable()
             .map { it.firstOrNull()?.toProfit().wrap() }

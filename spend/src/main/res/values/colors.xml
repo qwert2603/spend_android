@@ -20,4 +20,6 @@
     <color name="highlight_created_record">#AADCCF20</color>
 
     <color name="month_sum_background">#DDDDDD</color>
+
+    <color name="button_neutral">#33AD24</color>
 </resources>

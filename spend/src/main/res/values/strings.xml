@@ -65,6 +65,8 @@
     <string name="text_server_info">connection settings</string>
     <string name="short_sum_text_format" formatted="true">short &#931;: %s</string>
     <string name="long_sum_text_format" formatted="true">long &#931;: %s</string>
+    <string name="title_long_sum_dialog">long &#931;</string>
+    <string name="title_short_sum_dialog">short &#931;</string>
     <string name="text_period_sum_format" formatted="true" translatable="false">&#931;(%1$s) = %2$s</string>
 
     <string name="text_all_records_loaded">&#8704; records loaded</string>
@@ -113,6 +115,15 @@
     <string name="text_local_changes_count">&#916; local changes count</string>
     <string name="symbol_empty_set" translatable="false">&#8709;</string>
     <string name="text_deleted_while_deleted_profit">deleting profit was deleted on server</string>
+    <string name="text_deleted_while_edited_profit">editing profit was deleted on server</string>
     <string name="text_deleted_while_deleted_spend">deleting spend was deleted on server</string>
+    <string name="text_deleted_while_edited_spend">editing spend was deleted on server</string>
+
+    <string name="text_server_change_kind_format" formatted="true"><![CDATA[on server <b>kind</b> changed to <b>%s</b>]]></string>
+    <string name="text_server_change_value_format" formatted="true"><![CDATA[on server <b>value</b> changed to <b>%s</b>]]></string>
+    <string name="text_server_change_date_format" formatted="true"><![CDATA[on server <b>date</b> changed to <b>%s</b>]]></string>
+    <string name="text_server_change_time_format" formatted="true"><![CDATA[on server <b>time</b> changed to <b>%s</b>]]></string>
+
+    <string name="text_accept">accept</string>
 
 </resources>

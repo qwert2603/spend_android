@@ -75,10 +75,10 @@ class DeleteSpendDialogFragment : DialogFragment() {
     }
 
     override fun onResume() {
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+
         val spendChanges = spendsRepo.getSpend(id)
-                .distinctUntilChanged()
-                .replay(1)
-                .refCount()
+                .shareReplayLast()
         spendChanges
                 .filter { it.t == null }
                 .firstOrError()
@@ -124,12 +124,17 @@ class DeleteSpendDialogFragment : DialogFragment() {
 
         subscribeFieldUpdates({ it.kind }, dialogView.kind_TextView)
         subscribeFieldUpdates({ it.value.toPointedString() }, dialogView.value_TextView)
-        subscribeFieldUpdates({ spend ->
-            listOfNotNull(
-                    spend.date.toFormattedString(resources),
-                    spend.time?.let { SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(it) }
-            ).reduce { acc, s -> "$acc $s" }
-        }, dialogView.date_TextView)
+        subscribeFieldUpdates({ it.dateTimeString() }, dialogView.date_TextView)
+
+        Observable.interval(300, TimeUnit.MILLISECONDS)
+                .map { Date().onlyDate() }
+                .distinctUntilChanged()
+                .skip(1)
+                .withLatestFrom(spendChanges, secondOfTwo())
+                .mapNotNull { it.t }
+                .observeOn(uiSchedulerProvider.ui)
+                .doOnNext { dialogView.date_TextView.text = it.dateTimeString() }
+                .subscribeUntilPaused()
 
         super.onResume()
     }
@@ -138,6 +143,11 @@ class DeleteSpendDialogFragment : DialogFragment() {
         resumedDisposable.clear()
         super.onPause()
     }
+
+    private fun Spend.dateTimeString() = listOfNotNull(
+            date.toFormattedString(resources),
+            time?.let { SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(it) }
+    ).reduce { acc, s -> "$acc $s" }
 
     private fun <T> Observable<T>.subscribeUntilPaused() = this
             .doOnError { LogUtils.e("", it) }

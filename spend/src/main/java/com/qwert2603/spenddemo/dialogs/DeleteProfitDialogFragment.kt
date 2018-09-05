@@ -75,10 +75,13 @@ class DeleteProfitDialogFragment : DialogFragment() {
     }
 
     override fun onResume() {
+        // todo: consume id change when record created on server.
+        // in edit dialogs too.
+
+        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+
         val profitChanges = profitsRepo.getProfit(id)
-                .distinctUntilChanged()
-                .replay(1)
-                .refCount()
+                .shareReplayLast()
         profitChanges
                 .filter { it.t == null }
                 .firstOrError()
@@ -124,12 +127,17 @@ class DeleteProfitDialogFragment : DialogFragment() {
 
         subscribeFieldUpdates({ it.kind }, dialogView.kind_TextView)
         subscribeFieldUpdates({ it.value.toPointedString() }, dialogView.value_TextView)
-        subscribeFieldUpdates({ profit ->
-            listOfNotNull(
-                    profit.date.toFormattedString(resources),
-                    profit.time?.let { SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(it) }
-            ).reduce { acc, s -> "$acc $s" }
-        }, dialogView.date_TextView)
+        subscribeFieldUpdates({ it.dateTimeString() }, dialogView.date_TextView)
+
+        Observable.interval(300, TimeUnit.MILLISECONDS)
+                .map { Date().onlyDate() }
+                .distinctUntilChanged()
+                .skip(1)
+                .withLatestFrom(profitChanges, secondOfTwo())
+                .mapNotNull { it.t }
+                .observeOn(uiSchedulerProvider.ui)
+                .doOnNext { dialogView.date_TextView.text = it.dateTimeString() }
+                .subscribeUntilPaused()
 
         super.onResume()
     }
@@ -138,6 +146,11 @@ class DeleteProfitDialogFragment : DialogFragment() {
         resumedDisposable.clear()
         super.onPause()
     }
+
+    private fun Profit.dateTimeString() = listOfNotNull(
+            date.toFormattedString(resources),
+            time?.let { SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault()).format(it) }
+    ).reduce { acc, s -> "$acc $s" }
 
     private fun <T> Observable<T>.subscribeUntilPaused() = this
             .doOnError { LogUtils.e("", it) }

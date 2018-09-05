@@ -107,6 +107,7 @@ class SpendsRepoImpl @Inject constructor(
 
     override fun getSpend(id: Long): Observable<Wrapper<Spend>> = localDB.spendsDao()
             .getSpend(id)
+            .distinctUntilChanged()
             .onBackpressureLatest()
             .toObservable()
             .map { it.firstOrNull()?.toSpend().wrap() }

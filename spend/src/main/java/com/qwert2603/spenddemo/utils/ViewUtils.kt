@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.annotation.MainThread
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -19,15 +20,25 @@ fun TextView.setStrike(strike: Boolean) {
     }
 }
 
-fun EditText.selectEnd() {
-    setSelection(text.length)
+// todo: wrong cursor position for pointed long string.
+fun EditText.setTextIfNotYet(text: String) {
+    if (this.text.toString() != text) {
+        val prevSelection = if (this.selectionStart == this.text.length) {
+            text.length
+        } else {
+            this.selectionStart
+        }
+
+        this.setText(text)
+        this.setSelection(prevSelection)
+    }
 }
 
 fun View.getGlobalVisibleRectRightNow() = Rect().also { getGlobalVisibleRect(it) }
 
 object DateTimeTextViews {
 
-    private val TIME_FORMAT = SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault())
+    val TIME_FORMAT = SimpleDateFormat(Const.TIME_FORMAT_PATTERN, Locale.getDefault())
 
     fun render(
             dateTextView: TextView,
@@ -50,9 +61,12 @@ object DateTimeTextViews {
                 timeTextView.text = resources.getString(R.string.no_time_text)
                 timeTextView.setTextColor(resources.color(R.color.date_default))
             } else {
-                timeTextView.text = TIME_FORMAT.format(time)
+                timeTextView.text = time.formatTime()
                 timeTextView.setTextColor(resources.color(android.R.color.black))
             }
         }
     }
 }
+
+@MainThread
+fun Date.formatTime(): String = DateTimeTextViews.TIME_FORMAT.format(this)

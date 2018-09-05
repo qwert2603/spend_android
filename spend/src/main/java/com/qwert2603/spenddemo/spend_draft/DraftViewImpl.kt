@@ -134,11 +134,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
             DraftViewAction.FocusOnValueInput -> {
                 val value_EditText = value_EditText
                 value_EditText.postDelayed({
-                    if (keyboardManager.isKeyBoardShown()) {
-                        keyboardManager.showKeyboard(value_EditText)
-                    } else {
-                        keyboardManager.showKeyboard(value_EditText)
-                    }
+                    if (!isAttachedToWindow) return@postDelayed
+                    keyboardManager.showKeyboard(value_EditText)
                 }, 200)
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
