@@ -54,11 +54,14 @@ class RecordsListMvvmFragment : Fragment() {
         ViewModelProviders.of(this, ViewModelFactory()).get(RecordsListViewModel::class.java)
     }
 
-    val adapter = RecordsListAdapter()
+    private val adapter = RecordsListAdapter()
     private val viewDisposable = CompositeDisposable()
+
+    private var layoutAnimationShown by BundleBoolean("layoutAnimationShown", { arguments!! }, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments = arguments ?: Bundle()
         setHasOptionsMenu(true)
     }
 
@@ -108,7 +111,6 @@ class RecordsListMvvmFragment : Fragment() {
         var showFloatingDate = false
         var records = emptyList<RecordsListItem>()
 
-        var layoutAnimationShown = false
         viewModel.recordsLiveData.observe(this, Observer {
             val (list, diffResult) = it ?: return@Observer
             adapter.list = list
@@ -122,10 +124,9 @@ class RecordsListMvvmFragment : Fragment() {
                         .let { records_RecyclerView.scrollToPosition(it) }
             }
             records = list
-            if (savedInstanceState == null && !layoutAnimationShown) {
+            if (!layoutAnimationShown) {
                 layoutAnimationShown = true
-                val layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
-                records_RecyclerView.layoutAnimation = layoutAnimation
+                records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
         })
         viewModel.redrawAllRecords.observe(this, Observer { adapter.notifyDataSetChanged() })
