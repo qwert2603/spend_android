@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent?.action == "android.intent.action.VIEW") {
-            AppInfoDialogFragment().show(supportFragmentManager, "about")
+            AppInfoDialogFragment().show(supportFragmentManager, null)
         }
     }
 
