@@ -32,7 +32,7 @@ class RemoteDBImpl(serverInfoChanges: Observable<ServerInfo>) : RemoteDB {
     private val preparedStatements = ConcurrentHashMap<String, PreparedStatement>()
 
     init {
-        Class.forName(org.postgresql.Driver::class.java.name)
+//        Class.forName(org.postgresql.Driver::class.java.name)
         DriverManager.setLoginTimeout(5)
         serverInfoChanges.subscribe {
             serverInfo = it

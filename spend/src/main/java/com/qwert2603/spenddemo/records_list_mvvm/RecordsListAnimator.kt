@@ -89,7 +89,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
         return super.animateAdd(holder)
     }
 
-    override fun endAnimation(item: RecyclerView.ViewHolder?) {
+    override fun endAnimation(item: RecyclerView.ViewHolder) {
         createSpendAnimators.remove(item)?.apply {
             first.cancel()
             second.invoke()

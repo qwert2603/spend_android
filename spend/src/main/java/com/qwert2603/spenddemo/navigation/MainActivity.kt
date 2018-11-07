@@ -8,10 +8,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
@@ -28,18 +26,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     @Inject
     lateinit var navigatorHolder: NavigatorHolder
 
-    var resumedFragment: Fragment? = null
-
-    private val navigator = Navigator(object : ActivityInterface {
-        override val supportFragmentManager = this@MainActivity.supportFragmentManager
-        override val fragmentContainer = R.id.fragment_container
-        override fun finish() = this@MainActivity.finish()
-        override fun hideKeyboard() = this@MainActivity.hideKeyboard()
-        override fun viewForSnackbars(): View = (resumedFragment as? BaseFragment<*, *, *>)?.viewForSnackbar()
-                ?: activity_root_FrameLayout
-
-        override val navigationActivity: NavigationActivity = this@MainActivity
-    })
+    private val navigator = Navigator(this, R.id.fragment_container)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(ScreenKey.RECORDS_LIST_MVVM.name)
+            router.newRootScreen(SpendScreen.RecordsList)
         }
 
         if (savedInstanceState == null && intent.action == Intent.ACTION_VIEW) {
@@ -66,7 +53,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun onBackPressed() {
-        if ((resumedFragment as? BackPressListener)?.onBackPressed() == true) {
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if ((fragment as? BackPressListener)?.onBackPressed() == true) {
             return
         }
         router.exit()
@@ -84,11 +72,9 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
                     navigationIcon = if (isRoot) null else ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_arrow_back_white_24dp)
                     setNavigationOnClickListener { router.exit() }
                 }
-        resumedFragment = fragment
     }
 
     override fun onFragmentPaused(fragment: Fragment) {
-        if (resumedFragment === fragment) resumedFragment = null
         fragment.view
                 ?.findViewById<Toolbar>(R.id.toolbar)
                 ?.setNavigationOnClickListener(null)
@@ -98,6 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         if (removeFocus) {
             activity_root_FrameLayout.requestFocus()
         }
+        val currentFocus = currentFocus ?: return
         (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(currentFocus.windowToken, 0)
     }
 
@@ -107,6 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun isKeyBoardShown(): Boolean {
+        // todo: don't work in scree splitting
         return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels - resources.toPx(30)
     }
 }

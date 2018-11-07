@@ -2,12 +2,8 @@ package com.qwert2603.spenddemo
 
 import android.app.Application
 import android.os.Looper
-import com.facebook.stetho.Stetho
-import com.qwert2603.andrlib.base.mvi.load_refresh.list.listModelChangerInstance
-import com.qwert2603.andrlib.base.mvi.load_refresh.lrModelChangerInstance
-import com.qwert2603.andrlib.generated.LRModelChangerImpl
-import com.qwert2603.andrlib.generated.ListModelChangerImpl
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spend_android.StethoInstaller
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.di.DIManager
 import com.qwert2603.spenddemo.env.E
@@ -20,7 +16,7 @@ class SpendDemoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG) Stetho.initializeWithDefaults(this)
+        StethoInstaller.install(this)
 
         DIHolder.diManager = DIManager(this)
 
@@ -37,8 +33,8 @@ class SpendDemoApplication : Application() {
             AndroidSchedulers.from(Looper.getMainLooper(), true)
         }
 
-        lrModelChangerInstance = LRModelChangerImpl()
-        listModelChangerInstance = ListModelChangerImpl()
+//        lrModelChangerInstance = LRModelChangerImpl()
+//        listModelChangerInstance = ListModelChangerImpl()
 
         LogUtils.logType = if (BuildConfig.DEBUG || E.env.buildForTesting()) {
             LogUtils.LogType.ANDROID

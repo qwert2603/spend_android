@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
@@ -25,10 +24,6 @@ import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.*
 import kotlinx.android.synthetic.main.item_sum_variant.view.*
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
-import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentWithArgs
@@ -58,30 +53,30 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
     data class Variant(val minutes: Int, var sum: Long?)
 
     private val minuteChangesEvents = SingleLiveEvent<Unit>()
-    private lateinit var minuteChangesJob: Job
+//    private lateinit var minuteChangesJob: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
 
         minuteChangesEvents.value = Unit
-        minuteChangesJob = launch(newSingleThreadContext("ChooseShortSumPeriodDialog minuteChangesEvents")) {
-            try {
-                var prevCalendar = Calendar.getInstance()
-                while (isActive) {
-                    delay(300, TimeUnit.MILLISECONDS)
-                    val currentCalendar = Calendar.getInstance()
-                    if (!currentCalendar.minutesEqual(prevCalendar)) launch(UI) { minuteChangesEvents.value = Unit }
-                    prevCalendar = currentCalendar
-                }
-            } finally {
-                LogUtils.d("end of ChooseShortSumPeriodDialog#minuteChangesJob")
-            }
-        }
+//    todo    minuteChangesJob = launch(newSingleThreadContext("ChooseShortSumPeriodDialog minuteChangesEvents")) {
+//            try {
+//                var prevCalendar = Calendar.getInstance()
+//                while (isActive) {
+//                    delay(300, TimeUnit.MILLISECONDS)
+//                    val currentCalendar = Calendar.getInstance()
+//                    if (!currentCalendar.minutesEqual(prevCalendar)) launch(UI) { minuteChangesEvents.value = Unit }
+//                    prevCalendar = currentCalendar
+//                }
+//            } finally {
+//                LogUtils.d("end of ChooseShortSumPeriodDialog#minuteChangesJob")
+//            }
+//        }
     }
 
     override fun onDestroy() {
-        launch { minuteChangesJob.cancelAndJoin() }
+//        launch { minuteChangesJob.cancelAndJoin() }
         super.onDestroy()
     }
 

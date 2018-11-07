@@ -12,14 +12,10 @@ import com.qwert2603.spenddemo.model.local_db.results.RecordResult
 import com.qwert2603.spenddemo.model.repo.ProfitsRepo
 import com.qwert2603.spenddemo.model.repo.SpendsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.navigation.ScreenKey
 import com.qwert2603.spenddemo.records_list_mvvm.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
 import ru.terrakok.cicerone.Router
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class RecordsListViewModel(
         private val spendsRepo: SpendsRepo,
@@ -45,7 +41,7 @@ class RecordsListViewModel(
     private val minuteChangesEvents = SingleLiveEvent<Unit>()
     private val dayChangesEvents = SingleLiveEvent<Unit>()
 
-    private val vmJob: Job = Job()
+//    private val vmJob: Job = Job()
 
     init {
         showSpends.value = userSettingsRepo.showSpends
@@ -62,16 +58,16 @@ class RecordsListViewModel(
 
         minuteChangesEvents.value = Unit
         dayChangesEvents.value = Unit
-        launch(CommonPool, parent = vmJob) {
-            var prevCalendar = Calendar.getInstance()
-            while (isActive) {
-                delay(300, TimeUnit.MILLISECONDS)
-                val currentCalendar = Calendar.getInstance()
-                if (!currentCalendar.minutesEqual(prevCalendar)) launch(UI) { minuteChangesEvents.value = Unit }
-                if (!currentCalendar.daysEqual(prevCalendar)) launch(UI) { dayChangesEvents.value = Unit }
-                prevCalendar = currentCalendar
-            }
-        }
+//    todo    GlobalScope.launch(CommonPool, parent = vmJob) {
+//            var prevCalendar = Calendar.getInstance()
+//            while (isActive) {
+//                delay(300, TimeUnit.MILLISECONDS)
+//                val currentCalendar = Calendar.getInstance()
+//                if (!currentCalendar.minutesEqual(prevCalendar)) GlobalScope.launch(UI) { minuteChangesEvents.value = Unit }
+//                if (!currentCalendar.daysEqual(prevCalendar)) GlobalScope.launch(UI) { dayChangesEvents.value = Unit }
+//                prevCalendar = currentCalendar
+//            }
+//        }
     }
 
     data class ShowInfo(
@@ -366,16 +362,16 @@ class RecordsListViewModel(
     }
 
     fun sendRecords() {
-        launch(UI, parent = vmJob) {
-            creatingRecordsText.value = Unit
-            val spends = async(CommonPool) { spendsRepo.getDumpText() }
-            val profits = async(CommonPool) { profitsRepo.getDumpText() }
-            sendRecords.value = "SPENDS:\n${spends.await()}\n\nPROFITS:\n${profits.await()}"
-        }
+//        launch(UI, parent = vmJob) {
+//            creatingRecordsText.value = Unit
+//            val spends = async(CommonPool) { spendsRepo.getDumpText() }
+//            val profits = async(CommonPool) { profitsRepo.getDumpText() }
+//            sendRecords.value = "SPENDS:\n${spends.await()}\n\nPROFITS:\n${profits.await()}"
+//        }
     }
 
     fun moveToChangesList() {
-        router.navigateTo(ScreenKey.CHANGES_LIST.name)
+//        router.navigateTo(ScreenKey.CHANGES_LIST.name)
     }
 
     val createdSpendsEvents: SingleLiveEvent<Spend> = spendsRepo.locallyCreatedSpends()
@@ -396,6 +392,6 @@ class RecordsListViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        vmJob.cancel()
+//        vmJob.cancel()
     }
 }

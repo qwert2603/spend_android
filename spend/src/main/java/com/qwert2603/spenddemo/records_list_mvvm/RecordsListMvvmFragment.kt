@@ -91,7 +91,7 @@ class RecordsListMvvmFragment : Fragment() {
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_SPEND, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_PROFIT, 20)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
-        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh ->
+        records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DateSumViewHolder
         })
         val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
@@ -251,7 +251,12 @@ class RecordsListMvvmFragment : Fragment() {
                     if (!showFloatingDate) return@subscribe
                     var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val floatingTop = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
-                    val vhTop = records_RecyclerView.findViewHolderForAdapterPosition(i).itemView.getGlobalVisibleRectRightNow().top
+                    val viewHolder = records_RecyclerView.findViewHolderForAdapterPosition(i)
+                    if (viewHolder == null) {
+                        floatingDate_TextView.text = ""
+                        return@subscribe
+                    }
+                    val vhTop = viewHolder.itemView.getGlobalVisibleRectRightNow().top
                     if (i > 0 && vhTop < floatingTop) --i
                     if (i in 1..records.lastIndex && records[i] is TotalsUI) --i
                     if (i in 1..records.lastIndex && records[i] is MonthSumUI) --i

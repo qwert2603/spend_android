@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import android.view.View
 
-class ConditionDividerDecoration(context: Context, private val condition: (RecyclerView, RecyclerView.ViewHolder) -> Boolean) : RecyclerView.ItemDecoration() {
+open class ConditionDividerDecoration(context: Context, private val condition: (RecyclerView, RecyclerView.ViewHolder, RecyclerView.State) -> Boolean) : RecyclerView.ItemDecoration() {
 
     private var mDivider: Drawable
 
@@ -15,15 +15,15 @@ class ConditionDividerDecoration(context: Context, private val condition: (Recyc
 
     init {
         val a = context.obtainStyledAttributes(ATTRS)
-        mDivider = a.getDrawable(0)
+        mDivider = a.getDrawable(0)!!
         a.recycle()
     }
 
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
-        drawVertical(c, parent)
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        drawVertical(c, parent, state)
     }
 
-    private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
+    private fun drawVertical(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         canvas.save()
         val left: Int
         val right: Int
@@ -41,7 +41,7 @@ class ConditionDividerDecoration(context: Context, private val condition: (Recyc
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             val viewHolder = parent.findContainingViewHolder(child)
-            if (viewHolder != null && condition(parent, viewHolder)) {
+            if (viewHolder != null && condition(parent, viewHolder, state)) {
                 parent.getDecoratedBoundsWithMargins(child, mBounds)
                 val bottom = mBounds.bottom + Math.round(child.translationY)
                 val top = bottom - mDivider.intrinsicHeight
@@ -54,7 +54,7 @@ class ConditionDividerDecoration(context: Context, private val condition: (Recyc
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val viewHolder = parent.findContainingViewHolder(view)
-        if (viewHolder != null && condition(parent, viewHolder)) {
+        if (viewHolder != null && condition(parent, viewHolder, state)) {
             outRect.set(0, 0, 0, mDivider.intrinsicHeight)
         } else {
             outRect.set(0, 0, 0, 0)

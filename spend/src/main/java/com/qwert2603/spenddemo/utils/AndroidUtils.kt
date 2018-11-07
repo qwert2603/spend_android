@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.Transformations
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,11 +14,6 @@ import android.support.annotation.ColorRes
 import android.support.v4.content.res.ResourcesCompat
 import android.widget.Button
 import io.reactivex.functions.BiFunction
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
-import kotlinx.coroutines.experimental.withContext
-import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
@@ -94,13 +88,13 @@ fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transf
 
 fun <T, U> LiveData<T>.mapBG(suspendMapper: SuspendMapper<T, U>): LiveData<U> {
     val result = MediatorLiveData<U>()
-    val coroutineContext = newSingleThreadContext("mapBG ${UUID.randomUUID()}")
-    result.addSource(this, Observer { x ->
-        x ?: return@Observer
-        launch(UI) {
-            result.value = withContext(coroutineContext) { suspendMapper(x) }
-        }
-    })
+// todo   val coroutineContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+//    result.addSource(this, Observer { x ->
+//        x ?: return@Observer
+//        GlobalScope.launch(Dispatchers.Main) {
+//            result.value = withContext(coroutineContext) { suspendMapper(x) }
+//        }
+//    })
     return result
 }
 

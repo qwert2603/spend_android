@@ -4,9 +4,6 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.ServerInfo
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBFacade
 import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
-import com.qwert2603.spenddemo.utils.days
-import com.qwert2603.spenddemo.utils.minus
-import com.qwert2603.spenddemo.utils.toSqlDate
 import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Test
@@ -62,18 +59,18 @@ class T {
 
     @Test
     fun r() {
-        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(Observable.just(ServerInfo(
-                "jdbc:postgresql://192.168.1.26:5432/spend",
-                "postgres",
-                "1234"
-        ))))
-
-        remoteDBFacade.insertMother(
-                kind = "kind",
-                subkind = "subkind",
-                value = 1918.0,
-                date = (Date() - 3.days).toSqlDate(),
-                alex = true
-        )
+//        val remoteDBFacade = RemoteDBFacade(RemoteDBImpl(Observable.just(ServerInfo(
+//                "jdbc:postgresql://192.168.1.26:5432/spend",
+//                "postgres",
+//                "1234"
+//        ))))
+//
+//        remoteDBFacade.insertMother(
+//                kind = "kind",
+//                subkind = "subkind",
+//                value = 1918.0,
+//                date = (Date() - 3.days).toSqlDate(),
+//                alex = true
+//        )
     }
 }
