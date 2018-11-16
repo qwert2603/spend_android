@@ -17,6 +17,11 @@ class SaveRecordInteractor @Inject constructor(
 
     fun saveRecord(recordDraft: RecordDraft) {
         recordsRepo.saveRecords(listOf(recordDraft))
+        when (recordDraft.recordTypeId) {
+            Const.RECORD_TYPE_ID_SPEND -> recordsDraftsRepo.spendDraft = null
+            Const.RECORD_TYPE_ID_PROFIT -> recordsDraftsRepo.profitDraft = null
+            else -> null!!
+        }.also { }
     }
 
     fun getDraft(recordTypeId: Long): RecordDraft? = when (recordTypeId) {

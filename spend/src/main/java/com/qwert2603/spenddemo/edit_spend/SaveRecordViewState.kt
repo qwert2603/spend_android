@@ -11,10 +11,11 @@ data class SaveRecordViewState(
         val serverDate: Int?,
         val serverTime: Wrapper<Int?>?,
         val serverValue: Int?,
-        val justChangedOnServer: Boolean
+        val justChangedOnServer: Boolean,
+        private val originalRecord: RecordDraft? = null // null, when creating new record
 ) {
     val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
 
     private val canSave = recordDraft.isValid()
-    val isSaveEnable = canSave && !justChangedOnServer
+    val isSaveEnable = canSave && !justChangedOnServer && recordDraft != originalRecord
 }

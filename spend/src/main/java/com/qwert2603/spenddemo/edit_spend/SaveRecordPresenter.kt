@@ -17,19 +17,34 @@ class SaveRecordPresenter @Inject constructor(
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<SaveRecordView, SaveRecordViewState>(uiSchedulerProvider) {
 
-    override val initialState = SaveRecordViewState(
-            isNewRecord = saveRecordKey is SaveRecordKey.NewRecord,
-            recordDraft = when (saveRecordKey) {
-                is SaveRecordKey.EditRecord -> saveRecordInteractor.getRecordChanges(saveRecordKey.uuid).blockingFirst().t!!.toRecordDraft()
-                is SaveRecordKey.NewRecord -> saveRecordInteractor.getDraft(saveRecordKey.recordTypeId)
-                        ?: RecordDraft.new(saveRecordKey.recordTypeId)
-            },
-            serverKind = null,
-            serverDate = null,
-            serverTime = null,
-            serverValue = null,
-            justChangedOnServer = false
-    )
+    override val initialState by lazy {
+        val editingRecord by lazy {
+            val uuid = (saveRecordKey as SaveRecordKey.EditRecord).uuid
+            saveRecordInteractor
+                    .getRecordChanges(uuid)
+                    .blockingFirst()
+                    .t!!
+                    .toRecordDraft()
+        }
+
+        SaveRecordViewState(
+                isNewRecord = saveRecordKey is SaveRecordKey.NewRecord,
+                recordDraft = when (saveRecordKey) {
+                    is SaveRecordKey.EditRecord -> editingRecord
+                    is SaveRecordKey.NewRecord -> saveRecordInteractor.getDraft(saveRecordKey.recordTypeId)
+                            ?: RecordDraft.new(saveRecordKey.recordTypeId)
+                },
+                serverKind = null,
+                serverDate = null,
+                serverTime = null,
+                serverValue = null,
+                justChangedOnServer = false,
+                originalRecord = when (saveRecordKey) {
+                    is SaveRecordKey.EditRecord -> editingRecord
+                    is SaveRecordKey.NewRecord -> null
+                }
+        )
+    }
 
     private val serverRecordChanges: Observable<Wrapper<Record>> = intent { it.viewCreated() }
             .switchMap {

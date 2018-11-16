@@ -96,7 +96,7 @@ class RecordsListPresenter @Inject constructor(
                             longSumPeriodDaysChanges,
                             shortSumPeriodMinutesChanges,
                             showInfoChanges,
-                            RxUtils.minuteChanges(),
+                            RxUtils.minuteChanges().startWith(Any()),
                             makeQuad()
                     )
                     .switchMap { (longSumPeriodDays, shortSumPeriodMinutes, showInfo) ->
