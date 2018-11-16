@@ -16,19 +16,14 @@
         android:title="@string/text_show_profits" />
 
     <item
-        android:id="@+id/show_date_sums"
+        android:id="@+id/show_sums"
         android:checkable="true"
-        android:title="@string/text_show_date_sums" />
+        android:title="@string/text_show_sums" />
 
     <item
-        android:id="@+id/show_month_sums"
+        android:id="@+id/show_change_kinds"
         android:checkable="true"
-        android:title="@string/text_show_month_sums" />
-
-    <item
-        android:id="@+id/show_empty_sums"
-        android:checkable="true"
-        android:title="@string/text_show_empty_sums" />
+        android:title="@string/text_show_change_kinds" />
 
     <item
         android:id="@+id/show_times"
@@ -48,46 +43,11 @@
         android:title="@string/send_records_text" />
 
     <item
-        android:id="@+id/show_local_changes"
-        android:title="@string/show_local_changes" />
-
-    <item
-        android:id="@+id/show_ids"
-        android:checkable="true"
-        android:title="@string/text_show_ids" />
-
-    <item
-        android:id="@+id/show_change_kinds"
-        android:checkable="true"
-        android:title="@string/text_show_change_kinds" />
-
-    <item
-        android:id="@+id/show_deleted"
-        android:checkable="true"
-        android:title="@string/text_show_deleted" />
-
-    <item
-        android:id="@+id/server_info"
-        android:title="@string/text_server_info" />
-
-    <item
-        android:id="@+id/about"
-        android:title="@string/about_text" />
-
-    <item
-        android:id="@+id/add_stub_spends"
-        android:title="@string/text_add_stub_spends" />
-
-    <item
-        android:id="@+id/add_stub_profits"
-        android:title="@string/text_add_stub_profits" />
+        android:id="@+id/add_stub_records"
+        android:title="@string/text_add_stub_records" />
 
     <item
         android:id="@+id/clear_all"
         android:title="@string/text_clear_all" />
 
-    <item
-        android:id="@+id/server_delay"
-        android:checkable="true"
-        android:title="@string/text_server_delay" />
 </menu>

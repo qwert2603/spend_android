@@ -74,14 +74,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     def support_version = '28.0.0'
     def room_version = "1.1.1"
     def lifecycle_version = "1.1.1"
 
-    def spend_entity_version = '0.3.0'
-    def andrlib_version = '1.12.1'
+    def andrlib_version = '1.12.3'
     def andrlib_generator_version = '1.0.10'
 
     def rxjava_version = '2.2.3'
@@ -92,7 +90,7 @@ dependencies {
     def fragmentargs_version = '3.0.2'
     def cicerone_version = '4.0.2'
 
-    def dagger_version = '2.18'
+    def dagger_version = '2.19'
     def retrofit_version = '2.4.0'
     def okhttp_version = '3.11.0'
 
@@ -100,13 +98,10 @@ dependencies {
     def junit_version = '4.12'
     def android_test_runner_version = "1.0.2"
 
-    def postgresql_version = '42.1.4.jre7'
-
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
     implementation "com.android.support:support-media-compat:$support_version"
 
-    implementation "com.github.qwert2603:spend_entity:$spend_entity_version"
     implementation "com.github.qwert2603:andrlib:$andrlib_version"
     implementation "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
     annotationProcessor "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
@@ -138,7 +133,6 @@ dependencies {
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     testImplementation "junit:junit:$junit_version"

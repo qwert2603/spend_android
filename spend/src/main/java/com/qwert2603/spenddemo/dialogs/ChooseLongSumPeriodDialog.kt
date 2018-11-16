@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.dialogs
 
 import android.app.Activity
 import android.app.Dialog
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -15,14 +14,21 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
+import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.repo.ProfitsRepo
-import com.qwert2603.spenddemo.model.repo.SpendsRepo
+import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.utils.*
+import com.qwert2603.spenddemo.utils.Const
+import com.qwert2603.spenddemo.utils.RxUtils
+import com.qwert2603.spenddemo.utils.disposeOnPause
+import com.qwert2603.spenddemo.utils.toPointedString
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.item_sum_variant.view.*
 import javax.inject.Inject
 
@@ -44,40 +50,22 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
     var selectedDays = 0
 
     @Inject
-    lateinit var spendsRepo: SpendsRepo
-    @Inject
-    lateinit var profitsRepo: ProfitsRepo
+    lateinit var recordsRepo: RecordsRepo
+
     @Inject
     lateinit var userSettingsRepo: UserSettingsRepo
 
-    data class Variant(val days: Int, var sum: Long?)
+    @Inject
+    lateinit var uiSchedulerProvider: UiSchedulerProvider
 
-    private val dayChangesEvents = SingleLiveEvent<Unit>()
-//    private lateinit var dayChangesJob: Job
+    @Inject
+    lateinit var modelSchedulersProvider: ModelSchedulersProvider
+
+    data class Variant(val days: Int, var sum: Long?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
-
-        dayChangesEvents.value = Unit
-//  todo      dayChangesJob = launch(newSingleThreadContext("ChooseLongSumPeriodDialog dayChangesEvents")) {
-//            try {
-//                var prevCalendar = Calendar.getInstance()
-//                while (isActive) {
-//                    delay(300, TimeUnit.MILLISECONDS)
-//                    val currentCalendar = Calendar.getInstance()
-//                    if (!currentCalendar.daysEqual(prevCalendar)) launch(UI) { dayChangesEvents.value = Unit }
-//                    prevCalendar = currentCalendar
-//                }
-//            } finally {
-//                LogUtils.d("end of ChooseLongSumPeriodDialog#dayChangesJob")
-//            }
-//        }
-    }
-
-    override fun onDestroy() {
-//        launch { dayChangesJob.cancelAndJoin() }
-        super.onDestroy()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -90,31 +78,37 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
             )
             dismiss()
         }
+        val showProfits = userSettingsRepo.showProfits
+        val showSpends = userSettingsRepo.showSpends
         variants
                 .filter { it.days > 0 }
                 .forEach { variant ->
-                    val showProfits = userSettingsRepo.showProfits
-                    val showSpends = userSettingsRepo.showSpends
-                    dayChangesEvents
+                    RxUtils.dateChanges()
+                            .cast(Any::class.java)
+                            .startWith(Any())
                             .switchMap {
-                                combineLatest(
-                                        liveDataT = if (showProfits || !showSpends) {
-                                            profitsRepo.getSumLastDays(variant.days)
+                                Observable.combineLatest(
+                                        if (showSpends || !showProfits) {
+                                            recordsRepo.getSumLastDays(Const.RECORD_TYPE_ID_SPEND, variant.days)
                                         } else {
-                                            LDUtils.just(0L)
+                                            Observable.just(0L)
                                         },
-                                        liveDataU = if (showSpends || !showProfits) {
-                                            spendsRepo.getSumLastDays(variant.days)
+                                        if (showProfits || !showSpends) {
+                                            recordsRepo.getSumLastDays(Const.RECORD_TYPE_ID_PROFIT, variant.days)
                                         } else {
-                                            LDUtils.just(0L)
+                                            Observable.just(0L)
                                         },
-                                        combiner = { p, s -> p - s }
+                                        BiFunction { s: Long, p: Long -> p - s }
                                 )
                             }
-                            .observe(this, Observer {
+                            .doOnError { LogUtils.e("ChooseLongSumPeriodDialog getSumLastDays", it) }
+                            .subscribeOn(modelSchedulersProvider.io)
+                            .observeOn(uiSchedulerProvider.ui)
+                            .subscribe {
                                 variant.sum = it
                                 adapter.notifyDataSetChanged()
-                            })
+                            }
+                            .disposeOnPause(this)
                 }
         return AlertDialog.Builder(requireContext())
                 .setSingleChoiceItems(
@@ -138,13 +132,14 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
             with(view) {
                 this.setOnClickListener { onClick(position) }
                 variant_RadioButton.isChecked = position == (parent as ListView).checkedItemPosition
-                val item = getItem(position)
+                val item = getItem(position)!!
                 period_TextView.text = variantToString(item.days, resources)
                 if (item.days > 0) {
                     sum_TextView.setVisible(true)
                     sum_TextView.text = resources.getString(
                             R.string.variant_sum_format,
-                            item.sum?.toPointedString() ?: resources.getString(R.string.text_variant_sum_loading)
+                            item.sum?.toPointedString()
+                                    ?: resources.getString(R.string.text_variant_sum_loading)
                     )
                 } else {
                     sum_TextView.setVisible(false)

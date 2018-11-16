@@ -13,6 +13,7 @@
     <string name="delete_profit_text">delete profit?</string>
     <string name="edit_spend_text">edit spend</string>
     <string name="create_profit_text">create profit</string>
+    <string name="create_spend_text">create spend</string>
     <string name="edit_profit_text">edit profit</string>
     <string name="choose_kind_text">select kind</string>
 
@@ -57,6 +58,7 @@
     <string name="text_show_change_kinds">change kinds</string>
     <string name="text_show_spends">spends</string>
     <string name="text_show_profits">profits</string>
+    <string name="text_show_sums" translatable="false">&#931;</string>
     <string name="text_show_date_sums">&#931; by days</string>
     <string name="text_show_month_sums">&#931; by months</string>
     <string name="text_show_empty_sums" translatable="false">&#931;(&#8709;)</string>
@@ -74,16 +76,15 @@
     <string name="text_total_items_format" formatted="true" translatable="false">&#931;(%s) = %s</string>
     <string name="text_total_sum_format" formatted="true" translatable="false">&#931;(&#8704;) = %s</string>
 
-    <string name="text_add_stub_spends">200 stub spends</string>
-    <string name="text_add_stub_profits">200 stub profits</string>
+    <string name="text_add_stub_records">200 stub records</string>
     <string name="text_clear_all">clear all</string>
 
     <string name="text_source_code">source code</string>
     <string name="text_source_code_long">source code on github.com</string>
 
-    <string name="spend_kind_title_format" formatted="true" translatable="false"><![CDATA[<b>%s</b> (%s)]]></string>
-    <string name="spend_kind_description_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b> at <b>%3$s</b>]]></string>
-    <string name="spend_kind_description_no_time_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b>]]></string>
+    <string name="record_kind_title_format" formatted="true" translatable="false"><![CDATA[<b>%s</b> (%s)]]></string>
+    <string name="record_kind_description_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b> at <b>%3$s</b>]]></string>
+    <string name="record_kind_description_no_time_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b>]]></string>
 
     <string name="text_dumping_records">creating records list..</string>
     <string name="text_server_delay">server delay</string>

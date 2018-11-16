@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/profit"
         android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="175" />
 
     <TextView
@@ -35,6 +36,7 @@
         android:minWidth="80sp"
         android:textColor="@color/spend"
         android:textSize="18sp"
+        android:textStyle="bold"
         tools:text="175" />
 
 </LinearLayout>

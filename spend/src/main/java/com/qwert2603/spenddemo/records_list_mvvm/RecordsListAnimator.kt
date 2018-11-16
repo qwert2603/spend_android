@@ -11,11 +11,13 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.records_list_mvvm.vh.RecordViewHolder
 import com.qwert2603.spenddemo.spend_draft.DraftViewImpl
 import com.qwert2603.spenddemo.utils.AnimatorUtils
+import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.doOnEnd
 import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
-import kotlinx.android.synthetic.main.item_spend.view.*
+import kotlinx.android.synthetic.main.item_record.view.*
 import java.util.concurrent.ConcurrentHashMap
 
 class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAnimator() {
@@ -27,17 +29,14 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
     }
 
     // pair is <Animator, cancel_action>.
-    private val createSpendAnimators = ConcurrentHashMap<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
+    private val createRecordAnimators = ConcurrentHashMap<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
 
-    var pendingCreatedSpendId: Long? = null
-    var pendingCreatedProfitId: Long? = null
+    var pendingCreatedRecordUuid: String? = null
 
     override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
-        if (holder is SpendViewHolder && holder.t?.id == pendingCreatedSpendId
-                || holder is ProfitViewHolder && holder.t?.id == pendingCreatedProfitId) {
+        if (holder is RecordViewHolder && holder.t?.uuid == pendingCreatedRecordUuid) {
 
-            if (holder is SpendViewHolder) pendingCreatedSpendId = null
-            if (holder is ProfitViewHolder) pendingCreatedProfitId = null
+            pendingCreatedRecordUuid = null
 
             endAnimation(holder)
 
@@ -54,7 +53,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
 
             val recyclerView = holder.itemView.parent as View
             val spendOrigin = spendOrigin
-            if (holder is SpendViewHolder && spendOrigin != null) {
+            if (holder.t?.recordTypeId == Const.RECORD_TYPE_ID_SPEND && spendOrigin != null) {
                 // todo: если созданная запись отправилась быстро, то начинается новая анимация, и анимация создания сбрасывается.
 
                 /** created item should be above spendOrigin ([DraftViewImpl]) */
@@ -75,11 +74,11 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             animatorSet.playTogether(animators)
             animatorSet.doOnEnd {
                 dispatchAnimationFinished(holder)
-                createSpendAnimators.remove(holder)
+                createRecordAnimators.remove(holder)
                 recyclerView.elevation = 0f
             }
 
-            createSpendAnimators[holder] = Pair(
+            createRecordAnimators[holder] = Pair(
                     animatorSet,
                     { resetActions.forEach { it() } }
             )
@@ -90,7 +89,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
     }
 
     override fun endAnimation(item: RecyclerView.ViewHolder) {
-        createSpendAnimators.remove(item)?.apply {
+        createRecordAnimators.remove(item)?.apply {
             first.cancel()
             second.invoke()
         }
@@ -98,8 +97,8 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
     }
 
     override fun endAnimations() {
-        createSpendAnimators.forEach { endAnimation(it.key) }
-        createSpendAnimators.clear()
+        createRecordAnimators.forEach { endAnimation(it.key) }
+        createRecordAnimators.clear()
         super.endAnimations()
     }
 

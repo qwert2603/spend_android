@@ -1,30 +1,22 @@
 package com.qwert2603.spenddemo.model.sync_processor
 
-import android.arch.lifecycle.MutableLiveData
-import com.qwert2603.andrlib.model.IdentifiableLong
-import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.ChangeKind
-import com.qwert2603.spenddemo.model.entity.FullSyncStatus
 import com.qwert2603.spenddemo.model.entity.RecordChange
+import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.executeAndWait
-import com.qwert2603.spenddemo.utils.switchMap
-import java.sql.Timestamp
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
+class SyncProcessor<T : IdentifiableString, L : LocalItem>(
         private val remoteDBExecutor: ExecutorService,
         private val localDBExecutor: ExecutorService,
         private val lastUpdateStorage: LastUpdateStorage,
-        private val remoteDataSource: RemoteDataSource<T, R>,
-        private val localDataSource: LocalDataSource<T, L>,
+        private val remoteDataSource: RemoteDataSource<T>,
+        private val localDataSource: LocalDataSource<L, T>,
         private val changeIdCounter: IdCounter,
-        private val lastFullSyncStorage: LastFullSyncStorage,
-        private val r2t: R.() -> T,
         private val l2t: L.() -> T,
         private val t2l: T.(change: RecordChange?) -> L
 ) {
@@ -33,61 +25,22 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
         private const val TAG = "SyncProcessor"
     }
 
-    val syncingItemIds = MutableLiveData<Set<Long>>()
-
-    private val lastFullSyncMillis = MutableLiveData<Long>()
-
-    private val syncStatusExecutor = Executors.newSingleThreadScheduledExecutor()
-
-    val syncStatus = lastFullSyncMillis
-            .switchMap { millis ->
-                lastFullSyncStorage.millis = millis
-                val mutableLiveData = MutableLiveData<FullSyncStatus>()
-                mutableLiveData.postValue(FullSyncStatus(millis, millis != null && millis > System.currentTimeMillis() - Const.MILLIS_PER_SECOND))
-                syncStatusExecutor.schedule({ mutableLiveData.postValue(FullSyncStatus(millis, false)) }, 1, TimeUnit.SECONDS)
-                mutableLiveData
-            }
-
     private val pendingClearAll = AtomicBoolean(false)
 
-    init {
-        lastFullSyncMillis.postValue(lastFullSyncStorage.millis)
-    }
+    val syncingRecordsUuids = BehaviorSubject.createDefault<Set<String>>(emptySet())
 
     fun start() {
         if (!E.env.syncWithServer) return
 
         Executors.newSingleThreadExecutor().execute {
             while (true) {
-                Thread.sleep(10)
-
                 try {
+                    Thread.sleep(126)//todo
+
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
-                            localDataSource.clearAll()
-                            lastUpdateStorage.lastUpdateInfo = LastUpdateInfo(Timestamp(0), IdentifiableLong.NO_ID)
-                            lastFullSyncMillis.postValue(null)
-                        }
-                    }
-
-                    while (true) {
-                        val (lastUpdateTimestamp, lastUpdatedId) = lastUpdateStorage.lastUpdateInfo
-                        val items = remoteDBExecutor.executeAndWait {
-                            remoteDataSource.getUpdates(
-                                    lastUpdateMillis = lastUpdateTimestamp,
-                                    lastUpdatedId = lastUpdatedId,
-                                    count = 50
-                            )
-                        }
-                        if (items.isEmpty()) {
-                            lastFullSyncMillis.postValue(System.currentTimeMillis())
-                            break
-                        }
-                        localDBExecutor.executeAndWait {
-                            val (deleted, changed) = items.partition { it.deleted }
-                            localDataSource.deleteItems(deleted.map { it.id })
-                            localDataSource.saveChangesFromServer(changed.map(r2t))
-                            lastUpdateStorage.lastUpdateInfo = items.last().let { LastUpdateInfo(it.updated, it.id) }
+                            localDataSource.deleteAll()
+                            lastUpdateStorage.lastUpdateInfo = null
                         }
                     }
 
@@ -96,40 +49,37 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
                             localDataSource.getLocallyChangedItems(10)
                         }
                         if (locallyChangedItems.isEmpty()) break
-                        locallyChangedItems
-                                .forEach { localItem ->
-                                    val change = localItem.change!!
-                                    syncingItemIds.postValue(setOf(localItem.id))
-                                    when (change.changeKind) {
-                                        ChangeKind.INSERT -> {
-                                            val newId = remoteDBExecutor.executeAndWait {
-                                                remoteDataSource.addItem(localItem.l2t())
-                                            }
-                                            localDBExecutor.executeAndWait {
-                                                localDataSource.onItemAddedToServer(localItem.id, newId, change.id)
-                                            }
-                                        }
-                                        ChangeKind.UPDATE -> {
-                                            remoteDBExecutor.executeAndWait {
-                                                remoteDataSource.editItem(localItem.l2t())
-                                            }
-                                            localDBExecutor.executeAndWait {
-                                                localDataSource.clearLocalChange(localItem.id, change.id)
-                                            }
-                                        }
-                                        ChangeKind.DELETE -> {
-                                            remoteDBExecutor.executeAndWait {
-                                                remoteDataSource.deleteItem(localItem.id)
-                                            }
-                                            localDBExecutor.executeAndWait {
-                                                localDataSource.deleteItems(listOf(localItem.id))
-                                            }
-                                        }
-                                    }
-                                    syncingItemIds.postValue(emptySet())
-                                }
+
+                        syncingRecordsUuids.onNext(locallyChangedItems.map { it.uuid }.toHashSet())
+                        val (updated, deleted) = locallyChangedItems.partition { it.change!!.changeKindId == Const.CHANGE_KIND_UPSERT }
+                        val deletedUuids = deleted.map { it.uuid }
+                        try {
+                            remoteDBExecutor.executeAndWait {
+                                remoteDataSource.saveChanges(
+                                        updated = updated.map(l2t),
+                                        deletedUuids = deletedUuids
+                                )
+                            }
+                        } finally {
+                            syncingRecordsUuids.onNext(emptySet())
+                        }
+                        localDBExecutor.executeAndWait {
+                            // todo: one method.
+                            localDataSource.clearLocalChange(updated.map { ItemsIds(it.uuid, it.change!!.id) })
+                            localDataSource.deleteItems(deletedUuids)
+                        }
                     }
 
+                    while (true) {
+                        val updatesFromRemote = remoteDBExecutor.executeAndWait {
+                            remoteDataSource.getUpdates(lastUpdateStorage.lastUpdateInfo, 10)
+                        }
+                        if (updatesFromRemote.isEmpty()) break
+                        localDBExecutor.executeAndWait {
+                            localDataSource.saveChangesFromRemote(updatesFromRemote)
+                            lastUpdateStorage.lastUpdateInfo = updatesFromRemote.lastUpdateInfo
+                        }
+                    }
                 } catch (t: Throwable) {
                     LogUtils.e(TAG, "remoteDBExecutor.execute", t)
                 }
@@ -137,32 +87,18 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
         }
     }
 
-    fun addItem(t: T) {
+    fun saveItems(ts: List<T>) {
         localDBExecutor.execute {
-            localDataSource.saveItem(t.t2l(RecordChange(changeIdCounter.getNext(), ChangeKind.INSERT)))
+            localDataSource.saveItems(ts.map { it.t2l(RecordChange(changeIdCounter.getNext(), Const.CHANGE_KIND_UPSERT)) })
         }
     }
 
-    fun addItems(ts: List<T>) {
-        localDBExecutor.execute {
-            localDataSource.addItems(ts.map {
-                it.t2l(RecordChange(changeIdCounter.getNext(), ChangeKind.INSERT))
-            })
-        }
-    }
-
-    fun editItem(t: T) {
-        localDBExecutor.execute {
-            localDataSource.onItemEdited(t, changeIdCounter.getNext())
-        }
-    }
-
-    fun removeItem(itemId: Long) {
+    fun removeItems(itemsUuids: List<String>) {
         localDBExecutor.execute {
             if (E.env.syncWithServer) {
-                localDataSource.locallyDeleteItem(itemId, changeIdCounter.getNext())
+                localDataSource.locallyDeleteItems(itemsUuids.map { ItemsIds(it, changeIdCounter.getNext()) })
             } else {
-                localDataSource.deleteItems(listOf(itemId))
+                localDataSource.deleteItems(itemsUuids)
             }
         }
     }
@@ -172,7 +108,7 @@ class SyncProcessor<T : IdentifiableLong, R : RemoteItem, L : LocalItem>(
             pendingClearAll.set(true)
         } else {
             localDBExecutor.execute {
-                localDataSource.clearAll()
+                localDataSource.deleteAll()
             }
         }
     }

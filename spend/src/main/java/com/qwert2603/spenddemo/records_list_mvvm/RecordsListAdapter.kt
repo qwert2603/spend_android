@@ -1,89 +1,89 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.records_list_mvvm.entity.*
+import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.records_list_mvvm.vh.*
+import io.reactivex.subjects.PublishSubject
 
-class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecordsListAdapter(private val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true
         set(value) {
             if (value == field) return
             field = value
-            notifyItemRangeChanged(0, itemCount)
-        }
-
-    var showIds = true
-        set(value) {
-            if (value == field) return
-            field = value
-            notifyItemRangeChanged(0, itemCount)
+            redrawVisibleViewHolders()
         }
 
     var showDatesInRecords = true
         set(value) {
             if (value == field) return
             field = value
-            notifyItemRangeChanged(0, itemCount)
+            redrawVisibleViewHolders()
         }
 
     var showTimesInRecords = true
         set(value) {
             if (value == field) return
             field = value
-            notifyItemRangeChanged(0, itemCount)
+            redrawVisibleViewHolders()
         }
+
+    var syncingRecordsUuids: Set<String> = emptySet()
+        set(value) {
+            if (value == field) return
+            field = value
+            redrawVisibleViewHolders()
+        }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun redrawVisibleViewHolders() {
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        for (i in layoutManager.findFirstVisibleItemPosition()..layoutManager.findLastVisibleItemPosition()) {
+            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i)
+            if (viewHolder as? BaseViewHolder<RecordsListItem> != null) {
+                viewHolder.bind(viewHolder.t!!, this)
+            }
+        }
+    }
 
     var list: List<RecordsListItem> = emptyList()
 
-    var itemClicks: ((RecordsListItem) -> Unit)? = null
-    var itemLongClicks: ((RecordsListItem) -> Unit)? = null
-
-    var syncingItemIdsInList: Set<Long> = emptySet()
-        set(value) {
-            val changed = value union field
-            field = value
-            list.forEachIndexed { index, recordsListItem ->
-                if (recordsListItem.idInList() in changed) {
-                    notifyItemChanged(index)
-                }
-            }
-        }
+    var itemClicks = PublishSubject.create<RecordsListItem>()
+    var itemLongClicks = PublishSubject.create<RecordsListItem>()
 
     override fun getItemCount() = list.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        VIEW_TYPE_SPEND -> SpendViewHolder(parent)
-        VIEW_TYPE_PROFIT -> ProfitViewHolder(parent)
-        VIEW_TYPE_DATE_SUM -> DateSumViewHolder(parent)
+        VIEW_TYPE_RECORD -> RecordViewHolder(parent)
+        VIEW_TYPE_DATE_SUM -> DaySumViewHolder(parent)
         VIEW_TYPE_MONTH_SUM -> MonthSumViewHolder(parent)
+        VIEW_TYPE_YEAR_SUM -> YearSumViewHolder(parent)
         VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)
         else -> null!!
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? SpendViewHolder)?.bind(list[position] as SpendUI, this)
-        (holder as? ProfitViewHolder)?.bind(list[position] as ProfitUI, this)
-        (holder as? DateSumViewHolder)?.bind(list[position] as DateSumUI, this)
-        (holder as? MonthSumViewHolder)?.bind(list[position] as MonthSumUI, this)
-        (holder as? TotalsViewHolder)?.bind(list[position] as TotalsUI, this)
+        holder as BaseViewHolder<RecordsListItem>
+        holder.bind(list[position], this)
     }
 
     override fun getItemViewType(position: Int) = when (list[position]) {
-        is SpendUI -> VIEW_TYPE_SPEND
-        is ProfitUI -> VIEW_TYPE_PROFIT
-        is DateSumUI -> VIEW_TYPE_DATE_SUM
-        is MonthSumUI -> VIEW_TYPE_MONTH_SUM
-        is TotalsUI -> VIEW_TYPE_TOTALS
+        is Record -> VIEW_TYPE_RECORD
+        is DaySum -> VIEW_TYPE_DATE_SUM
+        is MonthSum -> VIEW_TYPE_MONTH_SUM
+        is YearSum -> VIEW_TYPE_YEAR_SUM
+        is Totals -> VIEW_TYPE_TOTALS
         else -> null!!
     }
 
     companion object {
-        const val VIEW_TYPE_SPEND = 1
-        const val VIEW_TYPE_PROFIT = 2
-        const val VIEW_TYPE_DATE_SUM = 3
-        const val VIEW_TYPE_MONTH_SUM = 4
+        const val VIEW_TYPE_RECORD = 1
+        const val VIEW_TYPE_DATE_SUM = 2
+        const val VIEW_TYPE_MONTH_SUM = 3
+        const val VIEW_TYPE_YEAR_SUM = 4
         const val VIEW_TYPE_TOTALS = 5
     }
 }

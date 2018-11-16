@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
@@ -18,15 +17,15 @@ import java.util.*
 class TimePickerDialogFragment : DialogFragment() {
 
     companion object {
-        const val MILLIS_KEY = "${BuildConfig.APPLICATION_ID}.MILLIS_KEY"
+        const val TIME_KEY = "TIME_KEY"
     }
 
     @Arg
-    var millis: Long = 0
+    var time: Int = 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-                .also { it.time = Date(millis).onlyTime() }
+                .also { it.timeInMillis = time.toTimeCalendar().timeInMillis }
         return TimePickerDialog(
                 requireContext(),
                 { _, h, m ->
@@ -35,7 +34,7 @@ class TimePickerDialogFragment : DialogFragment() {
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
-                            Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
+                            Intent().putExtra(TIME_KEY, calendar.toTimeInt())
                     )
                 },
                 calendar.hour,

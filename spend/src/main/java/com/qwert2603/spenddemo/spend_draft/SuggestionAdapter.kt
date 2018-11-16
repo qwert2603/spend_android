@@ -20,7 +20,7 @@ class SuggestionAdapter(context: Context, suggestions: List<String>, s: String? 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView ?: parent.inflate(R.layout.item_suggestion)
-        val s = getItem(position)
+        val s = getItem(position)!!
         val spannableStringBuilder = SpannableStringBuilder(s)
         if (search != null) {
             val indexOf = s.toLowerCase().indexOf(search)

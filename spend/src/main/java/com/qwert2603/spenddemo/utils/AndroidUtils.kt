@@ -3,10 +3,6 @@ package com.qwert2603.spenddemo.utils
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Dialog
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
@@ -20,17 +16,6 @@ import kotlin.math.absoluteValue
 import kotlin.reflect.KFunction2
 import android.app.AlertDialog as SystemDialog
 import android.support.v7.app.AlertDialog as AppCompatDialog
-
-inline fun <T, R1 : Comparable<R1>, R2 : Comparable<R2>> Iterable<T>.sortedBy(
-        crossinline first: (T) -> R1,
-        crossinline second: (T) -> R2
-) = this.sortedWith(kotlin.Comparator { i1, i2 ->
-    kotlin.comparisons.compareBy(first)
-            .compare(i1, i2)
-            .takeIf { it != 0 }
-            ?: kotlin.comparisons.compareBy(second)
-                    .compare(i1, i2)
-})
 
 inline fun Animator.doOnEnd(crossinline action: () -> Unit): Animator {
     addListener(object : AnimatorListenerAdapter() {
@@ -83,69 +68,6 @@ fun <T> List<T>.indexOfFirst(startIndex: Int, predicate: (T) -> Boolean): Int {
     return -1
 }
 
-fun <T, U> LiveData<T>.map(mapper: (T) -> U): LiveData<U> = Transformations.map(this, mapper)
-fun <T, U> LiveData<T>.switchMap(func: (T) -> LiveData<U>): LiveData<U> = Transformations.switchMap(this, func)
-
-fun <T, U> LiveData<T>.mapBG(suspendMapper: SuspendMapper<T, U>): LiveData<U> {
-    val result = MediatorLiveData<U>()
-// todo   val coroutineContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-//    result.addSource(this, Observer { x ->
-//        x ?: return@Observer
-//        GlobalScope.launch(Dispatchers.Main) {
-//            result.value = withContext(coroutineContext) { suspendMapper(x) }
-//        }
-//    })
-    return result
-}
-
-fun <T, U, V> combineLatest(
-        liveDataT: LiveData<T>,
-        liveDataU: LiveData<U>,
-        combiner: (T, U) -> V,
-        startT: T? = null,
-        startU: U? = null
-) = MediatorLiveData<V>()
-        .apply {
-            var lastT: T? = startT
-            var lastU: U? = startU
-
-            fun update() {
-                val localLastT = lastT ?: return
-                val localLastU = lastU ?: return
-                value = combiner(localLastT, localLastU)
-            }
-
-            addSource(liveDataT) {
-                lastT = it
-                update()
-            }
-            addSource(liveDataU) {
-                lastU = it
-                update()
-            }
-        }
-
-fun <T> combineLatest(liveDatas: List<LiveData<T>>) = MediatorLiveData<List<T>>()
-        .apply {
-            val lasts: MutableList<T?> = (1..liveDatas.size).map { null }.toMutableList()
-
-            fun update() {
-                lasts.toList()
-                        .takeIf { it.all { it != null } }
-                        ?.let { value = it.map { it!! } }
-            }
-            liveDatas.forEachIndexed { index, liveData ->
-                addSource(liveData) {
-                    lasts[index] = it
-                    update()
-                }
-            }
-        }
-
-object LDUtils {
-    fun <T> just(t: T): LiveData<T> = MutableLiveData<T>().also { it.value = t }
-}
-
 inline fun <T> ExecutorService.executeAndWait(crossinline action: () -> T): T = submit(Callable<T> { action() }).get()
 
 fun <T> List<T>.reduceEmptyToNull(reducer: (T, T) -> T): T? = if (this.isEmpty()) null else this.reduce(reducer)
@@ -155,6 +77,13 @@ fun <T, U, R> KFunction2<T, U, R>.toRxBiFunction() = BiFunction { t: T, u: U -> 
 fun Intent.getLongExtraNullable(key: String) =
         if (hasExtra(key)) {
             getLongExtra(key, 0)
+        } else {
+            null
+        }
+
+fun Intent.getIntExtraNullable(key: String) =
+        if (hasExtra(key)) {
+            getIntExtra(key, 0)
         } else {
             null
         }

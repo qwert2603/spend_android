@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
@@ -18,19 +17,18 @@ import java.util.*
 class DatePickerDialogFragment : DialogFragment() {
 
     companion object {
-        const val MILLIS_KEY = "${BuildConfig.APPLICATION_ID}.MILLIS_KEY"
+        const val DATE_KEY = "DATE_KEY"
     }
 
     @Arg
-    var millis: Long = 0
+    var date: Int = 0
 
     @Arg
     var withNow: Boolean = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-                .also { it.timeInMillis = millis }
-                .also { it.time = it.onlyDate() }
+                .also { it.timeInMillis = date.toDateCalendar().timeInMillis }
         return DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -40,7 +38,7 @@ class DatePickerDialogFragment : DialogFragment() {
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
-                            Intent().putExtra(MILLIS_KEY, calendar.timeInMillis)
+                            Intent().putExtra(DATE_KEY, calendar.toDateInt())
                     )
                 },
                 calendar.year,

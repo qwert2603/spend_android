@@ -2,12 +2,17 @@ package com.qwert2603.spenddemo.di
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.local_db.LocalDB
-import com.qwert2603.spenddemo.model.remote_db.RemoteDB
-import com.qwert2603.spenddemo.model.remote_db.RemoteDBImpl
-import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
+import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
+import com.qwert2603.spenddemo.model.rest.Rest
 import dagger.Module
 import dagger.Provides
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Singleton
@@ -22,7 +27,18 @@ class ModelModule {
 
     @Provides
     @Singleton
-    fun remoteDB(userSettingsRepo: UserSettingsRepo): RemoteDB = RemoteDBImpl(userSettingsRepo.serverInfoChanges())
+    fun recordsDao(localDB: LocalDB): RecordsDao = localDB.recordsDao()
+
+    @Provides
+    @Singleton
+    fun rest(): Rest = Retrofit.Builder()
+            .baseUrl(E.env.restBaseUrl)
+            .client(OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor { LogUtils.d("ok_http", it) }.setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(Rest::class.java)
 
     @Provides
     @Singleton

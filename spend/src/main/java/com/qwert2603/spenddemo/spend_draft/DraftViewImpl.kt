@@ -21,7 +21,6 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
-import java.util.*
 
 class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
 
@@ -41,8 +40,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
-    private val onDateSelected = PublishSubject.create<Wrapper<Date>>()
-    private val onTimeSelected = PublishSubject.create<Wrapper<Date>>()
+    private val onDateSelected = PublishSubject.create<Wrapper<Int>>()
+    private val onTimeSelected = PublishSubject.create<Wrapper<Int>>()
     private val onKindSelected = PublishSubject.create<String>()
 
     override lateinit var dialogShower: DialogAwareView.DialogShower
@@ -55,19 +54,9 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
-            REQUEST_CODE_DATE -> onDateSelected.onNext(
-                    data
-                            .getLongExtraNullable(DatePickerDialogFragment.MILLIS_KEY)
-                            ?.let { Date(it) }
-                            .wrap()
-            )
-            REQUEST_CODE_TIME -> onTimeSelected.onNext(
-                    data
-                            .getLongExtraNullable(TimePickerDialogFragment.MILLIS_KEY)
-                            ?.let { Date(it) }
-                            .wrap()
-            )
-            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseSpendKindDialogFragment.KIND_KEY))
+            REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY).wrap())
+            REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY).wrap())
+            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseRecordKindDialogFragment.KIND_KEY))
         }
     }
 
@@ -89,9 +78,9 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
 
-    override fun onDateSelected(): Observable<Wrapper<Date>> = onDateSelected
+    override fun onDateSelected(): Observable<Wrapper<Int>> = onDateSelected
 
-    override fun onTimeSelected(): Observable<Wrapper<Date>> = onTimeSelected
+    override fun onTimeSelected(): Observable<Wrapper<Int>> = onTimeSelected
 
     override fun onKindSelected(): Observable<String> = onKindSelected
 
@@ -103,17 +92,17 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     override fun render(vs: DraftViewState) {
         super.render(vs)
-        kindEditText.setText(vs.creatingSpend.kind)
+        kindEditText.setText(vs.recordDraft.kind)
         valueEditText.setText(vs.valueString)
 
         DateTimeTextViews.render(
                 dateTextView = date_EditText,
                 timeTextView = time_EditText,
-                date = vs.creatingSpend.date,
-                time = vs.creatingSpend.time
+                date = vs.recordDraft.date,
+                time = vs.recordDraft.time
         )
 
-        renderIfChanged({ createEnable }) {
+        renderIfChanged({ recordDraft.isValid() }) {
             save_Button.isEnabled = it
             save_Button.setColorFilter(resources.color(if (it) R.color.colorAccentDark else R.color.button_disabled))
         }
@@ -122,7 +111,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun executeAction(va: ViewAction) {
         LogUtils.d("DraftViewImpl executeAction $va")
-        if (va !is DraftViewAction) return
+        if (va !is DraftViewAction) null!!
         when (va) {
             DraftViewAction.FocusOnKindInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
@@ -139,14 +128,15 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                 }, 200)
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.millis, true)
+                    .newDatePickerDialogFragment(va.date, true)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
-                    .newTimePickerDialogFragment(va.millis)
+                    .newTimePickerDialogFragment(va.time)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_TIME) }
                     .also { keyboardManager.hideKeyboard() }
-            DraftViewAction.AskToSelectKind -> ChooseSpendKindDialogFragment()
+            DraftViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
+                    .newChooseRecordKindDialogFragment(Const.RECORD_TYPE_ID_SPEND)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_KIND) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.ShowKindSuggestions -> {
@@ -154,6 +144,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                 kind_EditText.showDropDown()
             }
             DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
+            DraftViewAction.RerenderAll -> renderAll()
         }.also { }
     }
 }

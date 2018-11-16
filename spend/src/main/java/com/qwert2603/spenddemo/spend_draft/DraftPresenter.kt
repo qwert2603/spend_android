@@ -3,11 +3,10 @@ package com.qwert2603.spenddemo.spend_draft
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.spenddemo.model.entity.CreatingSpend
+import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -17,116 +16,85 @@ class DraftPresenter @Inject constructor(
 ) : BasePresenter<DraftView, DraftViewState>(uiSchedulerProvider) {
 
     override val initialState = DraftViewState(
-            creatingSpend = CreatingSpend.EMPTY,
-            createEnable = false
+            draftInteractor.getDraft() ?: RecordDraft.new(Const.RECORD_TYPE_ID_SPEND)
     )
-
-    private val loadDraft: Observable<CreatingSpend> = intent { it.viewCreated() }
-            .switchMapSingle { draftInteractor.getDraft() }
-            .share()
 
     private val clearDraft = PublishSubject.create<Any>()
 
-    private val onDateSelectedIntent = intent { it.onDateSelected() }.share()
-    private val onTimeSelectedIntent = intent { it.onTimeSelected() }.share()
-    private val kingChangesIntent = intent { it.kingChanges() }.share()
-    private val onKindSelectedIntent = intent { it.onKindSelected() }.share()
-    private val onKindSuggestionSelectedIntent = intent { it.onKindSuggestionSelected() }.share()
+    private val onDateSelectedIntent = intent { it.onDateSelected() }.shareAfterViewSubscribed()
+    private val onTimeSelectedIntent = intent { it.onTimeSelected() }.shareAfterViewSubscribed()
+    private val kingChangesIntent = intent { it.kingChanges() }.shareAfterViewSubscribed()
+    private val onKindSelectedIntent = intent { it.onKindSelected() }.shareAfterViewSubscribed()
+    private val onKindSuggestionSelectedIntent = intent { it.onKindSuggestionSelected() }.shareAfterViewSubscribed()
 
-    private val draftChanges: Observable<CreatingSpend> = Observable
-            .merge(
-                    loadDraft
-                            .map { draft ->
-                                { _: CreatingSpend -> draft }
-                            },
-                    Observable
-                            .merge(listOf(
-                                    onDateSelectedIntent
-                                            .map { newDate ->
-                                                { r: CreatingSpend ->
-                                                    if (r.date == null && newDate.t?.isToday() == true) {
-                                                        r.copy(
-                                                                date = newDate.t,
-                                                                time = Date().onlyTime()
-                                                        )
-                                                    } else {
-                                                        r.copy(
-                                                                date = newDate.t,
-                                                                time = if (newDate.t == null) null else r.time
-                                                        )
-                                                    }
-                                                }
-                                            },
-                                    onTimeSelectedIntent
-                                            .map { newTime ->
-                                                { r: CreatingSpend -> r.copy(time = newTime.t.takeIf { r.date != null }) }
-                                            },
-                                    kingChangesIntent
-                                            .map { kind ->
-                                                { r: CreatingSpend -> r.copy(kind = kind) }
-                                            },
-                                    intent { it.valueChanges() }
-                                            .map { value ->
-                                                { r: CreatingSpend -> r.copy(value = value) }
-                                            },
-                                    Observable
-                                            .merge(
-                                                    onKindSelectedIntent,
-                                                    onKindSuggestionSelectedIntent
-                                            )
-                                            .map { kind ->
-                                                Pair(kind, draftInteractor.getLastPriceOfKind(kind))
-                                            }
-                                            .map { (kind, lastPrice) ->
-                                                { r: CreatingSpend -> r.copy(kind = kind, value = lastPrice) }
-                                            },
-                                    clearDraft
-                                            .map {
-                                                { _: CreatingSpend -> initialState.creatingSpend }
-                                            }
-                            ))
-                            .delaySubscription(loadDraft)
-            )
-            .scan(initialState.creatingSpend) { creatingSpend: CreatingSpend, change: (CreatingSpend) -> CreatingSpend ->
-                change(creatingSpend)
-            }
-            .skip(1) // skip initialValue in scan.
-            .share()
+    override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
+            onDateSelectedIntent
+                    .map { DraftPartialChange.DateSelected(it.t) },
+            onTimeSelectedIntent
+                    .map { DraftPartialChange.TimeSelected(it.t) },
+            kingChangesIntent
+                    .map { DraftPartialChange.KindChanged(it) },
+            intent { it.valueChanges() }
+                    .map { DraftPartialChange.ValueChanged(it) },
+            Observable
+                    .merge(
+                            onKindSelectedIntent,
+                            onKindSuggestionSelectedIntent
+                    )
+                    .switchMapSingle { kind ->
+                        draftInteractor.getLastValueOfKind(kind)
+                                .map { Pair(kind, it) }
+                    }
+                    .map { (kind, lastValue) ->
+                        DraftPartialChange.KindSelected(kind, lastValue)
+                    },
+            clearDraft
+                    .map { DraftPartialChange.DraftCleared }
+    ))
 
-
-    override val partialChanges: Observable<PartialChange> = Observable.merge(
-            draftChanges
-                    .map { DraftPartialChange.DraftChanged(it, draftInteractor.isCreatable(it)) },
-            RxUtils.dateChanges()
-                    .map { DraftPartialChange.CurrentDateChanged }
-    )
 
     override fun stateReducer(vs: DraftViewState, change: PartialChange): DraftViewState {
         if (change !is DraftPartialChange) throw Exception()
         return when (change) {
-            is DraftPartialChange.DraftChanged -> vs.copy(creatingSpend = change.creatingSpend, createEnable = change.createEnable)
-            DraftPartialChange.CurrentDateChanged -> vs
+            is DraftPartialChange.DateSelected -> {
+                val (nowDate, nowTime) = DateUtils.getNow()
+                if (vs.recordDraft.date == null && change.date == nowDate) {
+                    vs.copy(recordDraft = vs.recordDraft.copy(
+                            date = change.date,
+                            time = nowTime
+                    ))
+                } else {
+                    vs.copy(recordDraft = vs.recordDraft.copy(
+                            date = change.date,
+                            time = if (change.date != null) vs.recordDraft.time else null
+                    ))
+                }
+            }
+            is DraftPartialChange.TimeSelected -> vs.copy(recordDraft = vs.recordDraft.copy(time = change.time.takeIf { vs.recordDraft.date != null }))
+            is DraftPartialChange.KindChanged -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
+            is DraftPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind, value = change.lastValue))
+            is DraftPartialChange.ValueChanged -> vs.copy(recordDraft = vs.recordDraft.copy(value = change.value))
+            DraftPartialChange.DraftCleared -> vs.copy(recordDraft = RecordDraft.new(Const.RECORD_TYPE_ID_SPEND))
         }
     }
 
     override fun bindIntents() {
         super.bindIntents()
 
-        draftChanges
-                .skip(1) // skip loaded draft.
-                .switchMapCompletable { draftInteractor.saveDraft(it) }
-                .toObservable<Any>()
+        viewStateObservable
+                .skip(1) // skip initial value.
+                .doOnNext { draftInteractor.saveDraft(it.recordDraft) }
                 .subscribeToView()
 
         Observable
                 .merge(
                         intent { it.onKindInputClicked() }
-                                .withLatestFrom(draftChanges, secondOfTwo())
+                                .withLatestFrom(viewStateObservable, secondOfTwo())
+                                .mapNotNull { it.recordDraft }
                                 .map { it.kind },
                         kingChangesIntent
                                 .debounce(100, TimeUnit.MILLISECONDS)
                 )
-                .skipUntil(loadDraft)
                 .switchMapSingle { kind ->
                     draftInteractor.getSuggestions(kind)
                             .map { if (it.isNotEmpty()) it else listOf("smth") }
@@ -141,19 +109,21 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.selectDateClicks() }
-                .withLatestFrom(draftChanges, secondOfTwo())
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .mapNotNull { it.recordDraft }
                 .doOnNext {
                     viewActions.onNext(DraftViewAction.AskToSelectDate(
-                            (it.date ?: Date().onlyDate()).time
+                            it.date ?: DateUtils.getNow().first
                     ))
                 }
                 .subscribeToView()
 
         intent { it.selectTimeClicks() }
-                .withLatestFrom(draftChanges, secondOfTwo())
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .mapNotNull { it.recordDraft }
                 .doOnNext {
                     viewActions.onNext(DraftViewAction.AskToSelectTime(
-                            (it.time ?: Date().onlyTime()).time
+                            it.time ?: DateUtils.getNow().second
                     ))
                 }
                 .subscribeToView()
@@ -163,10 +133,11 @@ class DraftPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.saveClicks() }
-                .withLatestFrom(draftChanges, secondOfTwo())
-                .filter { draftInteractor.isCreatable(it) }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .mapNotNull { it.recordDraft }
+                .filter { it.isValid() }
                 .switchMapCompletable {
-                    draftInteractor.createSpend(it)
+                    draftInteractor.createRecord(it)
                             .doOnComplete { clearDraft.onNext(Any()) }
                             .doOnComplete { viewActions.onNext(DraftViewAction.FocusOnKindInput) }
                 }
@@ -183,6 +154,10 @@ class DraftPresenter @Inject constructor(
                         onKindSuggestionSelectedIntent
                 )
                 .doOnNext { viewActions.onNext(DraftViewAction.FocusOnValueInput) }
+                .subscribeToView()
+
+        RxUtils.dateChanges()
+                .doOnNext { viewActions.onNext(DraftViewAction.RerenderAll) }
                 .subscribeToView()
     }
 }

@@ -28,7 +28,7 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:reverseLayout="true"
             tools:itemCount="20"
-            tools:listitem="@layout/item_spend" />
+            tools:listitem="@layout/item_record" />
 
         <com.qwert2603.spenddemo.spend_draft.DraftViewImpl
             android:id="@+id/draftViewImpl"

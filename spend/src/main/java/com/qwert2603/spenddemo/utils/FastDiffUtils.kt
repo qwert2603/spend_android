@@ -13,6 +13,10 @@ object FastDiffUtils {
             val changes: List<Int>,
             val moves: List<Pair<Int, Int>>
     ) {
+        companion object {
+            val EMPTY = FastDiffResult(emptyList(), emptyList(), emptyList(), emptyList())
+        }
+
         fun dispatchToAdapter(adapter: RecyclerView.Adapter<*>) {
             moves.forEach { adapter.notifyItemMoved(it.first, it.second) }
             changes.forEach { adapter.notifyItemChanged(it) }

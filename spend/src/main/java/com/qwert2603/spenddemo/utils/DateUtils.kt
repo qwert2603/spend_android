@@ -3,7 +3,6 @@ package com.qwert2603.spenddemo.utils
 import android.content.res.Resources
 import android.support.annotation.MainThread
 import com.qwert2603.spenddemo.R
-import java.text.SimpleDateFormat
 import java.util.*
 import com.qwert2603.andrlib.util.Const as LibConst
 
@@ -33,18 +32,16 @@ fun Date.onlyTime(): Date = Calendar
         }
         .time
 
-fun Date.isToday() = this.onlyDate() == Date().onlyDate()
-fun Date.isYesterday() = this.onlyDate() == Date().onlyDate() - 1.days
-fun Date.isTomorrow() = this.onlyDate() == Date().onlyDate() + 1.days
-
-private val dateFormat = SimpleDateFormat(Const.DATE_FORMAT_PATTERN, Locale.getDefault())
+fun Int.isToday() = this == Calendar.getInstance().toDateInt()
+fun Int.isYesterday() = this == Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -1) }.toDateInt()
+fun Int.isTomorrow() = this == Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, 1) }.toDateInt()
 
 @MainThread
-fun Date.toFormattedString(resources: Resources): String = when {
+fun Int.toFormattedDateString(resources: Resources): String = when {
     isToday() -> resources.getString(R.string.today_text)
     isYesterday() -> resources.getString(R.string.yesterday_text)
     isTomorrow() -> resources.getString(R.string.tomorrow_text)
-    else -> dateFormat.format(this)
+    else -> this.toDateString()
 }
 
 infix operator fun Date.plus(millis: Long) = Date(time + millis)
@@ -111,3 +108,23 @@ fun Date.secondsToZero(): Date = Calendar.getInstance()
             it.millisecond = 0
         }
         .time
+
+
+object DateUtils {
+    fun getNow(): Pair<Int, Int> {
+        val calendar = Calendar.getInstance()
+        return Pair(
+                calendar.year * 10000 + (calendar.month + 1) * 100 + calendar.day,
+                calendar.hour * 100 + calendar.minute
+        )
+    }
+}
+
+fun Int.toDateString() = String.format("%04d-%02d-%02d", this / (100 * 100), this / 100 % 100, this % 100)
+fun Int.toTimeString() = String.format("%d:%02d", this / 100, this % 100)
+
+fun Calendar.toDateInt() = year * (100 * 100) + (month + 1) * 100 + day
+fun Calendar.toTimeInt() = hour * 100 + minute
+
+fun Int.toDateCalendar() = GregorianCalendar(this / (100 * 100), (this / 100 % 100) - 1, this % 100)
+fun Int.toTimeCalendar() = GregorianCalendar(1970, Calendar.JANUARY, 1, this / 100, this % 100, 0)

@@ -1,18 +1,12 @@
 package com.qwert2603.spenddemo.utils
 
 import android.content.SharedPreferences
-import com.qwert2603.spenddemo.model.entity.CreatingSpend
-import com.qwert2603.spenddemo.model.entity.ServerInfo
+import com.google.gson.Gson
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
-import com.qwert2603.spenddemo.model.sync_processor.LastFullSyncStorage
-import com.qwert2603.spenddemo.model.sync_processor.LastUpdateInfo
-import com.qwert2603.spenddemo.model.sync_processor.LastUpdateStorage
-import java.sql.Timestamp
-import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-private inline fun SharedPreferences.makeEdit(crossinline editAction: SharedPreferences.Editor.() -> Unit) {
+inline fun SharedPreferences.makeEdit(crossinline editAction: SharedPreferences.Editor.() -> Unit) {
     this.edit()
             .apply(editAction)
             .apply()
@@ -76,37 +70,6 @@ class PrefsLongNullable(
     }
 }
 
-class PrefsTimestamp(
-        private val prefs: SharedPreferences,
-        key: String,
-        private val defaultValue: Timestamp = Timestamp(0)
-) : ReadWriteProperty<Any, Timestamp> {
-    private val keyMillis = "$key millis"
-    private val keyNanos = "$key nanos"
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): Timestamp = Timestamp(prefs.getLong(keyMillis, defaultValue.time))
-            .also { it.nanos = prefs.getInt(keyNanos, defaultValue.nanos) }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: Timestamp) {
-        prefs.makeEdit {
-            putLong(keyMillis, value.time)
-            putInt(keyNanos, value.nanos)
-        }
-    }
-}
-
-class PrefsLastUpdateStorage(prefs: SharedPreferences, key: String) : LastUpdateStorage {
-    private var timestamp by PrefsTimestamp(prefs, "$key timestamp")
-    private var id by PrefsLong(prefs, "$key id")
-
-    override var lastUpdateInfo: LastUpdateInfo
-        get() = LastUpdateInfo(timestamp, id)
-        set(value) {
-            timestamp = value.lastUpdateTimestamp
-            id = value.lastUpdatedId
-        }
-}
-
 class PrefsCounter(
         private val prefs: SharedPreferences,
         private val key: String,
@@ -120,71 +83,29 @@ class PrefsCounter(
     }
 }
 
-class PrefsLastFullSyncStorage(
-        prefs: SharedPreferences,
-        key: String
-) : LastFullSyncStorage {
-    override var millis: Long? by PrefsLongNullable(prefs, key)
-}
+object PreferenceUtils {
 
-class PrefsServerInfo(
-        private val prefs: SharedPreferences,
-        key: String,
-        private val defaultValue: ServerInfo,
-        private val onChange: (ServerInfo) -> Unit
-) : ReadWriteProperty<Any, ServerInfo> {
-    private val keyUrl = "$key url"
-    private val keyUser = "$key user"
-    private val keyPassword = "$key password"
+    inline fun <reified T : Any> createPrefsObjectNullable(
+            prefs: SharedPreferences,
+            key: String,
+            gson: Gson
+    ) = object : ReadWriteProperty<Any, T?> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): T? =
+                if (key in prefs) {
+                    gson.fromJson(prefs.getString(key, ""), T::class.java)
+                } else {
+                    null
+                }
 
-    override fun getValue(thisRef: Any, property: KProperty<*>): ServerInfo = when {
-        prefs.contains(keyUrl) -> ServerInfo(
-                url = prefs.getString(keyUrl, ""),
-                user = prefs.getString(keyUser, ""),
-                password = prefs.getString(keyPassword, "")
-        )
-        else -> defaultValue
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: ServerInfo) {
-        prefs.makeEdit {
-            putString(keyUrl, value.url)
-            putString(keyUser, value.user)
-            putString(keyPassword, value.password)
-        }
-        onChange(value)
-    }
-}
-
-class PrefsCreatingSpend(
-        private val prefs: SharedPreferences,
-        key: String,
-        private val defaultValue: CreatingSpend
-) : ReadWriteProperty<Any, CreatingSpend> {
-    private val keyDate = "$key date"
-    private val keyTime = "$key time"
-    private val keyKind = "$key kind"
-    private val keyValue = "$key value"
-
-    private var dateMillis by PrefsLongNullable(prefs, keyDate)
-    private var timeMillis by PrefsLongNullable(prefs, keyTime)
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): CreatingSpend = when {
-        prefs.contains(keyKind) -> CreatingSpend(
-                kind = prefs.getString(keyKind, ""),
-                value = prefs.getInt(keyValue, 0),
-                date = dateMillis?.let { Date(it) },
-                time = timeMillis?.let { Date(it) }
-        )
-        else -> defaultValue
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: CreatingSpend) {
-        prefs.makeEdit {
-            dateMillis = value.date?.time
-            timeMillis = value.time?.time
-            putString(keyKind, value.kind)
-            putInt(keyValue, value.value)
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: T?) {
+            prefs.makeEdit {
+                if (value != null) {
+                    putString(key, gson.toJson(value))
+                } else {
+                    remove(key)
+                }
+            }
         }
     }
+
 }

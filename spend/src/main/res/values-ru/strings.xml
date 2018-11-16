@@ -13,6 +13,7 @@
     <string name="delete_profit_text">удалить доход?</string>
     <string name="edit_spend_text">редактирование расхода</string>
     <string name="create_profit_text">создание дохода</string>
+    <string name="create_spend_text">создание расхода</string>
     <string name="edit_profit_text">редактирование дохода</string>
     <string name="choose_kind_text">выбор типа</string>
 
@@ -61,15 +62,14 @@
 
     <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
-    <string name="text_add_stub_spends">200 рандомных расходов</string>
-    <string name="text_add_stub_profits">200 рандомных доходов</string>
+    <string name="text_add_stub_records">200 рандомных записей</string>
     <string name="text_clear_all">очистить все</string>
 
     <string name="text_source_code">исходный код</string>
     <string name="text_source_code_long">исходный код на github.com</string>
 
-    <string name="spend_kind_description_format" formatted="true"><![CDATA[последнее: <b>%1$s</b> @ <b>%2$s</b> в <b>%3$s</b>]]></string>
-    <string name="spend_kind_description_no_time_format" formatted="true"><![CDATA[последнее: <b>%1$s</b> @ <b>%2$s</b>]]></string>
+    <string name="record_kind_description_format" formatted="true"><![CDATA[последнее: <b>%1$s</b> @ <b>%2$s</b> в <b>%3$s</b>]]></string>
+    <string name="record_kind_description_no_time_format" formatted="true"><![CDATA[последнее: <b>%1$s</b> @ <b>%2$s</b>]]></string>
 
     <string name="text_dumping_records">создается список записей..</string>
     <string name="text_server_delay">задержка сервера</string>

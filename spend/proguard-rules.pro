@@ -18,10 +18,28 @@
 
 -keepattributes SourceFile,LineNumberTable
 
--dontwarn org.postgresql.**
--keep class org.postgresql.** { *; }
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+-renamesourcefileattribute SourceFile
+
+
+# andrlib
+-keepclasseswithmembernames class com.hannesdorfmann.mosby3.FragmentMviDelegateImpl { *; }
+
 
 # andrlib_generator
 -dontwarn com.qwert2603.andrlib.generator.**
 
--dontwarn com.qwert2603.spenddemo.dialogs.**
+
+# retrofit & okhttp
+-dontwarn okio.**
+-dontwarn okhttp3.**
+-dontwarn javax.annotation.**
+-dontwarn retrofit2.**
+-dontwarn retrofit2.Platform$Java8
+-dontnote retrofit2.Platform
+-keepattributes Signature
+-keepattributes Exceptions
+
+
+-keep class com.qwert2603.spenddemo.model.rest.entity.** { *; }

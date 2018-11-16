@@ -11,12 +11,10 @@ object E {
     }
 }
 
-interface Env {
-    val remoteTableNameSpends: String
-    val remoteTableNameProfits: String
-    val showIdsSetting: Boolean
-    val showChangeKindsSetting: Boolean
-    val syncWithServer: Boolean
+abstract class Env {
+    val restBaseUrl: String by lazy { "$serverUrl/api/v1.0/" }
+    protected abstract val serverUrl: String
+    abstract val syncWithServer: Boolean
 
     fun titleSuffix(): String = listOfNotNull(
             BuildConfig.FLAVOR_server,
@@ -27,26 +25,17 @@ interface Env {
     fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTesting"
 }
 
-private object NoServer : Env {
-    override val remoteTableNameSpends by lazy { null!! } // must never be called.
-    override val remoteTableNameProfits by lazy { null!! } // must never be called.
-    override val showIdsSetting = true
-    override val showChangeKindsSetting = false
+private object NoServer : Env() {
+    override val serverUrl = "http://nth.ca"
     override val syncWithServer = false
 }
 
-private object ServerTest : Env {
-    override val remoteTableNameSpends = "test_spend"
-    override val remoteTableNameProfits = "test_profit"
-    override val showIdsSetting = true
-    override val showChangeKindsSetting = true
+private object ServerTest : Env() {
+    override val serverUrl = "http://192.168.1.26:8359"
     override val syncWithServer = true
 }
 
-private object ServerProd : Env {
-    override val remoteTableNameSpends = "spend"
-    override val remoteTableNameProfits = "profit"
-    override val showIdsSetting = true
-    override val showChangeKindsSetting = true
+private object ServerProd : Env() {
+    override val serverUrl = "http://192.168.1.26:8354"
     override val syncWithServer = true
 }

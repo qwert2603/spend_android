@@ -39,10 +39,9 @@
         android:id="@+id/kind_EditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:hint="@string/kind"
         android:imeOptions="actionNext|flagNoFullscreen"
-        android:inputType="textNoSuggestions"
         android:selectAllOnFocus="true"
         android:singleLine="true" />
 
@@ -63,8 +62,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:src="@drawable/ic_syncing"
         tools:ignore="ContentDescription" />
 

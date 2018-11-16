@@ -1,25 +1,21 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
-import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.ChangeKind
-import com.qwert2603.spenddemo.model.local_db.results.RecordResult
-import com.qwert2603.spenddemo.records_list_mvvm.entity.*
-import com.qwert2603.spenddemo.utils.*
-import java.util.*
-import kotlin.collections.ArrayList
+import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.model.sync_processor.IdentifiableString
+import com.qwert2603.spenddemo.utils.Const
 
-private val FAKE_RECORD_RESULT = RecordResult(
-        type = RecordResult.TYPE_FAKE,
-        id = IdentifiableLong.NO_ID,
-        kind = "",
-        value = 0,
-        date = Date(0),
+private val FAKE_RECORD = Record(
+        uuid = IdentifiableString.NO_UUID,
+        recordTypeId = Const.RECORD_TYPE_ID_SPEND,
+        date = 0,
         time = null,
-        changeKind = null
+        kind = "nth",
+        value = 1,
+        change = null
 )
 
-fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo): List<RecordsListItem> {
+fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
     val currentTimeMillis = System.currentTimeMillis()
 
     var spendsCount = 0
@@ -29,32 +25,33 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
 
     var daySpendsSum = 0L
     var dayProfitsSum = 0L
-    var daySpendsCountNotDeleted = 0
-    var dayProfitsCountNotDeleted = 0
+    var daySpendsCount = 0
+    var dayProfitsCount = 0
 
     var monthSpendsSum = 0L
     var monthProfitsSum = 0L
-    var monthSpendsCountNotDeleted = 0
-    var monthProfitsCountNotDeleted = 0
+    var monthSpendsCount = 0
+    var monthProfitsCount = 0
 
-    var result = ArrayList<RecordsListItem>(this.size * 2 + 1)
-    val calendarPrev = Calendar.getInstance()
-    val calendarIndex = Calendar.getInstance()
+    var yearSpendsSum = 0L
+    var yearProfitsSum = 0L
+    var yearSpendsCount = 0
+    var yearProfitsCount = 0
+
+    val result = ArrayList<RecordsListItem>(this.size * 2 + 1)
     (0..this.lastIndex + 1).forEach { index ->
-        // fakeRecordResult is needed to add DateSumUI & MonthSumUI for earliest real RecordResult in list.
-        val tableRow = this.getOrNull(index) ?: FAKE_RECORD_RESULT
-        calendarIndex.time = tableRow.date
-        if (index > 0) {
-            if (showInfo.showDateSums
+        // FAKE_RECORD is needed to add DaySum & MonthSum & YearSum for earliest real RecordResult in list.
+        val record = this.getOrNull(index) ?: FAKE_RECORD
+        if (index > 0 && showInfo.showSums) {
+            if (this[index - 1].date != record.date
                     && when {
-                        showInfo.showSpends == showInfo.showProfits -> daySpendsCountNotDeleted > 0 || dayProfitsCountNotDeleted > 0
-                        showInfo.showSpends -> daySpendsCountNotDeleted > 0
-                        else -> dayProfitsCountNotDeleted > 0
+                        showInfo.showSpends == showInfo.showProfits -> daySpendsCount > 0 || dayProfitsCount > 0
+                        showInfo.showSpends -> daySpendsCount > 0
+                        else -> dayProfitsCount > 0
                     }
-                    && !calendarPrev.daysEqual(calendarIndex)
             ) {
-                result.add(DateSumUI(
-                        date = calendarPrev.onlyDate(),
+                result.add(DaySum(
+                        day = this[index - 1].date,
                         showSpends = showInfo.showSpendSum(),
                         showProfits = showInfo.showProfitSum(),
                         spends = daySpendsSum,
@@ -62,19 +59,18 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 ))
                 daySpendsSum = 0L
                 dayProfitsSum = 0L
-                daySpendsCountNotDeleted = 0
-                dayProfitsCountNotDeleted = 0
+                daySpendsCount = 0
+                dayProfitsCount = 0
             }
-            if (showInfo.showMonthSums
+            if (this[index - 1].date / 100 != record.date / 100
                     && when {
-                        showInfo.showSpends == showInfo.showProfits -> monthSpendsCountNotDeleted > 0 || monthProfitsCountNotDeleted > 0
-                        showInfo.showSpends -> monthSpendsCountNotDeleted > 0
-                        else -> monthProfitsCountNotDeleted > 0
+                        showInfo.showSpends == showInfo.showProfits -> monthSpendsCount > 0 || monthProfitsCount > 0
+                        showInfo.showSpends -> monthSpendsCount > 0
+                        else -> monthProfitsCount > 0
                     }
-                    && !calendarPrev.monthsEqual(calendarIndex)
             ) {
-                result.add(MonthSumUI(
-                        date = calendarPrev.onlyMonth(),
+                result.add(MonthSum(
+                        month = this[index - 1].date / 100,
                         showSpends = showInfo.showSpendSum(),
                         showProfits = showInfo.showProfitSum(),
                         spends = monthSpendsSum,
@@ -82,115 +78,70 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
                 ))
                 monthSpendsSum = 0L
                 monthProfitsSum = 0L
-                monthSpendsCountNotDeleted = 0
-                monthProfitsCountNotDeleted = 0
+                monthSpendsCount = 0
+                monthProfitsCount = 0
+            }
+            if (this[index - 1].date / (100 * 100) != record.date / (100 * 100)
+                    && when {
+                        showInfo.showSpends == showInfo.showProfits -> yearSpendsCount > 0 || yearProfitsCount > 0
+                        showInfo.showSpends -> yearSpendsCount > 0
+                        else -> yearProfitsCount > 0
+                    }
+            ) {
+                result.add(YearSum(
+                        year = this[index - 1].date / (100 * 100),
+                        showSpends = showInfo.showSpendSum(),
+                        showProfits = showInfo.showProfitSum(),
+                        spends = yearSpendsSum,
+                        profits = yearProfitsSum
+                ))
+                yearSpendsSum = 0L
+                yearProfitsSum = 0L
+                yearSpendsCount = 0
+                yearProfitsCount = 0
             }
         }
-        calendarPrev.time = calendarIndex.time
-        when (tableRow.type) {
-            RecordResult.TYPE_SPEND -> {
-                if (tableRow.changeKind != ChangeKind.DELETE) {
-                    daySpendsSum += tableRow.value
-                    monthSpendsSum += tableRow.value
-                    ++spendsCount
-                    spendsSum += tableRow.value
-                }
-                if (showInfo.showSpends && (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted)) {
-                    result.add(SpendUI(
-                            id = tableRow.id,
-                            kind = tableRow.kind,
-                            value = tableRow.value,
-                            date = tableRow.date,
-                            time = tableRow.time,
-                            changeKind = tableRow.changeKind
-                    ))
-                }
-                if (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted) {
-                    ++daySpendsCountNotDeleted
-                    ++monthSpendsCountNotDeleted
-                }
-            }
-            RecordResult.TYPE_PROFIT -> {
-                if (tableRow.changeKind != ChangeKind.DELETE) {
-                    dayProfitsSum += tableRow.value
-                    monthProfitsSum += tableRow.value
-                    ++profitsCount
-                    profitsSum += tableRow.value
-                }
-                if (showInfo.showProfits && (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted)) {
-                    result.add(ProfitUI(
-                            id = tableRow.id,
-                            kind = tableRow.kind,
-                            value = tableRow.value,
-                            date = tableRow.date,
-                            time = tableRow.time,
-                            changeKind = tableRow.changeKind
-                    ))
-                }
-                if (tableRow.changeKind != ChangeKind.DELETE || showInfo.showDeleted) {
-                    ++dayProfitsCountNotDeleted
-                    ++monthProfitsCountNotDeleted
-                }
-            }
-            RecordResult.TYPE_FAKE -> {
+        when {
+            record == FAKE_RECORD -> {
                 // nth
             }
-        }
-    }
-    if (showInfo.addEmptySumsToList() && result.isNotEmpty()) {
-        val calendar = Calendar.getInstance().also {
-            it.timeInMillis = result.first().time()
-            if (showInfo.showMonthSums) {
-                it.add(Calendar.MONTH, 1)
-                it.day = 1
-                it.add(Calendar.DAY_OF_MONTH, -1)
-            }
-        }
-        val endCalendar = Calendar.getInstance().also {
-            it.timeInMillis = result.last().time()
-            if (showInfo.showMonthSums) {
-                it.day = 1
-            }
-            it.add(Calendar.DAY_OF_MONTH, -1)
-        }
-        val notEmptyList = result
-        var notEmptyIndex = 0
-        result = ArrayList(result.size * 3)
-        while (!calendar.daysEqual(endCalendar)) {
-            if (showInfo.showDateSums) {
-                val item = notEmptyList.getOrNull(notEmptyIndex)
-                if (item is DateSumUI && item.date == calendar.time) {
-                    result.add(item)
-                    ++notEmptyIndex
-                } else {
-                    result.add(DateSumUI(
-                            date = calendar.onlyDate(),
-                            showSpends = showInfo.showSpendSum(),
-                            showProfits = showInfo.showProfitSum(),
-                            spends = 0,
-                            profits = 0
-                    ))
+            record.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
+                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
+                    daySpendsSum += record.value
+                    monthSpendsSum += record.value
+                    yearSpendsSum += record.value
+                    ++spendsCount
+                    spendsSum += record.value
+                }
+                if (showInfo.showSpends && (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted())) {
+                    result.add(record)
+                }
+                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted()) {
+                    ++daySpendsCount
+                    ++monthSpendsCount
+                    ++yearSpendsCount
                 }
             }
-            if (showInfo.showMonthSums && calendar.day == 1) {
-                val item = notEmptyList.getOrNull(notEmptyIndex)
-                if (item is MonthSumUI && item.date == calendar.time) {
-                    result.add(item)
-                    ++notEmptyIndex
-                } else {
-                    result.add(MonthSumUI(
-                            date = calendar.onlyMonth(),
-                            showSpends = showInfo.showSpendSum(),
-                            showProfits = showInfo.showProfitSum(),
-                            spends = 0,
-                            profits = 0
-                    ))
+            record.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
+                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
+                    dayProfitsSum += record.value
+                    monthProfitsSum += record.value
+                    yearProfitsSum += record.value
+                    ++profitsCount
+                    profitsSum += record.value
+                }
+                if (showInfo.showProfits && (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted())) {
+                    result.add(record)
+                }
+                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted()) {
+                    ++dayProfitsCount
+                    ++monthProfitsCount
+                    ++yearProfitsCount
                 }
             }
-            calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
     }
-    result.add(TotalsUI(
+    result.add(Totals(
             showSpends = showInfo.showSpendSum(),
             showProfits = showInfo.showProfitSum(),
             spendsCount = spendsCount,
@@ -200,7 +151,7 @@ fun List<RecordResult>.toRecordItemsList(showInfo: RecordsListViewModel.ShowInfo
             totalBalance = profitsSum - spendsSum
     ))
 
-    LogUtils.d("List<RecordResult>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
+    LogUtils.d("List<Record>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
     return result
 }
