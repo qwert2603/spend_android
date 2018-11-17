@@ -120,7 +120,7 @@ class RecordKindsRepoImpl @Inject constructor(
                         .sortedByDescending { it.recordsCount }
             }
 
-            LogUtils.d("RecordKindsRepoImpl toRecordKindsList ${System.currentTimeMillis() - b} ms")
+            LogUtils.d("timing_ RecordKindsRepoImpl toRecordKindsList ${System.currentTimeMillis() - b} ms")
 
             return result
         }

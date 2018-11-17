@@ -151,7 +151,7 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
             totalBalance = profitsSum - spendsSum
     ))
 
-    LogUtils.d("List<Record>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
+    LogUtils.d("timing_ List<Record>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
     return result
 }

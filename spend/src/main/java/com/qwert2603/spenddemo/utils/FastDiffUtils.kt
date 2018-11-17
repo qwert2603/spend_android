@@ -113,7 +113,7 @@ object FastDiffUtils {
             inserts.add(oldIndex + insertsCount - removesCount to newList.size - newIndex)
         }
 
-        LogUtils.d("FastDiffUtils.fastCalculateDiff() ${System.currentTimeMillis() - currentTimeMillis} ms")
+        LogUtils.d("timing_ FastDiffUtils.fastCalculateDiff() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
         return FastDiffResult(inserts = inserts, removes = removes, changes = changes, moves = moves)
     }

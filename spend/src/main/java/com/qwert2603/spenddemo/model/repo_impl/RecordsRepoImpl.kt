@@ -11,7 +11,6 @@ import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.toRecordServer
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
-import com.qwert2603.spenddemo.model.local_db.tables.toRecord
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordServer
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.rest.Rest
@@ -83,10 +82,13 @@ class RecordsRepoImpl @Inject constructor(
     override fun getRecordsList(): Observable<List<Record>> = recordsDao.recordsList
 
     override fun getRecord(uuid: String): Observable<Wrapper<Record>> = recordsDao
-            .getRecord(uuid)
+            .recordsList
+            .map { records ->
+                records
+                        .singleOrNull { it.uuid == uuid }
+                        .wrap()
+            }
             .distinctUntilChanged()
-            .toObservable()
-            .map { it.firstOrNull()?.toRecord().wrap() }
 
     override fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> {
         val calendar = Calendar.getInstance()
@@ -94,7 +96,7 @@ class RecordsRepoImpl @Inject constructor(
         return recordsDao
                 .getSumDays(recordTypeId, calendar.toDateInt())
                 .toObservable()
-                .startWith(0)
+                .map { it.singleOrNull() ?: 0L }
     }
 
     override fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> {
@@ -103,7 +105,7 @@ class RecordsRepoImpl @Inject constructor(
         return recordsDao
                 .getSum(recordTypeId, calendar.toDateInt(), calendar.toTimeInt())
                 .toObservable()
-                .startWith(0)
+                .map { it.singleOrNull() ?: 0L }
     }
 
     override fun getDumpText(): Single<String> = recordsDao.recordsList
@@ -118,6 +120,7 @@ class RecordsRepoImpl @Inject constructor(
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao
             .getChangesCount(recordTypeIds)
             .toObservable()
+            .map { it.singleOrNull() ?: 0 }
 
     override fun saveRecords(records: List<RecordDraft>) {
         records.forEach { recordCreatedLocallyEvents.onNext(it.uuid) }
