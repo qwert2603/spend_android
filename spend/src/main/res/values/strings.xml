@@ -76,7 +76,7 @@
     <string name="text_total_items_format" formatted="true" translatable="false">&#931;(%s) = %s</string>
     <string name="text_total_sum_format" formatted="true" translatable="false">&#931;(&#8704;) = %s</string>
 
-    <string name="text_add_stub_records">200 stub records</string>
+    <string name="text_add_stub_records">250 stub records</string>
     <string name="text_clear_all">clear all</string>
 
     <string name="text_source_code">source code</string>

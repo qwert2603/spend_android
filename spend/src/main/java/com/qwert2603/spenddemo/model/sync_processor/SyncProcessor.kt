@@ -35,7 +35,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
         Executors.newSingleThreadExecutor().execute {
             while (true) {
                 try {
-                    Thread.sleep(126)//todo
+                    Thread.sleep(926)//todo
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -46,7 +46,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
 
                     while (true) {
                         val locallyChangedItems = localDBExecutor.executeAndWait {
-                            localDataSource.getLocallyChangedItems(10)
+                            localDataSource.getLocallyChangedItems(50)
                         }
                         if (locallyChangedItems.isEmpty()) break
 
@@ -72,7 +72,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
 
                     while (true) {
                         val updatesFromRemote = remoteDBExecutor.executeAndWait {
-                            remoteDataSource.getUpdates(lastUpdateStorage.lastUpdateInfo, 10)
+                            remoteDataSource.getUpdates(lastUpdateStorage.lastUpdateInfo, 50)
                         }
                         if (updatesFromRemote.isEmpty()) break
                         localDBExecutor.executeAndWait {

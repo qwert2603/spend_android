@@ -132,11 +132,10 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                     else -> null!!
                 }
             })
-            dialog.positiveButton.setText(when (recordTypeId) {
-                Const.RECORD_TYPE_ID_SPEND -> R.string.text_edit
-                Const.RECORD_TYPE_ID_PROFIT -> R.string.text_create
-                else -> null!!
-            })
+            dialog.positiveButton.setText(
+                    if (isNewRecord) R.string.text_create
+                    else R.string.text_edit
+            )
         }
         kindEditText.setText(vs.recordDraft.kind)
         valueEditText.setText(vs.valueString)

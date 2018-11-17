@@ -62,7 +62,7 @@
 
     <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
-    <string name="text_add_stub_records">200 рандомных записей</string>
+    <string name="text_add_stub_records">250 рандомных записей</string>
     <string name="text_clear_all">очистить все</string>
 
     <string name="text_source_code">исходный код</string>

@@ -47,10 +47,14 @@ class RecordsRepoImpl @Inject constructor(
             remoteDataSource = object : RemoteDataSource<RecordServer> {
                 override fun getUpdates(lastUpdateInfo: LastUpdateInfo?, count: Int): UpdatesFromRemote<RecordServer> = rest
                         .getRecordsUpdates(lastUpdateInfo?.lastUpdated, lastUpdateInfo?.lastUuid, count)
+                        .execute()
+                        .body()!!
                         .toUpdatesFromRemote()
 
                 override fun saveChanges(updated: List<RecordServer>, deletedUuids: List<String>) = rest
                         .saveRecords(SaveRecordsParam(updated, deletedUuids))
+                        .execute()
+                        .let { Unit }
             },
             localDataSource = object : LocalDataSource<RecordTable, RecordServer> {
                 override fun saveItems(ts: List<RecordTable>) = recordsDao.saveRecords(ts)
@@ -73,7 +77,7 @@ class RecordsRepoImpl @Inject constructor(
     private val recordCreatedLocallyEvents = PublishSubject.create<String>()
 
     init {
-//     todo:   syncProcessor.start()
+        syncProcessor.start()
     }
 
     override fun getRecordsList(): Observable<List<Record>> = recordsDao.recordsList
