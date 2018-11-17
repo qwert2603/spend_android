@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.model.repo_impl
 
 import android.content.Context
 import com.google.gson.Gson
+import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
@@ -34,7 +35,8 @@ class RecordsRepoImpl @Inject constructor(
         rest: Rest,
         appContext: Context,
         @RemoteDBExecutor remoteDBExecutor: ExecutorService,
-        @LocalDBExecutor localDBExecutor: ExecutorService
+        @LocalDBExecutor localDBExecutor: ExecutorService,
+        private val modelSchedulersProvider: ModelSchedulersProvider
 ) : RecordsRepo {
 
     private val prefs = appContext.getSharedPreferences("records.prefs", Context.MODE_PRIVATE)
@@ -79,10 +81,13 @@ class RecordsRepoImpl @Inject constructor(
         syncProcessor.start()
     }
 
-    override fun getRecordsList(): Observable<List<Record>> = recordsDao.recordsList
+    override fun getRecordsList(): Observable<List<Record>> = recordsDao
+            .recordsList
+            .observeOn(modelSchedulersProvider.computation)
 
     override fun getRecord(uuid: String): Observable<Wrapper<Record>> = recordsDao
             .recordsList
+            .observeOn(modelSchedulersProvider.computation)
             .map { records ->
                 records
                         .singleOrNull { it.uuid == uuid }
@@ -93,19 +98,41 @@ class RecordsRepoImpl @Inject constructor(
     override fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -days + 1)
+        val startDate = calendar.toDateInt()
+
         return recordsDao
-                .getSumDays(recordTypeId, calendar.toDateInt())
-                .toObservable()
-                .map { it.singleOrNull() ?: 0L }
+                .recordsList
+                .observeOn(modelSchedulersProvider.computation)
+                .map {
+                    it
+                            .filter {
+                                it.recordTypeId == recordTypeId
+                                        && it.change?.changeKindId != Const.CHANGE_KIND_DELETE
+                                        && it.date >= startDate
+                            }
+                            .sumByLong { it.value.toLong() }
+                }
     }
 
     override fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.MINUTE, -minutes + 1)
+        val startDate = calendar.toDateInt()
+        val startTime = calendar.toTimeInt()
+
         return recordsDao
-                .getSum(recordTypeId, calendar.toDateInt(), calendar.toTimeInt())
-                .toObservable()
-                .map { it.singleOrNull() ?: 0L }
+                .recordsList
+                .observeOn(modelSchedulersProvider.computation)
+                .map {
+                    it
+                            .filter { record ->
+                                record.recordTypeId == recordTypeId
+                                        && record.change?.changeKindId != Const.CHANGE_KIND_DELETE
+                                        && record.time != null
+                                        && (record.date > startDate || (record.date == startDate && record.time >= startTime))
+                            }
+                            .sumByLong { it.value.toLong() }
+                }
     }
 
     override fun getDumpText(): Single<String> = recordsDao.recordsList
@@ -118,9 +145,9 @@ class RecordsRepoImpl @Inject constructor(
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents
 
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao
-            .getChangesCount(recordTypeIds)
-            .toObservable()
-            .map { it.singleOrNull() ?: 0 }
+            .recordsList
+            .observeOn(modelSchedulersProvider.computation)
+            .map { it.filter { it.change != null }.size }
 
     override fun saveRecords(records: List<RecordDraft>) {
         records.forEach { recordCreatedLocallyEvents.onNext(it.uuid) }

@@ -55,9 +55,6 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
 
-    @Inject
-    lateinit var modelSchedulersProvider: ModelSchedulersProvider
-
     data class Variant(val minutes: Int, var sum: Long?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +96,6 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
                                 )
                             }
                             .doOnError { LogUtils.e("ChooseShortSumPeriodDialog getSumLastMinutes", it) }
-                            .subscribeOn(modelSchedulersProvider.io)
                             .observeOn(uiSchedulerProvider.ui)
                             .subscribe {
                                 variant.sum = it

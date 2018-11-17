@@ -15,5 +15,5 @@ class SchedulersProviderImpl @Inject constructor() : UiSchedulerProvider, ModelS
     override val ui: Scheduler = AndroidSchedulers.mainThread()
     override fun isOnUi() = Looper.myLooper() == Looper.getMainLooper()
     override val io: Scheduler = Schedulers.from(Executors.newFixedThreadPool(8))//todo
-    override val computation: Scheduler = Schedulers.from(Executors.newFixedThreadPool(4))//todo
+    override val computation: Scheduler = Schedulers.from(Executors.newFixedThreadPool(14))//todo
 }

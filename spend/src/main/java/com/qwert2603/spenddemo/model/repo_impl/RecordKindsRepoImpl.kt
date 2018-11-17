@@ -25,6 +25,7 @@ class RecordKindsRepoImpl @Inject constructor(
 
     init {
         recordsDao.recordsList
+                .observeOn(modelSchedulersProvider.computation)
                 .map { it.toRecordKindsList() }
                 .subscribe(
                         { recordsKindsLists.onNext(it) },

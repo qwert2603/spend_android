@@ -35,27 +35,6 @@ abstract class RecordsDao {
         """)
     protected abstract fun getRecords(): Flowable<List<RecordTable>>
 
-    @Query("SELECT * FROM RecordTable WHERE uuid = :uuid")
-    abstract fun getRecord(uuid: String): Flowable<List<RecordTable>>
-
-    @Query("""
-        SELECT SUM(value)
-        FROM RecordTable
-        WHERE recordTypeId = :recordTypeId AND (change_changeKindId IS NULL OR change_changeKindId != ${Const.CHANGE_KIND_DELETE}) AND time IS NOT NULL
-            AND ((date > :startDate) OR (date = :startDate AND time >= :startTime))
-    """)
-    abstract fun getSum(recordTypeId: Long, startDate: Int, startTime: Int): Flowable<List<Long>>
-
-    @Query("""
-        SELECT SUM(value)
-        FROM RecordTable
-        WHERE recordTypeId = :recordTypeId AND (change_changeKindId IS NULL OR change_changeKindId != ${Const.CHANGE_KIND_DELETE}) AND date >= :startDate
-    """)
-    abstract fun getSumDays(recordTypeId: Long, startDate: Int): Flowable<List<Long>>
-
-    @Query("SELECT COUNT(*) FROM RecordTable WHERE recordTypeId in (:recordTypeIds) AND change_id IS NOT NULL")
-    abstract fun getChangesCount(recordTypeIds: List<Long>): Flowable<List<Int>>
-
     @Query("SELECT uuid FROM RecordTable WHERE change_changeKindId IS NOT NULL AND uuid in (:uuids)")
     abstract fun getChangedRecordsUuids(uuids: List<String>): List<String>
 
