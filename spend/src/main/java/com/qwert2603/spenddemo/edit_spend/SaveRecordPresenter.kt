@@ -39,7 +39,7 @@ class SaveRecordPresenter @Inject constructor(
                 serverTime = null,
                 serverValue = null,
                 justChangedOnServer = false,
-                originalRecord = when (saveRecordKey) {
+                existingRecord = when (saveRecordKey) {
                     is SaveRecordKey.EditRecord -> editingRecord
                     is SaveRecordKey.NewRecord -> null
                 }
@@ -86,6 +86,10 @@ class SaveRecordPresenter @Inject constructor(
                                 .map { it == 0L }
                     }
                     .map { SaveRecordPartialChange.RecordJustChangedOnServer(it) },
+            serverRecordChanges
+                    .skip(1)
+                    .mapNotNull { it.t }
+                    .map { SaveRecordPartialChange.ExistingRecordChanged(it.toRecordDraft()) },
             intent { it.onServerKindResolved() }
                     .map { SaveRecordPartialChange.KindServerResolved(it) },
             intent { it.onServerDateResolved() }
@@ -122,6 +126,7 @@ class SaveRecordPresenter @Inject constructor(
             is SaveRecordPartialChange.DateChangeOnServer -> vs.copy(serverDate = change.date)
             is SaveRecordPartialChange.TimeChangeOnServer -> vs.copy(serverTime = change.time.wrap())
             is SaveRecordPartialChange.RecordJustChangedOnServer -> vs.copy(justChangedOnServer = change.justChanged)
+            is SaveRecordPartialChange.ExistingRecordChanged -> vs.copy(existingRecord = change.existingRecord)
             is SaveRecordPartialChange.KindServerResolved -> vs.copy(
                     recordDraft = if (change.acceptFromServer && vs.serverKind != null) vs.recordDraft.copy(kind = vs.serverKind) else vs.recordDraft,
                     serverKind = null
