@@ -119,8 +119,21 @@ class SaveRecordPresenter @Inject constructor(
             is SaveRecordPartialChange.KindChanged -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
             is SaveRecordPartialChange.ValueChanged -> vs.copy(recordDraft = vs.recordDraft.copy(value = change.value))
             is SaveRecordPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
-            is SaveRecordPartialChange.DateSelected -> vs.copy(recordDraft = vs.recordDraft.copy(date = change.date))
-            is SaveRecordPartialChange.TimeSelected -> vs.copy(recordDraft = vs.recordDraft.copy(time = change.time))
+            is SaveRecordPartialChange.DateSelected -> {
+                val (nowDate, nowTime) = DateUtils.getNow()
+                if (vs.recordDraft.date == null && change.date == nowDate) {
+                    vs.copy(recordDraft = vs.recordDraft.copy(
+                            date = change.date,
+                            time = nowTime
+                    ))
+                } else {
+                    vs.copy(recordDraft = vs.recordDraft.copy(
+                            date = change.date,
+                            time = if (change.date != null) vs.recordDraft.time else null
+                    ))
+                }
+            }
+            is SaveRecordPartialChange.TimeSelected -> vs.copy(recordDraft = vs.recordDraft.copy(time = change.time.takeIf { vs.recordDraft.date != null }))
             is SaveRecordPartialChange.KindChangeOnServer -> vs.copy(serverKind = change.kind)
             is SaveRecordPartialChange.ValueChangeOnServer -> vs.copy(serverValue = change.value)
             is SaveRecordPartialChange.DateChangeOnServer -> vs.copy(serverDate = change.date)
