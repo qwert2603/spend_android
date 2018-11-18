@@ -32,7 +32,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
         Executors.newSingleThreadExecutor().execute {
             while (true) {
                 try {
-                    Thread.sleep(926)//todo
+//                    Thread.sleep(926)//todo
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -56,9 +56,10 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
                             )
                         }
                         localDBExecutor.executeAndWait {
-                            // todo: one method.
-                            localDataSource.clearLocalChange(updated.map { ItemsIds(it.uuid, it.change!!.id) })
-                            localDataSource.deleteItems(deletedUuids)
+                            localDataSource.onChangesSentToServer(
+                                    editedRecords = updated.map { ItemsIds(it.uuid, it.change!!.id) },
+                                    deletedUuids = deletedUuids
+                            )
                         }
                     }
 
@@ -74,6 +75,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
                     }
                 } catch (t: Throwable) {
                     LogUtils.e(TAG, "remoteDBExecutor.execute", t)
+                    Thread.sleep(10000)
                 }
             }
         }

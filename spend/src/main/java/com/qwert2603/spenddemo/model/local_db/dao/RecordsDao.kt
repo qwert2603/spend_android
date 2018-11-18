@@ -48,7 +48,7 @@ abstract class RecordsDao {
     protected abstract fun clearLocalChange(recordUuid: String, changeId: Long)
 
     @Transaction
-    open fun clearLocalChanges(recordsIds: List<ItemsIds>) {
+    protected open fun clearLocalChanges(recordsIds: List<ItemsIds>) {
         recordsIds.forEach { clearLocalChange(it.recordUuid, it.recordChangeId) }
     }
 
@@ -76,5 +76,11 @@ abstract class RecordsDao {
                 .map { it.toRecordTable(null) }
         saveRecords(changesToSave)
         deleteRecords(deletedRecordsUuid)
+    }
+
+    @Transaction
+    open fun onChangesSentToServer(editedRecords: List<ItemsIds>, deletedUuids: List<String>) {
+        clearLocalChanges(editedRecords)
+        deleteRecords(deletedUuids)
     }
 }

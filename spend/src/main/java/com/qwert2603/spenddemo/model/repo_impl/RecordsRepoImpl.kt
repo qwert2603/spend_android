@@ -61,12 +61,15 @@ class RecordsRepoImpl @Inject constructor(
                 override fun saveItems(ts: List<RecordTable>) = recordsDao.saveRecords(ts)
                 override fun locallyDeleteItems(itemsIds: List<ItemsIds>) = recordsDao.locallyDeleteRecords(itemsIds)
                 override fun getLocallyChangedItems(count: Int): List<RecordTable> = recordsDao.getLocallyChangedRecords(count)
-                override fun clearLocalChange(itemsIds: List<ItemsIds>) = recordsDao.clearLocalChanges(itemsIds)
                 override fun saveChangesFromRemote(updatesFromRemote: UpdatesFromRemote<RecordServer>) = recordsDao.saveChangesFromServer(
-                        updatesFromRemote.updatedItems,
-                        updatesFromRemote.deletedItemsUuid
+                        updatedRecords = updatesFromRemote.updatedItems,
+                        deletedRecordsUuid = updatesFromRemote.deletedItemsUuid
                 )
 
+                override fun onChangesSentToServer(editedRecords: List<ItemsIds>, deletedUuids: List<String>) = recordsDao.onChangesSentToServer(
+                        editedRecords = editedRecords,
+                        deletedUuids = deletedUuids
+                )
                 override fun deleteItems(uuids: List<String>) = recordsDao.deleteRecords(uuids)
                 override fun deleteAll() = recordsDao.deleteAllRecords()
             },
