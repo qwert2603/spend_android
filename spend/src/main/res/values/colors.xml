@@ -22,4 +22,8 @@
     <color name="month_sum_background">#DDDDDD</color>
 
     <color name="button_neutral">#33AD24</color>
+
+    <color name="navigation_menu_item_background">#EEEEEE</color>
+    <color name="navigation_menu_item_background_selected">#DDDDDD</color>
+    <color name="navigation_menu_item_background_pressed">#CCCCCC</color>
 </resources>

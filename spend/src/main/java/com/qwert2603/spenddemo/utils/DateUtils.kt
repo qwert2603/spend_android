@@ -127,4 +127,4 @@ fun Calendar.toDateInt() = year * (100 * 100) + (month + 1) * 100 + day
 fun Calendar.toTimeInt() = hour * 100 + minute
 
 fun Int.toDateCalendar() = GregorianCalendar(this / (100 * 100), (this / 100 % 100) - 1, this % 100)
-fun Int.toTimeCalendar() = GregorianCalendar(1970, Calendar.JANUARY, 1, this / 100, this % 100, 0)
+fun Int.toTimeCalendar() = GregorianCalendar(Const.MIN_YEAR, Calendar.JANUARY, 1, this / 100, this % 100, 0)

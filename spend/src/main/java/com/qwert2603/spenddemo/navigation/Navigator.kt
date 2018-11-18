@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.navigation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -24,8 +25,12 @@ class Navigator<A>(private val activity: A, fragmentContainer: Int)
     init {
         activity.supportFragmentManager.registerFragmentLifecycleCallbacks(
                 object : FragmentManager.FragmentLifecycleCallbacks() {
+                    @SuppressLint("RtlHardcoded")
                     override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-                        // todo: set transitions
+                        f.exitTransition = Slide(Gravity.LEFT)
+                                .also { it.duration = TRANSITION_DURATION }
+                        f.enterTransition = Slide(if (fm.backStackEntryCount > 0) Gravity.RIGHT else Gravity.LEFT)
+                                .also { it.duration = TRANSITION_DURATION }
                     }
 
                     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
@@ -51,15 +56,20 @@ class Navigator<A>(private val activity: A, fragmentContainer: Int)
         )
     }
 
+    @SuppressLint("RtlHardcoded")
     override fun setupFragmentTransaction(command: Command?, currentFragment: Fragment?, nextFragment: Fragment?, fragmentTransaction: FragmentTransaction?) {
-        currentFragment?.exitTransition = Slide(Gravity.START)
-                .also { it.duration = 230 }
-        nextFragment?.enterTransition = Slide(if (command is Forward) Gravity.END else Gravity.START)
-                .also { it.duration = 230 }
+        currentFragment?.exitTransition = Slide(Gravity.LEFT)
+                .also { it.duration = TRANSITION_DURATION }
+        nextFragment?.enterTransition = Slide(if (command is Forward) Gravity.RIGHT else Gravity.LEFT)
+                .also { it.duration = TRANSITION_DURATION }
     }
 
     override fun applyCommand(command: Command?) {
         activity.hideKeyboard()
         super.applyCommand(command)
+    }
+
+    companion object {
+        private const val TRANSITION_DURATION = 300L
     }
 }

@@ -4,14 +4,18 @@ import android.support.annotation.CallSuper
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.qwert2603.spenddemo.model.entity.RecordsListItem
 import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter
+import kotlinx.android.extensions.LayoutContainer
 
 abstract class BaseViewHolder<T : RecordsListItem>(
         parent: ViewGroup,
         @LayoutRes layoutRes: Int
-) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)) /* todo: LayoutContainer*/ {
+) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)), LayoutContainer {
+
+    override val containerView: View = itemView
 
     var t: T? = null
         private set
