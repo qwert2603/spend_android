@@ -138,7 +138,8 @@ class RecordsRepoImpl @Inject constructor(
                 }
     }
 
-    override fun getDumpText(): Single<String> = recordsDao.recordsList
+    override fun getDumpText(): Single<String> = recordsDao
+            .recordsList
             .firstOrError()
             .mapList { "${it.uuid},${it.recordTypeId},${it.date.toDateString()},${it.time?.toTimeString()},${it.kind},${it.value}" }
             .map { it.reduce { acc, s -> "$acc\n$s" } }

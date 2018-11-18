@@ -11,6 +11,7 @@ import com.qwert2603.spenddemo.model.sync_processor.ItemsIds
 import com.qwert2603.spenddemo.utils.Const
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 
 @Dao
@@ -20,6 +21,7 @@ abstract class RecordsDao {
         val behaviorSubject = BehaviorSubject.create<List<Record>>()
 
         getRecords()
+                .subscribeOn(Schedulers.io())
                 .subscribe(
                         { behaviorSubject.onNext(it.map { it.toRecord() }) },
                         { LogUtils.e("RecordsDao getRecords error!", it) }
@@ -36,7 +38,7 @@ abstract class RecordsDao {
     protected abstract fun getRecords(): Flowable<List<RecordTable>>
 
     @Query("SELECT uuid FROM RecordTable WHERE change_changeKindId IS NOT NULL AND uuid in (:uuids)")
-    abstract fun getChangedRecordsUuids(uuids: List<String>): List<String>
+    protected abstract fun getChangedRecordsUuids(uuids: List<String>): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun saveRecords(records: List<RecordTable>)

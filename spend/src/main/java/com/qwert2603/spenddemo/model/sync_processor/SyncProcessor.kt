@@ -26,13 +26,19 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
 
     private val pendingClearAll = AtomicBoolean(false)
 
+    init {
+        remoteDBExecutor.execute { Thread.currentThread().priority = Thread.NORM_PRIORITY - 1 }
+        localDBExecutor.execute { Thread.currentThread().priority = Thread.NORM_PRIORITY - 1 }
+    }
+
     fun start() {
         if (!E.env.syncWithServer) return
-
         Executors.newSingleThreadExecutor().execute {
+            Thread.currentThread().priority = Thread.NORM_PRIORITY - 1
             while (true) {
                 try {
-//                    Thread.sleep(926)//todo
+                    Thread.yield()
+                    Thread.sleep(96)
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -75,7 +81,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
                     }
                 } catch (t: Throwable) {
                     LogUtils.e(TAG, "remoteDBExecutor.execute", t)
-                    Thread.sleep(10000)
+                    Thread.sleep(1000)
                 }
             }
         }
