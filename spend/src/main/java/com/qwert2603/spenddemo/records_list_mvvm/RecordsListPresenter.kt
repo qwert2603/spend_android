@@ -234,6 +234,16 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { recordsListInteractor.showInfo = it }
                 .subscribeToView()
 
+        longSumPeriodDaysChanges
+                .skip(1)
+                .doOnNext { recordsListInteractor.longSumPeriodDays = it }
+                .subscribeToView()
+
+        shortSumPeriodMinutesChanges
+                .skip(1)
+                .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
+                .subscribeToView()
+
         super.bindIntents()
     }
 }
