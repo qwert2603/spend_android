@@ -71,23 +71,29 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .subscribeUntilPaused()
 
         recordChanges
-                .filter { it.t == null }
-                .firstOrError()
+                .buffer(2, 1)
+                .mapNotNull { (prev, current) ->
+                    if (prev.t != null && current.t == null) {
+                        prev.t.recordTypeId
+                    } else {
+                        null
+                    }
+                }
+                .take(1)
                 .observeOn(uiSchedulerProvider.ui)
-                .doOnSuccess {
-                    Toast.makeText(requireContext(), when (it.t!!.recordTypeId) {
+                .doOnNext {
+                    Toast.makeText(requireContext(), when (it) {
                         Const.RECORD_TYPE_ID_SPEND -> R.string.text_deleted_while_deleted_spend
                         Const.RECORD_TYPE_ID_PROFIT -> R.string.text_deleted_while_deleted_profit
                         else -> null!!
                     }, Toast.LENGTH_SHORT).show()
                     dismiss()
                 }
-                .toObservable()
                 .subscribeUntilPaused()
         recordChanges
                 .skip(1)
                 .switchMap {
-                    Observable.interval(0, 700, TimeUnit.MILLISECONDS)
+                    Observable.interval(0, 1000, TimeUnit.MILLISECONDS)
                             .take(2)
                             .map { it != 0L }
                 }
