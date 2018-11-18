@@ -10,6 +10,7 @@ data class RecordKind(
         val lastTime: Int?,
         val lastValue: Int,
         val recordsCount: Int
+//       todo val totalValue: Long
 ) : IdentifiableLong {
     override val id = kind.hashCodeLong()
 }

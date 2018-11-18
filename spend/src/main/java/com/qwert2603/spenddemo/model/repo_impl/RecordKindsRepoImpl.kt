@@ -118,7 +118,7 @@ class RecordKindsRepoImpl @Inject constructor(
                                     recordsCount = counts[it.kind]!!
                             )
                         }
-                        .sortedByDescending { it.recordsCount }
+                        .sortedByDescending { it.recordsCount } // todo: sort by lastDate DESC and so on.
             }
 
             LogUtils.d("timing_ RecordKindsRepoImpl toRecordKindsList ${System.currentTimeMillis() - b} ms")
