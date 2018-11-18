@@ -62,12 +62,12 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }.also {
         @Suppress("UNCHECKED_CAST")
         vhs.add(WeakReference(it as BaseViewHolder<RecordsListItem>))
-        LogUtils.d("RecordsListAdapter onCreateViewHolder $it")
+        LogUtils.d { "RecordsListAdapter onCreateViewHolder $it" }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        LogUtils.d("RecordsListAdapter onBindViewHolder $holder")
+        LogUtils.d { "RecordsListAdapter onBindViewHolder $holder" }
         holder as BaseViewHolder<RecordsListItem>
         holder.bind(list[position], this)
     }

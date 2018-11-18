@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.env
 
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.BuildConfig
 
 object E {
@@ -16,13 +17,13 @@ abstract class Env {
     protected abstract val serverUrl: String
     abstract val syncWithServer: Boolean
 
-    fun titleSuffix(): String = listOfNotNull(
-            BuildConfig.FLAVOR_server,
-            BuildConfig.FLAVOR_aim.takeIf { it != "forMarket" },
-            BuildConfig.BUILD_TYPE.takeIf { it != "release" }
-    ).reduce { acc, s -> "$acc $s" }
-
     fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTesting"
+
+    val logType = if (BuildConfig.DEBUG || buildForTesting()) {
+        LogUtils.LogType.ANDROID
+    } else {
+        LogUtils.LogType.ANDROID_ERRORS
+    }
 }
 
 private object NoServer : Env() {

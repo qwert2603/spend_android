@@ -36,11 +36,7 @@ class SpendDemoApplication : Application() {
 //        lrModelChangerInstance = LRModelChangerImpl()
 //        listModelChangerInstance = ListModelChangerImpl()
 
-        LogUtils.logType = if (BuildConfig.DEBUG || E.env.buildForTesting()) {
-            LogUtils.LogType.ANDROID
-        } else {
-            LogUtils.LogType.ANDROID_ERRORS
-        }
+        LogUtils.logType = E.env.logType
     }
 
     // todo: stat screen.
