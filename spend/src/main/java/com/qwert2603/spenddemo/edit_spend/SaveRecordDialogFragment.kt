@@ -9,6 +9,7 @@ import android.support.annotation.StringRes
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.text.Html
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -66,6 +67,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
+        dialogView.kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_KIND_LENGTH))
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)

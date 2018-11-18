@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.text.InputFilter
 import android.util.AttributeSet
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
@@ -49,6 +50,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     init {
         inflate(R.layout.view_spend_draft, attachToRoot = true)
         draft_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_KIND_LENGTH))
     }
 
     override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {
