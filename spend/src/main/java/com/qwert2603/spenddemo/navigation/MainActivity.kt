@@ -2,13 +2,11 @@ package com.qwert2603.spenddemo.navigation
 
 import android.app.Service
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -65,10 +63,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
             router.newRootScreen(SpendScreen.RecordsList)
         }
 
-        if (savedInstanceState == null && intent.action == Intent.ACTION_VIEW) {
-//      todo      AppInfoDialogFragment().show(supportFragmentManager, "about")
-        }
-
         headerNavigation = navigation_view.inflate(R.layout.header_navigation)
         navigation_view.addHeaderView(headerNavigation)
         headerNavigation.navigation_recyclerView.itemAnimator = null
@@ -104,13 +98,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         activity_DrawerLayout.removeDrawerListener(drawerListener)
         navigationDisposable.clear()
         super.onStop()
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.action == "android.intent.action.VIEW") {
-//       todo     AppInfoDialogFragment().show(supportFragmentManager, null)
-        }
     }
 
     private fun navigateToItem(navigationItem: NavigationItem, newRootScreen: Boolean) {
