@@ -1,49 +1,44 @@
 package com.qwert2603.spenddemo.records_list_mvvm
 
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.records_list_mvvm.vh.*
 import io.reactivex.subjects.PublishSubject
+import java.lang.ref.WeakReference
 
-class RecordsListAdapter(private val recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true
         set(value) {
             if (value == field) return
             field = value
-            redrawVisibleViewHolders()
+            redrawViewHolders()
         }
 
     var showDatesInRecords = true
         set(value) {
             if (value == field) return
             field = value
-            redrawVisibleViewHolders()
+            redrawViewHolders()
         }
 
     var showTimesInRecords = true
         set(value) {
             if (value == field) return
             field = value
-            redrawVisibleViewHolders()
-        }
-
-    var syncingRecordsUuids: Set<String> = emptySet()
-        set(value) {
-            if (value == field) return
-            field = value
-            redrawVisibleViewHolders()
+            redrawViewHolders()
         }
 
     @Suppress("UNCHECKED_CAST")
-    private fun redrawVisibleViewHolders() {
-        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        for (i in layoutManager.findFirstVisibleItemPosition()..layoutManager.findLastVisibleItemPosition()) {
-            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i)
-            if (viewHolder as? BaseViewHolder<RecordsListItem> != null) {
-                viewHolder.bind(viewHolder.t!!, this)
+    private fun redrawViewHolders() {
+        LogUtils.d("RecordsListAdapter redrawVisibleViewHolders")
+        vhs.forEach {
+            val viewHolder = it.get()
+            val recordsListItem = viewHolder?.t
+            if (viewHolder != null && recordsListItem != null) {
+                viewHolder.bind(recordsListItem, this)
             }
         }
     }
@@ -52,6 +47,8 @@ class RecordsListAdapter(private val recyclerView: RecyclerView) : RecyclerView.
 
     var itemClicks = PublishSubject.create<RecordsListItem>()
     var itemLongClicks = PublishSubject.create<RecordsListItem>()
+
+    private val vhs = mutableSetOf<WeakReference<BaseViewHolder<RecordsListItem>>>()
 
     override fun getItemCount() = list.size
 
@@ -62,10 +59,15 @@ class RecordsListAdapter(private val recyclerView: RecyclerView) : RecyclerView.
         VIEW_TYPE_YEAR_SUM -> YearSumViewHolder(parent)
         VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)
         else -> null!!
+    }.also {
+        @Suppress("UNCHECKED_CAST")
+        vhs.add(WeakReference(it as BaseViewHolder<RecordsListItem>))
+        LogUtils.d("RecordsListAdapter onCreateViewHolder $it")
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        LogUtils.d("RecordsListAdapter onBindViewHolder $holder")
         holder as BaseViewHolder<RecordsListItem>
         holder.bind(list[position], this)
     }

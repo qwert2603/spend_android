@@ -5,7 +5,6 @@ import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.executeAndWait
-import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -26,8 +25,6 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
     }
 
     private val pendingClearAll = AtomicBoolean(false)
-
-    val syncingRecordsUuids = BehaviorSubject.createDefault<Set<String>>(emptySet())
 
     fun start() {
         if (!E.env.syncWithServer) return
@@ -50,18 +47,13 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
                         }
                         if (locallyChangedItems.isEmpty()) break
 
-                        syncingRecordsUuids.onNext(locallyChangedItems.map { it.uuid }.toHashSet())
                         val (updated, deleted) = locallyChangedItems.partition { it.change!!.changeKindId == Const.CHANGE_KIND_UPSERT }
                         val deletedUuids = deleted.map { it.uuid }
-                        try {
-                            remoteDBExecutor.executeAndWait {
-                                remoteDataSource.saveChanges(
-                                        updated = updated.map(l2t),
-                                        deletedUuids = deletedUuids
-                                )
-                            }
-                        } finally {
-                            syncingRecordsUuids.onNext(emptySet())
+                        remoteDBExecutor.executeAndWait {
+                            remoteDataSource.saveChanges(
+                                    updated = updated.map(l2t),
+                                    deletedUuids = deletedUuids
+                            )
                         }
                         localDBExecutor.executeAndWait {
                             // todo: one method.

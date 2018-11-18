@@ -8,7 +8,6 @@ data class RecordsListViewState(
         val longSumPeriodDays: Int,
         val shortSumPeriodMinutes: Int,
         val sumsInfo: SumsInfo,
-        val syncingRecordsUuids: Set<String>,
         val records: List<RecordsListItem>,
         val diff: FastDiffUtils.FastDiffResult
 )

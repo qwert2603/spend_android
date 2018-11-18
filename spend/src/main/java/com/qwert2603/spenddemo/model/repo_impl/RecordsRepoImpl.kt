@@ -140,8 +140,6 @@ class RecordsRepoImpl @Inject constructor(
             .mapList { "${it.uuid},${it.recordTypeId},${it.date.toDateString()},${it.time?.toTimeString()},${it.kind},${it.value}" }
             .map { it.reduce { acc, s -> "$acc\n$s" } }
 
-    override fun getSyncingRecordsUuids(): Observable<Set<String>> = syncProcessor.syncingRecordsUuids
-
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents
 
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao

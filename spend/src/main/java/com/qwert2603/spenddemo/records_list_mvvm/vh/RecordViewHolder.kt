@@ -1,7 +1,5 @@
 package com.qwert2603.spenddemo.records_list_mvvm.vh
 
-import android.support.v4.widget.TextViewCompat
-import android.util.TypedValue
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
@@ -16,31 +14,6 @@ import kotlinx.android.synthetic.main.item_record.view.*
 
 class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.layout.item_record) {
 
-    init {
-        //todo:????
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                itemView.time_TextView,
-                14,
-                16,
-                1,
-                TypedValue.COMPLEX_UNIT_SP
-        )
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                itemView.date_TextView,
-                14,
-                16,
-                1,
-                TypedValue.COMPLEX_UNIT_SP
-        )
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                itemView.kind_TextView,
-                8,
-                18,
-                1,
-                TypedValue.COMPLEX_UNIT_SP
-        )
-    }
-
     override fun bind(t: Record, adapter: RecordsListAdapter) = with(itemView) {
         super.bind(t, adapter)
 
@@ -48,8 +21,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         date_TextView.setVisible(adapter.showDatesInRecords)
 
         local_ImageView.setImageResource(when {
-            t.uuid in adapter.syncingRecordsUuids -> R.drawable.ic_local
-            t.change != null -> R.drawable.ic_syncing
+            t.change != null -> R.drawable.ic_local
             else -> R.drawable.ic_done_24dp
         })
         if (t.change != null) {

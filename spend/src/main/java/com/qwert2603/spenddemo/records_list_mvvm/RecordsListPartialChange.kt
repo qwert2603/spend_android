@@ -10,5 +10,4 @@ sealed class RecordsListPartialChange : PartialChange {
     data class SumsInfoChanged(val sumsInfo: SumsInfo) : RecordsListPartialChange()
     data class LongSumPeriodDaysChanged(val days: Int) : RecordsListPartialChange()
     data class ShortSumPeriodMinutesChanged(val minutes: Int) : RecordsListPartialChange()
-    data class SyncingRecordsUuidsChanged(val uuids: Set<String>) : RecordsListPartialChange()
 }

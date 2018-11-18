@@ -22,8 +22,6 @@ class RecordsListInteractor @Inject constructor(
 
     fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> = recordsRepo.getSumLastMinutes(recordTypeId, minutes)
 
-    fun getSyncingRecordsUuids() = recordsRepo.getSyncingRecordsUuids()
-
     fun getRecordCreatedLocallyEvents(): Observable<String> = recordsRepo.getRecordCreatedLocallyEvents()
 
     fun addRecords(records: List<RecordDraft>) {

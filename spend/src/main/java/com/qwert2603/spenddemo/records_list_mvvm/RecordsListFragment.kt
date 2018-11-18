@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
 import java.util.concurrent.TimeUnit
 
-class RecordsListMvvmFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
+class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
 
     companion object {
         private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
@@ -70,7 +70,7 @@ class RecordsListMvvmFragment : BaseFragment<RecordsListViewState, RecordsListVi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         toolbar.setTitle(R.string.app_name)
 
-        val adapter = RecordsListAdapter(records_RecyclerView)
+        val adapter = RecordsListAdapter()
 
         /* todo: fast scroll.
         https://blog.stylingandroid.com/recyclerview-fastscroll-part-1/
@@ -216,7 +216,6 @@ class RecordsListMvvmFragment : BaseFragment<RecordsListViewState, RecordsListVi
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
         renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
-        renderIfChanged({ syncingRecordsUuids }) { adapter.syncingRecordsUuids = it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
             adapter.list = records
@@ -332,7 +331,7 @@ class RecordsListMvvmFragment : BaseFragment<RecordsListViewState, RecordsListVi
     }
 
     private fun DialogFragment.makeShow(requestCode: Int? = null) = this
-            .also { if (requestCode != null) it.setTargetFragment(this@RecordsListMvvmFragment, requestCode) }
-            .show(this@RecordsListMvvmFragment.fragmentManager, null)
-            .also { (this@RecordsListMvvmFragment.context as KeyboardManager).hideKeyboard() }
+            .also { if (requestCode != null) it.setTargetFragment(this@RecordsListFragment, requestCode) }
+            .show(this@RecordsListFragment.fragmentManager, null)
+            .also { (this@RecordsListFragment.context as KeyboardManager).hideKeyboard() }
 }

@@ -26,8 +26,6 @@ interface RecordsRepo {
 
     fun getDumpText(): Single<String>
 
-    fun getSyncingRecordsUuids(): Observable<Set<String>>
-
     fun getRecordCreatedLocallyEvents(): Observable<String>
 
     fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int>

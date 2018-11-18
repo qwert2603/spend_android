@@ -24,8 +24,7 @@ class RecordsListPresenter @Inject constructor(
             showInfo = recordsListInteractor.showInfo,
             longSumPeriodDays = recordsListInteractor.longSumPeriodDays,
             shortSumPeriodMinutes = recordsListInteractor.shortSumPeriodMinutes,
-            sumsInfo = SumsInfo.EMPTY,
-            syncingRecordsUuids = emptySet()
+            sumsInfo = SumsInfo.EMPTY
     )
 
     sealed class ShowInfoChange {
@@ -144,9 +143,7 @@ class RecordsListPresenter @Inject constructor(
                                         }
                                 )
                                 .map { RecordsListPartialChange.SumsInfoChanged(it) }
-                    },
-            recordsListInteractor.getSyncingRecordsUuids()
-                    .map { RecordsListPartialChange.SyncingRecordsUuidsChanged(it) }
+                    }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -157,7 +154,6 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
             is RecordsListPartialChange.LongSumPeriodDaysChanged -> vs.copy(longSumPeriodDays = change.days)
             is RecordsListPartialChange.ShortSumPeriodMinutesChanged -> vs.copy(shortSumPeriodMinutes = change.minutes)
-            is RecordsListPartialChange.SyncingRecordsUuidsChanged -> vs.copy(syncingRecordsUuids = change.uuids)
         }
     }
 
