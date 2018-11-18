@@ -81,6 +81,11 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         else -> null!!
     }
 
+    override fun onFailedToRecycleView(holder: RecyclerView.ViewHolder): Boolean {
+        LogUtils.e("RecordsListAdapter onFailedToRecycleView $holder")
+        return super.onFailedToRecycleView(holder)
+    }
+
     companion object {
         const val VIEW_TYPE_RECORD = 1
         const val VIEW_TYPE_DATE_SUM = 2
