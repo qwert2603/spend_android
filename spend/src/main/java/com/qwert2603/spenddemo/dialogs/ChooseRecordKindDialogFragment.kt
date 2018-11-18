@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.model.IdentifiableLong
-import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
@@ -46,11 +45,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
 
-    @Inject
-    lateinit var modelSchedulersProvider: ModelSchedulersProvider
-
     private lateinit var recordKindsAdapter: RecordKindsAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -82,7 +77,6 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
         recordKindsRepo.getRecordKinds(recordTypeId)
                 .doOnError { LogUtils.e("ChooseRecordKindDialogFragment getRecordKinds", it) }
-                .subscribeOn(modelSchedulersProvider.io)
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
                     recordKindsAdapter.recordKinds = it
