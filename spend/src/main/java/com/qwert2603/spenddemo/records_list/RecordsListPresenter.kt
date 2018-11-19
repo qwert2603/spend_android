@@ -256,6 +256,10 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordCreatedLocally(it)) }
                 .subscribeToView()
 
+        recordsListInteractor.getRecordEditedLocallyEvents()
+                .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordEditedLocally(it)) }
+                .subscribeToView()
+
         super.bindIntents()
     }
 }

@@ -314,6 +314,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .newChooseShortSumPeriodDialog(va.minutes)
                     .makeShow(REQUEST_CHOOSE_SHORT_SUM_PERIOD)
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
+            is RecordsListViewAction.OnRecordEditedLocally -> Unit//todo
             RecordsListViewAction.ShowDumpIsCreating -> Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show()
             is RecordsListViewAction.SendDump -> Intent(Intent.ACTION_SEND)
                     .also { it.putExtra(Intent.EXTRA_TEXT, va.dump) }

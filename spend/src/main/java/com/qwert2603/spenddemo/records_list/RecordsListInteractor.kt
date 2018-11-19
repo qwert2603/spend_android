@@ -24,6 +24,8 @@ class RecordsListInteractor @Inject constructor(
 
     fun getRecordCreatedLocallyEvents(): Observable<String> = recordsRepo.getRecordCreatedLocallyEvents()
 
+    fun getRecordEditedLocallyEvents(): Observable<String> = recordsRepo.getRecordEditedLocallyEvents()
+
     fun addRecords(records: List<RecordDraft>) {
         recordsRepo.saveRecords(records)
     }

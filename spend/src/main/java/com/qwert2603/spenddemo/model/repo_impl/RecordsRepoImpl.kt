@@ -89,6 +89,8 @@ class RecordsRepoImpl @Inject constructor(
 
     private val recordCreatedLocallyEvents = PublishSubject.create<String>()
 
+    private val recordEditedLocallyEvents = PublishSubject.create<String>()
+
     init {
         syncProcessor.start()
     }
@@ -155,6 +157,8 @@ class RecordsRepoImpl @Inject constructor(
 
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents.hide()
 
+    override fun getRecordEditedLocallyEvents(): Observable<String> = recordEditedLocallyEvents.hide()
+
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao
             .recordsList
             .observeOn(modelSchedulersProvider.computation)
@@ -164,6 +168,8 @@ class RecordsRepoImpl @Inject constructor(
         records.forEach {
             if (it.isNewRecord) {
                 recordCreatedLocallyEvents.onNext(it.uuid)
+            } else {
+                recordEditedLocallyEvents.onNext(it.uuid)
             }
         }
         syncProcessor.saveItems(records.map { it.toRecordServer() })
