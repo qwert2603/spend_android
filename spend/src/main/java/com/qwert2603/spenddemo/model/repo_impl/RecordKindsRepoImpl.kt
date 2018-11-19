@@ -123,9 +123,9 @@ class RecordKindsRepoImpl @Inject constructor(
                         }
                         .sortedWith(Comparator { k1, k2 ->
                             return@Comparator when {
-                                k1.recordsCount != k2.recordsCount -> k2.recordsCount.compareTo(k1.recordsCount)
-                                k1.lastDate != k2.lastDate -> k2.lastDate.compareTo(k1.lastDate)
-                                k1.lastTimeNN != k2.lastTimeNN -> k2.lastTimeNN.compareTo(k1.lastTimeNN)
+                                k1.recordsCount != k2.recordsCount -> k1.recordsCount.compareTo(k2.recordsCount).unaryMinus()
+                                k1.lastDate != k2.lastDate -> k1.lastDate.compareTo(k2.lastDate).unaryMinus()
+                                k1.lastTimeNN != k2.lastTimeNN -> k1.lastTimeNN.compareTo(k2.lastTimeNN).unaryMinus()
                                 else -> k1.kind.compareTo(k2.kind)
                             }
                         })

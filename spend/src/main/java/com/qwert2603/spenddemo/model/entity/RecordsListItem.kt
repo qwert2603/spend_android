@@ -14,10 +14,19 @@ interface RecordsListItem : IdentifiableLong {
         private const val DATE_MULTIPLIER = 10L * 100 * 100
 
         val COMPARE_ORDER = { r1: RecordsListItem, r2: RecordsListItem ->
-            when {
-                r1.dateTime() != r2.dateTime() -> r2.dateTime().compareTo(r1.dateTime())
-                r1.priority() != r2.priority() -> r2.priority().compareTo(r1.priority())
-                else -> r2.idInList().compareTo(r1.idInList())
+            if (r1 is Record && r2 is Record) {
+                when {
+                    r1.dateTime() != r2.dateTime() -> r1.dateTime().compareTo(r2.dateTime()).unaryMinus()
+                    r1.recordTypeId != r2.recordTypeId -> r1.recordTypeId.compareTo(r2.recordTypeId)
+                    r1.kind != r2.kind -> r1.kind.compareTo(r2.kind).unaryMinus()
+                    else -> r1.uuid.compareTo(r2.uuid)
+                }
+            } else {
+                when {
+                    r1.dateTime() != r2.dateTime() -> r1.dateTime().compareTo(r2.dateTime()).unaryMinus()
+                    r1.priority() != r2.priority() -> r1.priority().compareTo(r2.priority()).unaryMinus()
+                    else -> r1.idInList().compareTo(r2.idInList())
+                }
             }
         }
 

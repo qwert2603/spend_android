@@ -59,6 +59,8 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
                 Const.CHANGE_KIND_DELETE -> R.color.local_change_delete
                 else -> null!!
             }))
+        } else {
+            local_ImageView.clearColorFilter()
         }
     }
 }
