@@ -43,7 +43,22 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
+    var recordsChanges: HashMap<String, RecordChange> = hashMapOf()
+
     var list: List<RecordsListItem> = emptyList()
+        set(value) {
+            if (value == field) return
+            field = value
+            vhs.forEach { vhRef ->
+                val viewHolder = vhRef.get()
+                if (viewHolder as? RecordViewHolder != null) {
+                    val uuid = viewHolder.t?.uuid
+                    if (uuid != null) {
+                        viewHolder.drawChange(recordsChanges[uuid])
+                    }
+                }
+            }
+        }
 
     var itemClicks = PublishSubject.create<RecordsListItem>()
     var itemLongClicks = PublishSubject.create<RecordsListItem>()

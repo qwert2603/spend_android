@@ -5,6 +5,7 @@ import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.DateTimeTextViews
@@ -17,22 +18,9 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
     override fun bind(t: Record, adapter: RecordsListAdapter) = with(itemView) {
         super.bind(t, adapter)
 
-        local_ImageView.setVisible(adapter.showChangeKinds)
-        date_TextView.setVisible(adapter.showDatesInRecords)
+        drawChange(t.change)
 
-        local_ImageView.setImageResource(when {
-            t.change != null -> R.drawable.ic_local
-            else -> R.drawable.ic_done_24dp
-        })
-        if (t.change != null) {
-            local_ImageView.setColorFilter(resources.color(when (t.change.changeKindId) {
-                Const.CHANGE_KIND_UPSERT -> R.color.local_change_edit
-                Const.CHANGE_KIND_DELETE -> R.color.local_change_delete
-                else -> null!!
-            }))
-        } else {
-            local_ImageView.setColorFilter(resources.color(R.color.anth))
-        }
+        date_TextView.setVisible(adapter.showDatesInRecords)
         DateTimeTextViews.render(
                 dateTextView = date_TextView,
                 timeTextView = time_TextView,
@@ -54,5 +42,23 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         val strike = t.change?.changeKindId == Const.CHANGE_KIND_DELETE
         listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }
+    }
+
+    fun drawChange(recordChange: RecordChange?) = with(itemView) {
+        t = t?.copy(change = recordChange)
+        val adapter = adapter ?: return
+
+        local_ImageView.setVisible(adapter.showChangeKinds)
+        local_ImageView.setImageResource(when {
+            recordChange != null -> R.drawable.ic_local
+            else -> R.drawable.ic_done_24dp
+        })
+        if (recordChange != null) {
+            local_ImageView.setColorFilter(resources.color(when (recordChange.changeKindId) {
+                Const.CHANGE_KIND_UPSERT -> R.color.local_change_edit
+                Const.CHANGE_KIND_DELETE -> R.color.local_change_delete
+                else -> null!!
+            }))
+        }
     }
 }

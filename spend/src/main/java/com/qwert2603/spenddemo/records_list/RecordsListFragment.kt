@@ -216,6 +216,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
+            adapter.recordsChanges = vs.recordsChanges
             adapter.list = records
             if (firstRender) {
                 adapter.notifyDataSetChanged()

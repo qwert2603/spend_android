@@ -3,6 +3,8 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.RecordsListItem
 import com.qwert2603.spenddemo.utils.*
@@ -24,7 +26,8 @@ class RecordsListPresenter @Inject constructor(
             showInfo = recordsListInteractor.showInfo,
             longSumPeriodDays = recordsListInteractor.longSumPeriodDays,
             shortSumPeriodMinutes = recordsListInteractor.shortSumPeriodMinutes,
-            sumsInfo = SumsInfo.EMPTY
+            sumsInfo = SumsInfo.EMPTY,
+            recordsChanges = hashMapOf()
     )
 
     sealed class ShowInfoChange {
@@ -80,9 +83,25 @@ class RecordsListPresenter @Inject constructor(
                                 newList = current,
                                 id = RecordsListItem::idInList,
                                 compareOrder = RecordsListItem.COMPARE_ORDER,
-                                isEqual = RecordsListItem::equals
+                                isEqual = { r1: RecordsListItem, r2: RecordsListItem ->
+                                    if (r1 is Record && r2 is Record) {
+                                        r1.equalIgnoreChange(r2)
+                                    } else {
+                                        r1 == r2
+                                    }
+                                }
                         )
-                        RecordsListPartialChange.RecordsListChanged(current, diffResult)
+                        val recordsChanges = hashMapOf<String, RecordChange>()
+                        current.forEach {
+                            if (it is Record && it.change != null) {
+                                recordsChanges[it.uuid] = it.change
+                            }
+                        }
+                        RecordsListPartialChange.RecordsListChanged(
+                                list = current,
+                                diff = diffResult,
+                                recordsChanges = recordsChanges
+                        )
                     },
             longSumPeriodDaysChanges
                     .skip(1) // skip initial.
@@ -151,7 +170,11 @@ class RecordsListPresenter @Inject constructor(
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
         if (change !is RecordsListPartialChange) throw Exception()
         return when (change) {
-            is RecordsListPartialChange.RecordsListChanged -> vs.copy(records = change.list, diff = change.diff)
+            is RecordsListPartialChange.RecordsListChanged -> vs.copy(
+                    records = change.list,
+                    diff = change.diff,
+                    recordsChanges = change.recordsChanges
+            )
             is RecordsListPartialChange.ShowInfoChanged -> vs.copy(showInfo = change.showInfo)
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
             is RecordsListPartialChange.LongSumPeriodDaysChanged -> vs.copy(longSumPeriodDays = change.days)

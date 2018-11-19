@@ -20,4 +20,11 @@ data class Record(
         require(value > 0)
         require(kind.length <= Const.MAX_KIND_LENGTH)
     }
+
+    fun equalIgnoreChange(other: Record) = uuid == other.uuid
+            && recordTypeId == other.recordTypeId
+            && date == other.date
+            && time == other.time
+            && kind == other.kind
+            && value == other.value
 }

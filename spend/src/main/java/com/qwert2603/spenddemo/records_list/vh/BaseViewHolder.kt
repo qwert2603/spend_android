@@ -18,7 +18,7 @@ abstract class BaseViewHolder<T : RecordsListItem>(
     override val containerView: View = itemView
 
     var t: T? = null
-        private set
+        protected set
 
     protected var adapter: RecordsListAdapter? = null
         private set
