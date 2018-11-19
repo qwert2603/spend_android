@@ -13,6 +13,7 @@ import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.Const
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
@@ -208,7 +209,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
 
     override fun render(vs: RecordsListViewState) {
-        super.render(vs)
+        LogUtils.withErrorLoggingOnly { super.render(vs) }
 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
@@ -247,7 +248,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
                 menu.findItem(R.id.show_spends).isEnabled = it.showSpendsEnable()
                 menu.findItem(R.id.show_profits).isEnabled = it.showProfitsEnable()
-                menu.findItem(R.id.show_sums).isEnabled = it.showSumsEnable()
             }
 
             renderIfChanged({ longSumPeriodDays }) {

@@ -7,11 +7,8 @@ data class ShowInfo(
         val showChangeKinds: Boolean,
         val showTimes: Boolean
 ) {
-    fun showSpendSum() = showSpends || !showProfits
-    fun showProfitSum() = showProfits || !showSpends
-    fun showSpendsEnable() = showProfits || showSums
-    fun showProfitsEnable() = showSpends || showSums
-    fun showSumsEnable() = showSpends || showProfits
+    fun showSpendsEnable() = showProfits
+    fun showProfitsEnable() = showSpends
     fun newProfitEnable() = showProfits
     fun newSpendVisible() = showSpends
     fun showFloatingDate() = showSums && (showSpends || showProfits)

@@ -103,12 +103,12 @@ class RecordsListPresenter @Inject constructor(
                     .switchMap { (longSumPeriodDays, shortSumPeriodMinutes, showInfo) ->
                         val longSumChanges = Observable
                                 .combineLatest(
-                                        if (showInfo.showSpendSum()) {
+                                        if (showInfo.showSpends) {
                                             recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_SPEND, longSumPeriodDays)
                                         } else {
                                             Observable.just(0L)
                                         },
-                                        if (showInfo.showProfitSum()) {
+                                        if (showInfo.showProfits) {
                                             recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_PROFIT, longSumPeriodDays)
                                         } else {
                                             Observable.just(0L)
@@ -117,12 +117,12 @@ class RecordsListPresenter @Inject constructor(
                                 )
                         val shortSumChanges = Observable
                                 .combineLatest(
-                                        if (showInfo.showSpendSum()) {
+                                        if (showInfo.showSpends) {
                                             recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_SPEND, shortSumPeriodMinutes)
                                         } else {
                                             Observable.just(0L)
                                         },
-                                        if (showInfo.showProfitSum()) {
+                                        if (showInfo.showProfits) {
                                             recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_PROFIT, shortSumPeriodMinutes)
                                         } else {
                                             Observable.just(0L)
@@ -131,8 +131,8 @@ class RecordsListPresenter @Inject constructor(
                                 )
                         val changesCountChanges = recordsListInteractor
                                 .getLocalChangesCount(listOfNotNull(
-                                        Const.RECORD_TYPE_ID_SPEND.takeIf { showInfo.showSpendSum() },
-                                        Const.RECORD_TYPE_ID_PROFIT.takeIf { showInfo.showProfitSum() }
+                                        Const.RECORD_TYPE_ID_SPEND.takeIf { showInfo.showSpends },
+                                        Const.RECORD_TYPE_ID_PROFIT.takeIf { showInfo.showProfits }
                                 ))
 
                         Observable
