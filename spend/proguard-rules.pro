@@ -43,6 +43,7 @@
 
 
 -keep class com.qwert2603.spenddemo.model.rest.entity.** { *; }
+-keep class com.qwert2603.spenddemo.model.entity.** { *; }
 
 
 -dontwarn com.qwert2603.spenddemo.dialogs.**

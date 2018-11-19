@@ -35,13 +35,6 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
             else -> null!!
         }))
         value_TextView.text = t.value.toPointedString()
-
-        isClickable = t.change?.changeKindId != Const.CHANGE_KIND_DELETE
-        isLongClickable = t.change?.changeKindId != Const.CHANGE_KIND_DELETE
-
-        val strike = t.change?.changeKindId == Const.CHANGE_KIND_DELETE
-        listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
-                .forEach { it.setStrike(strike) }
     }
 
     fun drawChange(recordChange: RecordChange?) = with(itemView) {
@@ -62,5 +55,12 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         } else {
             local_ImageView.clearColorFilter()
         }
+
+        isClickable = recordChange?.changeKindId != Const.CHANGE_KIND_DELETE
+        isLongClickable = recordChange?.changeKindId != Const.CHANGE_KIND_DELETE
+
+        val strike = recordChange?.changeKindId == Const.CHANGE_KIND_DELETE
+        listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
+                .forEach { it.setStrike(strike) }
     }
 }
