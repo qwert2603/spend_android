@@ -153,7 +153,7 @@ class RecordsRepoImpl @Inject constructor(
             .mapList { "${it.uuid},${it.recordTypeId},${it.date.toDateString()},${it.time?.toTimeString()},${it.kind},${it.value}" }
             .map { it.reduce { acc, s -> "$acc\n$s" } }
 
-    override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents
+    override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents.hide()
 
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao
             .recordsList
@@ -161,7 +161,11 @@ class RecordsRepoImpl @Inject constructor(
             .map { it.filter { it.change != null }.size }
 
     override fun saveRecords(records: List<RecordDraft>) {
-        records.forEach { recordCreatedLocallyEvents.onNext(it.uuid) }
+        records.forEach {
+            if (it.isNewRecord) {
+                recordCreatedLocallyEvents.onNext(it.uuid)
+            }
+        }
         syncProcessor.saveItems(records.map { it.toRecordServer() })
     }
 

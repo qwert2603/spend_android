@@ -198,6 +198,7 @@ class RecordsListPresenter @Inject constructor(
                     recordsListInteractor.addRecords(
                             (1..200).map {
                                 RecordDraft(
+                                        isNewRecord = true,
                                         uuid = UUID.randomUUID().toString(),
                                         recordTypeId = Const.RECORD_TYPE_ID_SPEND,
                                         date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toDateInt(),
@@ -207,6 +208,7 @@ class RecordsListPresenter @Inject constructor(
                                 )
                             } + (1..50).map {
                                 RecordDraft(
+                                        isNewRecord = true,
                                         uuid = UUID.randomUUID().toString(),
                                         recordTypeId = Const.RECORD_TYPE_ID_PROFIT,
                                         date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toDateInt(),

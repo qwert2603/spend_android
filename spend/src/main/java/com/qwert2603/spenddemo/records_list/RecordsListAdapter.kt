@@ -81,8 +81,19 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         else -> null!!
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        LogUtils.d { "RecordsListAdapter onViewRecycled $holder" }
+        holder as BaseViewHolder<RecordsListItem>
+        holder.unbind()
+        super.onViewRecycled(holder)
+    }
+
+    @Suppress("UNCHECKED_CAST")
     override fun onFailedToRecycleView(holder: RecyclerView.ViewHolder): Boolean {
         LogUtils.e("RecordsListAdapter onFailedToRecycleView $holder")
+        holder as BaseViewHolder<RecordsListItem>
+        holder.unbind()
         return super.onFailedToRecycleView(holder)
     }
 

@@ -6,6 +6,7 @@ import com.qwert2603.spenddemo.utils.DateUtils
 import java.util.*
 
 data class RecordDraft(
+        val isNewRecord: Boolean,
         val uuid: String,
         val recordTypeId: Long,
         val date: Int?, // null means "now".
@@ -22,6 +23,7 @@ data class RecordDraft(
 
     companion object {
         fun new(recordTypeId: Long) = RecordDraft(
+                isNewRecord = true,
                 uuid = UUID.randomUUID().toString(),
                 recordTypeId = recordTypeId,
                 date = null,
@@ -45,6 +47,7 @@ fun RecordDraft.toRecordServer(): RecordServer {
 }
 
 fun Record.toRecordDraft() = RecordDraft(
+        isNewRecord = false,
         uuid = uuid,
         recordTypeId = recordTypeId,
         date = date,
