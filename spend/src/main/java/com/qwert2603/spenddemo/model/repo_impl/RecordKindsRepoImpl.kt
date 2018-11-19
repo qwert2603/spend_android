@@ -75,6 +75,7 @@ class RecordKindsRepoImpl @Inject constructor(
         }
 
         private val Record.timeNN: Int get() = time ?: -1
+        private val RecordKind.lastTimeNN: Int get() = lastTime ?: -1
 
         private fun List<Record>.toRecordKindsList(): Map<Long, List<RecordKind>> {
             val b = System.currentTimeMillis()
@@ -97,9 +98,11 @@ class RecordKindsRepoImpl @Inject constructor(
                                                 prevLast,
                                                 record,
                                                 Comparator { r1, r2 ->
-                                                    if (r1.date != r2.date) return@Comparator r1.date.compareTo(r2.date)
-                                                    if (r1.timeNN != r2.timeNN) return@Comparator r1.timeNN.compareTo(r2.timeNN)
-                                                    return@Comparator r1.uuid.compareTo(r2.uuid)
+                                                    return@Comparator when {
+                                                        r1.date != r2.date -> r1.date.compareTo(r2.date)
+                                                        r1.timeNN != r2.timeNN -> r1.timeNN.compareTo(r2.timeNN)
+                                                        else -> r1.uuid.compareTo(r2.uuid)
+                                                    }
                                                 }
                                         )
                                     } else {
@@ -118,7 +121,14 @@ class RecordKindsRepoImpl @Inject constructor(
                                     recordsCount = counts[it.kind]!!
                             )
                         }
-                        .sortedByDescending { it.recordsCount } // todo: sort by lastDate DESC and so on.
+                        .sortedWith(Comparator { k1, k2 ->
+                            return@Comparator when {
+                                k1.recordsCount != k2.recordsCount -> k2.recordsCount.compareTo(k1.recordsCount)
+                                k1.lastDate != k2.lastDate -> k2.lastDate.compareTo(k1.lastDate)
+                                k1.lastTimeNN != k2.lastTimeNN -> k2.lastTimeNN.compareTo(k1.lastTimeNN)
+                                else -> k1.kind.compareTo(k2.kind)
+                            }
+                        })
             }
 
             LogUtils.d("timing_ RecordKindsRepoImpl toRecordKindsList ${System.currentTimeMillis() - b} ms")
