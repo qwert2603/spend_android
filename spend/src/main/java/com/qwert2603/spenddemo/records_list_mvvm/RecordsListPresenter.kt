@@ -79,8 +79,7 @@ class RecordsListPresenter @Inject constructor(
                                 newList = current,
                                 id = RecordsListItem::idInList,
                                 compareOrder = RecordsListItem.COMPARE_ORDER,
-                                isEqual = RecordsListItem::equals,
-                                possiblyMovedItemIds = emptyList()//todo
+                                isEqual = RecordsListItem::equals
                         )
                         RecordsListPartialChange.RecordsListChanged(current, diffResult)
                     },

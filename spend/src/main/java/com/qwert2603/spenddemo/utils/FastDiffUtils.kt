@@ -8,17 +8,15 @@ import com.qwert2603.andrlib.util.LogUtils
 object FastDiffUtils {
 
     data class FastDiffResult(
-            val inserts: List<Pair<Int, Int>>,
             val removes: List<Pair<Int, Int>>,
-            val changes: List<Int>,
-            val moves: List<Pair<Int, Int>>
+            val inserts: List<Pair<Int, Int>>,
+            val changes: List<Int>
     ) {
         companion object {
-            val EMPTY = FastDiffResult(emptyList(), emptyList(), emptyList(), emptyList())
+            val EMPTY = FastDiffResult(emptyList(), emptyList(), emptyList())
         }
 
         fun dispatchToAdapter(adapter: RecyclerView.Adapter<*>) {
-            moves.forEach { adapter.notifyItemMoved(it.first, it.second) }
             changes.forEach { adapter.notifyItemChanged(it) }
             removes.forEach { adapter.notifyItemRangeRemoved(it.first, it.second) }
             inserts.forEach { adapter.notifyItemRangeInserted(it.first, it.second) }
@@ -37,31 +35,14 @@ object FastDiffUtils {
             newList: List<T>,
             crossinline id: T.() -> I,
             crossinline compareOrder: (T, T) -> Int,
-            crossinline isEqual: (T, T) -> Boolean,
-            possiblyMovedItemIds: List<I> = emptyList()
+            crossinline isEqual: (T, T) -> Boolean
     ): FastDiffResult {
 
         val currentTimeMillis = System.currentTimeMillis()
 
-        val movedIds = mutableSetOf<I>()
-
         val inserts = mutableListOf<Pair<Int, Int>>()
         val removes = mutableListOf<Pair<Int, Int>>()
         val changes = mutableListOf<Int>() // todo: calculate payload.
-
-        val moves = possiblyMovedItemIds.mapNotNull { movedId ->
-            val fromPosition = oldList.indexOfFirst { it.id() == movedId }
-            val toPosition = newList.indexOfFirst { it.id() == movedId }
-            if (fromPosition >= 0 && toPosition >= 0) {
-                movedIds.add(movedId)
-                if (!isEqual(oldList[fromPosition], newList[toPosition])) {
-                    changes.add(toPosition)
-                }
-                fromPosition to toPosition
-            } else {
-                null
-            }
-        }
 
         var oldIndex = 0
         var newIndex = 0
@@ -70,14 +51,6 @@ object FastDiffUtils {
         var removesCount = 0
 
         while (oldIndex < oldList.size && newIndex < newList.size) {
-            if (oldList[oldIndex].id() in movedIds) {
-                ++oldIndex
-                continue
-            }
-            if (newList[newIndex].id() in movedIds) {
-                ++newIndex
-                continue
-            }
             if (oldList[oldIndex].id() == newList[newIndex].id()) {
                 if (!isEqual(oldList[oldIndex], newList[newIndex])) {
                     changes.add(oldIndex)
@@ -107,7 +80,7 @@ object FastDiffUtils {
             }
         }
         if (oldIndex < oldList.size && newIndex == newList.size) {
-            removes.add(oldIndex to oldList.size - oldIndex)
+            removes.add(oldIndex - removesCount to oldList.size - oldIndex)
         }
         if (newIndex < newList.size && oldIndex == oldList.size) {
             inserts.add(oldIndex + insertsCount - removesCount to newList.size - newIndex)
@@ -115,7 +88,7 @@ object FastDiffUtils {
 
         LogUtils.d("timing_ FastDiffUtils.fastCalculateDiff() ${System.currentTimeMillis() - currentTimeMillis} ms")
 
-        return FastDiffResult(inserts = inserts, removes = removes, changes = changes, moves = moves)
+        return FastDiffResult(inserts = inserts, removes = removes, changes = changes)
     }
 
 }
