@@ -1,10 +1,10 @@
-package com.qwert2603.spenddemo.records_list_mvvm.vh
+package com.qwert2603.spenddemo.records_list.vh
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.YearSum
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter
+import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
 import kotlinx.android.synthetic.main.item_year_sum.view.*

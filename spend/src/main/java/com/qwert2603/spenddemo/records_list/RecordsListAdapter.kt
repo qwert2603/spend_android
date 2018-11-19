@@ -1,10 +1,10 @@
-package com.qwert2603.spenddemo.records_list_mvvm
+package com.qwert2603.spenddemo.records_list
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
-import com.qwert2603.spenddemo.records_list_mvvm.vh.*
+import com.qwert2603.spenddemo.records_list.vh.*
 import io.reactivex.subjects.PublishSubject
 import java.lang.ref.WeakReference
 

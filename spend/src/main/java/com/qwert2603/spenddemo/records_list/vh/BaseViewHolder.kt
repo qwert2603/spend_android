@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list_mvvm.vh
+package com.qwert2603.spenddemo.records_list.vh
 
 import android.support.annotation.CallSuper
 import android.support.annotation.LayoutRes
@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.qwert2603.spenddemo.model.entity.RecordsListItem
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter
+import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import kotlinx.android.extensions.LayoutContainer
 
 abstract class BaseViewHolder<T : RecordsListItem>(

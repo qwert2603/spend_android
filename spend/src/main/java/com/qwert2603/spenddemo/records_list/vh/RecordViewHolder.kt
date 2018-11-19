@@ -1,11 +1,11 @@
-package com.qwert2603.spenddemo.records_list_mvvm.vh
+package com.qwert2603.spenddemo.records_list.vh
 
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListAdapter
+import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.DateTimeTextViews
 import com.qwert2603.spenddemo.utils.setStrike

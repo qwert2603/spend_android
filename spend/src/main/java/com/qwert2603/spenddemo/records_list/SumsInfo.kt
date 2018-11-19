@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list_mvvm
+package com.qwert2603.spenddemo.records_list
 
 data class SumsInfo(
         val longSum: Long?,

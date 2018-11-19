@@ -2,7 +2,7 @@ package com.qwert2603.spenddemo.navigation
 
 import android.support.v4.app.Fragment
 import com.qwert2603.spenddemo.about.AboutFragment
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListFragment
+import com.qwert2603.spenddemo.records_list.RecordsListFragment
 import ru.terrakok.cicerone.android.support.SupportAppScreen
 import java.io.Serializable
 

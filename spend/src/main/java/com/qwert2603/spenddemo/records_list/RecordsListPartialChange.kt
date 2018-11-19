@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list_mvvm
+package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.spenddemo.model.entity.RecordsListItem

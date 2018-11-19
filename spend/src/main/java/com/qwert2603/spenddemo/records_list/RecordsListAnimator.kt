@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list_mvvm
+package com.qwert2603.spenddemo.records_list
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -11,7 +11,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.records_list_mvvm.vh.RecordViewHolder
+import com.qwert2603.spenddemo.records_list.vh.RecordViewHolder
 import com.qwert2603.spenddemo.spend_draft.DraftViewImpl
 import com.qwert2603.spenddemo.utils.AnimatorUtils
 import com.qwert2603.spenddemo.utils.Const

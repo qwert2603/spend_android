@@ -1,7 +1,6 @@
 package com.qwert2603.spenddemo.di.presenters
 
-import com.qwert2603.spenddemo.records_list_mvvm.RecordsListPresenter
-import dagger.BindsInstance
+import com.qwert2603.spenddemo.records_list.RecordsListPresenter
 import dagger.Subcomponent
 
 @Subcomponent
