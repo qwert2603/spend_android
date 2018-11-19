@@ -20,11 +20,11 @@ abstract class Env {
     fun buildForTesting() = BuildConfig.FLAVOR_aim == "forTesting"
 
     val logType =
-//            if (BuildConfig.DEBUG || buildForTesting()) {
-//                LogUtils.LogType.ANDROID
-//            } else {
+            if (BuildConfig.DEBUG || buildForTesting()) {
+                LogUtils.LogType.ANDROID
+            } else {
                 LogUtils.LogType.ANDROID_ERRORS
-//            }
+            }
 }
 
 private object NoServer : Env() {
