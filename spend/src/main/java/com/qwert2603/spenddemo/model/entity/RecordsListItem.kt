@@ -11,7 +11,7 @@ todo:
 interface RecordsListItem : IdentifiableLong {
 
     companion object {
-        private const val DATE_MULTIPLIER = 10L * 100 * 100 * 100
+        private const val DATE_MULTIPLIER = 10L * 100 * 100
 
         val COMPARE_ORDER = { r1: RecordsListItem, r2: RecordsListItem ->
             when {
@@ -20,14 +20,16 @@ interface RecordsListItem : IdentifiableLong {
                 else -> r2.idInList().compareTo(r1.idInList())
             }
         }
+
+        const val ID_IN_LIST_MULTIPLIER = 1_000_000_000_000L
     }
 
     // format is "yyyyMMdd0HHmm"; (date * DATE_MULTIPLIER) + time
     fun dateTime() = when (this) {
-        is Record -> date * DATE_MULTIPLIER + (time ?: 0)
-        is DaySum -> day * DATE_MULTIPLIER * (100L * 100L)
-        is MonthSum -> (month * 100L) * DATE_MULTIPLIER * (100L * 100L)
-        is YearSum -> (year * 100L * 100L) * DATE_MULTIPLIER * (100L * 100L)
+        is Record -> date * DATE_MULTIPLIER + if (time != null) time + 100 * 100 else 0
+        is DaySum -> day * DATE_MULTIPLIER
+        is MonthSum -> (month * 100L) * DATE_MULTIPLIER
+        is YearSum -> (year * 100L * 100L) * DATE_MULTIPLIER
         is Totals -> Long.MIN_VALUE
         else -> null!!
     }
@@ -44,9 +46,9 @@ interface RecordsListItem : IdentifiableLong {
     @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
     fun idInList(): Comparable<Any> = when (this) {
         is Record -> uuid
-        is DaySum -> day + 1_000_000_000_000L
-        is MonthSum -> month + 2_000_000_000_000L
-        is YearSum -> year + 3_000_000_000_000L
+        is DaySum -> day + 1 * ID_IN_LIST_MULTIPLIER
+        is MonthSum -> month + 2 * ID_IN_LIST_MULTIPLIER
+        is YearSum -> year + 3 * ID_IN_LIST_MULTIPLIER
         is Totals -> id
         else -> null!!
     } as Comparable<Any>

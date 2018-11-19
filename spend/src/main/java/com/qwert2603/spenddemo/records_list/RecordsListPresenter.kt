@@ -65,6 +65,7 @@ class RecordsListPresenter @Inject constructor(
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             showInfoChanges
                     .skip(1) // skip initial.
+                    .doOnNext { recordsListInteractor.showInfo = it }
                     .map { RecordsListPartialChange.ShowInfoChanged(it) },
             showInfoChanges
                     .switchMap { showInfo ->
@@ -85,9 +86,11 @@ class RecordsListPresenter @Inject constructor(
                     },
             longSumPeriodDaysChanges
                     .skip(1) // skip initial.
+                    .doOnNext { recordsListInteractor.longSumPeriodDays = it }
                     .map { RecordsListPartialChange.LongSumPeriodDaysChanged(it) },
             shortSumPeriodMinutesChanges
                     .skip(1) // skip initial.
+                    .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
                     .map { RecordsListPartialChange.ShortSumPeriodMinutesChanged(it) },
             Observable
                     .combineLatest(
@@ -226,21 +229,6 @@ class RecordsListPresenter @Inject constructor(
 
         recordsListInteractor.getRecordCreatedLocallyEvents()
                 .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordCreatedLocally(it)) }
-                .subscribeToView()
-
-        showInfoChanges
-                .skip(1) // skip initial.
-                .doOnNext { recordsListInteractor.showInfo = it }
-                .subscribeToView()
-
-        longSumPeriodDaysChanges
-                .skip(1)
-                .doOnNext { recordsListInteractor.longSumPeriodDays = it }
-                .subscribeToView()
-
-        shortSumPeriodMinutesChanges
-                .skip(1)
-                .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
                 .subscribeToView()
 
         super.bindIntents()
