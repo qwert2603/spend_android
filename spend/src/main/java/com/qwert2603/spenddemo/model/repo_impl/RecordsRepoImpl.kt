@@ -24,6 +24,7 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
@@ -49,13 +50,20 @@ class RecordsRepoImpl @Inject constructor(
                 override fun getUpdates(lastUpdateInfo: LastUpdateInfo?, count: Int): UpdatesFromRemote<RecordServer> = rest
                         .getRecordsUpdates(lastUpdateInfo?.lastUpdated, lastUpdateInfo?.lastUuid, count)
                         .execute()
-                        .body()!!
-                        .toUpdatesFromRemote()
+                        .let {
+                            if (!it.isSuccessful) throw HttpException(it)
+                            it
+                                    .body()!!
+                                    .toUpdatesFromRemote()
+                        }
 
                 override fun saveChanges(updated: List<RecordServer>, deletedUuids: List<String>) = rest
                         .saveRecords(SaveRecordsParam(updated, deletedUuids))
                         .execute()
-                        .let { Unit }
+                        .let {
+                            if (!it.isSuccessful) throw HttpException(it)
+                            Unit
+                        }
             },
             localDataSource = object : LocalDataSource<RecordTable, RecordServer> {
                 override fun saveItems(ts: List<RecordTable>) = recordsDao.saveRecords(ts)
@@ -70,6 +78,7 @@ class RecordsRepoImpl @Inject constructor(
                         editedRecords = editedRecords,
                         deletedUuids = deletedUuids
                 )
+
                 override fun deleteItems(uuids: List<String>) = recordsDao.deleteRecords(uuids)
                 override fun deleteAll() = recordsDao.deleteAllRecords()
             },
