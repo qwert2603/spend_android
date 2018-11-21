@@ -92,7 +92,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
-            // todo: correct with MonthSum
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DaySumViewHolder
         })
         val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {

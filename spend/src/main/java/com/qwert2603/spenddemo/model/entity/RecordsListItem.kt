@@ -13,10 +13,13 @@ interface RecordsListItem : IdentifiableLong {
     companion object {
         private const val DATE_MULTIPLIER = 10L * 100 * 100
 
+        private val Record.timeNN: Int get() = time ?: -1
+
         val COMPARE_ORDER = { r1: RecordsListItem, r2: RecordsListItem ->
             if (r1 is Record && r2 is Record) {
                 when {
-                    r1.dateTime() != r2.dateTime() -> r1.dateTime().compareTo(r2.dateTime()).unaryMinus()
+                    r1.date != r2.date -> r1.date.compareTo(r2.date).unaryMinus()
+                    r1.timeNN != r2.timeNN -> r1.timeNN.compareTo(r2.timeNN).unaryMinus()
                     r1.recordTypeId != r2.recordTypeId -> r1.recordTypeId.compareTo(r2.recordTypeId)
                     r1.kind != r2.kind -> r1.kind.compareTo(r2.kind).unaryMinus()
                     else -> r1.uuid.compareTo(r2.uuid)
@@ -30,7 +33,7 @@ interface RecordsListItem : IdentifiableLong {
             }
         }
 
-        const val ID_IN_LIST_MULTIPLIER = 1_000_000_000_000L
+        private const val ID_IN_LIST_MULTIPLIER = 1_000_000_000_000L
     }
 
     // format is "yyyyMMdd0HHmm"; (date * DATE_MULTIPLIER) + time

@@ -9,7 +9,6 @@ import android.content.res.Resources
 import android.support.annotation.ColorRes
 import android.support.v4.content.res.ResourcesCompat
 import android.widget.Button
-import com.qwert2603.andrlib.util.LogUtils
 import io.reactivex.functions.BiFunction
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -116,35 +115,3 @@ val Dialog.neutralButton: Button
 
 fun Resources.colorStateList(@ColorRes colorRes: Int, theme: Resources.Theme? = null) = ResourcesCompat
         .getColorStateList(this, colorRes, theme)
-
-fun LogUtils.withErrorLoggingOnly(action: () -> Unit) {
-    val prev = logType
-    logType = when (prev) {
-        LogUtils.LogType.NONE -> LogUtils.LogType.NONE
-        LogUtils.LogType.ANDROID -> LogUtils.LogType.ANDROID_ERRORS
-        LogUtils.LogType.ANDROID_ERRORS -> LogUtils.LogType.ANDROID_ERRORS
-        LogUtils.LogType.SOUT -> LogUtils.LogType.SOUT_ERRORS
-        LogUtils.LogType.SOUT_ERRORS -> LogUtils.LogType.SOUT_ERRORS
-    }
-    try {
-        action()
-    } finally {
-        logType = prev
-    }
-}
-
-fun LogUtils.allowDebugLogging(action: () -> Unit) {
-    val prev = logType
-    logType = when (prev) {
-        LogUtils.LogType.NONE -> LogUtils.LogType.NONE
-        LogUtils.LogType.ANDROID -> LogUtils.LogType.ANDROID
-        LogUtils.LogType.ANDROID_ERRORS -> LogUtils.LogType.ANDROID
-        LogUtils.LogType.SOUT -> LogUtils.LogType.SOUT
-        LogUtils.LogType.SOUT_ERRORS -> LogUtils.LogType.SOUT
-    }
-    try {
-        action()
-    } finally {
-        logType = prev
-    }
-}

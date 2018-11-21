@@ -85,6 +85,10 @@ class RecordsListPresenter @Inject constructor(
                                 compareOrder = RecordsListItem.COMPARE_ORDER,
                                 isEqual = { r1: RecordsListItem, r2: RecordsListItem ->
                                     if (r1 is Record && r2 is Record) {
+                                        /**
+                                         * difference in [Record.change] is consumed via
+                                         * [RecordsListViewState.recordsChanges] and [RecordsListAdapter.recordsChanges].
+                                         */
                                         r1.equalIgnoreChange(r2)
                                     } else {
                                         r1 == r2
