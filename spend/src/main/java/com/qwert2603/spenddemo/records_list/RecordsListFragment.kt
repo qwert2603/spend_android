@@ -56,8 +56,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val longSumPeriodDaysSelected = PublishSubject.create<Int>()
     private val shortSumPeriodMinutesSelected = PublishSubject.create<Int>()
 
-    //todo: вернуть layout animation
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
