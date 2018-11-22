@@ -74,8 +74,8 @@ class RecordKindsRepoImpl @Inject constructor(
             return result.take(limit)
         }
 
-        private val Record.timeNN: Int get() = time ?: -1
-        private val RecordKind.lastTimeNN: Int get() = lastTime ?: -1
+        private val Record.timeNN: Int get() = time?.time ?: -1
+        private val RecordKind.lastTimeNN: Int get() = lastTime?.time ?: -1
 
         private fun List<Record>.toRecordKindsList(): Map<Long, List<RecordKind>> {
             val b = System.currentTimeMillis()

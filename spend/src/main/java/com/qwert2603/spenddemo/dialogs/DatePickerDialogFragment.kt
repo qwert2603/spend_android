@@ -10,6 +10,8 @@ import android.support.v4.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.model.entity.toSDate
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
 
@@ -28,7 +30,7 @@ class DatePickerDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-                .also { it.timeInMillis = date.toDateCalendar().timeInMillis }
+                .also { it.timeInMillis = SDate(date).toDateCalendar().timeInMillis }
         return DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -38,7 +40,7 @@ class DatePickerDialogFragment : DialogFragment() {
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
-                            Intent().putExtra(DATE_KEY, calendar.toDateInt())
+                            Intent().putExtra(DATE_KEY, calendar.toSDate().date)
                     )
                 },
                 calendar.year,

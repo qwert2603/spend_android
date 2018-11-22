@@ -8,6 +8,9 @@ import android.widget.TextView
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.model.entity.STime
+import com.qwert2603.spenddemo.model.entity.toFormattedString
 
 fun TextView.setStrike(strike: Boolean) {
     paintFlags = if (strike) {
@@ -38,8 +41,8 @@ object DateTimeTextViews {
     fun render(
             dateTextView: TextView,
             timeTextView: TextView,
-            date: Int?,
-            time: Int?,
+            date: SDate?,
+            time: STime?,
             showTimeAtAll: Boolean = true,
             timePanel: View = timeTextView
     ) {
@@ -49,14 +52,14 @@ object DateTimeTextViews {
             dateTextView.setTextColor(resources.color(R.color.date_default))
             timePanel.setVisible(false)
         } else {
-            dateTextView.text = date.toFormattedDateString(resources)
+            dateTextView.text = date.toFormattedString(resources)
             dateTextView.setTextColor(resources.color(android.R.color.black))
             timePanel.setVisible(showTimeAtAll)
             if (time == null) {
                 timeTextView.text = resources.getString(R.string.no_time_text)
                 timeTextView.setTextColor(resources.color(R.color.date_default))
             } else {
-                timeTextView.text = time.toTimeString()
+                timeTextView.text = time.toString()
                 timeTextView.setTextColor(resources.color(android.R.color.black))
             }
         }

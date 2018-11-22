@@ -21,11 +21,10 @@ import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.RecordKind
+import com.qwert2603.spenddemo.model.entity.toFormattedString
 import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
 import com.qwert2603.spenddemo.utils.disposeOnPause
-import com.qwert2603.spenddemo.utils.toFormattedDateString
 import com.qwert2603.spenddemo.utils.toPointedString
-import com.qwert2603.spenddemo.utils.toTimeString
 import kotlinx.android.synthetic.main.item_record_kind.view.*
 import javax.inject.Inject
 
@@ -107,14 +106,14 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
                 view.resources.getString(
                         R.string.record_kind_description_format,
                         kind.lastValue.toPointedString(),
-                        kind.lastDate.toFormattedDateString(view.resources),
-                        kind.lastTime.toTimeString()
+                        kind.lastDate.toFormattedString(view.resources),
+                        kind.lastTime.toString()
                 )
             } else {
                 view.resources.getString(
                         R.string.record_kind_description_no_time_format,
                         kind.lastValue.toPointedString(),
-                        kind.lastDate.toFormattedDateString(view.resources)
+                        kind.lastDate.toFormattedString(view.resources)
                 )
             })
             return view

@@ -6,6 +6,8 @@ import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordChange
+import com.qwert2603.spenddemo.model.entity.toSDate
+import com.qwert2603.spenddemo.model.entity.toSTime
 import com.qwert2603.spenddemo.model.rest.entity.RecordServer
 import com.qwert2603.spenddemo.model.sync_processor.LocalItem
 
@@ -39,8 +41,8 @@ fun RecordTable.toRecordServer() = RecordServer(
 fun RecordTable.toRecord() = Record(
         uuid = uuid,
         recordTypeId = recordTypeId,
-        date = date,
-        time = time,
+        date = date.toSDate(),
+        time = time?.toSTime(),
         kind = kind,
         value = value,
         change = change

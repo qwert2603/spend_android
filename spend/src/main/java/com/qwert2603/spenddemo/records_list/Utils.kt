@@ -1,17 +1,14 @@
 package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.DaySum
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordsListItem
-import com.qwert2603.spenddemo.model.entity.Totals
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.sync_processor.IdentifiableString
 import com.qwert2603.spenddemo.utils.Const
 
 private val FAKE_RECORD = Record(
         uuid = IdentifiableString.NO_UUID,
         recordTypeId = Const.RECORD_TYPE_ID_SPEND,
-        date = 0,
+        date = SDate(0),
         time = null,
         kind = "nth",
         value = 1,

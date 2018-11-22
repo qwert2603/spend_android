@@ -6,8 +6,8 @@ import com.qwert2603.spenddemo.utils.Const
 data class Record(
         val uuid: String,
         val recordTypeId: Long,
-        val date: Int, // format is "yyyyMMdd"
-        val time: Int?, // format is "HHmm"
+        val date: SDate,
+        val time: STime?,
         val kind: String,
         val value: Int,
         val change: RecordChange?

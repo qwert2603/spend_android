@@ -21,10 +21,7 @@ import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.edit_spend.SaveRecordDialogFragmentBuilder
 import com.qwert2603.spenddemo.edit_spend.SaveRecordKey
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.DaySum
-import com.qwert2603.spenddemo.model.entity.MonthSum
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.Totals
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.utils.*
@@ -151,7 +148,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     if (i in 1..records.lastIndex && records[i] is MonthSum) --i
                     i = records.indexOfFirst(startIndex = i) { it is DaySum }
                     if (i >= 0) {
-                        floatingDate_TextView.text = (records[i] as DaySum).day.toFormattedDateString(resources)
+                        floatingDate_TextView.text = (records[i] as DaySum).day.toFormattedString(resources)
                     } else {
                         floatingDate_TextView.text = ""
                     }

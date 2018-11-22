@@ -6,8 +6,8 @@ import com.qwert2603.andrlib.model.hashCodeLong
 data class RecordKind(
         val recordTypeId: Long,
         val kind: String,
-        val lastDate: Int,
-        val lastTime: Int?,
+        val lastDate: SDate,
+        val lastTime: STime?,
         val lastValue: Int,
         val recordsCount: Int
 //       todo val totalValue: Long

@@ -17,6 +17,7 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.toFormattedString
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
@@ -137,8 +138,8 @@ class DeleteRecordDialogFragment : DialogFragment() {
     }
 
     private fun Record.dateTimeString() = listOfNotNull(
-            date.toFormattedDateString(resources),
-            time?.toTimeString()
+            date.toFormattedString(resources),
+            time?.toString()
     ).reduce { acc, s -> "$acc $s" }
 
     private fun <T> Observable<T>.subscribeUntilPaused() = this

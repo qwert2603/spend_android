@@ -23,6 +23,7 @@ import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
@@ -58,8 +59,8 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
-    private val onDateSelected = PublishSubject.create<Wrapper<Int>>()
-    private val onTimeSelected = PublishSubject.create<Wrapper<Int>>()
+    private val onDateSelected = PublishSubject.create<Wrapper<SDate>>()
+    private val onTimeSelected = PublishSubject.create<Wrapper<STime>>()
     private val onKindSelected = PublishSubject.create<String>()
 
     private lateinit var dialogView: View
@@ -85,8 +86,8 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
-            REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY).wrap())
-            REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY).wrap())
+            REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY)?.toSDate().wrap())
+            REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY)?.toSTime().wrap())
             REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseRecordKindDialogFragment.KIND_KEY))
         }
     }
@@ -160,10 +161,10 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         dialogView.apply {
             renderServerChange(kind_Change, vs.serverKind, R.string.text_server_change_kind_format)
             renderServerChange(value_Change, vs.serverValue?.toPointedString(), R.string.text_server_change_value_format)
-            renderServerChange(date_Change, vs.serverDate?.toFormattedDateString(resources), R.string.text_server_change_date_format)
+            renderServerChange(date_Change, vs.serverDate?.toFormattedString(resources), R.string.text_server_change_date_format)
             renderServerChange(
                     time_Change,
-                    vs.serverTime?.let { it.t?.toTimeString() ?: getString(R.string.no_time_text) },
+                    vs.serverTime?.let { it.t?.toString() ?: getString(R.string.no_time_text) },
                     R.string.text_server_change_time_format
             )
         }
@@ -176,9 +177,9 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         when (va) {
             SaveRecordViewAction.FocusOnKindInput -> keyboardManager.showKeyboard(dialogView.kind_EditText)
             SaveRecordViewAction.FocusOnValueInput -> keyboardManager.showKeyboard(dialogView.value_EditText)
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.date, true)
+            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.date.date, true)
                     .makeShow(REQUEST_CODE_DATE)
-            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(va.time)
+            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(va.time.time)
                     .makeShow(REQUEST_CODE_TIME)
             is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
                     .newChooseRecordKindDialogFragment(va.recordTypeId)

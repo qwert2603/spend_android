@@ -6,10 +6,7 @@ import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
-import com.qwert2603.spenddemo.model.entity.LastUpdateInfo
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.toRecordServer
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordServer
@@ -112,7 +109,7 @@ class RecordsRepoImpl @Inject constructor(
     override fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -days + 1)
-        val startDate = calendar.toDateInt()
+        val startDate = calendar.toSDate()
 
         return recordsDao
                 .recordsList
@@ -131,8 +128,8 @@ class RecordsRepoImpl @Inject constructor(
     override fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.MINUTE, -minutes + 1)
-        val startDate = calendar.toDateInt()
-        val startTime = calendar.toTimeInt()
+        val startDate = calendar.toSDate()
+        val startTime = calendar.toSTime()
 
         return recordsDao
                 .recordsList
@@ -152,7 +149,7 @@ class RecordsRepoImpl @Inject constructor(
     override fun getDumpText(): Single<String> = recordsDao
             .recordsList
             .firstOrError()
-            .mapList { "${it.uuid},${it.recordTypeId},${it.date.toDateString()},${it.time?.toTimeString()},${it.kind},${it.value}" }
+            .mapList { "${it.uuid},${it.recordTypeId},${it.date},${it.time},${it.kind},${it.value}" }
             .map { it.reduce { acc, s -> "$acc\n$s" } }
 
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents.hide()

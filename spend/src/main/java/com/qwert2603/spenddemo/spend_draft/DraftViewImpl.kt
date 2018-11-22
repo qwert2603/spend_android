@@ -17,6 +17,10 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.model.entity.STime
+import com.qwert2603.spenddemo.model.entity.toSDate
+import com.qwert2603.spenddemo.model.entity.toSTime
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
@@ -41,8 +45,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
-    private val onDateSelected = PublishSubject.create<Wrapper<Int>>()
-    private val onTimeSelected = PublishSubject.create<Wrapper<Int>>()
+    private val onDateSelected = PublishSubject.create<Wrapper<SDate>>()
+    private val onTimeSelected = PublishSubject.create<Wrapper<STime>>()
     private val onKindSelected = PublishSubject.create<String>()
 
     override lateinit var dialogShower: DialogAwareView.DialogShower
@@ -56,8 +60,8 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
-            REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY).wrap())
-            REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY).wrap())
+            REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY)?.toSDate().wrap())
+            REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY)?.toSTime().wrap())
             REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseRecordKindDialogFragment.KIND_KEY))
         }
     }
@@ -80,9 +84,9 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
 
-    override fun onDateSelected(): Observable<Wrapper<Int>> = onDateSelected
+    override fun onDateSelected() = onDateSelected
 
-    override fun onTimeSelected(): Observable<Wrapper<Int>> = onTimeSelected
+    override fun onTimeSelected() = onTimeSelected
 
     override fun onKindSelected(): Observable<String> = onKindSelected
 
@@ -130,11 +134,11 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
                 }, 200)
             }
             is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.date, true)
+                    .newDatePickerDialogFragment(va.date.date, true)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
             is DraftViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
-                    .newTimePickerDialogFragment(va.time)
+                    .newTimePickerDialogFragment(va.time.time)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_TIME) }
                     .also { keyboardManager.hideKeyboard() }
             DraftViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder

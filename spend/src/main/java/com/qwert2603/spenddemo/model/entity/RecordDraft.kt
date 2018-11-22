@@ -9,8 +9,8 @@ data class RecordDraft(
         val isNewRecord: Boolean,
         val uuid: String,
         val recordTypeId: Long,
-        val date: Int?, // null means "now".
-        val time: Int?,
+        val date: SDate?, // null means "now".
+        val time: STime?,
         val kind: String,
         val value: Int
 ) {
@@ -39,8 +39,8 @@ fun RecordDraft.toRecordServer(): RecordServer {
     return RecordServer(
             uuid = uuid,
             recordTypeId = recordTypeId,
-            date = date ?: nowDate,
-            time = if (date != null) time else nowTime,
+            date = (date ?: nowDate).date,
+            time = (if (date != null) time else nowTime)?.time,
             kind = kind,
             value = value
     )

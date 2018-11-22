@@ -10,6 +10,8 @@ import android.support.v4.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.model.entity.STime
+import com.qwert2603.spenddemo.model.entity.toSTime
 import com.qwert2603.spenddemo.utils.*
 import java.util.*
 
@@ -25,7 +27,7 @@ class TimePickerDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-                .also { it.timeInMillis = time.toTimeCalendar().timeInMillis }
+                .also { it.timeInMillis = STime(time).toTimeCalendar().timeInMillis }
         return TimePickerDialog(
                 requireContext(),
                 { _, h, m ->
@@ -34,7 +36,7 @@ class TimePickerDialogFragment : DialogFragment() {
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
-                            Intent().putExtra(TIME_KEY, calendar.toTimeInt())
+                            Intent().putExtra(TIME_KEY, calendar.toSTime().time)
                     )
                 },
                 calendar.hour,

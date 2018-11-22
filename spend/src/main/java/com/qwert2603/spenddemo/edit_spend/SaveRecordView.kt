@@ -1,6 +1,8 @@
 package com.qwert2603.spenddemo.edit_spend
 
 import com.qwert2603.andrlib.base.mvi.BaseView
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.model.entity.STime
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 
@@ -10,8 +12,8 @@ interface SaveRecordView : BaseView<SaveRecordViewState> {
     fun kindChanges(): Observable<String>
     fun valueChanges(): Observable<Int>
 
-    fun onDateSelected(): Observable<Wrapper<Int>>
-    fun onTimeSelected(): Observable<Wrapper<Int>>
+    fun onDateSelected(): Observable<Wrapper<SDate>>
+    fun onTimeSelected(): Observable<Wrapper<STime>>
     fun onKindSelected(): Observable<String>
 
     fun selectKindClicks(): Observable<Any>

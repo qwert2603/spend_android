@@ -2,19 +2,21 @@ package com.qwert2603.spenddemo.edit_spend
 
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.model.entity.STime
 
 sealed class SaveRecordPartialChange : PartialChange {
     data class KindChanged(val kind: String) : SaveRecordPartialChange()
     data class ValueChanged(val value: Int) : SaveRecordPartialChange()
 
     data class KindSelected(val kind: String) : SaveRecordPartialChange()
-    data class DateSelected(val date: Int?) : SaveRecordPartialChange()
-    data class TimeSelected(val time: Int?) : SaveRecordPartialChange()
+    data class DateSelected(val date: SDate?) : SaveRecordPartialChange()
+    data class TimeSelected(val time: STime?) : SaveRecordPartialChange()
 
     data class KindChangeOnServer(val kind: String) : SaveRecordPartialChange()
     data class ValueChangeOnServer(val value: Int) : SaveRecordPartialChange()
-    data class DateChangeOnServer(val date: Int) : SaveRecordPartialChange()
-    data class TimeChangeOnServer(val time: Int?) : SaveRecordPartialChange()
+    data class DateChangeOnServer(val date: SDate) : SaveRecordPartialChange()
+    data class TimeChangeOnServer(val time: STime?) : SaveRecordPartialChange()
 
     data class RecordJustChangedOnServer(val justChanged: Boolean) : SaveRecordPartialChange()
 

@@ -3,10 +3,7 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordChange
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.RecordsListItem
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -228,8 +225,8 @@ class RecordsListPresenter @Inject constructor(
                                         isNewRecord = true,
                                         uuid = UUID.randomUUID().toString(),
                                         recordTypeId = Const.RECORD_TYPE_ID_SPEND,
-                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toDateInt(),
-                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toTimeInt().takeIf { Random.nextBoolean() },
+                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
+                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
                                         kind = stubSpendKinds[Random.nextInt(stubSpendKinds.size)],
                                         value = Random.nextInt(1, 10000)
                                 )
@@ -238,8 +235,8 @@ class RecordsListPresenter @Inject constructor(
                                         isNewRecord = true,
                                         uuid = UUID.randomUUID().toString(),
                                         recordTypeId = Const.RECORD_TYPE_ID_PROFIT,
-                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toDateInt(),
-                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toTimeInt().takeIf { Random.nextBoolean() },
+                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
+                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
                                         kind = stubProfitKinds[Random.nextInt(stubProfitKinds.size)],
                                         value = Random.nextInt(1, 10000)
                                 )
