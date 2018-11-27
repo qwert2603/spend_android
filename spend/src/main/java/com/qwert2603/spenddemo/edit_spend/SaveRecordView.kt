@@ -7,8 +7,6 @@ import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 
 interface SaveRecordView : BaseView<SaveRecordViewState> {
-    fun viewCreated(): Observable<Any>
-
     fun kindChanges(): Observable<String>
     fun valueChanges(): Observable<Int>
 

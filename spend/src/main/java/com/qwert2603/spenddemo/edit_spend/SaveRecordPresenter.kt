@@ -12,50 +12,45 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SaveRecordPresenter @Inject constructor(
-        private val saveRecordKey: SaveRecordKey,
+        saveRecordKey: SaveRecordKey,
         private val saveRecordInteractor: SaveRecordInteractor,
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<SaveRecordView, SaveRecordViewState>(uiSchedulerProvider) {
 
-    override val initialState by lazy {
-        val editingRecord by lazy {
-            val uuid = (saveRecordKey as SaveRecordKey.EditRecord).uuid
-            saveRecordInteractor
-                    .getRecordChanges(uuid)
-                    .blockingFirst()
-                    .t!!
-                    .toRecordDraft()
-        }
+    override val initialState = SaveRecordViewState(
+            isNewRecord = saveRecordKey is SaveRecordKey.NewRecord,
+            recordDraft = when (saveRecordKey) {
+                is SaveRecordKey.EditRecord -> SaveRecordViewState.DRAFT_IS_LOADING
+                is SaveRecordKey.NewRecord -> saveRecordInteractor.getDraft(saveRecordKey.recordTypeId)
+                        ?: RecordDraft.new(saveRecordKey.recordTypeId)
+            },
+            serverKind = null,
+            serverDate = null,
+            serverTime = null,
+            serverValue = null,
+            justChangedOnServer = false,
+            existingRecord = null
+    )
 
-        SaveRecordViewState(
-                isNewRecord = saveRecordKey is SaveRecordKey.NewRecord,
-                recordDraft = when (saveRecordKey) {
-                    is SaveRecordKey.EditRecord -> editingRecord
-                    is SaveRecordKey.NewRecord -> saveRecordInteractor.getDraft(saveRecordKey.recordTypeId)
-                            ?: RecordDraft.new(saveRecordKey.recordTypeId)
-                },
-                serverKind = null,
-                serverDate = null,
-                serverTime = null,
-                serverValue = null,
-                justChangedOnServer = false,
-                existingRecord = when (saveRecordKey) {
-                    is SaveRecordKey.EditRecord -> editingRecord
-                    is SaveRecordKey.NewRecord -> null
-                }
-        )
-    }
 
-    private val serverRecordChanges: Observable<Wrapper<Record>> = intent { it.viewCreated() }
-            .switchMap {
-                when (saveRecordKey) {
-                    is SaveRecordKey.EditRecord -> saveRecordInteractor.getRecordChanges(saveRecordKey.uuid)
-                    is SaveRecordKey.NewRecord -> Observable.never()
-                }
+    private val serverRecordChanges: Observable<Wrapper<Record>> =
+            when (saveRecordKey) {
+                is SaveRecordKey.EditRecord -> saveRecordInteractor.getRecordChanges(saveRecordKey.uuid)
+                is SaveRecordKey.NewRecord -> Observable.never()
             }
-            .shareAfterViewSubscribed()
+                    .shareAfterViewSubscribed()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
+            serverRecordChanges
+                    .take(1)
+                    .flatMap {
+                        if (it.t != null) {
+                            Observable.just(SaveRecordPartialChange.EditingRecordLoaded(it.t.toRecordDraft()))
+                        } else {
+                            viewActions.onNext(SaveRecordViewAction.EditingRecordNotFound)
+                            Observable.empty()
+                        }
+                    },
             serverRecordChanges
                     .mapNotNull { it.t }
                     .shareReplayLast()
@@ -81,13 +76,12 @@ class SaveRecordPresenter @Inject constructor(
                     .distinctUntilChanged()
                     .skip(1)
                     .switchMap {
-                        Observable.interval(0, 700, TimeUnit.MILLISECONDS)
+                        Observable.interval(0, 1000, TimeUnit.MILLISECONDS)
                                 .take(2)
                                 .map { it == 0L }
                     }
                     .map { SaveRecordPartialChange.RecordJustChangedOnServer(it) },
             serverRecordChanges
-                    .skip(1)
                     .mapNotNull { it.t }
                     .map { SaveRecordPartialChange.ExistingRecordChanged(it.toRecordDraft()) },
             intent { it.onServerKindResolved() }
@@ -116,6 +110,11 @@ class SaveRecordPresenter @Inject constructor(
     override fun stateReducer(vs: SaveRecordViewState, change: PartialChange): SaveRecordViewState {
         if (change !is SaveRecordPartialChange) null!!
         return when (change) {
+            is SaveRecordPartialChange.EditingRecordLoaded -> if (vs.isNewRecord) {
+                vs
+            } else {
+                vs.copy(recordDraft = change.recordDraft)
+            }
             is SaveRecordPartialChange.KindChanged -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
             is SaveRecordPartialChange.ValueChanged -> vs.copy(recordDraft = vs.recordDraft.copy(value = change.value))
             is SaveRecordPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
@@ -160,11 +159,11 @@ class SaveRecordPresenter @Inject constructor(
     }
 
     override fun bindIntents() {
-        if (saveRecordKey is SaveRecordKey.NewRecord) {
-            viewStateObservable
-                    .doOnNext { saveRecordInteractor.saveDraft(saveRecordKey.recordTypeId, it.recordDraft) }
-                    .subscribeToView()
-        }
+        viewStateObservable
+                .map { it.recordDraft }
+                .filter { it.isNewRecord }
+                .doOnNext { saveRecordInteractor.saveDraft(it.recordTypeId, it) }
+                .subscribeToView()
 
         intent { it.selectKindClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())

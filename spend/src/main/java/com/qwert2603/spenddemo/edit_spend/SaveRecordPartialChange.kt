@@ -6,6 +6,8 @@ import com.qwert2603.spenddemo.model.entity.SDate
 import com.qwert2603.spenddemo.model.entity.STime
 
 sealed class SaveRecordPartialChange : PartialChange {
+    data class EditingRecordLoaded(val recordDraft: RecordDraft) : SaveRecordPartialChange()
+
     data class KindChanged(val kind: String) : SaveRecordPartialChange()
     data class ValueChanged(val value: Int) : SaveRecordPartialChange()
 

@@ -11,6 +11,7 @@ sealed class SaveRecordViewAction : ViewAction {
     data class AskToSelectTime(val time: STime) : SaveRecordViewAction()
     data class AskToSelectKind(val recordTypeId: Long) : SaveRecordViewAction()
     data class EditingRecordDeletedOnServer(val recordTypeId: Long) : SaveRecordViewAction()
+    object EditingRecordNotFound : SaveRecordViewAction()
     object RerenderAll : SaveRecordViewAction()
     object Close : SaveRecordViewAction()
 }

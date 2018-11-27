@@ -66,8 +66,6 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
         }
     }
 
-    override fun viewCreated(): Observable<Any> = Observable.just(Any())
-
     override fun kingChanges(): Observable<String> = kindEditText.userInputs()
 
     override fun valueChanges(): Observable<Int> = valueEditText.userInputs()

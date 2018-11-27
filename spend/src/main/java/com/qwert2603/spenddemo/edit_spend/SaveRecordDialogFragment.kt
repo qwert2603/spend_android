@@ -92,8 +92,6 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         }
     }
 
-    override fun viewCreated(): Observable<Any> = Observable.just(Any())
-
     override fun kindChanges(): Observable<String> = kindEditText.userInputs()
 
     override fun valueChanges(): Observable<Int> = valueEditText.userInputs()
@@ -190,6 +188,14 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                     Const.RECORD_TYPE_ID_PROFIT -> R.string.text_deleted_while_edited_profit
                     else -> null!!
                 }, Toast.LENGTH_SHORT).show()
+                dismiss()
+            }
+            SaveRecordViewAction.EditingRecordNotFound -> {
+                Toast.makeText(
+                        requireContext(),
+                        R.string.text_editing_record_not_found,
+                        Toast.LENGTH_SHORT
+                ).show()
                 dismiss()
             }
             SaveRecordViewAction.RerenderAll -> renderAll()

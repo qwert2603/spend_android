@@ -7,8 +7,6 @@ import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 
 interface DraftView : BaseView<DraftViewState> {
-    fun viewCreated(): Observable<Any>
-
     fun kingChanges(): Observable<String>
     fun valueChanges(): Observable<Int>
 
