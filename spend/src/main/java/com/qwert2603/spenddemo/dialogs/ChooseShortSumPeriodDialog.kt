@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
