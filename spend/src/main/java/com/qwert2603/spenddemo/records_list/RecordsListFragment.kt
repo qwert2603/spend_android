@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
@@ -47,6 +48,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             .recordsListPresenterCreatorComponent()
             .build()
             .createRecordsListPresenter()
+
+    private var layoutAnimationShown by BundleBoolean("layoutAnimationShown", { arguments!! }, false)
 
     private val adapter: RecordsListAdapter get() = records_RecyclerView.adapter as RecordsListAdapter
     private val itemAnimator: RecordsListAnimator get() = records_RecyclerView.itemAnimator as RecordsListAnimator
@@ -216,6 +219,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
             adapter.recordsChanges = vs.recordsChanges
             adapter.list = records
+            if (!layoutAnimationShown) {
+                // todo: don't work
+                layoutAnimationShown = true
+                records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
+            }
             if (firstRender) {
                 adapter.notifyDataSetChanged()
             } else {
