@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -25,6 +26,7 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
+import com.qwert2603.spenddemo.spend_draft.SuggestionAdapter
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -105,6 +107,11 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun selectDateClicks(): Observable<Any> = RxView.clicks(dialogView.date_EditText)
     override fun selectTimeClicks(): Observable<Any> = RxView.clicks(dialogView.time_EditText)
 
+    override fun onKindInputClicked(): Observable<Any> = RxView.clicks(dialogView.kind_EditText)
+    override fun onKindSuggestionSelected(): Observable<String> = RxAutoCompleteTextView
+            .itemClickEvents(dialogView.kind_EditText)
+            .map { it.view().adapter.getItem(it.position()).toString() }
+
     override fun onServerKindResolved(): Observable<Boolean> = dialogView.kind_Change.resolvedActions()
     override fun onServerDateResolved(): Observable<Boolean> = dialogView.date_Change.resolvedActions()
     override fun onServerTimeResolved(): Observable<Boolean> = dialogView.time_Change.resolvedActions()
@@ -175,13 +182,20 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         when (va) {
             SaveRecordViewAction.FocusOnKindInput -> keyboardManager.showKeyboard(dialogView.kind_EditText)
             SaveRecordViewAction.FocusOnValueInput -> keyboardManager.showKeyboard(dialogView.value_EditText)
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder.newDatePickerDialogFragment(va.date.date, true)
+            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
+                    .newDatePickerDialogFragment(va.date.date, true)
                     .makeShow(REQUEST_CODE_DATE)
-            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder.newTimePickerDialogFragment(va.time.time)
+            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
+                    .newTimePickerDialogFragment(va.time.time)
                     .makeShow(REQUEST_CODE_TIME)
             is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
                     .newChooseRecordKindDialogFragment(va.recordTypeId)
                     .makeShow(REQUEST_CODE_KIND)
+            is SaveRecordViewAction.ShowKindSuggestions -> {
+                dialogView.kind_EditText.setAdapter(SuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
+                dialogView.kind_EditText.showDropDown()
+            }
+            SaveRecordViewAction.HideKindSuggestions -> dialogView.kind_EditText.dismissDropDown()
             is SaveRecordViewAction.EditingRecordDeletedOnServer -> {
                 Toast.makeText(requireContext(), when (va.recordTypeId) {
                     Const.RECORD_TYPE_ID_SPEND -> R.string.text_deleted_while_edited_spend

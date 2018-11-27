@@ -18,6 +18,9 @@ interface SaveRecordView : BaseView<SaveRecordViewState> {
     fun selectDateClicks(): Observable<Any>
     fun selectTimeClicks(): Observable<Any>
 
+    fun onKindInputClicked(): Observable<Any>
+    fun onKindSuggestionSelected(): Observable<String>
+
     fun onServerKindResolved(): Observable<Boolean> // is accept from server
     fun onServerDateResolved(): Observable<Boolean> // is accept from server
     fun onServerTimeResolved(): Observable<Boolean> // is accept from server

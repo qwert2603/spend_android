@@ -8,6 +8,7 @@ import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.toRecordDraft
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -32,13 +33,20 @@ class SaveRecordPresenter @Inject constructor(
             existingRecord = null
     )
 
-
     private val serverRecordChanges: Observable<Wrapper<Record>> =
             when (saveRecordKey) {
                 is SaveRecordKey.EditRecord -> saveRecordInteractor.getRecordChanges(saveRecordKey.uuid)
                 is SaveRecordKey.NewRecord -> Observable.never()
             }
                     .shareAfterViewSubscribed()
+
+    private val clearDraft = PublishSubject.create<Any>()
+
+    private val onDateSelectedIntent = intent { it.onDateSelected() }.shareAfterViewSubscribed()
+    private val onTimeSelectedIntent = intent { it.onTimeSelected() }.shareAfterViewSubscribed()
+    private val kindChangesIntent = intent { it.kindChanges() }.shareAfterViewSubscribed()
+    private val onKindSelectedIntent = intent { it.onKindSelected() }.shareAfterViewSubscribed()
+    private val onKindSuggestionSelectedIntent = intent { it.onKindSuggestionSelected() }.shareAfterViewSubscribed()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             serverRecordChanges
@@ -84,6 +92,7 @@ class SaveRecordPresenter @Inject constructor(
             serverRecordChanges
                     .mapNotNull { it.t }
                     .map { SaveRecordPartialChange.ExistingRecordChanged(it.toRecordDraft()) },
+
             intent { it.onServerKindResolved() }
                     .map { SaveRecordPartialChange.KindServerResolved(it) },
             intent { it.onServerDateResolved() }
@@ -92,19 +101,30 @@ class SaveRecordPresenter @Inject constructor(
                     .map { SaveRecordPartialChange.TimeServerResolved(it) },
             intent { it.onServerValueResolved() }
                     .map { SaveRecordPartialChange.ValueServerResolved(it) },
-            intent { it.kindChanges() }
+
+            kindChangesIntent
                     .map { SaveRecordPartialChange.KindChanged(it) },
             intent { it.valueChanges() }
                     .map { SaveRecordPartialChange.ValueChanged(it) },
-            intent { it.onKindSelected() }
-                    .doOnNext { viewActions.onNext(SaveRecordViewAction.FocusOnValueInput) }
-                    .map { SaveRecordPartialChange.KindSelected(it) },
-            intent { it.onDateSelected() }
-                    .doOnNext { viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) }
+            onDateSelectedIntent
                     .map { SaveRecordPartialChange.DateSelected(it.t) },
-            intent { it.onTimeSelected() }
-                    .doOnNext { viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) }
-                    .map { SaveRecordPartialChange.TimeSelected(it.t) }
+            onTimeSelectedIntent
+                    .map { SaveRecordPartialChange.TimeSelected(it.t) },
+            Observable
+                    .merge(
+                            onKindSelectedIntent,
+                            onKindSuggestionSelectedIntent
+                    )
+                    .withLatestFrom(viewStateObservable.map { it.recordDraft.recordTypeId }, makePair())
+                    .switchMapSingle { (kind, recordTypeId) ->
+                        saveRecordInteractor.getLastValueOfKind(recordTypeId, kind)
+                                .map { Pair(kind, it) }
+                    }
+                    .map { (kind, lastValue) ->
+                        SaveRecordPartialChange.KindSelected(kind, lastValue)
+                    },
+            clearDraft
+                    .map { SaveRecordPartialChange.DraftCleared }
     ))
 
     override fun stateReducer(vs: SaveRecordViewState, change: PartialChange): SaveRecordViewState {
@@ -117,7 +137,7 @@ class SaveRecordPresenter @Inject constructor(
             }
             is SaveRecordPartialChange.KindChanged -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
             is SaveRecordPartialChange.ValueChanged -> vs.copy(recordDraft = vs.recordDraft.copy(value = change.value))
-            is SaveRecordPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind))
+            is SaveRecordPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(kind = change.kind, value = change.lastValue))
             is SaveRecordPartialChange.DateSelected -> {
                 val (nowDate, nowTime) = DateUtils.getNow()
                 if (vs.recordDraft.date == null && change.date == nowDate) {
@@ -133,6 +153,7 @@ class SaveRecordPresenter @Inject constructor(
                 }
             }
             is SaveRecordPartialChange.TimeSelected -> vs.copy(recordDraft = vs.recordDraft.copy(time = change.time.takeIf { vs.recordDraft.date != null }))
+            SaveRecordPartialChange.DraftCleared -> vs.copy(recordDraft = RecordDraft.new(vs.recordDraft.recordTypeId))
             is SaveRecordPartialChange.KindChangeOnServer -> vs.copy(serverKind = change.kind)
             is SaveRecordPartialChange.ValueChangeOnServer -> vs.copy(serverValue = change.value)
             is SaveRecordPartialChange.DateChangeOnServer -> vs.copy(serverDate = change.date)
@@ -160,9 +181,33 @@ class SaveRecordPresenter @Inject constructor(
 
     override fun bindIntents() {
         viewStateObservable
+                .skip(1) // skip initial value.
                 .map { it.recordDraft }
                 .filter { it.isNewRecord }
                 .doOnNext { saveRecordInteractor.saveDraft(it.recordTypeId, it) }
+                .subscribeToView()
+
+        Observable
+                .merge(
+                        intent { it.onKindInputClicked() }
+                                .withLatestFrom(viewStateObservable, secondOfTwo())
+                                .mapNotNull { it.recordDraft }
+                                .map { it.kind },
+                        kindChangesIntent
+                                .debounce(100, TimeUnit.MILLISECONDS)
+                )
+                .withLatestFrom(viewStateObservable.map { it.recordDraft.recordTypeId }, makePair())
+                .switchMapSingle { (kind, recordTypeId) ->
+                    saveRecordInteractor.getSuggestions(recordTypeId, kind)
+                            .map { if (it.isNotEmpty()) it else listOf("smth") }
+                            .doOnSuccess {
+                                if (kind !in it) {
+                                    viewActions.onNext(SaveRecordViewAction.ShowKindSuggestions(it, kind))
+                                } else {
+                                    viewActions.onNext(SaveRecordViewAction.HideKindSuggestions)
+                                }
+                            }
+                }
                 .subscribeToView()
 
         intent { it.selectKindClicks() }
@@ -188,6 +233,14 @@ class SaveRecordPresenter @Inject constructor(
                 }
                 .subscribeToView()
 
+        Observable.merge(onDateSelectedIntent, onTimeSelectedIntent)
+                .doOnNext { viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) }
+                .subscribeToView()
+
+        Observable.merge(onKindSelectedIntent, onKindSuggestionSelectedIntent)
+                .doOnNext { viewActions.onNext(SaveRecordViewAction.FocusOnValueInput) }
+                .subscribeToView()
+
         serverRecordChanges
                 .buffer(2, 1)
                 .mapNotNull { (prev, current) ->
@@ -203,9 +256,13 @@ class SaveRecordPresenter @Inject constructor(
 
         intent { it.saveClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
+                .mapNotNull { it.recordDraft }
+                .filter { it.isValid() }
                 .doOnNext {
-                    saveRecordInteractor.saveRecord(it.recordDraft)
-                    viewActions.onNext(SaveRecordViewAction.Close)
+                    saveRecordInteractor.saveRecord(it)
+                    viewActions.onNext(SaveRecordViewAction.Close) // close is for dialog
+                    clearDraft.onNext(Any())
+                    viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) // this is for DraftViewImpl
                 }
                 .subscribeToView()
 

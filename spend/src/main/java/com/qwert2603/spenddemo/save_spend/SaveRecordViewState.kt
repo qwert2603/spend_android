@@ -29,6 +29,10 @@ data class SaveRecordViewState(
         )
     }
 
+    init {
+        if (isNewRecord) require(existingRecord == null)
+    }
+
     val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
 
     private val canSave = recordDraft.isValid()

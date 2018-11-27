@@ -11,9 +11,12 @@ sealed class SaveRecordPartialChange : PartialChange {
     data class KindChanged(val kind: String) : SaveRecordPartialChange()
     data class ValueChanged(val value: Int) : SaveRecordPartialChange()
 
-    data class KindSelected(val kind: String) : SaveRecordPartialChange()
+    data class KindSelected(val kind: String, val lastValue: Int) : SaveRecordPartialChange()
     data class DateSelected(val date: SDate?) : SaveRecordPartialChange()
     data class TimeSelected(val time: STime?) : SaveRecordPartialChange()
+
+    // after new record created.
+    object DraftCleared : SaveRecordPartialChange()
 
     data class KindChangeOnServer(val kind: String) : SaveRecordPartialChange()
     data class ValueChangeOnServer(val value: Int) : SaveRecordPartialChange()

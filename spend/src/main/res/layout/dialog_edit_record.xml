@@ -38,7 +38,7 @@
                 android:textColorHint="@color/anth"
                 app:hintTextAppearance="@color/anth">
 
-                <EditText
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/date_EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 android:textColorHint="@color/anth"
                 app:hintTextAppearance="@color/anth">
 
-                <EditText
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/time_EditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             android:textColorHint="@color/anth"
             app:hintTextAppearance="@color/anth">
 
-            <EditText
+            <android.support.design.widget.TextInputAutoCompleteTextView
                 android:id="@+id/kind_EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
             android:textColorHint="@color/anth"
             app:hintTextAppearance="@color/anth">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/value_EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

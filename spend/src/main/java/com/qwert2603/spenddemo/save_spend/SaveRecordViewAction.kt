@@ -10,6 +10,8 @@ sealed class SaveRecordViewAction : ViewAction {
     data class AskToSelectDate(val date: SDate) : SaveRecordViewAction()
     data class AskToSelectTime(val time: STime) : SaveRecordViewAction()
     data class AskToSelectKind(val recordTypeId: Long) : SaveRecordViewAction()
+    data class ShowKindSuggestions(val suggestions: List<String>, val search: String) : SaveRecordViewAction()
+    object HideKindSuggestions : SaveRecordViewAction()
     data class EditingRecordDeletedOnServer(val recordTypeId: Long) : SaveRecordViewAction()
     object EditingRecordNotFound : SaveRecordViewAction()
     object RerenderAll : SaveRecordViewAction()
