@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.edit_spend
+package com.qwert2603.spenddemo.save_spend
 
 import android.annotation.SuppressLint
 import android.app.Activity

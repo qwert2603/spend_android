@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.edit_spend
+package com.qwert2603.spenddemo.save_spend
 
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.model.entity.SDate
