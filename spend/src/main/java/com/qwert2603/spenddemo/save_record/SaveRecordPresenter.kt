@@ -262,7 +262,7 @@ class SaveRecordPresenter @Inject constructor(
                     saveRecordInteractor.saveRecord(it)
                     viewActions.onNext(SaveRecordViewAction.Close) // close is for dialog
                     clearDraft.onNext(Any())
-                    viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) // this is for DraftViewImpl
+                    viewActions.onNext(SaveRecordViewAction.FocusOnKindInput) // this is for CreateSpendViewImpl
                 }
                 .subscribeToView()
 

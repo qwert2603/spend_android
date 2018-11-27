@@ -12,7 +12,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.records_list.vh.RecordViewHolder
-import com.qwert2603.spenddemo.spend_draft.DraftViewImpl
+import com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
 import com.qwert2603.spenddemo.utils.AnimatorUtils
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.doOnEnd
@@ -55,7 +55,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             val spendOrigin = spendOrigin
             if (holder.t?.recordTypeId == Const.RECORD_TYPE_ID_SPEND && spendOrigin != null) {
 
-                /** created item should be above spendOrigin ([DraftViewImpl]) */
+                /** created item should be above spendOrigin ([CreateSpendViewImpl]) */
                 recyclerView.elevation = holder.itemView.resources.toPx(12).toFloat()
 
                 listOf(

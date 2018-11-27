@@ -30,8 +30,8 @@
             tools:itemCount="20"
             tools:listitem="@layout/item_record" />
 
-        <com.qwert2603.spenddemo.spend_draft.DraftViewImpl
-            android:id="@+id/draftViewImpl"
+        <com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
+            android:id="@+id/createSpendViewImpl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"

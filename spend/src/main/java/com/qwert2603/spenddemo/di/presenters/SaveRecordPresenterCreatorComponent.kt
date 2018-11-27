@@ -6,14 +6,14 @@ import dagger.BindsInstance
 import dagger.Subcomponent
 
 @Subcomponent
-interface EditRecordPresenterCreatorComponent {
-    fun createEditSpendPresenter(): SaveRecordPresenter
+interface SaveRecordPresenterCreatorComponent {
+    fun createSaveRecordPresenter(): SaveRecordPresenter
 
     @Subcomponent.Builder
     interface Builder {
         @BindsInstance
         fun saveRecordKey(saveRecordKey: SaveRecordKey): Builder
 
-        fun build(): EditRecordPresenterCreatorComponent
+        fun build(): SaveRecordPresenterCreatorComponent
     }
 }

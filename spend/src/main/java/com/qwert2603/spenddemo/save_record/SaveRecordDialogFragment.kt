@@ -26,7 +26,6 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
-import com.qwert2603.spenddemo.spend_draft.SuggestionAdapter
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -51,10 +50,10 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     lateinit var saveRecordKey: SaveRecordKey
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .editRecordPresenterCreatorComponent()
+            .saveRecordPresenterCreatorComponent()
             .saveRecordKey(saveRecordKey)
             .build()
-            .createEditSpendPresenter()
+            .createSaveRecordPresenter()
 
     private val kindEditText by lazy { UserInputEditText(dialogView.kind_EditText) }
     private val valueEditText by lazy { UserInputEditText(dialogView.value_EditText) }

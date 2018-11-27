@@ -1,13 +1,11 @@
 package com.qwert2603.spenddemo.di
 
-import com.qwert2603.spenddemo.di.presenters.DraftPresenterCreatorComponent
-import com.qwert2603.spenddemo.di.presenters.EditRecordPresenterCreatorComponent
 import com.qwert2603.spenddemo.di.presenters.RecordsListPresenterCreatorComponent
+import com.qwert2603.spenddemo.di.presenters.SaveRecordPresenterCreatorComponent
 import dagger.Subcomponent
 
 @Subcomponent
 interface PresentersCreatorComponent {
-    fun draftPresenterComponentBuilder(): DraftPresenterCreatorComponent.Builder
-    fun editRecordPresenterCreatorComponent(): EditRecordPresenterCreatorComponent.Builder
+    fun saveRecordPresenterCreatorComponent(): SaveRecordPresenterCreatorComponent.Builder
     fun recordsListPresenterCreatorComponent(): RecordsListPresenterCreatorComponent.Builder
 }

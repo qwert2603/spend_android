@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.spend_draft
+package com.qwert2603.spenddemo.save_record
 
 import android.annotation.SuppressLint
 import android.content.Context

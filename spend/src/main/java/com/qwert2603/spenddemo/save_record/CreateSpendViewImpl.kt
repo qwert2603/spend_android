@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.spend_draft
+package com.qwert2603.spenddemo.save_record
 
 import android.animation.LayoutTransition
 import android.app.Activity
@@ -27,7 +27,10 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_spend_draft.view.*
 
-class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFrameLayout<DraftViewState, DraftView, DraftPresenter>(context, attrs), DraftView, DialogAwareView {
+class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
+        BaseFrameLayout<SaveRecordViewState, SaveRecordView, SaveRecordPresenter>(context, attrs),
+        SaveRecordView,
+        DialogAwareView {
 
     companion object {
         private const val REQUEST_CODE_DATE = 11
@@ -36,9 +39,10 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
     }
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .draftPresenterComponentBuilder()
+            .saveRecordPresenterCreatorComponent()
+            .saveRecordKey(SaveRecordKey.NewRecord(Const.RECORD_TYPE_ID_SPEND))
             .build()
-            .createDraftPresenter()
+            .createSaveRecordPresenter()
 
     private val kindEditText by lazy { UserInputEditText(kind_EditText) }
     private val valueEditText by lazy { UserInputEditText(value_EditText) }
@@ -66,7 +70,7 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
         }
     }
 
-    override fun kingChanges(): Observable<String> = kindEditText.userInputs()
+    override fun kindChanges(): Observable<String> = kindEditText.userInputs()
 
     override fun valueChanges(): Observable<Int> = valueEditText.userInputs()
             .mapToInt()
@@ -94,7 +98,14 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
             .itemClickEvents(kind_EditText)
             .map { it.view().adapter.getItem(it.position()).toString() }
 
-    override fun render(vs: DraftViewState) {
+    // not for CreateSpendViewImpl.
+
+    override fun onServerKindResolved(): Observable<Boolean> = Observable.never()
+    override fun onServerDateResolved(): Observable<Boolean> = Observable.never()
+    override fun onServerTimeResolved(): Observable<Boolean> = Observable.never()
+    override fun onServerValueResolved(): Observable<Boolean> = Observable.never()
+
+    override fun render(vs: SaveRecordViewState) {
         super.render(vs)
         kindEditText.setText(vs.recordDraft.kind)
         valueEditText.setText(vs.valueString)
@@ -114,41 +125,45 @@ class DraftViewImpl constructor(context: Context, attrs: AttributeSet) : BaseFra
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun executeAction(va: ViewAction) {
-        LogUtils.d("DraftViewImpl executeAction $va")
-        if (va !is DraftViewAction) null!!
+        LogUtils.d("CreateSpendViewImpl executeAction $va")
+        if (va !is SaveRecordViewAction) null!!
         when (va) {
-            DraftViewAction.FocusOnKindInput -> {
+            SaveRecordViewAction.FocusOnKindInput -> {
                 if (keyboardManager.isKeyBoardShown()) {
                     keyboardManager.showKeyboard(kind_EditText)
                 } else {
                     kind_EditText.requestFocus()
                 }
             }
-            DraftViewAction.FocusOnValueInput -> {
+            SaveRecordViewAction.FocusOnValueInput -> {
                 val value_EditText = value_EditText
                 value_EditText.postDelayed({
                     if (!isAttachedToWindow) return@postDelayed
                     keyboardManager.showKeyboard(value_EditText)
                 }, 200)
             }
-            is DraftViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
+            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
                     .newDatePickerDialogFragment(va.date.date, true)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_DATE) }
                     .also { keyboardManager.hideKeyboard() }
-            is DraftViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
+            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_TIME) }
                     .also { keyboardManager.hideKeyboard() }
-            DraftViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
+            is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
                     .newChooseRecordKindDialogFragment(Const.RECORD_TYPE_ID_SPEND)
                     .also { dialogShower.showDialog(it, REQUEST_CODE_KIND) }
                     .also { keyboardManager.hideKeyboard() }
-            is DraftViewAction.ShowKindSuggestions -> {
+            is SaveRecordViewAction.ShowKindSuggestions -> {
                 kind_EditText.setAdapter(SuggestionAdapter(context, va.suggestions.reversed(), va.search))
                 kind_EditText.showDropDown()
             }
-            DraftViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
-            DraftViewAction.RerenderAll -> renderAll()
+            SaveRecordViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()
+            SaveRecordViewAction.RerenderAll -> renderAll()
+
+            is SaveRecordViewAction.EditingRecordDeletedOnServer,
+            SaveRecordViewAction.EditingRecordNotFound,
+            SaveRecordViewAction.Close -> Unit // not for CreateSpendViewImpl.
         }.also { }
     }
 }

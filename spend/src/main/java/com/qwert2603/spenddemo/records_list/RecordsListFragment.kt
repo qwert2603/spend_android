@@ -96,13 +96,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DaySumViewHolder
         })
         val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
-            override fun getDateGlobalVisibleRect(): Rect = draftViewImpl.date_EditText.getGlobalVisibleRectRightNow()
-            override fun getKindGlobalVisibleRect(): Rect = draftViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
-            override fun getValueGlobalVisibleRect(): Rect = draftViewImpl.value_EditText.getGlobalVisibleRectRightNow()
+            override fun getDateGlobalVisibleRect(): Rect = createSpendViewImpl.date_EditText.getGlobalVisibleRectRightNow()
+            override fun getKindGlobalVisibleRect(): Rect = createSpendViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
+            override fun getValueGlobalVisibleRect(): Rect = createSpendViewImpl.value_EditText.getGlobalVisibleRectRightNow()
         })
         records_RecyclerView.itemAnimator = recordsListAnimator
 
-        draftViewImpl.dialogShower = object : DialogAwareView.DialogShower {
+        createSpendViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {
                 dialogFragment
                         .makeShow(requestCode)
@@ -163,7 +163,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        draftViewImpl.onDialogResult(requestCode, resultCode, data)
+        createSpendViewImpl.onDialogResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
@@ -239,7 +239,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
 
         renderIfChanged({ showInfo.newSpendVisible() }) {
-            draftViewImpl.setVisible(it)
+            createSpendViewImpl.setVisible(it)
             if (!it) (requireActivity() as KeyboardManager).hideKeyboard()
         }
 
