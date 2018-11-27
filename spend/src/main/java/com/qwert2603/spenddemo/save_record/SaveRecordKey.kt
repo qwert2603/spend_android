@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.save_spend
+package com.qwert2603.spenddemo.save_record
 
 import java.io.Serializable
 

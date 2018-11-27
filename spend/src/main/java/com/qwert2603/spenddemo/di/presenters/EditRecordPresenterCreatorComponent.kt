@@ -1,7 +1,7 @@
 package com.qwert2603.spenddemo.di.presenters
 
-import com.qwert2603.spenddemo.save_spend.SaveRecordKey
-import com.qwert2603.spenddemo.save_spend.SaveRecordPresenter
+import com.qwert2603.spenddemo.save_record.SaveRecordKey
+import com.qwert2603.spenddemo.save_record.SaveRecordPresenter
 import dagger.BindsInstance
 import dagger.Subcomponent
 
