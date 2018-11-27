@@ -7,7 +7,7 @@ import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.spenddemo.R
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_navigation_menu.view.*
+import kotlinx.android.synthetic.main.item_navigation_menu.*
 
 class NavigationItemViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<NavigationItem>(parent, R.layout.item_navigation_menu), LayoutContainer {
 

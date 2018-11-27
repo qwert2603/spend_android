@@ -8,7 +8,7 @@ import com.qwert2603.spenddemo.model.entity.MonthSum
 import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
-import kotlinx.android.synthetic.main.item_month_sum.view.*
+import kotlinx.android.synthetic.main.item_month_sum.*
 
 class MonthSumViewHolder(parent: ViewGroup) : BaseViewHolder<MonthSum>(parent, R.layout.item_month_sum) {
 

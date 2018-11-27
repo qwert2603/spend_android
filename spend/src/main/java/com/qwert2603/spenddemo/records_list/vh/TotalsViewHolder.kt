@@ -6,7 +6,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.Totals
 import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.toPointedString
-import kotlinx.android.synthetic.main.item_totals.view.*
+import kotlinx.android.synthetic.main.item_totals.*
 
 class TotalsViewHolder(parent: ViewGroup) : BaseViewHolder<Totals>(parent, R.layout.item_totals) {
 

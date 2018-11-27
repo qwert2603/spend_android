@@ -11,7 +11,7 @@ import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.DateTimeTextViews
 import com.qwert2603.spenddemo.utils.setStrike
 import com.qwert2603.spenddemo.utils.toPointedString
-import kotlinx.android.synthetic.main.item_record.view.*
+import kotlinx.android.synthetic.main.item_record.*
 
 class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.layout.item_record) {
 

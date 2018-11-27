@@ -7,7 +7,7 @@ import com.qwert2603.spenddemo.model.entity.YearSum
 import com.qwert2603.spenddemo.records_list.RecordsListAdapter
 import com.qwert2603.spenddemo.utils.toPointedString
 import com.qwert2603.spenddemo.utils.zeroToEmpty
-import kotlinx.android.synthetic.main.item_year_sum.view.*
+import kotlinx.android.synthetic.main.item_year_sum.*
 
 class YearSumViewHolder(parent: ViewGroup) : BaseViewHolder<YearSum>(parent, R.layout.item_year_sum) {
 
