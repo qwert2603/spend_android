@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.model.repo
 
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
@@ -12,7 +13,8 @@ interface RecordsRepo {
      * List of all records sorted by
      * - [Record.date] DESC
      * - [Record.time] DESC NULLS LAST
-     * - [Record.recordTypeId]
+     * - [RecordCategory.recordTypeId]
+     * - [RecordCategory.name] DESC
      * - [Record.kind] DESC
      * - [Record.uuid]
      */

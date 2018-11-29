@@ -3,11 +3,13 @@ package com.qwert2603.spenddemo.model.local_db.dao
 import android.arch.persistence.room.*
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordCategory
+import com.qwert2603.spenddemo.model.local_db.entity.ChangesFromServer
+import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
+import com.qwert2603.spenddemo.model.local_db.results.RecordItemResult
+import com.qwert2603.spenddemo.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
-import com.qwert2603.spenddemo.model.local_db.tables.toRecord
-import com.qwert2603.spenddemo.model.rest.entity.RecordServer
-import com.qwert2603.spenddemo.model.rest.toRecordTable
-import com.qwert2603.spenddemo.model.sync_processor.ItemsIds
+import com.qwert2603.spenddemo.model.local_db.tables.toRecordCategory
 import com.qwert2603.spenddemo.utils.Const
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -30,15 +32,48 @@ abstract class RecordsDao {
         behaviorSubject.hide()
     }
 
+    val recordCategoriesList: Observable<List<RecordCategory>> by lazy {
+        val behaviorSubject = BehaviorSubject.create<List<RecordCategory>>()
+
+        getRecordCategories()
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        { behaviorSubject.onNext(it.map { it.toRecordCategory() }) },
+                        { LogUtils.e("RecordsDao getRecords error!", it) }
+                ).also { }
+
+        behaviorSubject.hide()
+    }
+
     @Transaction
     @Query("""
-            SELECT * FROM RecordTable
-            ORDER BY date DESC, coalesce(time, ${Long.MIN_VALUE}) DESC, recordTypeId, kind DESC, uuid
+            SELECT
+                r.uuid,
+                c.uuid AS recordCategoryUuid,
+                c.recordTypeId,
+                c.name AS recordCategoryName,
+                r.date,
+                r.time,
+                r.kind,
+                r.value,
+                r.change_id AS changeId,
+                r.change_changeKindId AS changeKindId
+            FROM RecordTable AS r
+            JOIN RecordCategoryTable AS c ON r.recordCategoryUuid = c.uuid
+            ORDER BY r.date DESC, coalesce(r.time, -1) DESC, c.recordTypeId, c.name DESC, r.kind DESC, r.uuid
         """)
-    protected abstract fun getRecords(): Flowable<List<RecordTable>>
+    protected abstract fun getRecords(): Flowable<List<RecordItemResult>>
 
+    @Transaction
+    @Query("SELECT * FROM RecordCategoryTable")
+    protected abstract fun getRecordCategories(): Flowable<List<RecordCategoryTable>>
+
+    @Transaction
     @Query("SELECT uuid FROM RecordTable WHERE change_changeKindId IS NOT NULL AND uuid in (:uuids)")
     protected abstract fun getChangedRecordsUuids(uuids: List<String>): List<String>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    protected abstract fun saveRecordsCategories(recordsCategories: List<RecordCategoryTable>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun saveRecords(records: List<RecordTable>)
@@ -67,17 +102,26 @@ abstract class RecordsDao {
     }
 
     @Query("DELETE FROM RecordTable")
-    abstract fun deleteAllRecords()
+    protected abstract fun deleteAllRecords()
+
+    @Query("DELETE FROM RecordCategoryTable")
+    protected abstract fun deleteAllRecordsCategories()
 
     @Transaction
-    open fun saveChangesFromServer(updatedRecords: List<RecordServer>, deletedRecordsUuid: List<String>) {
-        val changedLocally = getChangedRecordsUuids(updatedRecords.map { it.uuid })
+    open fun deleteAll() {
+        deleteAllRecords()
+        deleteAllRecordsCategories()
+    }
+
+    @Transaction
+    open fun saveChangesFromServer(changesFromServer: ChangesFromServer) {
+        saveRecordsCategories(changesFromServer.updatedCategories)
+        val changedLocally = getChangedRecordsUuids(changesFromServer.updatedRecords.map { it.uuid })
                 .toHashSet()
-        val changesToSave = updatedRecords
+        val changesToSave = changesFromServer.updatedRecords
                 .filter { it.uuid !in changedLocally }
-                .map { it.toRecordTable(null) }
         saveRecords(changesToSave)
-        deleteRecords(deletedRecordsUuid)
+        deleteRecords(changesFromServer.deletedRecordsUuid)
     }
 
     @Transaction

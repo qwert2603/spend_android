@@ -1,5 +1,9 @@
 package com.qwert2603.spenddemo.records_list.vh
 
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.view.ViewGroup
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
@@ -28,8 +32,10 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
                 time = t.time,
                 showTimeAtAll = adapter.showTimesInRecords
         )
-        kind_TextView.text = t.kind
-        kind_TextView.setTextColor(resources.color(when (t.recordTypeId) {
+        val spannableStringBuilder = SpannableStringBuilder("${t.recordCategory.name} ${t.kind}")
+        spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), 0, t.recordCategory.name.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        kind_TextView.text = spannableStringBuilder
+        kind_TextView.setTextColor(resources.color(when (t.recordCategory.recordTypeId) {
             Const.RECORD_TYPE_ID_SPEND -> R.color.spend
             Const.RECORD_TYPE_ID_PROFIT -> R.color.profit
             else -> null!!

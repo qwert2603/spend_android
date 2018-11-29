@@ -6,6 +6,7 @@ import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import java.util.*
@@ -216,32 +217,55 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         intent { it.addStubRecordsClicks() }
-                .doOnNext {
+                .flatMapSingle {
+                    Single.zip(
+                            recordsListInteractor.getRecordCategories(Const.RECORD_TYPE_ID_SPEND),
+                            recordsListInteractor.getRecordCategories(Const.RECORD_TYPE_ID_PROFIT),
+                            makePair()
+                    )
+                }
+                .doOnNext { (spendCategories, profitCategories) ->
+
                     val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
                     val stubProfitKinds = listOf("стипендия", "зарплата", "аванс", "доход")
-                    recordsListInteractor.addRecords(
-                            (1..200).map {
-                                RecordDraft(
-                                        isNewRecord = true,
-                                        uuid = UUID.randomUUID().toString(),
-                                        recordTypeId = Const.RECORD_TYPE_ID_SPEND,
-                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
-                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
-                                        kind = stubSpendKinds[Random.nextInt(stubSpendKinds.size)],
-                                        value = Random.nextInt(1, 10000)
-                                )
-                            } + (1..50).map {
-                                RecordDraft(
-                                        isNewRecord = true,
-                                        uuid = UUID.randomUUID().toString(),
-                                        recordTypeId = Const.RECORD_TYPE_ID_PROFIT,
-                                        date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
-                                        time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
-                                        kind = stubProfitKinds[Random.nextInt(stubProfitKinds.size)],
-                                        value = Random.nextInt(1, 10000)
-                                )
-                            }
-                    )
+
+                    val spends = if (spendCategories.isNotEmpty()) {
+                        (1..200).map {
+                            val recordCategory = spendCategories.random()
+                            RecordDraft(
+                                    isNewRecord = true,
+                                    uuid = UUID.randomUUID().toString(),
+                                    recordTypeId = recordCategory.recordTypeId,
+                                    recordCategoryName = recordCategory.name,
+                                    recordCategoryUuid = recordCategory.uuid,
+                                    date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
+                                    time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
+                                    kind = stubSpendKinds[Random.nextInt(stubSpendKinds.size)],
+                                    value = Random.nextInt(1, 10000)
+                            )
+                        }
+                    } else {
+                        emptyList()
+                    }
+                    val profits = if (profitCategories.isNotEmpty()) {
+                        (1..50).map {
+                            val recordCategory = profitCategories.random()
+                            RecordDraft(
+                                    isNewRecord = true,
+                                    uuid = UUID.randomUUID().toString(),
+                                    recordTypeId = recordCategory.recordTypeId,
+                                    recordCategoryName = recordCategory.name,
+                                    recordCategoryUuid = recordCategory.uuid,
+                                    date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
+                                    time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
+                                    kind = stubProfitKinds[Random.nextInt(stubProfitKinds.size)],
+                                    value = Random.nextInt(1, 10000)
+                            )
+                        }
+                    } else {
+                        emptyList()
+                    }
+                    recordsListInteractor.addRecords(spends + profits)
                 }
                 .subscribeToView()
 

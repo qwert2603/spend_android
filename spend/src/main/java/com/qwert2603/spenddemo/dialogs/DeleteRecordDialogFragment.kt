@@ -61,7 +61,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .shareReplayLast()
 
         recordChanges
-                .mapNotNull { it.t?.recordTypeId }
+                .mapNotNull { it.t?.recordCategory?.recordTypeId }
                 .doOnNext {
                     dialogView.dialogTitle_TextView.setText(when (it) {
                         Const.RECORD_TYPE_ID_SPEND -> R.string.delete_spend_text
@@ -75,7 +75,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .buffer(2, 1)
                 .mapNotNull { (prev, current) ->
                     if (prev.t != null && current.t == null) {
-                        prev.t.recordTypeId
+                        prev.t.recordCategory.recordTypeId
                     } else {
                         null
                     }

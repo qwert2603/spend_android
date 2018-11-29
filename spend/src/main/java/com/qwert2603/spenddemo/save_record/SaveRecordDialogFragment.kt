@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.DialogFragment
@@ -38,7 +39,8 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     companion object {
         private const val REQUEST_CODE_DATE = 21
         private const val REQUEST_CODE_TIME = 22
-        private const val REQUEST_CODE_KIND = 23
+        private const val REQUEST_CODE_CATEGORY = 23
+        private const val REQUEST_CODE_KIND = 24
 
         private fun View.resolvedActions(): Observable<Boolean> = Observable.merge(
                 RxView.clicks(this.cancel_Button).map { false },
@@ -55,6 +57,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             .build()
             .createSaveRecordPresenter()
 
+    private val categoryEditText by lazy { UserInputEditText(dialogView.category_EditText) }
     private val kindEditText by lazy { UserInputEditText(dialogView.kind_EditText) }
     private val valueEditText by lazy { UserInputEditText(dialogView.value_EditText) }
 
@@ -62,14 +65,15 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     private val onDateSelected = PublishSubject.create<Wrapper<SDate>>()
     private val onTimeSelected = PublishSubject.create<Wrapper<STime>>()
-    private val onKindSelected = PublishSubject.create<String>()
+    private val onCategoryUuidSelected = PublishSubject.create<String>()
+    private val onCategoryUuidAndKindSelected = PublishSubject.create<Pair<String, String>>()
 
     private lateinit var dialogView: View
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
-        dialogView.kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_KIND_LENGTH))
+        dialogView.kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_RECORD_KIND_LENGTH))
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
@@ -89,9 +93,17 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         when (requestCode) {
             REQUEST_CODE_DATE -> onDateSelected.onNext(data.getIntExtraNullable(DatePickerDialogFragment.DATE_KEY)?.toSDate().wrap())
             REQUEST_CODE_TIME -> onTimeSelected.onNext(data.getIntExtraNullable(TimePickerDialogFragment.TIME_KEY)?.toSTime().wrap())
-            REQUEST_CODE_KIND -> onKindSelected.onNext(data.getStringExtra(ChooseRecordKindDialogFragment.KIND_KEY))
+            REQUEST_CODE_CATEGORY -> onCategoryUuidSelected.onNext(data.getStringExtra(ChooseRecordCategoryDialogFragment.CATEGORY_UUID_KEY))
+            REQUEST_CODE_KIND -> onCategoryUuidAndKindSelected.onNext(
+                    data
+                            .getSerializableExtra(ChooseRecordKindDialogFragment.RESULT_KEY)
+                            .let { it as ChooseRecordKindDialogFragment.Result }
+                            .let { it.recordCategoryUuid to it.kind }
+            )
         }
     }
+
+    override fun categoryNameChanges(): Observable<String> = categoryEditText.userInputs()
 
     override fun kindChanges(): Observable<String> = kindEditText.userInputs()
 
@@ -100,17 +112,34 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     override fun onDateSelected() = onDateSelected
     override fun onTimeSelected() = onTimeSelected
-    override fun onKindSelected() = onKindSelected
 
+    override fun onCategoryUuidSelected(): Observable<String> = Observable.merge(
+            onCategoryUuidSelected,
+            RxAutoCompleteTextView
+                    .itemClickEvents(dialogView.category_EditText)
+                    .map { it.view().adapter.getItem(it.position()) }
+                    .ofType(RecordCategoryAggregation::class.java)
+                    .map { it.recordCategory.uuid }
+    )
+
+    override fun onCategoryUuidAndKindSelected(): Observable<Pair<String, String>> = Observable.merge(
+            onCategoryUuidAndKindSelected,
+            RxAutoCompleteTextView
+                    .itemClickEvents(dialogView.kind_EditText)
+                    .map { it.view().adapter.getItem(it.position()) }
+                    .ofType(RecordKind::class.java)
+                    .map { it.recordCategory.uuid to it.kind }
+    )
+
+    override fun selectCategoryClicks(): Observable<Any> = RxView.longClicks(dialogView.category_EditText)
     override fun selectKindClicks(): Observable<Any> = RxView.longClicks(dialogView.kind_EditText)
     override fun selectDateClicks(): Observable<Any> = RxView.clicks(dialogView.date_EditText)
     override fun selectTimeClicks(): Observable<Any> = RxView.clicks(dialogView.time_EditText)
 
+    override fun onCategoryInputClicked(): Observable<Any> = RxView.clicks(dialogView.category_EditText)
     override fun onKindInputClicked(): Observable<Any> = RxView.clicks(dialogView.kind_EditText)
-    override fun onKindSuggestionSelected(): Observable<String> = RxAutoCompleteTextView
-            .itemClickEvents(dialogView.kind_EditText)
-            .map { it.view().adapter.getItem(it.position()).toString() }
 
+    override fun onServerCategoryResolved(): Observable<Boolean> = dialogView.category_Change.resolvedActions()
     override fun onServerKindResolved(): Observable<Boolean> = dialogView.kind_Change.resolvedActions()
     override fun onServerDateResolved(): Observable<Boolean> = dialogView.date_Change.resolvedActions()
     override fun onServerTimeResolved(): Observable<Boolean> = dialogView.time_Change.resolvedActions()
@@ -119,7 +148,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun saveClicks(): Observable<Any> = Observable.merge(
             RxView.clicks(dialog.positiveButton),
             RxTextView.editorActions(dialogView.value_EditText)
-                    .filter { currentViewState.isSaveEnable }
+                    .filter { currentViewState.isSaveEnable() }
     )
 
     override fun render(vs: SaveRecordViewState) {
@@ -144,6 +173,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                     else R.string.text_edit
             )
         }
+        categoryEditText.setText(vs.recordDraft.recordCategoryName)
         kindEditText.setText(vs.recordDraft.kind)
         valueEditText.setText(vs.valueString)
         DateTimeTextViews.render(
@@ -154,6 +184,10 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                 timePanel = dialogView.time_TextInputLayout
         )
 
+        renderIfChanged({ categorySelected() }) {
+            dialogView.category_EditText.setTypeface(null, if (it) Typeface.BOLD else Typeface.NORMAL)
+        }
+
         fun renderServerChange(changePanel: View, changeString: String?, @StringRes titleRes: Int) {
             changePanel.setVisible(changeString != null)
             @Suppress("DEPRECATION")
@@ -163,6 +197,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         }
 
         dialogView.apply {
+            renderServerChange(category_Change, vs.serverCategory?.name, R.string.text_server_change_category_format)
             renderServerChange(kind_Change, vs.serverKind, R.string.text_server_change_kind_format)
             renderServerChange(value_Change, vs.serverValue?.toPointedString(), R.string.text_server_change_value_format)
             renderServerChange(date_Change, vs.serverDate?.toFormattedString(resources), R.string.text_server_change_date_format)
@@ -173,12 +208,13 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             )
         }
 
-        dialog.positiveButton.isEnabled = vs.isSaveEnable
+        dialog.positiveButton.isEnabled = vs.isSaveEnable()
     }
 
     override fun executeAction(va: ViewAction) {
         if (va !is SaveRecordViewAction) null!!
         when (va) {
+            SaveRecordViewAction.FocusOnCategoryInput -> keyboardManager.showKeyboard(dialogView.category_EditText)
             SaveRecordViewAction.FocusOnKindInput -> keyboardManager.showKeyboard(dialogView.kind_EditText)
             SaveRecordViewAction.FocusOnValueInput -> keyboardManager.showKeyboard(dialogView.value_EditText)
             is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
@@ -187,11 +223,19 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)
                     .makeShow(REQUEST_CODE_TIME)
+            is SaveRecordViewAction.AskToSelectCategory -> ChooseRecordCategoryDialogFragmentBuilder
+                    .newChooseRecordCategoryDialogFragment(va.recordTypeId)
+                    .makeShow(REQUEST_CODE_CATEGORY)
             is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
-                    .newChooseRecordKindDialogFragment(va.recordTypeId)
+                    .newChooseRecordKindDialogFragment(ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid))
                     .makeShow(REQUEST_CODE_KIND)
+            is SaveRecordViewAction.ShowCategorySuggestions -> {
+                dialogView.category_EditText.setAdapter(CategorySuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
+                dialogView.category_EditText.showDropDown()
+            }
+            SaveRecordViewAction.HideCategorySuggestions -> dialogView.category_EditText.dismissDropDown()
             is SaveRecordViewAction.ShowKindSuggestions -> {
-                dialogView.kind_EditText.setAdapter(SuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
+                dialogView.kind_EditText.setAdapter(KindSuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
                 dialogView.kind_EditText.showDropDown()
             }
             SaveRecordViewAction.HideKindSuggestions -> dialogView.kind_EditText.dismissDropDown()
@@ -216,7 +260,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         }.also { }
     }
 
-    private fun DialogFragment.makeShow(requestCode: Int? = null) = this
-            .also { if (requestCode != null) it.setTargetFragment(this@SaveRecordDialogFragment, requestCode) }
+    private fun DialogFragment.makeShow(requestCode: Int) = this
+            .also { it.setTargetFragment(this@SaveRecordDialogFragment, requestCode) }
             .show(this@SaveRecordDialogFragment.fragmentManager, null)
 }

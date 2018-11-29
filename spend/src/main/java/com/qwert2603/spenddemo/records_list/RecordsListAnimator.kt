@@ -53,7 +53,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
 
             val recyclerView = holder.itemView.parent as View
             val spendOrigin = spendOrigin
-            if (holder.t?.recordTypeId == Const.RECORD_TYPE_ID_SPEND && spendOrigin != null) {
+            if (holder.t?.recordCategory?.recordTypeId == Const.RECORD_TYPE_ID_SPEND && spendOrigin != null) {
 
                 /** created item should be above spendOrigin ([CreateSpendViewImpl]) */
                 recyclerView.elevation = holder.itemView.resources.toPx(12).toFloat()

@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.save_record
 
+import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.SDate
 import com.qwert2603.spenddemo.model.entity.STime
@@ -10,6 +11,7 @@ import com.qwert2603.spenddemo.utils.toPointedString
 data class SaveRecordViewState(
         val isNewRecord: Boolean,
         val recordDraft: RecordDraft,
+        val serverCategory: RecordCategory?,
         val serverKind: String?,
         val serverDate: SDate?,
         val serverTime: Wrapper<STime?>?,
@@ -19,9 +21,11 @@ data class SaveRecordViewState(
 ) {
     companion object {
         val DRAFT_IS_LOADING = RecordDraft(
-                isNewRecord = true,
+                isNewRecord = false,
                 uuid = "DRAFT_IS_LOADING",
                 recordTypeId = Const.RECORD_TYPE_ID_SPEND,
+                recordCategoryUuid = null,
+                recordCategoryName = "",
                 date = null,
                 time = null,
                 kind = "",
@@ -30,11 +34,15 @@ data class SaveRecordViewState(
     }
 
     init {
-        if (isNewRecord) require(existingRecord == null)
+        if (isNewRecord) {
+            require(!justChangedOnServer)
+            require(existingRecord == null)
+        }
     }
 
     val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
 
-    private val canSave = recordDraft.isValid()
-    val isSaveEnable = canSave && !justChangedOnServer && recordDraft != existingRecord
+    fun isSaveEnable() = recordDraft.isValid() && !justChangedOnServer && recordDraft != existingRecord
+
+    fun categorySelected() = recordDraft.recordCategoryUuid != null
 }

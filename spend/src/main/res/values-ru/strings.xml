@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
     <string name="app_name">расходы</string>
 
+    <string name="category">категория</string>
     <string name="kind">вид</string>
     <string name="value">сумма</string>
     <string name="date">дата</string>
@@ -16,6 +17,7 @@
     <string name="create_spend_text">создание расхода</string>
     <string name="edit_profit_text">редактирование дохода</string>
     <string name="choose_kind_text">выбор типа</string>
+    <string name="choose_category_text">выбор категории</string>
 
     <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
     <string name="text_create">создать</string>
@@ -99,6 +101,7 @@
     <string name="text_deleted_while_deleted_spend">удаляемый расход был удален на сервере</string>
     <string name="text_deleted_while_edited_spend">редактируемый расход был удален на сервере</string>
 
+    <string name="text_server_change_category_format" formatted="true"><![CDATA[на сервере <b>категория</b> изменилась на <b>%s</b>]]></string>
     <string name="text_server_change_kind_format" formatted="true"><![CDATA[на сервере <b>вид</b> изменился на <b>%s</b>]]></string>
     <string name="text_server_change_value_format" formatted="true"><![CDATA[на сервере <b>сумма</b> изменилась на <b>%s</b>]]></string>
     <string name="text_server_change_date_format" formatted="true"><![CDATA[на сервере <b>дата</b> изменилась на <b>%s</b>]]></string>
@@ -106,5 +109,6 @@
 
     <string name="text_accept">применить</string>
     <string name="text_editing_record_not_found">запись не найдена</string>
+    <string name="record_kind_description_no_records"><![CDATA[<i>нет записей</i>]]></string>
 
 </resources>

@@ -20,7 +20,8 @@ interface RecordsListItem : IdentifiableLong {
                 when {
                     r1.date != r2.date -> r1.date.compareTo(r2.date).unaryMinus()
                     r1.timeNN != r2.timeNN -> r1.timeNN.compareTo(r2.timeNN).unaryMinus()
-                    r1.recordTypeId != r2.recordTypeId -> r1.recordTypeId.compareTo(r2.recordTypeId)
+                    r1.recordCategory.recordTypeId != r2.recordCategory.recordTypeId -> r1.recordCategory.recordTypeId.compareTo(r2.recordCategory.recordTypeId)
+                    r1.recordCategory.name != r2.recordCategory.name -> r1.recordCategory.name.compareTo(r2.recordCategory.name).unaryMinus()
                     r1.kind != r2.kind -> r1.kind.compareTo(r2.kind).unaryMinus()
                     else -> r1.uuid.compareTo(r2.uuid)
                 }

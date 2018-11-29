@@ -12,8 +12,8 @@ interface Rest {
 
     @GET("get_records_updates")
     fun getRecordsUpdates(
-            @Query("last_updated") lastUpdated: Long?,
-            @Query("last_uuid") lastUuid: String?,
+            @Query("last_category_change_id") lastCategoryChangeId: Long?,
+            @Query("last_record_change_id") lastRecordChangeId: Long?,
             @Query("count") count: Int
     ): Call<GetRecordsUpdatesResult>
 

@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.model.sync_processor
+package com.qwert2603.spenddemo.model.local_db.entity
 
 data class ItemsIds(
         val recordUuid: String,

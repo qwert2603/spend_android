@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.utils
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -92,7 +93,7 @@ object PreferenceUtils {
     ) = object : ReadWriteProperty<Any, T?> {
         override fun getValue(thisRef: Any, property: KProperty<*>): T? =
                 if (key in prefs) {
-                    gson.fromJson(prefs.getString(key, ""), T::class.java)
+                    gson.fromJson(prefs.getString(key, ""), object : TypeToken<T>() {}.type)
                 } else {
                     null
                 }

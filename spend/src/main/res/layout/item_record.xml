@@ -44,8 +44,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:textSize="18sp"
-        android:textStyle="bold"
-        tools:text="food"
+        tools:text="food fish"
         tools:textColor="@color/spend" />
 
     <TextView

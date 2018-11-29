@@ -13,7 +13,7 @@ object E {
 }
 
 abstract class Env {
-    val restBaseUrl: String by lazy { "$serverUrl/api/v1.0/" }
+    val restBaseUrl: String by lazy { "$serverUrl/api/v2.0/" }
     protected abstract val serverUrl: String
     abstract val syncWithServer: Boolean
 

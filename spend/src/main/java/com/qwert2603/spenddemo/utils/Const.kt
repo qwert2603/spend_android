@@ -3,7 +3,8 @@ package com.qwert2603.spenddemo.utils
 object Const {
     const val MIN_YEAR = 1970
 
-    const val MAX_KIND_LENGTH = 64
+    const val MAX_CATEGORY_NAME_LENGTH = 64
+    const val MAX_RECORD_KIND_LENGTH = 64
 
     const val RECORD_TYPE_ID_SPEND = 1L
     const val RECORD_TYPE_ID_PROFIT = 2L

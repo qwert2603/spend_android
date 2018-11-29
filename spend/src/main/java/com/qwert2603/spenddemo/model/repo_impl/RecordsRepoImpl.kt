@@ -6,22 +6,19 @@ import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
-import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.toSDate
+import com.qwert2603.spenddemo.model.entity.toSTime
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
-import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
-import com.qwert2603.spenddemo.model.local_db.tables.toRecordServer
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
-import com.qwert2603.spenddemo.model.rest.Rest
-import com.qwert2603.spenddemo.model.rest.entity.RecordServer
-import com.qwert2603.spenddemo.model.rest.entity.SaveRecordsParam
-import com.qwert2603.spenddemo.model.rest.toRecordTable
-import com.qwert2603.spenddemo.model.rest.toUpdatesFromRemote
-import com.qwert2603.spenddemo.model.sync_processor.*
+import com.qwert2603.spenddemo.model.rest.ApiHelper
+import com.qwert2603.spenddemo.model.sync_processor.PrefsLastChangeStorage
+import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
-import retrofit2.HttpException
 import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
@@ -30,7 +27,7 @@ import javax.inject.Singleton
 @Singleton
 class RecordsRepoImpl @Inject constructor(
         private val recordsDao: RecordsDao,
-        rest: Rest,
+        apiHelper: ApiHelper,
         appContext: Context,
         @RemoteDBExecutor remoteDBExecutor: ExecutorService,
         @LocalDBExecutor localDBExecutor: ExecutorService,
@@ -42,46 +39,10 @@ class RecordsRepoImpl @Inject constructor(
     private val syncProcessor = SyncProcessor(
             remoteDBExecutor = remoteDBExecutor,
             localDBExecutor = localDBExecutor,
-            lastUpdateStorage = PrefsLastUpdateStorage(prefs, Gson()),
-            remoteDataSource = object : RemoteDataSource<RecordServer> {
-                override fun getUpdates(lastUpdateInfo: LastUpdateInfo?, count: Int): UpdatesFromRemote<RecordServer> = rest
-                        .getRecordsUpdates(lastUpdateInfo?.lastUpdated, lastUpdateInfo?.lastUuid, count)
-                        .execute()
-                        .let {
-                            if (!it.isSuccessful) throw HttpException(it)
-                            it
-                                    .body()!!
-                                    .toUpdatesFromRemote()
-                        }
-
-                override fun saveChanges(updated: List<RecordServer>, deletedUuids: List<String>) = rest
-                        .saveRecords(SaveRecordsParam(updated, deletedUuids))
-                        .execute()
-                        .let {
-                            if (!it.isSuccessful) throw HttpException(it)
-                            Unit
-                        }
-            },
-            localDataSource = object : LocalDataSource<RecordTable, RecordServer> {
-                override fun saveItems(ts: List<RecordTable>) = recordsDao.saveRecords(ts)
-                override fun locallyDeleteItems(itemsIds: List<ItemsIds>) = recordsDao.locallyDeleteRecords(itemsIds)
-                override fun getLocallyChangedItems(count: Int): List<RecordTable> = recordsDao.getLocallyChangedRecords(count)
-                override fun saveChangesFromRemote(updatesFromRemote: UpdatesFromRemote<RecordServer>) = recordsDao.saveChangesFromServer(
-                        updatedRecords = updatesFromRemote.updatedItems,
-                        deletedRecordsUuid = updatesFromRemote.deletedItemsUuid
-                )
-
-                override fun onChangesSentToServer(editedRecords: List<ItemsIds>, deletedUuids: List<String>) = recordsDao.onChangesSentToServer(
-                        editedRecords = editedRecords,
-                        deletedUuids = deletedUuids
-                )
-
-                override fun deleteItems(uuids: List<String>) = recordsDao.deleteRecords(uuids)
-                override fun deleteAll() = recordsDao.deleteAllRecords()
-            },
-            changeIdCounter = PrefsCounter(prefs, "last_change_id"),
-            l2t = { this.toRecordServer() },
-            t2l = { this.toRecordTable(it) }
+            lastChangeStorage = PrefsLastChangeStorage(prefs, Gson()),
+            apiHelper = apiHelper,
+            recordsDao = recordsDao,
+            changeIdCounter = PrefsCounter(prefs, "last_change_id")
     )
 
     private val recordCreatedLocallyEvents = PublishSubject.create<String>()
@@ -117,12 +78,13 @@ class RecordsRepoImpl @Inject constructor(
                 .map {
                     it
                             .filter {
-                                it.recordTypeId == recordTypeId
+                                it.recordCategory.recordTypeId == recordTypeId
                                         && it.change?.changeKindId != Const.CHANGE_KIND_DELETE
                                         && it.date >= startDate
                             }
                             .sumByLong { it.value.toLong() }
                 }
+                .distinctUntilChanged()
     }
 
     override fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> {
@@ -137,19 +99,20 @@ class RecordsRepoImpl @Inject constructor(
                 .map {
                     it
                             .filter { record ->
-                                record.recordTypeId == recordTypeId
+                                record.recordCategory.recordTypeId == recordTypeId
                                         && record.change?.changeKindId != Const.CHANGE_KIND_DELETE
                                         && record.time != null
                                         && (record.date > startDate || (record.date == startDate && record.time >= startTime))
                             }
                             .sumByLong { it.value.toLong() }
                 }
+                .distinctUntilChanged()
     }
 
     override fun getDumpText(): Single<String> = recordsDao
             .recordsList
             .firstOrError()
-            .mapList { "${it.uuid},${it.recordTypeId},${it.date},${it.time},${it.kind},${it.value}" }
+            .mapList { "${it.uuid},${it.recordCategory.uuid},${it.date},${it.time},${it.kind},${it.value}" }
             .map { it.reduce { acc, s -> "$acc\n$s" } }
 
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents.hide()
@@ -169,7 +132,7 @@ class RecordsRepoImpl @Inject constructor(
                 recordEditedLocallyEvents.onNext(it.uuid)
             }
         }
-        syncProcessor.saveItems(records.map { it.toRecordServer() })
+        syncProcessor.saveItems(records)
     }
 
     override fun removeRecords(recordsUuids: List<String>) {

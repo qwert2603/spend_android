@@ -1,7 +1,9 @@
 package com.qwert2603.spenddemo.save_record
 
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
 import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.RecordKind
 import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsDraftsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
@@ -41,11 +43,19 @@ class SaveRecordInteractor @Inject constructor(
         }.also { }
     }
 
-    fun getSuggestions(recordTypeId: Long, inputKind: String): Single<List<String>> = recordKindsRepo
-            .getKindSuggestions(recordTypeId, inputKind, 5)
+    fun getCategorySuggestions(recordTypeId: Long, inputCategoryName: String): Single<List<RecordCategoryAggregation>> = recordKindsRepo
+            .getCategorySuggestions(recordTypeId, inputCategoryName, 5)
 
-    fun getLastValueOfKind(recordTypeId: Long, kind: String): Single<Int> = recordKindsRepo
-            .getRecordKind(recordTypeId, kind)
+    fun getKindSuggestions(recordTypeId: Long, recordCategoryUuid: String?, inputKind: String): Single<List<RecordKind>> = recordKindsRepo
+            .getKindSuggestions(recordTypeId, recordCategoryUuid, inputKind, 5)
+
+    fun getRecordCategory(recordCategoryUuid: String): Observable<RecordCategoryAggregation> = recordKindsRepo.getRecordCategory(recordCategoryUuid)
+
+    fun getRecordCategory(recordTypeId: Long, recordCategoryName: String): Observable<Wrapper<RecordCategoryAggregation>> = recordKindsRepo
+            .getRecordCategory(recordTypeId, recordCategoryName)
+
+    fun getLastValueOfKind(recordTypeId: Long, recordCategoryUuid: String?, kind: String): Single<Int> = recordKindsRepo
+            .getRecordKind(recordTypeId, recordCategoryUuid, kind)
             .firstOrError()
-            .map { it.t?.lastValue ?: 0 }
+            .map { it.t?.lastRecord?.value ?: 0 }
 }

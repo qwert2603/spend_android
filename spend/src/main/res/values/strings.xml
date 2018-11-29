@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
 
+    <string name="category">category</string>
     <string name="kind">kind</string>
     <string name="value">value</string>
     <string name="date">date</string>
@@ -16,6 +17,7 @@
     <string name="create_spend_text">create spend</string>
     <string name="edit_profit_text">edit profit</string>
     <string name="choose_kind_text">select kind</string>
+    <string name="choose_category_text">select category</string>
 
     <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
     <string name="text_create">create</string>
@@ -82,9 +84,10 @@
     <string name="text_source_code">source code</string>
     <string name="text_source_code_long">source code on github.com</string>
 
-    <string name="record_kind_title_format" formatted="true" translatable="false"><![CDATA[<b>%s</b> (%s)]]></string>
+    <string name="record_kind_title_format" formatted="true" translatable="false"><![CDATA[<b>%s</b> (%s, &#931; = %s)]]></string>
     <string name="record_kind_description_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b> at <b>%3$s</b>]]></string>
     <string name="record_kind_description_no_time_format" formatted="true"><![CDATA[last: <b>%1$s</b> @ <b>%2$s</b>]]></string>
+    <string name="record_kind_description_no_records"><![CDATA[<i>no records</i>]]></string>
 
     <string name="text_dumping_records">creating records list..</string>
     <string name="text_server_delay">server delay</string>
@@ -121,6 +124,7 @@
     <string name="text_deleted_while_edited_spend">editing spend was deleted on server</string>
     <string name="text_editing_record_not_found">record not found</string>
 
+    <string name="text_server_change_category_format" formatted="true"><![CDATA[on server <b>category</b> changed to <b>%s</b>]]></string>
     <string name="text_server_change_kind_format" formatted="true"><![CDATA[on server <b>kind</b> changed to <b>%s</b>]]></string>
     <string name="text_server_change_value_format" formatted="true"><![CDATA[on server <b>value</b> changed to <b>%s</b>]]></string>
     <string name="text_server_change_date_format" formatted="true"><![CDATA[on server <b>date</b> changed to <b>%s</b>]]></string>

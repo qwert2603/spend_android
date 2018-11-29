@@ -1,0 +1,182 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 12,
+    "identityHash": "2efdd9b48f836d6bfd096a7d20cc54fc",
+    "entities": [
+      {
+        "tableName": "RecordTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `recordCategoryUuid` TEXT NOT NULL, `date` INTEGER NOT NULL, `time` INTEGER, `kind` TEXT NOT NULL, `value` INTEGER NOT NULL, `change_id` INTEGER, `change_changeKindId` INTEGER, PRIMARY KEY(`uuid`))",
+        "fields": [
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordCategoryUuid",
+            "columnName": "recordCategoryUuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "change.id",
+            "columnName": "change_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "change.changeKindId",
+            "columnName": "change_changeKindId",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uuid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_RecordTable_uuid",
+            "unique": true,
+            "columnNames": [
+              "uuid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_RecordTable_uuid` ON `${TABLE_NAME}` (`uuid`)"
+          },
+          {
+            "name": "index_RecordTable_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE  INDEX `index_RecordTable_date` ON `${TABLE_NAME}` (`date`)"
+          },
+          {
+            "name": "index_RecordTable_time",
+            "unique": false,
+            "columnNames": [
+              "time"
+            ],
+            "createSql": "CREATE  INDEX `index_RecordTable_time` ON `${TABLE_NAME}` (`time`)"
+          },
+          {
+            "name": "index_RecordTable_recordCategoryUuid",
+            "unique": false,
+            "columnNames": [
+              "recordCategoryUuid"
+            ],
+            "createSql": "CREATE  INDEX `index_RecordTable_recordCategoryUuid` ON `${TABLE_NAME}` (`recordCategoryUuid`)"
+          },
+          {
+            "name": "index_RecordTable_kind",
+            "unique": false,
+            "columnNames": [
+              "kind"
+            ],
+            "createSql": "CREATE  INDEX `index_RecordTable_kind` ON `${TABLE_NAME}` (`kind`)"
+          },
+          {
+            "name": "index_RecordTable_change_id",
+            "unique": true,
+            "columnNames": [
+              "change_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_RecordTable_change_id` ON `${TABLE_NAME}` (`change_id`)"
+          },
+          {
+            "name": "index_RecordTable_change_changeKindId",
+            "unique": false,
+            "columnNames": [
+              "change_changeKindId"
+            ],
+            "createSql": "CREATE  INDEX `index_RecordTable_change_changeKindId` ON `${TABLE_NAME}` (`change_changeKindId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "RecordCategoryTable",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uuid` TEXT NOT NULL, `recordTypeId` INTEGER NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`uuid`))",
+        "fields": [
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordTypeId",
+            "columnName": "recordTypeId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "uuid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_RecordCategoryTable_uuid",
+            "unique": true,
+            "columnNames": [
+              "uuid"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_RecordCategoryTable_uuid` ON `${TABLE_NAME}` (`uuid`)"
+          },
+          {
+            "name": "index_RecordCategoryTable_recordTypeId_name",
+            "unique": true,
+            "columnNames": [
+              "recordTypeId",
+              "name"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_RecordCategoryTable_recordTypeId_name` ON `${TABLE_NAME}` (`recordTypeId`, `name`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"2efdd9b48f836d6bfd096a7d20cc54fc\")"
+    ]
+  }
+}

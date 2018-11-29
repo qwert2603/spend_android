@@ -2,12 +2,15 @@ package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
-import com.qwert2603.spenddemo.model.sync_processor.IdentifiableString
 import com.qwert2603.spenddemo.utils.Const
 
 private val FAKE_RECORD = Record(
-        uuid = IdentifiableString.NO_UUID,
-        recordTypeId = Const.RECORD_TYPE_ID_SPEND,
+        uuid = "FAKE_RECORD",
+        recordCategory = RecordCategory(
+                "FAKE_CATEGORY",
+                Const.RECORD_TYPE_ID_SPEND,
+                "nth"
+        ),
         date = SDate(0),
         time = null,
         kind = "nth",
@@ -53,7 +56,7 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
             record == FAKE_RECORD -> {
                 // nth
             }
-            record.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
+            record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
                 if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
                     daySpendsSum += record.value
                     ++spendsCount
@@ -66,7 +69,7 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
                     ++daySpendsCount
                 }
             }
-            record.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
+            record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
                 if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
                     dayProfitsSum += record.value
                     ++profitsCount

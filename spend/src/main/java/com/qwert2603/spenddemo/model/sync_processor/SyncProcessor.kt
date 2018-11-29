@@ -3,21 +3,23 @@ package com.qwert2603.spenddemo.model.sync_processor
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.RecordChange
+import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
+import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
+import com.qwert2603.spenddemo.model.rest.ApiHelper
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.executeAndWait
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-class SyncProcessor<T : IdentifiableString, L : LocalItem>(
+class SyncProcessor(
         private val remoteDBExecutor: ExecutorService,
         private val localDBExecutor: ExecutorService,
-        private val lastUpdateStorage: LastUpdateStorage,
-        private val remoteDataSource: RemoteDataSource<T>,
-        private val localDataSource: LocalDataSource<L, T>,
-        private val changeIdCounter: IdCounter,
-        private val l2t: L.() -> T,
-        private val t2l: T.(change: RecordChange?) -> L
+        private val lastChangeStorage: LastChangeStorage,
+        private val apiHelper: ApiHelper,
+        private val recordsDao: RecordsDao,
+        private val changeIdCounter: IdCounter
 ) {
 
     companion object {
@@ -32,31 +34,31 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
             while (true) {
                 try {
                     Thread.yield()
-                    Thread.sleep(96)
+                    Thread.sleep(26)
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
-                            localDataSource.deleteAll()
-                            lastUpdateStorage.lastUpdateInfo = null
+                            recordsDao.deleteAll()
+                            lastChangeStorage.lastChangeInfo = null
                         }
                     }
 
                     while (true) {
                         val locallyChangedItems = localDBExecutor.executeAndWait {
-                            localDataSource.getLocallyChangedItems(50)
+                            recordsDao.getLocallyChangedRecords(50)
                         }
                         if (locallyChangedItems.isEmpty()) break
 
                         val (updated, deleted) = locallyChangedItems.partition { it.change!!.changeKindId == Const.CHANGE_KIND_UPSERT }
                         val deletedUuids = deleted.map { it.uuid }
                         remoteDBExecutor.executeAndWait {
-                            remoteDataSource.saveChanges(
-                                    updated = updated.map(l2t),
+                            apiHelper.saveChanges(
+                                    updated = updated.map { it.toRecordServer() },
                                     deletedUuids = deletedUuids
                             )
                         }
                         localDBExecutor.executeAndWait {
-                            localDataSource.onChangesSentToServer(
+                            recordsDao.onChangesSentToServer(
                                     editedRecords = updated.map { ItemsIds(it.uuid, it.change!!.id) },
                                     deletedUuids = deletedUuids
                             )
@@ -65,12 +67,12 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
 
                     while (true) {
                         val updatesFromRemote = remoteDBExecutor.executeAndWait {
-                            remoteDataSource.getUpdates(lastUpdateStorage.lastUpdateInfo, 50)
+                            apiHelper.getUpdates(lastChangeStorage.lastChangeInfo, 50)
                         }
                         if (updatesFromRemote.isEmpty()) break
                         localDBExecutor.executeAndWait {
-                            localDataSource.saveChangesFromRemote(updatesFromRemote)
-                            lastUpdateStorage.lastUpdateInfo = updatesFromRemote.lastUpdateInfo
+                            recordsDao.saveChangesFromServer(updatesFromRemote.toChangesFromServer())
+                            lastChangeStorage.lastChangeInfo = updatesFromRemote.lastChangeInfo
                         }
                     }
                 } catch (t: Throwable) {
@@ -81,18 +83,18 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
         }
     }
 
-    fun saveItems(ts: List<T>) {
+    fun saveItems(ts: List<RecordDraft>) {
         localDBExecutor.execute {
-            localDataSource.saveItems(ts.map { it.t2l(RecordChange(changeIdCounter.getNext(), Const.CHANGE_KIND_UPSERT)) })
+            recordsDao.saveRecords(ts.map { it.toRecordTable(RecordChange(changeIdCounter.getNext(), Const.CHANGE_KIND_UPSERT)) })
         }
     }
 
     fun removeItems(itemsUuids: List<String>) {
         localDBExecutor.execute {
             if (E.env.syncWithServer) {
-                localDataSource.locallyDeleteItems(itemsUuids.map { ItemsIds(it, changeIdCounter.getNext()) })
+                recordsDao.locallyDeleteRecords(itemsUuids.map { ItemsIds(it, changeIdCounter.getNext()) })
             } else {
-                localDataSource.deleteItems(itemsUuids)
+                recordsDao.deleteRecords(itemsUuids)
             }
         }
     }
@@ -102,7 +104,7 @@ class SyncProcessor<T : IdentifiableString, L : LocalItem>(
             pendingClearAll.set(true)
         } else {
             localDBExecutor.execute {
-                localDataSource.deleteAll()
+                recordsDao.deleteAll()
             }
         }
     }

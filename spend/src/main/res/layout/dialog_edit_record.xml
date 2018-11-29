@@ -79,6 +79,24 @@
             app:hintTextAppearance="@color/anth">
 
             <android.support.design.widget.TextInputAutoCompleteTextView
+                android:id="@+id/category_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/category"
+                android:imeOptions="actionNext|flagNoFullscreen"
+                android:inputType="textNoSuggestions"
+                android:selectAllOnFocus="true"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/anth"
+            app:hintTextAppearance="@color/anth">
+
+            <android.support.design.widget.TextInputAutoCompleteTextView
                 android:id="@+id/kind_EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,6 +125,10 @@
                 android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
+
+        <include
+            android:id="@+id/category_Change"
+            layout="@layout/include_server_change" />
 
         <include
             android:id="@+id/kind_Change"
