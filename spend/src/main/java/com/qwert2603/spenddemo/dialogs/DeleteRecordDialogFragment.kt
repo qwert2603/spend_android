@@ -49,8 +49,8 @@ class DeleteRecordDialogFragment : DialogFragment() {
         dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_record, null)
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton(R.string.text_delete) { _, _ -> recordsRepo.removeRecords(listOf(uuid)) }
-                .setNegativeButton(R.string.text_cancel, null)
+                .setPositiveButton(R.string.button_delete) { _, _ -> recordsRepo.removeRecords(listOf(uuid)) }
+                .setNegativeButton(R.string.button_cancel, null)
                 .create()
     }
 
@@ -64,8 +64,8 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .mapNotNull { it.t?.recordCategory?.recordTypeId }
                 .doOnNext {
                     dialogView.dialogTitle_TextView.setText(when (it) {
-                        Const.RECORD_TYPE_ID_SPEND -> R.string.delete_spend_text
-                        Const.RECORD_TYPE_ID_PROFIT -> R.string.delete_profit_text
+                        Const.RECORD_TYPE_ID_SPEND -> R.string.dialog_title_delete_spend
+                        Const.RECORD_TYPE_ID_PROFIT -> R.string.dialog_title_delete_profit
                         else -> null!!
                     })
                 }

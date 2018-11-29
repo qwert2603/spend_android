@@ -113,7 +113,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
                                 .let { if (it >= 0) it else -1 }
                 ) { _, _ -> }
                 .setTitle(R.string.title_long_sum_dialog)
-                .setNegativeButton(R.string.text_cancel, null)
+                .setNegativeButton(R.string.button_cancel, null)
                 .create()
     }
 

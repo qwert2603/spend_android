@@ -13,7 +13,7 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        tools:text="@string/delete_spend_text" />
+        tools:text="@string/dialog_title_delete_spend" />
 
     <TextView
         android:id="@+id/date_TextView"

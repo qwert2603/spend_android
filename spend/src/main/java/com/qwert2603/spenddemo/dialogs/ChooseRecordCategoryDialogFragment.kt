@@ -56,7 +56,7 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
         recordCategoriesAdapter = RecordCategoriesAdapter(requireContext())
 
         return AlertDialog.Builder(requireContext())
-                .setTitle(R.string.choose_category_text)
+                .setTitle(R.string.dialog_title_choose_category)
                 .setSingleChoiceItems(recordCategoriesAdapter, -1) { _, which ->
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
@@ -65,7 +65,7 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
                     )
                     dismiss()
                 }
-                .setNegativeButton(R.string.text_cancel, null)
+                .setNegativeButton(R.string.button_cancel, null)
                 .create()
 
     }

@@ -1,34 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
 
-    <string name="category">category</string>
-    <string name="kind">kind</string>
-    <string name="value">value</string>
-    <string name="date">date</string>
-    <string name="time">time</string>
-    <string name="show_local_changes">show changes list</string>
-    <string name="local_changes">local changes</string>
-    <string name="no_local_changes">no local changes</string>
+    <string name="hint_category">category</string>
+    <string name="hint_kind">kind</string>
+    <string name="hint_value">value</string>
+    <string name="hint_date">date</string>
+    <string name="hint_time">time</string>
 
-    <string name="delete_spend_text">delete spend?</string>
-    <string name="delete_profit_text">delete profit?</string>
-    <string name="edit_spend_text">edit spend</string>
-    <string name="create_profit_text">create profit</string>
-    <string name="create_spend_text">create spend</string>
-    <string name="edit_profit_text">edit profit</string>
-    <string name="choose_kind_text">select kind</string>
-    <string name="choose_category_text">select category</string>
+    <string name="dialog_title_delete_spend">delete spend?</string>
+    <string name="dialog_title_delete_profit">delete profit?</string>
+    <string name="dialog_title_edit_spend">edit spend</string>
+    <string name="dialog_title_create_profit">create profit</string>
+    <string name="dialog_title_create_spend">create spend</string>
+    <string name="dialog_title_edit_profit">edit profit</string>
+    <string name="dialog_title_choose_kind">select kind</string>
+    <string name="dialog_title_choose_category">select category</string>
 
-    <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
-    <string name="text_create">create</string>
-    <string name="text_edit">edit</string>
-    <string name="text_delete">delete</string>
-    <string name="text_cancel" tools:ignore="ButtonCase">cancel</string>
-    <string name="text_save">save</string>
+    <string name="button_ok" tools:ignore="ButtonCase,Typos">ok</string>
+    <string name="button_create">create</string>
+    <string name="button_edit">edit</string>
+    <string name="button_delete">delete</string>
+    <string name="button_cancel" tools:ignore="ButtonCase">cancel</string>
 
-    <string name="error_text">error</string>
-    <string name="retry_text">retry</string>
-    <string name="empty_list_text">list is empty</string>
     <string name="list_loaded_completely">list loaded completely</string>
     <string name="send_records_text">send records</string>
     <string name="send_title">send records</string>
@@ -66,7 +59,6 @@
     <string name="text_show_empty_sums" translatable="false">&#931;(&#8709;)</string>
     <string name="text_new_profit">new profit</string>
     <string name="show_times_text">times</string>
-    <string name="text_server_info">connection settings</string>
     <string name="short_sum_text_format" formatted="true">short &#931;: %s</string>
     <string name="long_sum_text_format" formatted="true">long &#931;: %s</string>
     <string name="title_long_sum_dialog">long &#931;</string>
@@ -90,7 +82,6 @@
     <string name="record_kind_description_no_records"><![CDATA[<i>no records</i>]]></string>
 
     <string name="text_dumping_records">creating records list..</string>
-    <string name="text_server_delay">server delay</string>
 
     <string name="and_text">and</string>
     <string name="no_sum_text">no</string>
@@ -100,10 +91,6 @@
     <string name="letter_hours">h</string>
     <string name="letter_minutes">m</string>
 
-    <string name="text_url" translatable="false">url</string>
-    <string name="text_user">user</string>
-    <string name="text_password">password</string>
-
     <string name="changes_count_format" formatted="true" translatable="false">%d&#916;</string>
     <string name="no_changes_text" translatable="false">&#8709;&#916;</string>
     <string name="text_show_deleted">deleted</string>
@@ -111,25 +98,18 @@
     <string name="variant_sum_format" formatted="true" translatable="false">&#931; = %s</string>
     <string name="text_variant_sum_loading" translatable="false">~</string>
 
-    <string name="text_synced" translatable="false">&#10003;</string>
-    <string name="text_not_sync" translatable="false">!&#10003;</string>
-    <string name="text_never">never</string>
-    <string name="last_sync_time_format" formatted="true">%s at %s</string>
-    <string name="text_last_full_sync">&#10003; last full sync</string>
-    <string name="text_local_changes_count">&#916; local changes count</string>
-    <string name="symbol_empty_set" translatable="false">&#8709;</string>
     <string name="text_deleted_while_deleted_profit">deleting profit was deleted on server</string>
     <string name="text_deleted_while_edited_profit">editing profit was deleted on server</string>
     <string name="text_deleted_while_deleted_spend">deleting spend was deleted on server</string>
     <string name="text_deleted_while_edited_spend">editing spend was deleted on server</string>
     <string name="text_editing_record_not_found">record not found</string>
 
-    <string name="text_server_change_category_format" formatted="true"><![CDATA[on server <b>category</b> changed to <b>%s</b>]]></string>
-    <string name="text_server_change_kind_format" formatted="true"><![CDATA[on server <b>kind</b> changed to <b>%s</b>]]></string>
-    <string name="text_server_change_value_format" formatted="true"><![CDATA[on server <b>value</b> changed to <b>%s</b>]]></string>
-    <string name="text_server_change_date_format" formatted="true"><![CDATA[on server <b>date</b> changed to <b>%s</b>]]></string>
-    <string name="text_server_change_time_format" formatted="true"><![CDATA[on server <b>time</b> changed to <b>%s</b>]]></string>
+    <string name="server_change_category_format" formatted="true"><![CDATA[on server <b>category</b> changed to <b>%s</b>]]></string>
+    <string name="server_change_kind_format" formatted="true"><![CDATA[on server <b>kind</b> changed to <b>%s</b>]]></string>
+    <string name="server_change_value_format" formatted="true"><![CDATA[on server <b>value</b> changed to <b>%s</b>]]></string>
+    <string name="server_change_date_format" formatted="true"><![CDATA[on server <b>date</b> changed to <b>%s</b>]]></string>
+    <string name="server_change_time_format" formatted="true"><![CDATA[on server <b>time</b> changed to <b>%s</b>]]></string>
 
-    <string name="text_accept">accept</string>
+    <string name="button_accept">accept</string>
 
 </resources>

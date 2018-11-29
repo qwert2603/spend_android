@@ -77,8 +77,8 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton(R.string.text_edit, null)
-                .setNegativeButton(R.string.text_cancel, null)
+                .setPositiveButton(R.string.button_edit, null)
+                .setNegativeButton(R.string.button_cancel, null)
                 .create()
     }
 
@@ -157,20 +157,20 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         renderIfChangedTwo({ isNewRecord to recordDraft.recordTypeId }) { (isNewRecord, recordTypeId) ->
             dialogView.dialogTitle_TextView.setText(if (isNewRecord) {
                 when (recordTypeId) {
-                    Const.RECORD_TYPE_ID_SPEND -> R.string.create_spend_text
-                    Const.RECORD_TYPE_ID_PROFIT -> R.string.create_profit_text
+                    Const.RECORD_TYPE_ID_SPEND -> R.string.dialog_title_create_spend
+                    Const.RECORD_TYPE_ID_PROFIT -> R.string.dialog_title_create_profit
                     else -> null!!
                 }
             } else {
                 when (recordTypeId) {
-                    Const.RECORD_TYPE_ID_SPEND -> R.string.edit_spend_text
-                    Const.RECORD_TYPE_ID_PROFIT -> R.string.edit_profit_text
+                    Const.RECORD_TYPE_ID_SPEND -> R.string.dialog_title_edit_spend
+                    Const.RECORD_TYPE_ID_PROFIT -> R.string.dialog_title_edit_profit
                     else -> null!!
                 }
             })
             dialog.positiveButton.setText(
-                    if (isNewRecord) R.string.text_create
-                    else R.string.text_edit
+                    if (isNewRecord) R.string.button_create
+                    else R.string.button_edit
             )
         }
         categoryEditText.setText(vs.recordDraft.recordCategoryName)
@@ -197,14 +197,14 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         }
 
         dialogView.apply {
-            renderServerChange(category_Change, vs.serverCategory?.name, R.string.text_server_change_category_format)
-            renderServerChange(kind_Change, vs.serverKind, R.string.text_server_change_kind_format)
-            renderServerChange(value_Change, vs.serverValue?.toPointedString(), R.string.text_server_change_value_format)
-            renderServerChange(date_Change, vs.serverDate?.toFormattedString(resources), R.string.text_server_change_date_format)
+            renderServerChange(category_Change, vs.serverCategory?.name, R.string.server_change_category_format)
+            renderServerChange(kind_Change, vs.serverKind, R.string.server_change_kind_format)
+            renderServerChange(value_Change, vs.serverValue?.toPointedString(), R.string.server_change_value_format)
+            renderServerChange(date_Change, vs.serverDate?.toFormattedString(resources), R.string.server_change_date_format)
             renderServerChange(
                     time_Change,
                     vs.serverTime?.let { it.t?.toString() ?: getString(R.string.no_time_text) },
-                    R.string.text_server_change_time_format
+                    R.string.server_change_time_format
             )
         }
 

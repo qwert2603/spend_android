@@ -1,33 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
     <string name="app_name">расходы</string>
 
-    <string name="category">категория</string>
-    <string name="kind">вид</string>
-    <string name="value">сумма</string>
-    <string name="date">дата</string>
-    <string name="time">время</string>
-    <string name="show_local_changes">показать изменения</string>
-    <string name="local_changes">локальные изменения</string>
-    <string name="no_local_changes">нет локальных изменений</string>
+    <string name="hint_category">категория</string>
+    <string name="hint_kind">вид</string>
+    <string name="hint_value">сумма</string>
+    <string name="hint_date">дата</string>
+    <string name="hint_time">время</string>
 
-    <string name="delete_spend_text">удалить расход?</string>
-    <string name="delete_profit_text">удалить доход?</string>
-    <string name="edit_spend_text">редактирование расхода</string>
-    <string name="create_profit_text">создание дохода</string>
-    <string name="create_spend_text">создание расхода</string>
-    <string name="edit_profit_text">редактирование дохода</string>
-    <string name="choose_kind_text">выбор типа</string>
-    <string name="choose_category_text">выбор категории</string>
+    <string name="dialog_title_delete_spend">удалить расход?</string>
+    <string name="dialog_title_delete_profit">удалить доход?</string>
+    <string name="dialog_title_edit_spend">редактирование расхода</string>
+    <string name="dialog_title_create_profit">создание дохода</string>
+    <string name="dialog_title_create_spend">создание расхода</string>
+    <string name="dialog_title_edit_profit">редактирование дохода</string>
+    <string name="dialog_title_choose_kind">выбор вида</string>
+    <string name="dialog_title_choose_category">выбор категории</string>
 
-    <string name="text_ok" tools:ignore="ButtonCase,Typos">ok</string>
-    <string name="text_create">создать</string>
-    <string name="text_edit">изменить</string>
-    <string name="text_delete">удалить</string>
-    <string name="text_cancel" tools:ignore="ButtonCase">отмена</string>
+    <string name="button_ok" tools:ignore="ButtonCase,Typos">ok</string>
+    <string name="button_create">создать</string>
+    <string name="button_edit">изменить</string>
+    <string name="button_delete">удалить</string>
+    <string name="button_cancel" tools:ignore="ButtonCase">отмена</string>
 
-    <string name="error_text">ошибка</string>
-    <string name="retry_text">повторить</string>
-    <string name="empty_list_text">список пуст</string>
     <string name="list_loaded_completely">список загружен полностью</string>
     <string name="send_records_text">отправить списки</string>
     <string name="send_title">отправить списки</string>
@@ -74,17 +68,12 @@
     <string name="record_kind_description_no_time_format" formatted="true"><![CDATA[последнее: <b>%1$s</b> @ <b>%2$s</b>]]></string>
 
     <string name="text_dumping_records">создается список записей..</string>
-    <string name="text_server_delay">задержка сервера</string>
 
     <string name="and_text">и</string>
     <string name="letter_days">д</string>
     <string name="letter_hours">ч</string>
     <string name="letter_minutes">м</string>
-    <string name="text_user">пользователь</string>
-    <string name="text_password">пароль</string>
-    <string name="text_server_info">настройки подключения</string>
     <string name="no_sum_text">нет</string>
-    <string name="text_save">сохранить</string>
     <string name="short_sum_text_format" formatted="true">короткая &#931;: %s</string>
     <string name="long_sum_text_format" formatted="true">длинная &#931;: %s</string>
     <string name="title_long_sum_dialog" formatted="true">длинная &#931;</string>
@@ -92,22 +81,18 @@
     <string name="text_show_deleted">удаленные</string>
     <string name="now_text">сейчас</string>
     <string name="no_time_text">без&#9719;</string>
-    <string name="last_sync_time_format" formatted="true">%s в %s</string>
-    <string name="text_last_full_sync">&#10003; последняя полная синхронизация</string>
-    <string name="text_local_changes_count">&#916; количество локальных изменений</string>
-    <string name="text_never">никогда</string>
     <string name="text_deleted_while_deleted_profit">удаляемый доход был удален на сервере</string>
     <string name="text_deleted_while_edited_profit">редактируемый доход был удален на сервере</string>
     <string name="text_deleted_while_deleted_spend">удаляемый расход был удален на сервере</string>
     <string name="text_deleted_while_edited_spend">редактируемый расход был удален на сервере</string>
 
-    <string name="text_server_change_category_format" formatted="true"><![CDATA[на сервере <b>категория</b> изменилась на <b>%s</b>]]></string>
-    <string name="text_server_change_kind_format" formatted="true"><![CDATA[на сервере <b>вид</b> изменился на <b>%s</b>]]></string>
-    <string name="text_server_change_value_format" formatted="true"><![CDATA[на сервере <b>сумма</b> изменилась на <b>%s</b>]]></string>
-    <string name="text_server_change_date_format" formatted="true"><![CDATA[на сервере <b>дата</b> изменилась на <b>%s</b>]]></string>
-    <string name="text_server_change_time_format" formatted="true"><![CDATA[на сервере <b>время</b> изменилось на <b>%s</b>]]></string>
+    <string name="server_change_category_format" formatted="true"><![CDATA[на сервере <b>категория</b> изменилась на <b>%s</b>]]></string>
+    <string name="server_change_kind_format" formatted="true"><![CDATA[на сервере <b>вид</b> изменился на <b>%s</b>]]></string>
+    <string name="server_change_value_format" formatted="true"><![CDATA[на сервере <b>сумма</b> изменилась на <b>%s</b>]]></string>
+    <string name="server_change_date_format" formatted="true"><![CDATA[на сервере <b>дата</b> изменилась на <b>%s</b>]]></string>
+    <string name="server_change_time_format" formatted="true"><![CDATA[на сервере <b>время</b> изменилось на <b>%s</b>]]></string>
 
-    <string name="text_accept">применить</string>
+    <string name="button_accept">применить</string>
     <string name="text_editing_record_not_found">запись не найдена</string>
     <string name="record_kind_description_no_records"><![CDATA[<i>нет записей</i>]]></string>
 

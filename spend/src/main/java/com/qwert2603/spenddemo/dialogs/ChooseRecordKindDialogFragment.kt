@@ -66,7 +66,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
         recordKindsAdapter = RecordKindsAdapter(requireContext(), key.recordCategoryUuid)
 
         return AlertDialog.Builder(requireContext())
-                .setTitle(R.string.choose_kind_text)
+                .setTitle(R.string.dialog_title_choose_kind)
                 .setSingleChoiceItems(recordKindsAdapter, -1) { _, which ->
                     val recordKind = recordKindsAdapter.recordKinds[which]
                     targetFragment!!.onActivityResult(
@@ -79,7 +79,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
                     )
                     dismiss()
                 }
-                .setNegativeButton(R.string.text_cancel, null)
+                .setNegativeButton(R.string.button_cancel, null)
                 .create()
 
     }
