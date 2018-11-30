@@ -115,18 +115,30 @@ abstract class RecordsDao {
 
     @Transaction
     open fun saveChangesFromServer(changesFromServer: ChangesFromServer) {
-        saveRecordsCategories(changesFromServer.updatedCategories)
-        val changedLocally = getChangedRecordsUuids(changesFromServer.updatedRecords.map { it.uuid })
-                .toHashSet()
-        val changesToSave = changesFromServer.updatedRecords
-                .filter { it.uuid !in changedLocally }
-        saveRecords(changesToSave)
-        deleteRecords(changesFromServer.deletedRecordsUuid)
+        if (changesFromServer.updatedCategories.isNotEmpty()) {
+            saveRecordsCategories(changesFromServer.updatedCategories)
+        }
+
+        if (changesFromServer.updatedRecords.isNotEmpty()) {
+            val changedLocally = getChangedRecordsUuids(changesFromServer.updatedRecords.map { it.uuid })
+                    .toHashSet()
+            val changesToSave = changesFromServer.updatedRecords
+                    .filter { it.uuid !in changedLocally }
+            saveRecords(changesToSave)
+        }
+
+        if (changesFromServer.deletedRecordsUuid.isNotEmpty()) {
+            deleteRecords(changesFromServer.deletedRecordsUuid)
+        }
     }
 
     @Transaction
     open fun onChangesSentToServer(editedRecords: List<ItemsIds>, deletedUuids: List<String>) {
-        clearLocalChanges(editedRecords)
-        deleteRecords(deletedUuids)
+        if (editedRecords.isNotEmpty()) {
+            clearLocalChanges(editedRecords)
+        }
+        if (deletedUuids.isNotEmpty()) {
+            deleteRecords(deletedUuids)
+        }
     }
 }
