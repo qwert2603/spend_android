@@ -266,7 +266,11 @@ class SaveRecordPresenter @Inject constructor(
                     saveRecordInteractor.getKindSuggestions(recordDraft.recordTypeId, recordDraft.recordCategoryUuid, kind)
                             .doOnSuccess { recordKinds ->
                                 if (kind !in recordKinds.map { it.kind }) {
-                                    viewActions.onNext(SaveRecordViewAction.ShowKindSuggestions(recordKinds, kind))
+                                    viewActions.onNext(SaveRecordViewAction.ShowKindSuggestions(
+                                            suggestions = recordKinds,
+                                            search = kind,
+                                            withCategory = recordDraft.recordCategoryUuid == null
+                                    ))
                                 } else {
                                     viewActions.onNext(SaveRecordViewAction.HideKindSuggestions)
                                 }

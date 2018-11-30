@@ -23,14 +23,7 @@ fun TextView.setStrike(strike: Boolean) {
 // todo: wrong cursor position for pointed long string.
 fun EditText.setTextIfNotYet(text: String) {
     if (this.text.toString() != text) {
-        val prevSelection = if (this.selectionStart == this.text.length) {
-            text.length
-        } else {
-            this.selectionStart
-        }
-
         this.setText(text)
-        this.setSelection(prevSelection)
     }
 }
 

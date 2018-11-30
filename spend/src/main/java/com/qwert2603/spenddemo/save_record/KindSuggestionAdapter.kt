@@ -14,7 +14,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.RecordKind
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class KindSuggestionAdapter(context: Context, suggestions: List<RecordKind>, s: String? = null)
+class KindSuggestionAdapter(context: Context, suggestions: List<RecordKind>, s: String? = null, private val withCategory: Boolean)
     : ArrayAdapter<RecordKind>(context, 0, suggestions) {
 
     private val search = s?.toLowerCase()
@@ -23,10 +23,17 @@ class KindSuggestionAdapter(context: Context, suggestions: List<RecordKind>, s: 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = convertView ?: parent.inflate(R.layout.item_suggestion)
         val recordKind = getItem(position)!!
-        val s = "${recordKind.recordCategory.name} / ${recordKind.kind}"
+        val s = if (withCategory) {
+            "${recordKind.recordCategory.name} / ${recordKind.kind}"
+        } else {
+            recordKind.kind
+        }
         val spannableStringBuilder = SpannableStringBuilder(s)
         if (search != null) {
-            val indexOf = s.toLowerCase().indexOf(search, startIndex = recordKind.recordCategory.name.length + 3)
+            val indexOf = s.toLowerCase().indexOf(
+                    string = search,
+                    startIndex = if (withCategory) recordKind.recordCategory.name.length + 3 else 0
+            )
             if (indexOf >= 0) {
                 spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), indexOf, indexOf + search.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
             }

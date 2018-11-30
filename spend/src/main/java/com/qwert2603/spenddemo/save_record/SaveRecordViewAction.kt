@@ -16,7 +16,7 @@ sealed class SaveRecordViewAction : ViewAction {
     data class AskToSelectKind(val recordTypeId: Long, val categoryUuid: String?) : SaveRecordViewAction()
     data class ShowCategorySuggestions(val suggestions: List<RecordCategoryAggregation>, val search: String) : SaveRecordViewAction()
     object HideCategorySuggestions : SaveRecordViewAction()
-    data class ShowKindSuggestions(val suggestions: List<RecordKind>, val search: String) : SaveRecordViewAction()
+    data class ShowKindSuggestions(val suggestions: List<RecordKind>, val search: String, val withCategory: Boolean) : SaveRecordViewAction()
     object HideKindSuggestions : SaveRecordViewAction()
     data class EditingRecordDeletedOnServer(val recordTypeId: Long) : SaveRecordViewAction()
     object EditingRecordNotFound : SaveRecordViewAction()

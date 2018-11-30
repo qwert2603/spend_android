@@ -195,7 +195,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             }
             SaveRecordViewAction.HideCategorySuggestions -> category_EditText.dismissDropDown()
             is SaveRecordViewAction.ShowKindSuggestions -> {
-                kind_EditText.setAdapter(KindSuggestionAdapter(context, va.suggestions.reversed(), va.search))
+                kind_EditText.setAdapter(KindSuggestionAdapter(context, va.suggestions.reversed(), va.search, va.withCategory))
                 kind_EditText.showDropDown()
             }
             SaveRecordViewAction.HideKindSuggestions -> kind_EditText.dismissDropDown()

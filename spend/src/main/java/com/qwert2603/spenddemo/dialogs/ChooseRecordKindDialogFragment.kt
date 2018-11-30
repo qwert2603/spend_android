@@ -112,7 +112,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
             val kind = recordKinds[position]
             view.kindName_TextView.text = Html.fromHtml(view.resources.getString(
                     R.string.record_kind_title_format,
-                    "${kind.recordCategory.name} / ${kind.kind}",
+                    if (categoryUuid == null) "${kind.recordCategory.name} / ${kind.kind}" else kind.kind,
                     view.resources.getQuantityString(R.plurals.times, kind.recordsCount, kind.recordsCount),
                     kind.totalValue.toPointedString()
             ))

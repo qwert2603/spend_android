@@ -235,7 +235,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             }
             SaveRecordViewAction.HideCategorySuggestions -> dialogView.category_EditText.dismissDropDown()
             is SaveRecordViewAction.ShowKindSuggestions -> {
-                dialogView.kind_EditText.setAdapter(KindSuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
+                dialogView.kind_EditText.setAdapter(KindSuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search, va.withCategory))
                 dialogView.kind_EditText.showDropDown()
             }
             SaveRecordViewAction.HideKindSuggestions -> dialogView.kind_EditText.dismissDropDown()
