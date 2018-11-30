@@ -50,7 +50,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         local_ImageView.setVisible(adapter.showChangeKinds)
         local_ImageView.setImageResource(when {
             recordChange != null -> R.drawable.ic_local
-            else -> R.drawable.ic_done_24dp
+            else -> R.drawable.ic_synced
         })
         if (recordChange != null) {
             local_ImageView.setColorFilter(resources.color(when (recordChange.changeKindId) {

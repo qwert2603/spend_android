@@ -7,12 +7,13 @@
     android:clipToPadding="false"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="6dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/local_ImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4sp"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_local"
         tools:tint="@color/local_change_edit" />
@@ -31,7 +32,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:gravity="end"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         tools:text="@string/no_time_text" />
@@ -42,7 +42,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_weight="1"
-        android:gravity="center_vertical"
         android:textSize="18sp"
         tools:text="food fish"
         tools:textColor="@color/spend" />
