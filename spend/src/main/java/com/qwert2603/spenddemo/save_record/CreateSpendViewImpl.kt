@@ -88,6 +88,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
     override fun saveClicks(): Observable<Any> = Observable.merge(
             RxView.clicks(save_Button),
             RxTextView.editorActions(value_EditText)
+                    .filter { currentViewState.isSaveEnable() }
     )
 
     override fun selectDateClicks(): Observable<Any> = RxView.clicks(date_EditText)

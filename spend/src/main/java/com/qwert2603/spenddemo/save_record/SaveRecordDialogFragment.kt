@@ -211,12 +211,17 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         dialog.positiveButton.isEnabled = vs.isSaveEnable()
     }
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun executeAction(va: ViewAction) {
         if (va !is SaveRecordViewAction) null!!
         when (va) {
             SaveRecordViewAction.FocusOnCategoryInput -> keyboardManager.showKeyboard(dialogView.category_EditText)
             SaveRecordViewAction.FocusOnKindInput -> keyboardManager.showKeyboard(dialogView.kind_EditText)
-            SaveRecordViewAction.FocusOnValueInput -> keyboardManager.showKeyboard(dialogView.value_EditText)
+            SaveRecordViewAction.FocusOnValueInput -> {
+                dialogView.value_EditText.postDelayed({
+                    dialogView.value_EditText?.let { keyboardManager.showKeyboard(it) }
+                }, 150)
+            }
             is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
                     .newDatePickerDialogFragment(va.date.date, true)
                     .makeShow(REQUEST_CODE_DATE)

@@ -8,6 +8,7 @@ import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.toRecordDraft
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -253,23 +254,48 @@ class SaveRecordPresenter @Inject constructor(
                 }
                 .subscribeToView()
 
+        data class KindSuggestionParams(
+                val recordTypeId: Long,
+                val categoryUuid: String?,
+                val kind: String
+        )
+
         Observable
                 .merge(
                         intent { it.onKindInputClicked() }
-                                .withLatestFrom(viewStateObservable, secondOfTwo())
-                                .map { it.recordDraft.kind },
+                                .withLatestFrom(viewStateObservable, BiFunction { _, vs ->
+                                    KindSuggestionParams(
+                                            recordTypeId = vs.recordDraft.recordTypeId,
+                                            categoryUuid = vs.recordDraft.recordCategoryUuid,
+                                            kind = vs.recordDraft.kind
+                                    )
+                                }),
+                        onCategoryUuidSelectedIntent
+                                .withLatestFrom(viewStateObservable, BiFunction { categoryUuid, vs ->
+                                    KindSuggestionParams(
+                                            recordTypeId = vs.recordDraft.recordTypeId,
+                                            categoryUuid = categoryUuid,
+                                            kind = ""
+                                    )
+                                }),
                         kindChangesIntent
                                 .debounce(100, TimeUnit.MILLISECONDS)
+                                .withLatestFrom(viewStateObservable, BiFunction { kind: String, vs: SaveRecordViewState ->
+                                    KindSuggestionParams(
+                                            recordTypeId = vs.recordDraft.recordTypeId,
+                                            categoryUuid = vs.recordDraft.recordCategoryUuid,
+                                            kind = kind
+                                    )
+                                })
                 )
-                .withLatestFrom(viewStateObservable.map { it.recordDraft }, makePair())
-                .switchMapSingle { (kind, recordDraft) ->
-                    saveRecordInteractor.getKindSuggestions(recordDraft.recordTypeId, recordDraft.recordCategoryUuid, kind)
+                .switchMapSingle { (recordTypeId, categoryUuid, kind) ->
+                    saveRecordInteractor.getKindSuggestions(recordTypeId, categoryUuid, kind)
                             .doOnSuccess { recordKinds ->
                                 if (kind !in recordKinds.map { it.kind }) {
                                     viewActions.onNext(SaveRecordViewAction.ShowKindSuggestions(
                                             suggestions = recordKinds,
                                             search = kind,
-                                            withCategory = recordDraft.recordCategoryUuid == null
+                                            withCategory = categoryUuid == null
                                     ))
                                 } else {
                                     viewActions.onNext(SaveRecordViewAction.HideKindSuggestions)
