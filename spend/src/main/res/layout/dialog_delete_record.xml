@@ -25,13 +25,23 @@
         tools:text="today 19:18" />
 
     <TextView
+        android:id="@+id/category_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="еда" />
+
+    <TextView
         android:id="@+id/kind_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        tools:text="расход" />
+        tools:text="рыба" />
 
     <TextView
         android:id="@+id/value_TextView"

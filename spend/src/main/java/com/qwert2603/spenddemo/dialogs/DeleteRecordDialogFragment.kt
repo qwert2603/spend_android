@@ -123,6 +123,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                     .subscribeUntilPaused()
         }
 
+        subscribeFieldUpdates({ it.recordCategory.name }, dialogView.category_TextView)
         subscribeFieldUpdates({ it.kind }, dialogView.kind_TextView)
         subscribeFieldUpdates({ it.value.toPointedString() }, dialogView.value_TextView)
         subscribeFieldUpdates({ it.dateTimeString() }, dialogView.date_TextView)
