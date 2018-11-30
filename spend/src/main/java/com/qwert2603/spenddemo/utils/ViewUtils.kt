@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.utils
 import android.graphics.Paint
 import android.graphics.Rect
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.EditText
 import android.widget.TextView
 import com.qwert2603.andrlib.util.color
@@ -57,4 +58,13 @@ object DateTimeTextViews {
             }
         }
     }
+}
+
+fun View.onPreDraw(action: () -> Boolean) {
+    viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+        override fun onPreDraw(): Boolean {
+            viewTreeObserver.removeOnPreDrawListener(this)
+            return action()
+        }
+    })
 }

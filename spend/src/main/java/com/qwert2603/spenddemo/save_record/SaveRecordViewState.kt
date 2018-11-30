@@ -6,7 +6,6 @@ import com.qwert2603.spenddemo.model.entity.SDate
 import com.qwert2603.spenddemo.model.entity.STime
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.Wrapper
-import com.qwert2603.spenddemo.utils.toPointedString
 
 data class SaveRecordViewState(
         val isNewRecord: Boolean,
@@ -40,7 +39,7 @@ data class SaveRecordViewState(
         }
     }
 
-    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
+    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toString() ?: "" // todo: toPointedString
 
     fun isSaveEnable() = recordDraft.isValid() && !justChangedOnServer && recordDraft != existingRecord
 
