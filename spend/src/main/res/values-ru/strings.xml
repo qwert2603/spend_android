@@ -23,7 +23,7 @@
     <string name="button_cancel" tools:ignore="ButtonCase">отмена</string>
 
     <string name="list_loaded_completely">список загружен полностью</string>
-    <string name="send_records_text">отправить списки</string>
+    <string name="menu_item_send_records">отправить списки</string>
     <string name="send_title">отправить списки</string>
     <string name="about_text">о приложении</string>
 
@@ -47,19 +47,17 @@
         ]]>
     </string>
 
-    <string name="text_show_ids">id записей</string>
-    <string name="text_show_change_kinds">виды изменений</string>
-    <string name="text_show_spends">расходы</string>
-    <string name="text_show_profits">доходы</string>
-    <string name="text_show_date_sums">&#931; по дням</string>
-    <string name="text_show_month_sums">&#931; по месяцам</string>
-    <string name="text_new_profit">новый доход</string>
-    <string name="show_times_text">время</string>
+    <string name="menu_item_show_change_kinds">виды изменений</string>
+    <string name="menu_item_show_spends">расходы</string>
+    <string name="menu_item_show_profits">доходы</string>
+    <string name="menu_item_show_sums_by_day">&#931; по дням</string>
+    <string name="menu_item_new_profit">новый доход</string>
+    <string name="menu_item_show_times">время</string>
 
     <string name="text_all_records_loaded">&#8704; записи загружены</string>
 
-    <string name="text_add_stub_records">250 рандомных записей</string>
-    <string name="text_clear_all">очистить все</string>
+    <string name="menu_item_add_stub_records">250 рандомных записей</string>
+    <string name="menu_item_clear_all">очистить все</string>
 
     <string name="text_source_code">исходный код</string>
     <string name="text_source_code_long">исходный код на github.com</string>
@@ -74,8 +72,8 @@
     <string name="letter_hours">ч</string>
     <string name="letter_minutes">м</string>
     <string name="no_sum_text">нет</string>
-    <string name="short_sum_text_format" formatted="true">короткая &#931;: %s</string>
-    <string name="long_sum_text_format" formatted="true">длинная &#931;: %s</string>
+    <string name="menu_item_short_sum_format" formatted="true">короткая &#931;: %s</string>
+    <string name="menu_item_long_sum_format" formatted="true">длинная &#931;: %s</string>
     <string name="title_long_sum_dialog" formatted="true">длинная &#931;</string>
     <string name="title_short_sum_dialog" formatted="true">короткая &#931;</string>
     <string name="text_show_deleted">удаленные</string>

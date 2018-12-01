@@ -3,51 +3,51 @@
 
     <item
         android:id="@+id/new_profit"
-        android:title="@string/text_new_profit" />
+        android:title="@string/menu_item_new_profit" />
 
     <item
         android:id="@+id/show_spends"
         android:checkable="true"
-        android:title="@string/text_show_spends" />
+        android:title="@string/menu_item_show_spends" />
 
     <item
         android:id="@+id/show_profits"
         android:checkable="true"
-        android:title="@string/text_show_profits" />
+        android:title="@string/menu_item_show_profits" />
 
     <item
         android:id="@+id/show_sums"
         android:checkable="true"
-        android:title="@string/text_show_sums" />
+        android:title="@string/menu_item_show_sums_by_day" />
 
     <item
         android:id="@+id/show_change_kinds"
         android:checkable="true"
-        android:title="@string/text_show_change_kinds" />
+        android:title="@string/menu_item_show_change_kinds" />
 
     <item
         android:id="@+id/show_times"
         android:checkable="true"
-        android:title="@string/show_times_text" />
+        android:title="@string/menu_item_show_times" />
 
     <item
         android:id="@+id/long_sum"
-        android:title="@string/long_sum_text_format" />
+        android:title="@string/menu_item_long_sum_format" />
 
     <item
         android:id="@+id/short_sum"
-        android:title="@string/short_sum_text_format" />
+        android:title="@string/menu_item_short_sum_format" />
 
     <item
         android:id="@+id/send_records"
-        android:title="@string/send_records_text" />
+        android:title="@string/menu_item_send_records" />
 
     <item
         android:id="@+id/add_stub_records"
-        android:title="@string/text_add_stub_records" />
+        android:title="@string/menu_item_add_stub_records" />
 
     <item
         android:id="@+id/clear_all"
-        android:title="@string/text_clear_all" />
+        android:title="@string/menu_item_clear_all" />
 
 </menu>

@@ -23,7 +23,7 @@
     <string name="button_cancel" tools:ignore="ButtonCase">cancel</string>
 
     <string name="list_loaded_completely">list loaded completely</string>
-    <string name="send_records_text">send records</string>
+    <string name="menu_item_send_records">send records</string>
     <string name="send_title">send records</string>
     <string name="about_text">about</string>
 
@@ -49,18 +49,14 @@
         ]]>
     </string>
 
-    <string name="text_show_ids">ids</string>
-    <string name="text_show_change_kinds">change kinds</string>
-    <string name="text_show_spends">spends</string>
-    <string name="text_show_profits">profits</string>
-    <string name="text_show_sums" translatable="false">&#931;</string>
-    <string name="text_show_date_sums">&#931; by days</string>
-    <string name="text_show_month_sums">&#931; by months</string>
-    <string name="text_show_empty_sums" translatable="false">&#931;(&#8709;)</string>
-    <string name="text_new_profit">new profit</string>
-    <string name="show_times_text">times</string>
-    <string name="short_sum_text_format" formatted="true">short &#931;: %s</string>
-    <string name="long_sum_text_format" formatted="true">long &#931;: %s</string>
+    <string name="menu_item_show_change_kinds">change kinds</string>
+    <string name="menu_item_show_spends">spends</string>
+    <string name="menu_item_show_profits">profits</string>
+    <string name="menu_item_show_sums_by_day">&#931; by days</string>
+    <string name="menu_item_new_profit">new profit</string>
+    <string name="menu_item_show_times">times</string>
+    <string name="menu_item_short_sum_format" formatted="true">short &#931;: %s</string>
+    <string name="menu_item_long_sum_format" formatted="true">long &#931;: %s</string>
     <string name="title_long_sum_dialog">long &#931;</string>
     <string name="title_short_sum_dialog">short &#931;</string>
     <string name="text_period_sum_format" formatted="true" translatable="false">&#931;(%1$s) = %2$s</string>
@@ -70,8 +66,8 @@
     <string name="text_total_items_format" formatted="true" translatable="false">&#931;(%s) = %s</string>
     <string name="text_total_sum_format" formatted="true" translatable="false">&#931;(&#8704;) = %s</string>
 
-    <string name="text_add_stub_records">250 stub records</string>
-    <string name="text_clear_all">clear all</string>
+    <string name="menu_item_add_stub_records">250 stub records</string>
+    <string name="menu_item_clear_all">clear all</string>
 
     <string name="text_source_code">source code</string>
     <string name="text_source_code_long">source code on github.com</string>

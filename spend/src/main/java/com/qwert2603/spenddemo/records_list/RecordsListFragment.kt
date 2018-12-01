@@ -252,13 +252,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
             renderIfChanged({ longSumPeriodDays }) {
                 menu.findItem(R.id.long_sum).title = resources.getString(
-                        R.string.long_sum_text_format,
+                        R.string.menu_item_long_sum_format,
                         ChooseLongSumPeriodDialog.variantToString(it, resources)
                 )
             }
             renderIfChanged({ shortSumPeriodMinutes }) {
                 menu.findItem(R.id.short_sum).title = resources.getString(
-                        R.string.short_sum_text_format,
+                        R.string.menu_item_short_sum_format,
                         ChooseShortSumPeriodDialog.variantToString(it, resources)
                 )
             }
