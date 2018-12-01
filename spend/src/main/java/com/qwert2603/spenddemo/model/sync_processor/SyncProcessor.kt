@@ -9,6 +9,7 @@ import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.rest.ApiHelper
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.executeAndWait
+import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -27,6 +28,9 @@ class SyncProcessor(
     }
 
     private val pendingClearAll = AtomicBoolean(false)
+
+    // todo: use it.
+    val lastSyncMillis = PublishSubject.create<Long>()
 
     fun start() {
         if (!E.env.syncWithServer) return
@@ -75,6 +79,8 @@ class SyncProcessor(
                             lastChangeStorage.lastChangeInfo = updatesFromRemote.lastChangeInfo
                         }
                     }
+
+                    lastSyncMillis.onNext(System.currentTimeMillis())
                 } catch (t: Throwable) {
                     LogUtils.e(TAG, "remoteDBExecutor.execute", t)
                     Thread.sleep(1000)
