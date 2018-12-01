@@ -107,5 +107,6 @@
     <string name="server_change_time_format" formatted="true"><![CDATA[on server <b>time</b> changed to <b>%s</b>]]></string>
 
     <string name="button_accept">accept</string>
+    <string name="fix_time">fix time</string>
 
 </resources>

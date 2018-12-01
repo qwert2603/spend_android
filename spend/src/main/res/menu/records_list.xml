@@ -38,6 +38,13 @@
         android:id="@+id/short_sum"
         android:title="@string/menu_item_short_sum_format" />
 
+    <!--todo: visible-->
+    <item
+        android:id="fix_time"
+        android:title="@string/fix_time"
+        android:visible="false" />
+
+    <!--todo: to settings-->
     <item
         android:id="@+id/send_records"
         android:title="@string/menu_item_send_records" />
@@ -46,6 +53,7 @@
         android:id="@+id/add_stub_records"
         android:title="@string/menu_item_add_stub_records" />
 
+    <!--todo: to settings-->
     <item
         android:id="@+id/clear_all"
         android:title="@string/menu_item_clear_all" />
