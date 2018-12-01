@@ -13,6 +13,7 @@ import android.text.Html
 import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
@@ -214,14 +215,18 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun executeAction(va: ViewAction) {
         if (va !is SaveRecordViewAction) null!!
+
+        fun EditText.focus() {
+            postDelayed({
+                if (!isResumed) return@postDelayed
+                keyboardManager.showKeyboard(this)
+            }, 150)
+        }
+
         when (va) {
-            SaveRecordViewAction.FocusOnCategoryInput -> keyboardManager.showKeyboard(dialogView.category_EditText)
-            SaveRecordViewAction.FocusOnKindInput -> keyboardManager.showKeyboard(dialogView.kind_EditText)
-            SaveRecordViewAction.FocusOnValueInput -> {
-                dialogView.value_EditText.postDelayed({
-                    dialogView.value_EditText?.let { keyboardManager.showKeyboard(it) }
-                }, 150)
-            }
+            SaveRecordViewAction.FocusOnCategoryInput -> dialogView.category_EditText.focus()
+            SaveRecordViewAction.FocusOnKindInput -> dialogView.kind_EditText.focus()
+            SaveRecordViewAction.FocusOnValueInput -> dialogView.value_EditText.focus()
             is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
                     .newDatePickerDialogFragment(va.date.date, true)
                     .makeShow(REQUEST_CODE_DATE)

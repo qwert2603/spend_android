@@ -120,7 +120,9 @@ class SaveRecordPresenter @Inject constructor(
                     .switchMap { (categoryName, recordTypeId) ->
                         saveRecordInteractor
                                 .getRecordCategory(recordTypeId, categoryName)
-                                .map { SaveRecordPartialChange.CategoryUuidChanged(it.t?.recordCategory?.uuid) }
+                                .map { it.t?.recordCategory?.uuid.wrap() }
+                                .distinctUntilChanged()
+                                .map { SaveRecordPartialChange.CategoryUuidChanged(it.t) }
                     },
             onCategoryUuidSelectedIntent
                     .map { SaveRecordPartialChange.CategoryUuidChanged(it) },
@@ -130,8 +132,11 @@ class SaveRecordPresenter @Inject constructor(
                     .distinctUntilChanged()
                     .switchMap { (categoryUuid) ->
                         if (categoryUuid != null) {
-                            saveRecordInteractor.getRecordCategory(categoryUuid)
-                                    .map { SaveRecordPartialChange.CategoryNameChanged(it.recordCategory.name) }
+                            saveRecordInteractor
+                                    .getRecordCategory(categoryUuid)
+                                    .map { it.recordCategory.name }
+                                    .distinctUntilChanged()
+                                    .map { SaveRecordPartialChange.CategoryNameChanged(it) }
                         } else {
                             Observable.empty()
                         }
