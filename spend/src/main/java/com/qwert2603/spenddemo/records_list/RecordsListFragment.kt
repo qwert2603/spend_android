@@ -2,7 +2,6 @@ package com.qwert2603.spenddemo.records_list
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
@@ -34,7 +33,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import kotlinx.android.synthetic.main.view_spend_draft.view.*
 import java.util.concurrent.TimeUnit
 
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
@@ -95,12 +93,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DaySumViewHolder
         })
-        val recordsListAnimator = RecordsListAnimator(object : RecordsListAnimator.SpendOrigin {
-            override fun getDateGlobalVisibleRect(): Rect = createSpendViewImpl.date_EditText.getGlobalVisibleRectRightNow()
-            override fun getKindGlobalVisibleRect(): Rect = createSpendViewImpl.kind_EditText.getGlobalVisibleRectRightNow()
-            override fun getValueGlobalVisibleRect(): Rect = createSpendViewImpl.value_EditText.getGlobalVisibleRectRightNow()
-        })
-        records_RecyclerView.itemAnimator = recordsListAnimator
+        records_RecyclerView.itemAnimator = RecordsListAnimator(createSpendViewImpl)
 
         createSpendViewImpl.dialogShower = object : DialogAwareView.DialogShower {
             override fun showDialog(dialogFragment: DialogFragment, requestCode: Int) {

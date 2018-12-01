@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.support.v4.app.DialogFragment
 import android.text.InputFilter
@@ -21,15 +22,19 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
+import com.qwert2603.spenddemo.records_list.RecordsListAnimator
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.view_spend_draft.view.*
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.view_spend_draft.*
 
 class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
         BaseFrameLayout<SaveRecordViewState, SaveRecordView, SaveRecordPresenter>(context, attrs),
         SaveRecordView,
-        DialogAwareView {
+        DialogAwareView,
+        RecordsListAnimator.SpendOrigin,
+        LayoutContainer {
 
     companion object {
         private const val REQUEST_CODE_DATE = 11
@@ -37,6 +42,8 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
         private const val REQUEST_CODE_CATEGORY = 13
         private const val REQUEST_CODE_KIND = 14
     }
+
+    override val containerView = this
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .saveRecordPresenterCreatorComponent()
@@ -211,4 +218,8 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
     private fun DialogFragment.makeShow(requestCode: Int) = this
             .also { dialogShower.showDialog(it, requestCode) }
             .also { keyboardManager.hideKeyboard() }
+
+    override fun getDateGlobalVisibleRect(): Rect = date_EditText.getGlobalVisibleRectRightNow()
+    override fun getKindGlobalVisibleRect(): Rect = category_EditText.getGlobalVisibleRectRightNow()
+    override fun getValueGlobalVisibleRect(): Rect = value_EditText.getGlobalVisibleRectRightNow()
 }
