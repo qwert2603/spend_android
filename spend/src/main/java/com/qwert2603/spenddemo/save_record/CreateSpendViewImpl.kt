@@ -61,13 +61,6 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
         inflate(R.layout.view_spend_draft, attachToRoot = true)
         draft_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_RECORD_KIND_LENGTH))
-
-        onPreDraw {
-            //todo
-//            category_EditText.dropDownVerticalOffset = resources.toPx(12)
-//            kind_EditText.dropDownVerticalOffset = resources.toPx(12)
-            true
-        }
     }
 
     override fun onDialogResult(requestCode: Int, resultCode: Int, data: Intent?) {

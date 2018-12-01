@@ -1,80 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/draft_LinearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:orientation="horizontal"
-    android:padding="4dp">
+    android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/date_EditText"
-        android:layout_width="wrap_content"
+    <View
+        android:id="@+id/dropDownAnchor_View"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="12dp" />
+
+    <LinearLayout
+        android:id="@+id/draft_LinearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:hint="@string/hint_date"
-        android:longClickable="false"
-        android:singleLine="true"
-        tools:ignore="TextFields"
-        tools:text="2017-11-09" />
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
+        android:padding="4dp">
 
-    <EditText
-        android:id="@+id/time_EditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:hint="@string/hint_time"
-        android:longClickable="false"
-        android:singleLine="true"
-        tools:ignore="TextFields"
-        tools:text="19:18" />
+        <EditText
+            android:id="@+id/date_EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="@string/hint_date"
+            android:longClickable="false"
+            android:singleLine="true"
+            tools:ignore="TextFields"
+            tools:text="2017-11-09" />
 
-    <AutoCompleteTextView
-        android:id="@+id/category_EditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:dropDownAnchor="@id/draft_LinearLayout"
-        android:hint="@string/hint_category"
-        android:imeOptions="actionNext|flagNoFullscreen"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        tools:text="food"
-        tools:textStyle="bold" />
+        <EditText
+            android:id="@+id/time_EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="@string/hint_time"
+            android:longClickable="false"
+            android:singleLine="true"
+            tools:ignore="TextFields"
+            tools:text="19:18" />
 
-    <AutoCompleteTextView
-        android:id="@+id/kind_EditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:dropDownAnchor="@id/draft_LinearLayout"
-        android:hint="@string/hint_kind"
-        android:imeOptions="actionNext|flagNoFullscreen"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        tools:text="fish" />
+        <AutoCompleteTextView
+            android:id="@+id/category_EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:dropDownAnchor="@id/dropDownAnchor_View"
+            android:hint="@string/hint_category"
+            android:imeOptions="actionNext|flagNoFullscreen"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            tools:text="food"
+            tools:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/value_EditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_value"
-        android:imeOptions="actionDone|flagNoFullscreen"
-        android:inputType="number"
-        android:minWidth="54dp"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        tools:text="123" />
+        <AutoCompleteTextView
+            android:id="@+id/kind_EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:dropDownAnchor="@id/dropDownAnchor_View"
+            android:hint="@string/hint_kind"
+            android:imeOptions="actionNext|flagNoFullscreen"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            tools:text="fish" />
 
-    <ImageView
-        android:id="@+id/save_Button"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:src="@drawable/ic_save"
-        tools:ignore="ContentDescription" />
+        <EditText
+            android:id="@+id/value_EditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_value"
+            android:imeOptions="actionDone|flagNoFullscreen"
+            android:inputType="number"
+            android:minWidth="54dp"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            tools:text="123" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/save_Button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:src="@drawable/ic_save"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+</FrameLayout>
