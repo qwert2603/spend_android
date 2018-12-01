@@ -3,7 +3,9 @@ package com.qwert2603.spenddemo.utils
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.qwert2603.spenddemo.model.rest.entity.LastChangeInfo
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
+import com.qwert2603.spenddemo.model.sync_processor.LastChangeStorage
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -82,6 +84,10 @@ class PrefsCounter(
         prefs.makeEdit { putLong(key, next) }
         return next
     }
+}
+
+class PrefsLastChangeStorage(prefs: SharedPreferences, gson: Gson) : LastChangeStorage {
+    override var lastChangeInfo: LastChangeInfo? by PreferenceUtils.createPrefsObjectNullable(prefs, "lastChangeInfo", gson)
 }
 
 object PreferenceUtils {
