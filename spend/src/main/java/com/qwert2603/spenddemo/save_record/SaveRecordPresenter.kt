@@ -367,9 +367,9 @@ class SaveRecordPresenter @Inject constructor(
                 .mapNotNull { it.recordDraft }
                 .filter { it.isValid() }
                 .doOnNext {
+                    clearDraft.onNext(Any())
                     saveRecordInteractor.saveRecord(it)
                     viewActions.onNext(SaveRecordViewAction.Close) // this is for dialog
-                    clearDraft.onNext(Any())
                     viewActions.onNext(SaveRecordViewAction.FocusOnCategoryInput) // this is for CreateSpendViewImpl
                 }
                 .subscribeToView()
