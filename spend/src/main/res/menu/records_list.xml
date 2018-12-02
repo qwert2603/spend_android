@@ -40,7 +40,7 @@
 
     <!--todo: visible-->
     <item
-        android:id="fix_time"
+        android:id="@+id/fix_time"
         android:title="@string/fix_time"
         android:visible="false" />
 
