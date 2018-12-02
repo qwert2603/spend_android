@@ -8,6 +8,7 @@ object E {
         "noServer" -> NoServer
         "serverTest" -> ServerTest
         "serverProd" -> ServerProd
+        "serverMother" -> ServerMother
         else -> null!!
     }
 }
@@ -39,5 +40,10 @@ private object ServerTest : Env() {
 
 private object ServerProd : Env() {
     override val serverUrl = "http://192.168.1.26:8354"
+    override val syncWithServer = true
+}
+
+private object ServerMother : Env() {
+    override val serverUrl = "http://192.168.1.26:8361"
     override val syncWithServer = true
 }
