@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.save_record
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.entity.toRecordDraft
@@ -162,6 +163,7 @@ class SaveRecordPresenter @Inject constructor(
 
     override fun stateReducer(vs: SaveRecordViewState, change: PartialChange): SaveRecordViewState {
         if (change !is SaveRecordPartialChange) null!!
+        LogUtils.d { "SaveRecordPresenter stateReducer $change" }
         return when (change) {
             is SaveRecordPartialChange.EditingRecordLoaded -> if (vs.isNewRecord) {
                 vs
@@ -367,7 +369,9 @@ class SaveRecordPresenter @Inject constructor(
                 .mapNotNull { it.recordDraft }
                 .filter { it.isValid() }
                 .doOnNext {
+                    LogUtils.d("SaveRecordPresenter saveClicks #1")
                     clearDraft.onNext(Any())
+                    LogUtils.d("SaveRecordPresenter saveClicks #2")
                     saveRecordInteractor.saveRecord(it)
                     viewActions.onNext(SaveRecordViewAction.Close) // this is for dialog
                     viewActions.onNext(SaveRecordViewAction.FocusOnCategoryInput) // this is for CreateSpendViewImpl
