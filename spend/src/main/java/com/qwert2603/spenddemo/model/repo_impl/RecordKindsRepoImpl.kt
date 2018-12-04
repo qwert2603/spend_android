@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
+import android.support.annotation.VisibleForTesting
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.Record
@@ -21,7 +22,7 @@ class RecordKindsRepoImpl @Inject constructor(
         private val modelSchedulersProvider: ModelSchedulersProvider
 ) : RecordKindsRepo {
 
-    private data class AggregationResult(
+    data class AggregationResult(
             val recordsCategoriesList: Map<Long, List<RecordCategoryAggregation>>,
             val recordsKindsLists: Map<Long, Map<String?, List<RecordKind>>>
     )
@@ -43,7 +44,7 @@ class RecordKindsRepoImpl @Inject constructor(
                         makePair()
                 )
                 .observeOn(modelSchedulersProvider.computation)
-                .map { it.aggregate() }
+                .map { aggregate(it.first, it.second) }
                 .subscribe(
                         {
                             recordsCategoriesList.onNext(it.recordsCategoriesList)
@@ -147,10 +148,12 @@ class RecordKindsRepoImpl @Inject constructor(
             }
         }
 
-        private fun Pair<List<Record>, List<RecordCategory>>.aggregate(): AggregationResult {
+        @VisibleForTesting
+        fun aggregate(
+                records: List<Record>,
+                categories: List<RecordCategory>
+        ): AggregationResult {
             val b = System.currentTimeMillis()
-
-            val (records, categories) = this
 
             val recordsCategoriesList: HashMap<Long, List<RecordCategoryAggregation>> = hashMapOf()
             val recordsKindsLists: HashMap<Long, HashMap<String?, List<RecordKind>>> = hashMapOf()
@@ -212,7 +215,7 @@ class RecordKindsRepoImpl @Inject constructor(
                             RecordCategoryAggregation(
                                     recordTypeId = recordTypeId,
                                     recordCategory = category,
-                                    lastRecord = kinds.firstOrNull()?.lastRecord,
+                                    lastRecord = kinds.map { it.lastRecord }.maxBy { it.dateTime() },
                                     recordsCount = kinds.sumBy { it.recordsCount },
                                     totalValue = kinds.sumByLong { it.totalValue }
                             )
