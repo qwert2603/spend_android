@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun onBackPressed() {
+        if (closeDrawer()) return
         val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         if ((fragment as? BackPressListener)?.onBackPressed() == true) {
             return
@@ -145,7 +146,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
                             router.exit()
                         }
                     }
-
                 }
     }
 
