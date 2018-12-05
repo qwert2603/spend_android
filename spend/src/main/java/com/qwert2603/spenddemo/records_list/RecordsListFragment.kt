@@ -71,22 +71,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         val adapter = RecordsListAdapter()
 
-        /* todo: fast scroll.
-        https://blog.stylingandroid.com/recyclerview-fastscroll-part-1/
-        https://github.com/danoz73/RecyclerViewFastScroller
-        https://github.com/timusus/RecyclerView-FastScrollll
-        */
-
-        /*todo
-        выделение записей.
-        отображение кол-ва и суммы выделенных записей,
-        удаление выделенных с подтверждением
-         */
-
-        // todo: sort by value and set dates range.
-
-        // todo: search by kind.
-
         records_RecyclerView.adapter = adapter
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
@@ -213,7 +197,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             adapter.recordsChanges = vs.recordsChanges
             adapter.list = records
             if (!layoutAnimationShown) {
-                // todo: don't work
                 layoutAnimationShown = true
                 records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
@@ -313,7 +296,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .newChooseShortSumPeriodDialog(va.minutes)
                     .makeShow(REQUEST_CHOOSE_SHORT_SUM_PERIOD)
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
-            is RecordsListViewAction.OnRecordEditedLocally -> Unit//todo
+            is RecordsListViewAction.OnRecordEditedLocally -> Unit
             RecordsListViewAction.ShowDumpIsCreating -> Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show()
             is RecordsListViewAction.SendDump -> Intent(Intent.ACTION_SEND)
                     .also { it.putExtra(Intent.EXTRA_TEXT, va.dump) }

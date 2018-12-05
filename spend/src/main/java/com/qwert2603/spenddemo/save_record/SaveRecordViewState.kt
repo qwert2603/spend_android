@@ -39,7 +39,7 @@ data class SaveRecordViewState(
         }
     }
 
-    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toString() ?: "" // todo: toPointedString
+    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toString() ?: ""
 
     fun isSaveEnable() = recordDraft.isValid() && !justChangedOnServer && recordDraft != existingRecord
 

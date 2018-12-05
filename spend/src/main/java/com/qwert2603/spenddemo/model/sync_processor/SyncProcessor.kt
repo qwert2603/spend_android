@@ -29,7 +29,6 @@ class SyncProcessor(
 
     private val pendingClearAll = AtomicBoolean(false)
 
-    // todo: use it.
     val lastSyncMillis = PublishSubject.create<Long>()
 
     fun start() {

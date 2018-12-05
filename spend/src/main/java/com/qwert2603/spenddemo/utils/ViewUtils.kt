@@ -21,7 +21,6 @@ fun TextView.setStrike(strike: Boolean) {
     }
 }
 
-// todo: wrong cursor position for pointed long string.
 fun EditText.setTextIfNotYet(text: String) {
     if (this.text.toString() != text) {
         this.setText(text)

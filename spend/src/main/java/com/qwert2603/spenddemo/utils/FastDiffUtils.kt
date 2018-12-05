@@ -42,7 +42,7 @@ object FastDiffUtils {
 
         val inserts = mutableListOf<Pair<Int, Int>>()
         val removes = mutableListOf<Pair<Int, Int>>()
-        val changes = mutableListOf<Int>() // todo: calculate payload.
+        val changes = mutableListOf<Int>()
 
         var oldIndex = 0
         var newIndex = 0

@@ -62,7 +62,6 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        // todo: search.
         recordKindsAdapter = RecordKindsAdapter(requireContext(), key.recordCategoryUuid)
 
         return AlertDialog.Builder(requireContext())

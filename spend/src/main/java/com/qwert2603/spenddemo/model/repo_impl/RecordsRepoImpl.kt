@@ -108,8 +108,6 @@ class RecordsRepoImpl @Inject constructor(
                 .distinctUntilChanged()
     }
 
-    // todo: file & content provider
-    // todo: json
     override fun getDumpText(): Single<String> = recordsDao
             .recordsList
             .firstOrError()

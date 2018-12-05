@@ -13,6 +13,5 @@ interface UserSettingsRepo {
     var longSumPeriodDays: Int
     var shortSumPeriodMinutes: Int
 
-    // todo: use it
     val fixedTime: Pair<SDate, STime?>?
 }

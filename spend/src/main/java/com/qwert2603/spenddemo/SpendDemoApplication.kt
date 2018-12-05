@@ -38,8 +38,4 @@ class SpendDemoApplication : Application() {
 
         LogUtils.logType = E.env.logType
     }
-
-    // todo: stat screen.
-    // todo: App Shortcuts for frequent spends.
-    // todo: widget for adding spends.
 }

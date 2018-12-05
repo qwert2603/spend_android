@@ -172,7 +172,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     override fun isKeyBoardShown(): Boolean {
-        // todo: don't work in screen splitting
         return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels - resources.toPx(30)
     }
 }

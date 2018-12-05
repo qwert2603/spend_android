@@ -2,12 +2,6 @@ package com.qwert2603.spenddemo.model.entity
 
 import com.qwert2603.andrlib.model.IdentifiableLong
 
-/*
-todo:
-показывать в списке разделители:
-* "последние 5 минут"
-* "последние 30 дней"
- */
 interface RecordsListItem : IdentifiableLong {
 
     companion object {
