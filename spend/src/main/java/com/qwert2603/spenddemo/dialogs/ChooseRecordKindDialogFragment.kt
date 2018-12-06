@@ -18,9 +18,9 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
-import com.qwert2603.spenddemo.model.entity.RecordKind
+import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
 import com.qwert2603.spenddemo.model.entity.toFormattedString
-import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
+import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.utils.disposeOnPause
 import com.qwert2603.spenddemo.utils.toPointedString
 import kotlinx.android.synthetic.main.item_record_kind.view.*
@@ -48,7 +48,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
     lateinit var key: Key
 
     @Inject
-    lateinit var recordKindsRepo: RecordKindsRepo
+    lateinit var recordAggregationsRepo: RecordAggregationsRepo
 
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
@@ -67,7 +67,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_choose_kind)
                 .setSingleChoiceItems(recordKindsAdapter, -1) { _, which ->
-                    val recordKind = recordKindsAdapter.recordKinds[which]
+                    val recordKind = recordKindsAdapter.recordKindAggregations[which]
                     targetFragment!!.onActivityResult(
                             targetRequestCode,
                             Activity.RESULT_OK,
@@ -86,29 +86,29 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
 
-        recordKindsRepo.getRecordKinds(key.recordTypeId, key.recordCategoryUuid)
-                .doOnError { LogUtils.e("ChooseRecordKindDialogFragment getRecordKinds", it) }
+        recordAggregationsRepo.getRecordKinds(key.recordTypeId, key.recordCategoryUuid)
+                .doOnError { LogUtils.e("ChooseRecordKindDialogFragment getRecordKindAggregations", it) }
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
-                    recordKindsAdapter.recordKinds = it
+                    recordKindsAdapter.recordKindAggregations = it
                 }
                 .disposeOnPause(this)
     }
 
-    private class RecordKindsAdapter(context: Context, private val categoryUuid: String?) : ArrayAdapter<RecordKind>(context, 0, emptyList()) {
+    private class RecordKindsAdapter(context: Context, private val categoryUuid: String?) : ArrayAdapter<RecordKindAggregation>(context, 0, emptyList()) {
 
-        var recordKinds: List<RecordKind> = emptyList()
+        var recordKindAggregations: List<RecordKindAggregation> = emptyList()
             set(value) {
                 field = value
                 notifyDataSetChanged()
             }
 
-        override fun getCount() = recordKinds.size
+        override fun getCount() = recordKindAggregations.size
 
         @Suppress("DEPRECATION")
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = convertView ?: parent.inflate(R.layout.item_record_kind)
-            val kind = recordKinds[position]
+            val kind = recordKindAggregations[position]
             view.kindName_TextView.text = Html.fromHtml(view.resources.getString(
                     R.string.record_kind_title_format,
                     if (categoryUuid == null) "${kind.recordCategory.name} / ${kind.kind}" else kind.kind,

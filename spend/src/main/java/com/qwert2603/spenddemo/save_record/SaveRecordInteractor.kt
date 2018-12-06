@@ -3,8 +3,8 @@ package com.qwert2603.spenddemo.save_record
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
 import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.RecordKind
-import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
+import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
+import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsDraftsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.utils.Const
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class SaveRecordInteractor @Inject constructor(
         private val recordsRepo: RecordsRepo,
         private val recordsDraftsRepo: RecordsDraftsRepo,
-        private val recordKindsRepo: RecordKindsRepo
+        private val recordAggregationsRepo: RecordAggregationsRepo
 ) {
     fun getRecordChanges(uuid: String): Observable<Wrapper<Record>> = recordsRepo.getRecord(uuid)
 
@@ -43,18 +43,18 @@ class SaveRecordInteractor @Inject constructor(
         }.also { }
     }
 
-    fun getCategorySuggestions(recordTypeId: Long, inputCategoryName: String): Single<List<RecordCategoryAggregation>> = recordKindsRepo
+    fun getCategorySuggestions(recordTypeId: Long, inputCategoryName: String): Single<List<RecordCategoryAggregation>> = recordAggregationsRepo
             .getCategorySuggestions(recordTypeId, inputCategoryName, 5)
 
-    fun getKindSuggestions(recordTypeId: Long, recordCategoryUuid: String?, inputKind: String): Single<List<RecordKind>> = recordKindsRepo
+    fun getKindSuggestions(recordTypeId: Long, recordCategoryUuid: String?, inputKind: String): Single<List<RecordKindAggregation>> = recordAggregationsRepo
             .getKindSuggestions(recordTypeId, recordCategoryUuid, inputKind, 5)
 
-    fun getRecordCategory(recordCategoryUuid: String): Observable<RecordCategoryAggregation> = recordKindsRepo.getRecordCategory(recordCategoryUuid)
+    fun getRecordCategory(recordCategoryUuid: String): Observable<RecordCategoryAggregation> = recordAggregationsRepo.getRecordCategory(recordCategoryUuid)
 
-    fun getRecordCategory(recordTypeId: Long, recordCategoryName: String): Observable<Wrapper<RecordCategoryAggregation>> = recordKindsRepo
+    fun getRecordCategory(recordTypeId: Long, recordCategoryName: String): Observable<Wrapper<RecordCategoryAggregation>> = recordAggregationsRepo
             .getRecordCategory(recordTypeId, recordCategoryName)
 
-    fun getLastValueOfKind(recordTypeId: Long, recordCategoryUuid: String?, kind: String): Single<Int> = recordKindsRepo
+    fun getLastValueOfKind(recordTypeId: Long, recordCategoryUuid: String?, kind: String): Single<Int> = recordAggregationsRepo
             .getRecordKind(recordTypeId, recordCategoryUuid, kind)
             .firstOrError()
             .map { it.t?.lastRecord?.value ?: 0 }

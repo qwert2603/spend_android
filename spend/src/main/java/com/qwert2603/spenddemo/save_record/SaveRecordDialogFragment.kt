@@ -128,7 +128,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             RxAutoCompleteTextView
                     .itemClickEvents(dialogView.kind_EditText)
                     .map { it.view().adapter.getItem(it.position()) }
-                    .ofType(RecordKind::class.java)
+                    .ofType(RecordKindAggregation::class.java)
                     .map { it.recordCategory.uuid to it.kind }
     )
 

@@ -1,13 +1,12 @@
 package com.qwert2603.spenddemo.model.repo
 
 import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
-import com.qwert2603.spenddemo.model.entity.RecordKind
+import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 import io.reactivex.Single
 
-// todo: RecordAggregationsRepo
-interface RecordKindsRepo {
+interface RecordAggregationsRepo {
 
     fun getRecordCategories(recordTypeId: Long): Observable<List<RecordCategoryAggregation>>
 
@@ -21,13 +20,13 @@ interface RecordKindsRepo {
     fun getRecordKinds(
             recordTypeId: Long,
             recordCategoryUuid: String?
-    ): Observable<List<RecordKind>>
+    ): Observable<List<RecordKindAggregation>>
 
     fun getRecordKind(
             recordTypeId: Long,
             recordCategoryUuid: String?,
             kind: String
-    ): Observable<Wrapper<RecordKind>>
+    ): Observable<Wrapper<RecordKindAggregation>>
 
     /** @return list of kinds names. */
     fun getKindSuggestions(
@@ -35,7 +34,7 @@ interface RecordKindsRepo {
             recordCategoryUuid: String?,
             inputKind: String,
             count: Int
-    ): Single<List<RecordKind>>
+    ): Single<List<RecordKindAggregation>>
 
     fun getCategorySuggestions(
             recordTypeId: Long,

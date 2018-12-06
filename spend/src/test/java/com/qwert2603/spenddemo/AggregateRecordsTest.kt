@@ -2,7 +2,7 @@ package com.qwert2603.spenddemo
 
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
-import com.qwert2603.spenddemo.model.repo_impl.RecordKindsRepoImpl
+import com.qwert2603.spenddemo.model.repo_impl.RecordAggregationsRepoImpl
 import com.qwert2603.spenddemo.utils.Const
 import org.junit.Assert
 import org.junit.Before
@@ -20,16 +20,16 @@ class AggregateRecordsTest {
 
     @Test
     fun empty() {
-        val actual = RecordKindsRepoImpl.aggregate(emptyList(), emptyList())
+        val actual = RecordAggregationsRepoImpl.aggregate(emptyList(), emptyList())
         Assert.assertEquals(
-                RecordKindsRepoImpl.AggregationResult(
+                RecordAggregationsRepoImpl.AggregationResult(
                         recordsCategoriesList = mapOf(
                                 Const.RECORD_TYPE_ID_SPEND to emptyList(),
                                 Const.RECORD_TYPE_ID_PROFIT to emptyList()
                         ),
                         recordsKindsLists = mapOf(
-                                Const.RECORD_TYPE_ID_SPEND to mapOf<String?, List<RecordKind>>(null to emptyList()),
-                                Const.RECORD_TYPE_ID_PROFIT to mapOf<String?, List<RecordKind>>(null to emptyList())
+                                Const.RECORD_TYPE_ID_SPEND to mapOf<String?, List<RecordKindAggregation>>(null to emptyList()),
+                                Const.RECORD_TYPE_ID_PROFIT to mapOf<String?, List<RecordKindAggregation>>(null to emptyList())
                         )
                 ),
                 actual
@@ -54,7 +54,7 @@ class AggregateRecordsTest {
         val r6 = Record("u_r6", c2, SDate(20181204), null, "k1", 6, null)
         val r7 = Record("u_r7", c4, SDate(20181203), STime(1918), "k1", 7, null)
 
-        val expected = RecordKindsRepoImpl.AggregationResult(
+        val expected = RecordAggregationsRepoImpl.AggregationResult(
                 recordsCategoriesList = mapOf(
                         Const.RECORD_TYPE_ID_SPEND to listOf(
                                 RecordCategoryAggregation(Const.RECORD_TYPE_ID_SPEND, c1, r5, 3, 12),
@@ -70,36 +70,36 @@ class AggregateRecordsTest {
                 recordsKindsLists = mapOf(
                         Const.RECORD_TYPE_ID_SPEND to mapOf(
                                 c1.uuid to listOf(
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c1, r4.kind, r4, 2, 7),
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c1, r5.kind, r5, 1, 5)
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c1, r4.kind, r4, 2, 7),
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c1, r5.kind, r5, 1, 5)
                                 ),
-                                c2.uuid to listOf(RecordKind(Const.RECORD_TYPE_ID_SPEND, c2, r6.kind, r6, 1, 6)),
-                                c3.uuid to listOf(RecordKind(Const.RECORD_TYPE_ID_SPEND, c3, r1.kind, r1, 1, 1)),
+                                c2.uuid to listOf(RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c2, r6.kind, r6, 1, 6)),
+                                c3.uuid to listOf(RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c3, r1.kind, r1, 1, 1)),
                                 null to listOf(
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c1, r4.kind, r4, 2, 7),
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c2, r6.kind, r6, 1, 6),
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c1, r5.kind, r5, 1, 5),
-                                        RecordKind(Const.RECORD_TYPE_ID_SPEND, c3, r1.kind, r1, 1, 1)
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c1, r4.kind, r4, 2, 7),
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c2, r6.kind, r6, 1, 6),
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c1, r5.kind, r5, 1, 5),
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_SPEND, c3, r1.kind, r1, 1, 1)
                                 )
                         ),
                         Const.RECORD_TYPE_ID_PROFIT to mapOf(
-                                c4.uuid to listOf(RecordKind(Const.RECORD_TYPE_ID_PROFIT, c4, r7.kind, r7, 1, 7)),
+                                c4.uuid to listOf(RecordKindAggregation(Const.RECORD_TYPE_ID_PROFIT, c4, r7.kind, r7, 1, 7)),
                                 c5.uuid to emptyList(),
-                                c6.uuid to listOf(RecordKind(Const.RECORD_TYPE_ID_PROFIT, c6, r2.kind, r2, 1, 2)),
+                                c6.uuid to listOf(RecordKindAggregation(Const.RECORD_TYPE_ID_PROFIT, c6, r2.kind, r2, 1, 2)),
                                 null to listOf(
-                                        RecordKind(Const.RECORD_TYPE_ID_PROFIT, c4, r7.kind, r7, 1, 7),
-                                        RecordKind(Const.RECORD_TYPE_ID_PROFIT, c6, r2.kind, r2, 1, 2)
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_PROFIT, c4, r7.kind, r7, 1, 7),
+                                        RecordKindAggregation(Const.RECORD_TYPE_ID_PROFIT, c6, r2.kind, r2, 1, 2)
                                 )
                         )
                 )
         )
 
-        val actual = RecordKindsRepoImpl.aggregate(
+        val actual = RecordAggregationsRepoImpl.aggregate(
                 records = listOf(r1, r2, r3, r4, r5, r6, r7),
                 categories = listOf(c1, c2, c3, c4, c5, c6)
         )
 
-        fun <T> makeAssert(extractor: (RecordKindsRepoImpl.AggregationResult) -> T) = Assert.assertEquals(extractor(expected), extractor(actual))
+        fun <T> makeAssert(extractor: (RecordAggregationsRepoImpl.AggregationResult) -> T) = Assert.assertEquals(extractor(expected), extractor(actual))
 
         makeAssert { it.recordsCategoriesList[Const.RECORD_TYPE_ID_SPEND] }
         makeAssert { it.recordsCategoriesList[Const.RECORD_TYPE_ID_PROFIT] }
@@ -133,7 +133,7 @@ class AggregateRecordsTest {
             )
         }
 
-        repeat(10) { RecordKindsRepoImpl.aggregate(records, categories) }
+        repeat(10) { RecordAggregationsRepoImpl.aggregate(records, categories) }
     }
 
     private fun randomName() = Random

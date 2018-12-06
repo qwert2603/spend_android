@@ -4,7 +4,7 @@ import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
+import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import io.reactivex.Observable
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class RecordsListInteractor @Inject constructor(
         private val recordsRepo: RecordsRepo,
-        private val recordKindsRepo: RecordKindsRepo,
+        private val recordAggregationsRepo: RecordAggregationsRepo,
         private val userSettingsRepo: UserSettingsRepo
 ) {
     fun getRecordsList(): Observable<List<Record>> = recordsRepo.getRecordsList()
@@ -66,7 +66,7 @@ class RecordsListInteractor @Inject constructor(
             userSettingsRepo.shortSumPeriodMinutes = value
         }
 
-    fun getRecordCategories(recordTypeId: Long): Single<List<RecordCategory>> = recordKindsRepo
+    fun getRecordCategories(recordTypeId: Long): Single<List<RecordCategory>> = recordAggregationsRepo
             .getRecordCategories(recordTypeId).firstOrError()
             .mapList { it.recordCategory }
 }

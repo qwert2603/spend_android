@@ -124,7 +124,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             RxAutoCompleteTextView
                     .itemClickEvents(kind_EditText)
                     .map { it.view().adapter.getItem(it.position()) }
-                    .ofType(RecordKind::class.java)
+                    .ofType(RecordKindAggregation::class.java)
                     .map { it.recordCategory.uuid to it.kind }
     )
 

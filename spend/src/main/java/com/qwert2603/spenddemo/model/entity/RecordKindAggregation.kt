@@ -3,8 +3,7 @@ package com.qwert2603.spenddemo.model.entity
 import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.andrlib.model.hashCodeLong
 
-//todo: RecordKindAggregation
-data class RecordKind(
+data class RecordKindAggregation(
         val recordTypeId: Long,
         val recordCategory: RecordCategory,
         val kind: String,

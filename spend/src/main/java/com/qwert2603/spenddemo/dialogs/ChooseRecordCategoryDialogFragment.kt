@@ -21,7 +21,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
 import com.qwert2603.spenddemo.model.entity.toFormattedString
-import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
+import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.utils.disposeOnPause
 import com.qwert2603.spenddemo.utils.toPointedString
 import kotlinx.android.synthetic.main.item_record_kind.view.*
@@ -38,7 +38,7 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
     var recordTypeId: Long = IdentifiableLong.NO_ID
 
     @Inject
-    lateinit var recordKindsRepo: RecordKindsRepo
+    lateinit var recordAggregationsRepo: RecordAggregationsRepo
 
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
@@ -72,7 +72,7 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
     override fun onResume() {
         super.onResume()
 
-        recordKindsRepo.getRecordCategories(recordTypeId)
+        recordAggregationsRepo.getRecordCategories(recordTypeId)
                 .doOnError { LogUtils.e("ChooseRecordCategoryDialogFragment getRecordCategories", it) }
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {

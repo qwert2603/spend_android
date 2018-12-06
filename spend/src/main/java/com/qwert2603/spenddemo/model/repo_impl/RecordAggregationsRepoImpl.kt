@@ -6,9 +6,9 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
-import com.qwert2603.spenddemo.model.entity.RecordKind
+import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
-import com.qwert2603.spenddemo.model.repo.RecordKindsRepo
+import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,14 +17,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RecordKindsRepoImpl @Inject constructor(
+class RecordAggregationsRepoImpl @Inject constructor(
         recordsDao: RecordsDao,
         private val modelSchedulersProvider: ModelSchedulersProvider
-) : RecordKindsRepo {
+) : RecordAggregationsRepo {
 
     data class AggregationResult(
             val recordsCategoriesList: Map<Long, List<RecordCategoryAggregation>>,
-            val recordsKindsLists: Map<Long, Map<String?, List<RecordKind>>>
+            val recordsKindsLists: Map<Long, Map<String?, List<RecordKindAggregation>>>
     )
 
     /** key is recordTypeId. */
@@ -34,7 +34,7 @@ class RecordKindsRepoImpl @Inject constructor(
      * {recordTypeId ; {recordCategoryUuid? ; recordKinds}}.
      * recordCategoryUuid == null means all recordKinds for given recordTypeId.
      */
-    private val recordsKindsLists: BehaviorSubject<Map<Long, Map<String?, List<RecordKind>>>> = BehaviorSubject.create()
+    private val recordsKindsLists: BehaviorSubject<Map<Long, Map<String?, List<RecordKindAggregation>>>> = BehaviorSubject.create()
 
     init {
         Observable
@@ -50,7 +50,7 @@ class RecordKindsRepoImpl @Inject constructor(
                             recordsCategoriesList.onNext(it.recordsCategoriesList)
                             recordsKindsLists.onNext(it.recordsKindsLists)
                         },
-                        { LogUtils.e("RecordKindsRepoImpl recordsKindsLists error!", it) }
+                        { LogUtils.e("RecordAggregationsRepoImpl recordsKindsLists error!", it) }
                 ).also { }
     }
 
@@ -65,14 +65,14 @@ class RecordKindsRepoImpl @Inject constructor(
             .map { it[recordTypeId]!!.find { category -> category.recordCategory.name == recordCategoryName }.wrap() }
             .distinctUntilChanged()
 
-    override fun getRecordKinds(recordTypeId: Long, recordCategoryUuid: String?): Observable<List<RecordKind>> = recordsKindsLists
+    override fun getRecordKinds(recordTypeId: Long, recordCategoryUuid: String?): Observable<List<RecordKindAggregation>> = recordsKindsLists
             .map { it[recordTypeId]!![recordCategoryUuid] }
 
-    override fun getRecordKind(recordTypeId: Long, recordCategoryUuid: String?, kind: String): Observable<Wrapper<RecordKind>> = recordsKindsLists
+    override fun getRecordKind(recordTypeId: Long, recordCategoryUuid: String?, kind: String): Observable<Wrapper<RecordKindAggregation>> = recordsKindsLists
             .map { it[recordTypeId]!![recordCategoryUuid]!!.find { recordKind -> recordKind.kind == kind }.wrap() }
             .distinctUntilChanged()
 
-    override fun getKindSuggestions(recordTypeId: Long, recordCategoryUuid: String?, inputKind: String, count: Int): Single<List<RecordKind>> = recordsKindsLists
+    override fun getKindSuggestions(recordTypeId: Long, recordCategoryUuid: String?, inputKind: String, count: Int): Single<List<RecordKindAggregation>> = recordsKindsLists
             .firstOrError()
             .map { it[recordTypeId]!![recordCategoryUuid] }
             .map { it.findSuggestions(inputKind, count) { it.kind } }
@@ -126,7 +126,7 @@ class RecordKindsRepoImpl @Inject constructor(
 
         private val Record.timeNN: Int get() = time?.time ?: -1
 
-        private val kindsComparator = Comparator<RecordKind> { k1, k2 ->
+        private val kindsComparator = Comparator<RecordKindAggregation> { k1, k2 ->
             return@Comparator when {
                 k1.recordsCount != k2.recordsCount -> k1.recordsCount.compareTo(k2.recordsCount).unaryMinus()
                 k1.lastRecord.date != k2.lastRecord.date -> k1.lastRecord.date.compareTo(k2.lastRecord.date).unaryMinus()
@@ -156,7 +156,7 @@ class RecordKindsRepoImpl @Inject constructor(
             val b = System.currentTimeMillis()
 
             val recordsCategoriesList: HashMap<Long, List<RecordCategoryAggregation>> = hashMapOf()
-            val recordsKindsLists: HashMap<Long, HashMap<String?, List<RecordKind>>> = hashMapOf()
+            val recordsKindsLists: HashMap<Long, HashMap<String?, List<RecordKindAggregation>>> = hashMapOf()
 
             val categoriesByType = categories.groupBy { it.recordTypeId }
             val recordsByCategory = records.groupBy { it.recordCategory.uuid }
@@ -197,7 +197,7 @@ class RecordKindsRepoImpl @Inject constructor(
 
                             recordsKindsLists[recordTypeId]!![category.uuid] = lasts
                                     .map { (kind, lastRecord) ->
-                                        RecordKind(
+                                        RecordKindAggregation(
                                                 recordTypeId = recordTypeId,
                                                 recordCategory = category,
                                                 kind = kind,
@@ -228,7 +228,7 @@ class RecordKindsRepoImpl @Inject constructor(
                         .sortedWith(kindsComparator)
             }
 
-            LogUtils.d("timing_ RecordKindsRepoImpl aggregate ${System.currentTimeMillis() - b} ms")
+            LogUtils.d("timing_ RecordAggregationsRepoImpl aggregate ${System.currentTimeMillis() - b} ms")
 
             return AggregationResult(recordsCategoriesList, recordsKindsLists)
         }

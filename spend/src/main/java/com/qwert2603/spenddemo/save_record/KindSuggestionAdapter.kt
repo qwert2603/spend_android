@@ -11,11 +11,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
-import com.qwert2603.spenddemo.model.entity.RecordKind
+import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class KindSuggestionAdapter(context: Context, suggestions: List<RecordKind>, s: String? = null, private val withCategory: Boolean)
-    : ArrayAdapter<RecordKind>(context, 0, suggestions) {
+class KindSuggestionAdapter(context: Context, suggestions: List<RecordKindAggregation>, s: String? = null, private val withCategory: Boolean)
+    : ArrayAdapter<RecordKindAggregation>(context, 0, suggestions) {
 
     private val search = s?.toLowerCase()
 
