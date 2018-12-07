@@ -6,10 +6,7 @@ import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.toSDate
-import com.qwert2603.spenddemo.model.entity.toSTime
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.rest.ApiHelper
@@ -141,4 +138,6 @@ class RecordsRepoImpl @Inject constructor(
     override fun removeAllRecords() {
         syncProcessor.clear()
     }
+
+    override fun getSyncState(): Observable<SyncState> = syncProcessor.syncState
 }

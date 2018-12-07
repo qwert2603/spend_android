@@ -4,11 +4,12 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.rest.ApiHelper
 import com.qwert2603.spenddemo.utils.executeAndWait
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -28,7 +29,7 @@ class SyncProcessor(
 
     private val pendingClearAll = AtomicBoolean(false)
 
-    val lastSyncMillis = PublishSubject.create<Long>()
+    val syncState = BehaviorSubject.create<SyncState>()
 
     fun start() {
         if (!E.env.syncWithServer) return
@@ -36,7 +37,7 @@ class SyncProcessor(
             while (true) {
                 try {
                     Thread.yield()
-                    Thread.sleep(26)
+                    Thread.sleep(42)
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -51,6 +52,7 @@ class SyncProcessor(
                         }
                         if (locallyChangedItems.isEmpty()) break
 
+                        syncState.onNext(SyncState.SYNCING)
                         val (deleted, updated) = locallyChangedItems.partition { it.change!!.isDelete }
                         val deletedUuids = deleted.map { it.uuid }
                         remoteDBExecutor.executeAndWait {
@@ -72,14 +74,17 @@ class SyncProcessor(
                             apiHelper.getUpdates(lastChangeStorage.lastChangeInfo, 50)
                         }
                         if (updatesFromRemote.isEmpty()) break
+
+                        syncState.onNext(SyncState.SYNCING)
                         localDBExecutor.executeAndWait {
                             recordsDao.saveChangesFromServer(updatesFromRemote.toChangesFromServer())
                             lastChangeStorage.lastChangeInfo = updatesFromRemote.lastChangeInfo
                         }
                     }
 
-                    lastSyncMillis.onNext(System.currentTimeMillis())
+                    syncState.onNext(SyncState.SYNCED)
                 } catch (t: Throwable) {
+                    syncState.onNext(SyncState.ERROR)
                     LogUtils.e(TAG, "remoteDBExecutor.execute", t)
                     Thread.sleep(1000)
                 }

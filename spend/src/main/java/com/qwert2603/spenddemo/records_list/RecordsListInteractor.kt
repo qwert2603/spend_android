@@ -4,6 +4,7 @@ import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
@@ -69,4 +70,6 @@ class RecordsListInteractor @Inject constructor(
     fun getRecordCategories(recordTypeId: Long): Single<List<RecordCategory>> = recordAggregationsRepo
             .getRecordCategories(recordTypeId).firstOrError()
             .mapList { it.recordCategory }
+
+    fun getSyncState(): Observable<SyncState> = recordsRepo.getSyncState()
 }

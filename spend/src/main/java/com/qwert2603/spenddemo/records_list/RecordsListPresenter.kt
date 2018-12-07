@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
@@ -10,6 +11,7 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -25,7 +27,8 @@ class RecordsListPresenter @Inject constructor(
             longSumPeriodDays = recordsListInteractor.longSumPeriodDays,
             shortSumPeriodMinutes = recordsListInteractor.shortSumPeriodMinutes,
             sumsInfo = SumsInfo.EMPTY,
-            recordsChanges = hashMapOf()
+            recordsChanges = hashMapOf(),
+            syncState = SyncState.SYNCING
     )
 
     sealed class ShowInfoChange {
@@ -113,6 +116,7 @@ class RecordsListPresenter @Inject constructor(
                     .skip(1) // skip initial.
                     .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
                     .map { RecordsListPartialChange.ShortSumPeriodMinutesChanged(it) },
+            // todo: to separate fun.
             Observable
                     .combineLatest(
                             longSumPeriodDaysChanges,
@@ -166,7 +170,21 @@ class RecordsListPresenter @Inject constructor(
                                         }
                                 )
                                 .map { RecordsListPartialChange.SumsInfoChanged(it) }
+                    },
+            recordsListInteractor
+                    .getSyncState()
+                    .distinctUntilChanged()
+                    .switchMapSingle { syncState ->
+                        Single.just(syncState)
+                                .let {
+                                    when (syncState) {
+                                        SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
+                                        SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
+                                        SyncState.ERROR -> it
+                                    }
+                                }
                     }
+                    .map { RecordsListPartialChange.SyncStateChanged(it) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -181,6 +199,7 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
             is RecordsListPartialChange.LongSumPeriodDaysChanged -> vs.copy(longSumPeriodDays = change.days)
             is RecordsListPartialChange.ShortSumPeriodMinutesChanged -> vs.copy(shortSumPeriodMinutes = change.minutes)
+            is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
         }
     }
 

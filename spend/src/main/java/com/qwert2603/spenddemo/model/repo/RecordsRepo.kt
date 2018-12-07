@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.model.repo
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.entity.RecordDraft
+import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -39,4 +40,6 @@ interface RecordsRepo {
     fun removeRecords(recordsUuids: List<String>)
 
     fun removeAllRecords()
+
+    fun getSyncState(): Observable<SyncState>
 }

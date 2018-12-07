@@ -19,10 +19,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.DaySum
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.Totals
-import com.qwert2603.spenddemo.model.entity.toFormattedString
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.save_record.SaveRecordDialogFragmentBuilder
@@ -67,11 +64,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        toolbar.setTitle(R.string.app_name)
-
-        val adapter = RecordsListAdapter()
-
-        records_RecyclerView.adapter = adapter
+        records_RecyclerView.adapter = RecordsListAdapter()
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
@@ -274,6 +267,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     }
             toolbar.subtitle = listOfNotNull(longSumText, shortSumText, changesCountText)
                     .reduceEmptyToNull { acc, s -> "$acc    $s" }
+        }
+
+        renderIfChanged({ syncState }) {
+            toolbar.title = getString(R.string.app_name) + when (it) {
+                SyncState.SYNCING -> ".."
+                SyncState.SYNCED -> ""
+                SyncState.ERROR -> " X"
+            }
         }
     }
 
