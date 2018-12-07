@@ -8,6 +8,7 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -117,7 +118,21 @@ class RecordsListPresenter @Inject constructor(
                     shortSumPeriodMinutesChanges,
                     showInfoChanges,
                     recordsListInteractor
-            ).map { RecordsListPartialChange.SumsInfoChanged(it) }
+            ).map { RecordsListPartialChange.SumsInfoChanged(it) },
+            recordsListInteractor
+                    .getSyncState()
+                    .distinctUntilChanged()
+                    .switchMapSingle { syncState ->
+                        Single.just(syncState)
+                                .let {
+                                    when (syncState) {
+                                        SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
+                                        SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
+                                        SyncState.ERROR -> it
+                                    }
+                                }
+                    }
+                    .map { RecordsListPartialChange.SyncStateChanged(it) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
