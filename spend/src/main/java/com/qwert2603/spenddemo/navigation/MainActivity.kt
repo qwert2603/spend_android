@@ -15,7 +15,6 @@ import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
-import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import io.reactivex.disposables.CompositeDisposable
@@ -169,9 +168,5 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     override fun showKeyboard(editText: EditText) {
         editText.requestFocus()
         (getSystemService(Service.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(editText, 0)
-    }
-
-    override fun isKeyBoardShown(): Boolean {
-        return activity_root_FrameLayout.height < resources.displayMetrics.heightPixels - resources.toPx(30)
     }
 }

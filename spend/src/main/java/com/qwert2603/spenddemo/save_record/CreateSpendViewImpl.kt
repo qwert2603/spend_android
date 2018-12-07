@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.support.v4.app.DialogFragment
 import android.text.InputFilter
 import android.util.AttributeSet
+import android.widget.EditText
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -167,24 +168,22 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
     override fun executeAction(va: ViewAction) {
         LogUtils.d("CreateSpendViewImpl executeAction $va")
         if (va !is SaveRecordViewAction) null!!
-        when (va) {
-            SaveRecordViewAction.FocusOnCategoryInput -> {
-                category_EditText.requestFocus()
-            }
-            SaveRecordViewAction.FocusOnKindInput -> {
-                if (keyboardManager.isKeyBoardShown()) {
-                    keyboardManager.showKeyboard(kind_EditText)
+
+        fun EditText.focus(withKeyboard: Boolean) {
+            postDelayed({
+                if (!isAttachedToWindow) return@postDelayed
+                if (withKeyboard) {
+                    keyboardManager.showKeyboard(this)
                 } else {
-                    kind_EditText.requestFocus()
+                    this@focus.requestFocus()
                 }
-            }
-            SaveRecordViewAction.FocusOnValueInput -> {
-                val value_EditText = value_EditText
-                value_EditText.postDelayed({
-                    if (!isAttachedToWindow) return@postDelayed
-                    keyboardManager.showKeyboard(value_EditText)
-                }, 200)
-            }
+            }, 150)
+        }
+
+        when (va) {
+            SaveRecordViewAction.FocusOnCategoryInput -> category_EditText.focus(false)
+            SaveRecordViewAction.FocusOnKindInput -> kind_EditText.focus(true)
+            SaveRecordViewAction.FocusOnValueInput -> value_EditText.focus(true)
             is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
                     .newDatePickerDialogFragment(va.date.date, true)
                     .makeShow(REQUEST_CODE_DATE)
