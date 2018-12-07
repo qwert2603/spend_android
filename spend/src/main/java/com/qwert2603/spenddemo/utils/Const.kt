@@ -14,9 +14,6 @@ object Const {
             RECORD_TYPE_ID_PROFIT
     )
 
-    const val CHANGE_KIND_UPSERT = 1
-    const val CHANGE_KIND_DELETE = 2
-
     const val MAX_RECORDS_TO_SAVE_COUNT = 250
     const val MAX_RECORDS_UPDATES_COUNT = 250
 }

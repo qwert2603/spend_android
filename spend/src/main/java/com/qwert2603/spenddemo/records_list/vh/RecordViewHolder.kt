@@ -53,19 +53,18 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
             else -> R.drawable.ic_synced
         })
         if (recordChange != null) {
-            local_ImageView.setColorFilter(resources.color(when (recordChange.changeKindId) {
-                Const.CHANGE_KIND_UPSERT -> R.color.local_change_edit
-                Const.CHANGE_KIND_DELETE -> R.color.local_change_delete
-                else -> null!!
+            local_ImageView.setColorFilter(resources.color(when (recordChange.isDelete) {
+                true -> R.color.local_change_delete
+                false -> R.color.local_change_edit
             }))
         } else {
             local_ImageView.clearColorFilter()
         }
 
-        isClickable = recordChange?.changeKindId != Const.CHANGE_KIND_DELETE
-        isLongClickable = recordChange?.changeKindId != Const.CHANGE_KIND_DELETE
+        isClickable = recordChange?.isDelete != true
+        isLongClickable = recordChange?.isDelete != true
 
-        val strike = recordChange?.changeKindId == Const.CHANGE_KIND_DELETE
+        val strike = recordChange?.isDelete == true
         listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }
     }

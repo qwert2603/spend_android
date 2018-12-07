@@ -7,7 +7,6 @@ import com.qwert2603.spenddemo.model.entity.RecordDraft
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.rest.ApiHelper
-import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.executeAndWait
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.ExecutorService
@@ -52,7 +51,7 @@ class SyncProcessor(
                         }
                         if (locallyChangedItems.isEmpty()) break
 
-                        val (updated, deleted) = locallyChangedItems.partition { it.change!!.changeKindId == Const.CHANGE_KIND_UPSERT }
+                        val (deleted, updated) = locallyChangedItems.partition { it.change!!.isDelete }
                         val deletedUuids = deleted.map { it.uuid }
                         remoteDBExecutor.executeAndWait {
                             apiHelper.saveChanges(
@@ -90,7 +89,7 @@ class SyncProcessor(
 
     fun saveItems(ts: List<RecordDraft>) {
         localDBExecutor.execute {
-            recordsDao.saveRecords(ts.map { it.toRecordTable(RecordChange(changeIdCounter.getNext(), Const.CHANGE_KIND_UPSERT)) })
+            recordsDao.saveRecords(ts.map { it.toRecordTable(RecordChange(changeIdCounter.getNext(), false)) })
         }
     }
 

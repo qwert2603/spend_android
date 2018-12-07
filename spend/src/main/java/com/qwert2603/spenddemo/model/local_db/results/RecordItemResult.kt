@@ -12,7 +12,7 @@ data class RecordItemResult(
         val kind: String,
         val value: Int,
         val changeId: Long?,
-        val changeKindId: Int?
+        val isDelete: Boolean?
 ) {
     fun toRecord() = Record(
             uuid = uuid,
@@ -28,7 +28,7 @@ data class RecordItemResult(
             change = changeId?.let {
                 RecordChange(
                         id = it,
-                        changeKindId = changeKindId!!
+                        isDelete = isDelete!!
                 )
             }
     )

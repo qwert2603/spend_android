@@ -10,7 +10,6 @@ import com.qwert2603.spenddemo.model.local_db.results.RecordItemResult
 import com.qwert2603.spenddemo.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordCategory
-import com.qwert2603.spenddemo.utils.Const
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -57,7 +56,7 @@ abstract class RecordsDao {
                 r.kind,
                 r.value,
                 r.change_id AS changeId,
-                r.change_changeKindId AS changeKindId
+                r.change_isDelete AS isDelete
             FROM RecordTable AS r
             JOIN RecordCategoryTable AS c ON r.recordCategoryUuid = c.uuid
             ORDER BY r.date DESC, coalesce(r.time, -1) DESC, c.recordTypeId, c.name DESC, r.kind DESC, r.uuid
@@ -69,7 +68,7 @@ abstract class RecordsDao {
     protected abstract fun getRecordCategories(): Flowable<List<RecordCategoryTable>>
 
     @Transaction
-    @Query("SELECT uuid FROM RecordTable WHERE change_changeKindId IS NOT NULL AND uuid in (:uuids)")
+    @Query("SELECT uuid FROM RecordTable WHERE change_isDelete IS NOT NULL AND uuid in (:uuids)")
     protected abstract fun getChangedRecordsUuids(uuids: List<String>): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -81,7 +80,7 @@ abstract class RecordsDao {
     @Query("DELETE FROM RecordTable WHERE uuid IN (:uuids)")
     abstract fun deleteRecords(uuids: List<String>)
 
-    @Query("UPDATE RecordTable SET change_changeKindId = NULL, change_id = NULL WHERE uuid = :recordUuid AND change_id = :changeId")
+    @Query("UPDATE RecordTable SET change_isDelete = NULL, change_id = NULL WHERE uuid = :recordUuid AND change_id = :changeId")
     protected abstract fun clearLocalChange(recordUuid: String, changeId: Long)
 
     @Transaction
@@ -90,10 +89,10 @@ abstract class RecordsDao {
     }
 
     @Transaction
-    @Query("SELECT * FROM RecordTable WHERE change_changeKindId IS NOT NULL LIMIT :limit")
+    @Query("SELECT * FROM RecordTable WHERE change_isDelete IS NOT NULL LIMIT :limit")
     abstract fun getLocallyChangedRecords(limit: Int): List<RecordTable>
 
-    @Query("UPDATE RecordTable SET change_changeKindId = ${Const.CHANGE_KIND_DELETE}, change_id = :changeId WHERE uuid = :uuid")
+    @Query("UPDATE RecordTable SET change_isDelete = 1, change_id = :changeId WHERE uuid = :uuid")
     protected abstract fun locallyDeleteRecord(uuid: String, changeId: Long)
 
     @Transaction

@@ -57,28 +57,28 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
                 // nth
             }
             record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
-                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
+                if (!record.isDeleted()) {
                     daySpendsSum += record.value
                     ++spendsCount
                     spendsSum += record.value
                 }
-                if (showInfo.showSpends && (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted())) {
+                if (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted())) {
                     result.add(record)
                 }
-                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted()) {
+                if (!record.isDeleted() || showInfo.showDeleted()) {
                     ++daySpendsCount
                 }
             }
             record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
-                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE) {
+                if (!record.isDeleted()) {
                     dayProfitsSum += record.value
                     ++profitsCount
                     profitsSum += record.value
                 }
-                if (showInfo.showProfits && (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted())) {
+                if (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted())) {
                     result.add(record)
                 }
-                if (record.change?.changeKindId != Const.CHANGE_KIND_DELETE || showInfo.showDeleted()) {
+                if (!record.isDeleted() || showInfo.showDeleted()) {
                     ++dayProfitsCount
                 }
             }

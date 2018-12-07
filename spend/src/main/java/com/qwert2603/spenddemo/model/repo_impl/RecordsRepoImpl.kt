@@ -76,10 +76,10 @@ class RecordsRepoImpl @Inject constructor(
                 .observeOn(modelSchedulersProvider.computation)
                 .map {
                     it
-                            .filter {
-                                it.recordCategory.recordTypeId == recordTypeId
-                                        && it.change?.changeKindId != Const.CHANGE_KIND_DELETE
-                                        && it.date >= startDate
+                            .filter { record ->
+                                record.recordCategory.recordTypeId == recordTypeId
+                                        && !record.isDeleted()
+                                        && record.date >= startDate
                             }
                             .sumByLong { it.value.toLong() }
                 }
@@ -99,7 +99,7 @@ class RecordsRepoImpl @Inject constructor(
                     it
                             .filter { record ->
                                 record.recordCategory.recordTypeId == recordTypeId
-                                        && record.change?.changeKindId != Const.CHANGE_KIND_DELETE
+                                        && !record.isDeleted()
                                         && record.time != null
                                         && (record.date > startDate || (record.date == startDate && record.time >= startTime))
                             }

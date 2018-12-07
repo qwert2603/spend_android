@@ -14,7 +14,7 @@ import com.qwert2603.spenddemo.model.entity.RecordChange
             Index("recordCategoryUuid"),
             Index("kind"),
             Index("change_id", unique = true),
-            Index("change_changeKindId")
+            Index("change_isDelete")
         ]
 )
 data class RecordTable(

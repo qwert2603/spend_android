@@ -26,4 +26,6 @@ data class Record(
             && time == other.time
             && kind == other.kind
             && value == other.value
+
+    fun isDeleted() = change?.isDelete == true
 }
