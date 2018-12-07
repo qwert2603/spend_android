@@ -3,15 +3,11 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function3
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -116,75 +112,12 @@ class RecordsListPresenter @Inject constructor(
                     .skip(1) // skip initial.
                     .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
                     .map { RecordsListPartialChange.ShortSumPeriodMinutesChanged(it) },
-            // todo: to separate fun.
-            Observable
-                    .combineLatest(
-                            longSumPeriodDaysChanges,
-                            shortSumPeriodMinutesChanges,
-                            showInfoChanges,
-                            RxUtils.minuteChanges().startWith(Any()),
-                            makeQuad()
-                    )
-                    .switchMap { (longSumPeriodDays, shortSumPeriodMinutes, showInfo) ->
-                        val longSumChanges = Observable
-                                .combineLatest(
-                                        if (showInfo.showSpends) {
-                                            recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_SPEND, longSumPeriodDays)
-                                        } else {
-                                            Observable.just(0L)
-                                        },
-                                        if (showInfo.showProfits) {
-                                            recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_PROFIT, longSumPeriodDays)
-                                        } else {
-                                            Observable.just(0L)
-                                        },
-                                        BiFunction { s: Long, p: Long -> p - s }
-                                )
-                        val shortSumChanges = Observable
-                                .combineLatest(
-                                        if (showInfo.showSpends) {
-                                            recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_SPEND, shortSumPeriodMinutes)
-                                        } else {
-                                            Observable.just(0L)
-                                        },
-                                        if (showInfo.showProfits) {
-                                            recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_PROFIT, shortSumPeriodMinutes)
-                                        } else {
-                                            Observable.just(0L)
-                                        },
-                                        BiFunction { s: Long, p: Long -> p - s }
-                                )
-                        val changesCountChanges = recordsListInteractor
-                                .getLocalChangesCount(listOfNotNull(
-                                        Const.RECORD_TYPE_ID_SPEND.takeIf { showInfo.showSpends },
-                                        Const.RECORD_TYPE_ID_PROFIT.takeIf { showInfo.showProfits }
-                                ))
-
-                        Observable
-                                .combineLatest(
-                                        if (longSumPeriodDays > 0) longSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
-                                        if (shortSumPeriodMinutes > 0) shortSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
-                                        if (showInfo.showChangeKinds) changesCountChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
-                                        Function3 { longSum: Wrapper<out Long>, shortSum: Wrapper<out Long>, changesCount: Wrapper<out Int> ->
-                                            SumsInfo(longSum.t, shortSum.t, changesCount.t)
-                                        }
-                                )
-                                .map { RecordsListPartialChange.SumsInfoChanged(it) }
-                    },
-            recordsListInteractor
-                    .getSyncState()
-                    .distinctUntilChanged()
-                    .switchMapSingle { syncState ->
-                        Single.just(syncState)
-                                .let {
-                                    when (syncState) {
-                                        SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
-                                        SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
-                                        SyncState.ERROR -> it
-                                    }
-                                }
-                    }
-                    .map { RecordsListPartialChange.SyncStateChanged(it) }
+            sumsInfoChanges(
+                    longSumPeriodDaysChanges,
+                    shortSumPeriodMinutesChanges,
+                    showInfoChanges,
+                    recordsListInteractor
+            ).map { RecordsListPartialChange.SumsInfoChanged(it) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
