@@ -159,7 +159,9 @@ class RecordAggregationsRepoImpl @Inject constructor(
             val recordsKindsLists: HashMap<Long, HashMap<String?, List<RecordKindAggregation>>> = hashMapOf()
 
             val categoriesByType = categories.groupBy { it.recordTypeId }
-            val recordsByCategory = records.groupBy { it.recordCategory.uuid }
+            val recordsByCategory = records
+                    .filter { !it.isDeleted() }
+                    .groupBy { it.recordCategory.uuid }
 
             for (recordTypeId in listOf(Const.RECORD_TYPE_ID_SPEND, Const.RECORD_TYPE_ID_PROFIT)) {
                 recordsKindsLists[recordTypeId] = hashMapOf()

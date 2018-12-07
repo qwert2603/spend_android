@@ -48,11 +48,14 @@ class AggregateRecordsTest {
         val r1 = Record("u_r1", c3, SDate(20181203), STime(1918), "k1", 1, null)
         val r2 = Record("u_r2", c6, SDate(20181203), STime(1918), "k1", 2, null)
 
-        val r3 = Record("u_r3", c1, SDate(20181203), STime(1417), "k1", 3, null)
+        val r3 = Record("u_r3", c1, SDate(20181203), STime(1417), "k1", 3, RecordChange(1, false))
         val r4 = Record("u_r4", c1, SDate(20181203), STime(1918), "k1", 4, null)
-        val r5 = Record("u_r5", c1, SDate(20181203), STime(2310), "k2", 5, null)
-        val r6 = Record("u_r6", c2, SDate(20181204), null, "k1", 6, null)
+        val r5 = Record("u_r5", c1, SDate(20181203), STime(2310), "k2", 5, RecordChange(2, false))
+        val r6 = Record("u_r6", c2, SDate(20181204), null, "k1", 6, RecordChange(3, false))
         val r7 = Record("u_r7", c4, SDate(20181203), STime(1918), "k1", 7, null)
+        val r8 = Record("u_r7", c4, SDate(20181203), STime(1918), "k1", 7, RecordChange(101, true))
+        val r9 = Record("u_r7", c4, SDate(20181203), STime(1918), "k1", 7, RecordChange(102, true))
+        val r10 = Record("u_r7", c4, SDate(20181203), STime(1918), "k1", 7, RecordChange(103, true))
 
         val expected = RecordAggregationsRepoImpl.AggregationResult(
                 recordsCategoriesList = mapOf(
@@ -95,7 +98,7 @@ class AggregateRecordsTest {
         )
 
         val actual = RecordAggregationsRepoImpl.aggregate(
-                records = listOf(r1, r2, r3, r4, r5, r6, r7),
+                records = listOf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10),
                 categories = listOf(c1, c2, c3, c4, c5, c6)
         )
 
