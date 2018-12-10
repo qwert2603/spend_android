@@ -23,7 +23,6 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun longSumPeriodDaysSelected(): Observable<Int>
     fun shortSumPeriodMinutesSelected(): Observable<Int>
 
-    fun makeDumpClicks(): Observable<Any>
     fun addStubRecordsClicks(): Observable<Any>
     fun clearAllClicks(): Observable<Any>
 }

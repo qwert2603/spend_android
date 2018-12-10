@@ -19,8 +19,6 @@ class RecordsListInteractor @Inject constructor(
 ) {
     fun getRecordsList(): Observable<List<Record>> = recordsRepo.getRecordsList()
 
-    fun getDumpText(): Single<String> = recordsRepo.getDumpText()
-
     fun getLocalChangesCount(recordTypeIds: List<Long>) = recordsRepo.getLocalChangesCount(recordTypeIds)
 
     fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> = recordsRepo.getSumLastDays(recordTypeId, days)

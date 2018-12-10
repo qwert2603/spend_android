@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -175,7 +174,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun longSumPeriodDaysSelected(): Observable<Int> = longSumPeriodDaysSelected
     override fun shortSumPeriodMinutesSelected(): Observable<Int> = shortSumPeriodMinutesSelected
 
-    override fun makeDumpClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.send_records)
     override fun addStubRecordsClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.add_stub_records)
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
 
@@ -298,12 +296,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .makeShow(REQUEST_CHOOSE_SHORT_SUM_PERIOD)
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
             is RecordsListViewAction.OnRecordEditedLocally -> Unit
-            RecordsListViewAction.ShowDumpIsCreating -> Toast.makeText(requireContext(), R.string.text_dumping_records, Toast.LENGTH_SHORT).show()
-            is RecordsListViewAction.SendDump -> Intent(Intent.ACTION_SEND)
-                    .also { it.putExtra(Intent.EXTRA_TEXT, va.dump) }
-                    .also { it.type = "text/plain" }
-                    .let { Intent.createChooser(it, getString(R.string.send_title)) }
-                    .run { requireActivity().startActivity(this) }
             RecordsListViewAction.RerenderAll -> renderAll()
         }.also { }
     }

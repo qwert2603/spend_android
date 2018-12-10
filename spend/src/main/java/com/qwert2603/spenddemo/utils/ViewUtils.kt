@@ -1,7 +1,9 @@
 package com.qwert2603.spenddemo.utils
 
+import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.EditText
@@ -12,6 +14,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.SDate
 import com.qwert2603.spenddemo.model.entity.STime
 import com.qwert2603.spenddemo.model.entity.toFormattedString
+import com.qwert2603.spenddemo.navigation.KeyboardManager
 
 fun TextView.setStrike(strike: Boolean) {
     paintFlags = if (strike) {
@@ -66,4 +69,13 @@ fun View.onPreDraw(action: () -> Boolean) {
             return action()
         }
     })
+}
+
+fun AlertDialog.setShowing(showing: Boolean, keyboardContext: Context) {
+    if (showing) {
+        (keyboardContext as KeyboardManager).hideKeyboard()
+        show()
+    } else {
+        dismiss()
+    }
 }

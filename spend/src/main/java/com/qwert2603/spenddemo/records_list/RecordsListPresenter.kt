@@ -174,15 +174,6 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.uuid)) }
                 .subscribeToView()
 
-        intent { it.makeDumpClicks() }
-                .flatMapSingle {
-                    recordsListInteractor.getDumpText()
-                            .doOnSubscribe { viewActions.onNext(RecordsListViewAction.ShowDumpIsCreating) }
-                            .doOnSuccess { viewActions.onNext(RecordsListViewAction.SendDump(it)) }
-                            .onErrorReturnItem("dump error!")
-                }
-                .subscribeToView()
-
         intent { it.addStubRecordsClicks() }
                 .flatMapSingle {
                     Single.zip(

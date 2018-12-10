@@ -24,7 +24,7 @@
 
     <string name="list_loaded_completely">list loaded completely</string>
     <string name="menu_item_send_records">send records</string>
-    <string name="send_title">send records</string>
+    <string name="send_title">send dump</string>
     <string name="about_text">about</string>
 
     <string name="today_text">today</string>
@@ -108,5 +108,6 @@
 
     <string name="button_accept">accept</string>
     <string name="fix_time">fix time</string>
+    <string name="text_loading">loading..</string>
 
 </resources>

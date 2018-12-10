@@ -94,5 +94,6 @@
     <string name="text_editing_record_not_found">запись не найдена</string>
     <string name="record_kind_description_no_records"><![CDATA[<i>нет записей</i>]]></string>
     <string name="fix_time">зафиксировать время</string>
+    <string name="text_loading">загрузка..</string>
 
 </resources>

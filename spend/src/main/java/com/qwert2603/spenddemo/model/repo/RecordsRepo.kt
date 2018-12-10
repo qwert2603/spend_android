@@ -7,6 +7,7 @@ import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.io.File
 
 interface RecordsRepo {
 
@@ -27,7 +28,7 @@ interface RecordsRepo {
 
     fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long>
 
-    fun getDumpText(): Single<String>
+    fun getDumpFile(): Single<File>
 
     fun getRecordCreatedLocallyEvents(): Observable<String>
 

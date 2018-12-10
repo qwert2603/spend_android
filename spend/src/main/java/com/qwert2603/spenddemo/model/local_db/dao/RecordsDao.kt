@@ -6,10 +6,12 @@ import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
 import com.qwert2603.spenddemo.model.local_db.entity.ChangesFromServer
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
+import com.qwert2603.spenddemo.model.local_db.results.Dump
 import com.qwert2603.spenddemo.model.local_db.results.RecordItemResult
 import com.qwert2603.spenddemo.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordCategory
+import com.qwert2603.spenddemo.utils.DateUtils
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -140,4 +142,21 @@ abstract class RecordsDao {
             deleteRecords(deletedUuids)
         }
     }
+
+    @Query("SELECT * FROM RecordCategoryTable")
+    protected abstract fun getDumpRecordCategories(): List<RecordCategoryTable>
+
+    @Query("SELECT * FROM RecordTable")
+    protected abstract fun getDumpRecords(): List<RecordTable>
+
+    @Transaction
+    open fun getDump() = DateUtils.getNow()
+            .let { (sDate, sTime) ->
+                Dump(
+                        sDate = sDate,
+                        sTime = sTime,
+                        recordCategories = getDumpRecordCategories(),
+                        records = getDumpRecords()
+                )
+            }
 }

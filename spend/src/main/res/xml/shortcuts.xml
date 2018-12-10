@@ -7,7 +7,7 @@
         android:shortcutShortLabel="@string/about_text">
         <intent
             android:action="com.qwert2603.spenddemo.navigation.ACTION_ABOUT"
-            android:targetPackage="com.qwert2603.spenddemo.serverProd.forTesting.debug"
+            android:targetPackage="${applicationId}"
             android:targetClass="com.qwert2603.spenddemo.navigation.MainActivity" />
     </shortcut>
 

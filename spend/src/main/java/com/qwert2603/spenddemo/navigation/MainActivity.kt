@@ -12,6 +12,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DIHolder.diManager.viewsComponent.inject(this)
+
+        LogUtils.d("MainActivity onCreate intent.action=${intent.action}")
 
         setContentView(R.layout.activity_main)
 

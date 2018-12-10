@@ -3,7 +3,6 @@ package com.qwert2603.spenddemo.model.repo_impl
 import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
-import com.qwert2603.andrlib.util.mapList
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.model.entity.*
@@ -15,6 +14,8 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import java.io.File
+import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
@@ -24,7 +25,7 @@ import javax.inject.Singleton
 class RecordsRepoImpl @Inject constructor(
         private val recordsDao: RecordsDao,
         apiHelper: ApiHelper,
-        appContext: Context,
+        private val appContext: Context,
         @RemoteDBExecutor remoteDBExecutor: ExecutorService,
         @LocalDBExecutor localDBExecutor: ExecutorService,
         private val modelSchedulersProvider: ModelSchedulersProvider
@@ -105,11 +106,17 @@ class RecordsRepoImpl @Inject constructor(
                 .distinctUntilChanged()
     }
 
-    override fun getDumpText(): Single<String> = recordsDao
-            .recordsList
-            .firstOrError()
-            .mapList { "${it.uuid},${it.recordCategory.uuid},${it.date},${it.time},${it.kind},${it.value}" }
-            .map { it.reduce { acc, s -> "$acc\n$s" } }
+    override fun getDumpFile(): Single<File> = Single
+            .fromCallable { recordsDao.getDump() }
+            .map { dump ->
+                val filename = "spend_dump.json"
+                val dir = File(appContext.filesDir, "dumps")
+                dir.mkdirs()
+                val file = File(dir, filename)
+                PrintWriter(file).use { it.write(Gson().toJson(dump)) }
+                file
+            }
+            .subscribeOn(modelSchedulersProvider.computation)
 
     override fun getRecordCreatedLocallyEvents(): Observable<String> = recordCreatedLocallyEvents.hide()
 

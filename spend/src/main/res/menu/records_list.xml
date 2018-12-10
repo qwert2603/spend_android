@@ -44,10 +44,6 @@
         android:visible="false" />
 
     <item
-        android:id="@+id/send_records"
-        android:title="@string/menu_item_send_records" />
-
-    <item
         android:id="@+id/add_stub_records"
         android:title="@string/menu_item_add_stub_records" />
 

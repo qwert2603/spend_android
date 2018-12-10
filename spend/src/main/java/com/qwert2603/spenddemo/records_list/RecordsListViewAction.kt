@@ -10,7 +10,5 @@ sealed class RecordsListViewAction : ViewAction {
     data class AskToChooseShortSumPeriod(val minutes: Int) : RecordsListViewAction()
     data class OnRecordCreatedLocally(val uuid: String) : RecordsListViewAction()
     data class OnRecordEditedLocally(val uuid: String) : RecordsListViewAction()
-    object ShowDumpIsCreating : RecordsListViewAction()
-    data class SendDump(val dump: String) : RecordsListViewAction()
     object RerenderAll : RecordsListViewAction()
 }

@@ -15,8 +15,9 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/about_TextView"
@@ -27,6 +28,13 @@
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
                 tools:text="@string/app_info_text_format" />
+
+            <Button
+                android:id="@+id/sendDump_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:text="@string/send_title" />
 
         </LinearLayout>
 
