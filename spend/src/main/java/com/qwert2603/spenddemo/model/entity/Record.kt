@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.model.entity
 
 import com.qwert2603.andrlib.model.hashCodeLong
 import com.qwert2603.spenddemo.utils.Const
+import com.qwert2603.spenddemo.utils.DateUtils
 
 data class Record(
         val uuid: String,
@@ -28,4 +29,8 @@ data class Record(
             && value == other.value
 
     fun isDeleted() = change?.isDelete == true
+
+    /*** can update or delete. */
+    fun isChangeable() = !isDeleted()
+            && (date + Const.CHANGE_RECORD_PAST) > DateUtils.getNow().first
 }

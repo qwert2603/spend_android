@@ -45,15 +45,17 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
 
     fun drawChange(recordChange: RecordChange?) = with(itemView) {
         t = t?.copy(change = recordChange)
+
+        val t = t ?: return
         val adapter = adapter ?: return
 
         local_ImageView.setVisible(adapter.showChangeKinds)
         local_ImageView.setImageResource(when {
-            recordChange != null -> R.drawable.ic_local
+            t.change != null -> R.drawable.ic_local
             else -> R.drawable.ic_synced
         })
-        if (recordChange != null) {
-            local_ImageView.setColorFilter(resources.color(when (recordChange.isDelete) {
+        if (t.change != null) {
+            local_ImageView.setColorFilter(resources.color(when (t.change.isDelete) {
                 true -> R.color.local_change_delete
                 false -> R.color.local_change_edit
             }))
@@ -61,10 +63,10 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
             local_ImageView.clearColorFilter()
         }
 
-        isClickable = recordChange?.isDelete != true
-        isLongClickable = recordChange?.isDelete != true
+        isClickable = t.isChangeable()
+        isLongClickable = t.isChangeable()
 
-        val strike = recordChange?.isDelete == true
+        val strike = t.change?.isDelete == true
         listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }
     }

@@ -28,6 +28,9 @@ class DatePickerDialogFragment : DialogFragment() {
     @Arg
     var withNow: Boolean = false
 
+    @Arg
+    var minDate: Int = 0
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
                 .also { it.timeInMillis = SDate(date).toDateCalendar().timeInMillis }
@@ -56,6 +59,7 @@ class DatePickerDialogFragment : DialogFragment() {
                     )
                 }
             }
+            it.datePicker.minDate = SDate(minDate).toDateCalendar().timeInMillis
         }
     }
 

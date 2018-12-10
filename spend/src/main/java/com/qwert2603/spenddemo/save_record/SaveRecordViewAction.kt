@@ -10,7 +10,7 @@ sealed class SaveRecordViewAction : ViewAction {
     object FocusOnCategoryInput : SaveRecordViewAction()
     object FocusOnKindInput : SaveRecordViewAction()
     object FocusOnValueInput : SaveRecordViewAction()
-    data class AskToSelectDate(val date: SDate) : SaveRecordViewAction()
+    data class AskToSelectDate(val date: SDate, val minDate: SDate) : SaveRecordViewAction()
     data class AskToSelectTime(val time: STime) : SaveRecordViewAction()
     data class AskToSelectCategory(val recordTypeId: Long) : SaveRecordViewAction()
     data class AskToSelectKind(val recordTypeId: Long, val categoryUuid: String?) : SaveRecordViewAction()

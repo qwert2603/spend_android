@@ -4,9 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.toRecordDraft
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -325,7 +323,8 @@ class SaveRecordPresenter @Inject constructor(
                 .withLatestFrom(viewStateObservable, secondOfTwo())
                 .doOnNext {
                     viewActions.onNext(SaveRecordViewAction.AskToSelectDate(
-                            it.recordDraft.date ?: DateUtils.getNow().first
+                            date = it.recordDraft.date ?: DateUtils.getNow().first,
+                            minDate = DateUtils.getNow().first + (-1 * Const.CHANGE_RECORD_PAST.days + 1).days
                     ))
                 }
                 .subscribeToView()

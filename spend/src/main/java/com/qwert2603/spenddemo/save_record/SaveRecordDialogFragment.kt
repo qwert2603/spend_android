@@ -228,7 +228,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             SaveRecordViewAction.FocusOnKindInput -> dialogView.kind_EditText.focus()
             SaveRecordViewAction.FocusOnValueInput -> dialogView.value_EditText.focus()
             is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.date.date, true)
+                    .newDatePickerDialogFragment(va.date.date, va.minDate.date, true)
                     .makeShow(REQUEST_CODE_DATE)
             is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)
