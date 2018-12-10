@@ -44,6 +44,9 @@
 
 -keep class com.qwert2603.spenddemo.model.rest.entity.** { *; }
 -keep class com.qwert2603.spenddemo.model.entity.** { *; }
+-keep class com.qwert2603.spenddemo.model.local_db.results.** { *; }
+-keep class com.qwert2603.spenddemo.model.local_db.entity.** { *; }
+-keep class com.qwert2603.spenddemo.model.local_db.tables.** { *; }
 
 
 -dontwarn com.qwert2603.spenddemo.dialogs.**
