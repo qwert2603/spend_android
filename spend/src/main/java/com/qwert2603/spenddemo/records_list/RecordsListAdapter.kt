@@ -72,6 +72,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         VIEW_TYPE_DATE_SUM -> DaySumViewHolder(parent)
         VIEW_TYPE_MONTH_SUM -> MonthSumViewHolder(parent)
         VIEW_TYPE_YEAR_SUM -> YearSumViewHolder(parent)
+        VIEW_TYPE_PERIOD_DIVIDER -> PeriodDividerViewHolder(parent)
         VIEW_TYPE_TOTALS -> TotalsViewHolder(parent)
         else -> null!!
     }.also {
@@ -92,6 +93,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         is DaySum -> VIEW_TYPE_DATE_SUM
         is MonthSum -> VIEW_TYPE_MONTH_SUM
         is YearSum -> VIEW_TYPE_YEAR_SUM
+        is PeriodDivider -> VIEW_TYPE_PERIOD_DIVIDER
         is Totals -> VIEW_TYPE_TOTALS
         else -> null!!
     }
@@ -117,6 +119,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         const val VIEW_TYPE_DATE_SUM = 2
         const val VIEW_TYPE_MONTH_SUM = 3
         const val VIEW_TYPE_YEAR_SUM = 4
-        const val VIEW_TYPE_TOTALS = 5
+        const val VIEW_TYPE_PERIOD_DIVIDER = 5
+        const val VIEW_TYPE_TOTALS = 6
     }
 }

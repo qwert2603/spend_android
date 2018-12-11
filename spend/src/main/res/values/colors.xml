@@ -26,4 +26,6 @@
     <color name="navigation_menu_item_background">#EEEEEE</color>
     <color name="navigation_menu_item_background_selected">#DDDDDD</color>
     <color name="navigation_menu_item_background_pressed">#CCCCCC</color>
+
+    <color name="gray">#999999</color>
 </resources>

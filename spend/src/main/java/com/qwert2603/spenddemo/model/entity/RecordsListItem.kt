@@ -1,6 +1,8 @@
 package com.qwert2603.spenddemo.model.entity
 
 import com.qwert2603.andrlib.model.IdentifiableLong
+import com.qwert2603.spenddemo.records_list.RecordsListAdapter
+import com.qwert2603.spenddemo.records_list.RecordsListViewState
 
 interface RecordsListItem : IdentifiableLong {
 
@@ -29,6 +31,20 @@ interface RecordsListItem : IdentifiableLong {
         }
 
         private const val ID_IN_LIST_MULTIPLIER = 1_000_000_000_000L
+
+        val IS_EQUAL = { r1: RecordsListItem, r2: RecordsListItem ->
+            if (r1 is Record && r2 is Record) {
+                /**
+                 * difference in [Record.change] is consumed via
+                 * [RecordsListViewState.recordsChanges] and [RecordsListAdapter.recordsChanges].
+                 */
+                r1.equalIgnoreChange(r2)
+            } else if (r1 is PeriodDivider && r2 is PeriodDivider) {
+                r1.interval == r2.interval
+            } else {
+                r1 == r2
+            }
+        }
     }
 
     // format is "yyyyMMdd0HHmm"; (date * DATE_MULTIPLIER) + time
@@ -37,15 +53,17 @@ interface RecordsListItem : IdentifiableLong {
         is DaySum -> day.date * DATE_MULTIPLIER
         is MonthSum -> (month * 100L) * DATE_MULTIPLIER
         is YearSum -> (year * 100L * 100L) * DATE_MULTIPLIER
+        is PeriodDivider -> date.date * DATE_MULTIPLIER + if (time != null) time.time + 100 * 100 else 0
         is Totals -> Long.MIN_VALUE
         else -> null!!
     }
 
     fun priority() = when (this) {
-        is Record -> 5
-        is DaySum -> 4
-        is MonthSum -> 3
-        is YearSum -> 2
+        is Record -> 6
+        is DaySum -> 5
+        is MonthSum -> 4
+        is YearSum -> 3
+        is PeriodDivider -> 2
         is Totals -> 1
         else -> null!!
     }
@@ -56,6 +74,7 @@ interface RecordsListItem : IdentifiableLong {
         is DaySum -> day.date + 1 * ID_IN_LIST_MULTIPLIER
         is MonthSum -> month + 2 * ID_IN_LIST_MULTIPLIER
         is YearSum -> year + 3 * ID_IN_LIST_MULTIPLIER
+        is PeriodDivider -> interval.minutes() + 4 * ID_IN_LIST_MULTIPLIER
         is Totals -> id
         else -> null!!
     } as Comparable<Any>

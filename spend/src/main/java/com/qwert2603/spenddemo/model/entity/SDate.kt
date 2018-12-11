@@ -48,7 +48,4 @@ infix operator fun SDate.plus(days: Days) = this
         .also { it.add(Calendar.DAY_OF_MONTH, days.days) }
         .toSDate()
 
-
-data class Days(val days: Int)
-
-val Int.days: Days get() = Days(this)
+infix operator fun SDate.minus(days: Days) = this + -days

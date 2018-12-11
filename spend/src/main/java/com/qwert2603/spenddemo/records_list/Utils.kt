@@ -6,6 +6,7 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
+import java.util.*
 
 private val FAKE_RECORD = Record(
         uuid = "FAKE_RECORD",
@@ -21,7 +22,36 @@ private val FAKE_RECORD = Record(
         change = null
 )
 
-fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
+fun List<Record>.toRecordItemsList(
+        showInfo: ShowInfo,
+        longSumPeriodDays: Int,
+        shortSumPeriodMinutes: Int
+): List<RecordsListItem> {
+
+    val calendarL = GregorianCalendar.getInstance()
+    val calendarS = GregorianCalendar.getInstance().also { it.timeInMillis = calendarL.timeInMillis }
+
+    calendarL.add(Calendar.DAY_OF_MONTH, -longSumPeriodDays + 1)
+    calendarS.add(Calendar.MINUTE, -shortSumPeriodMinutes + 1)
+
+    val longSumBound = calendarL.toSDate()
+    val shortSumBound = calendarS.toSDate() to calendarS.toSTime()
+
+    val shortPeriodDivider = PeriodDivider(
+            date = shortSumBound.first,
+            time = shortSumBound.second,
+            interval = shortSumPeriodMinutes.minutes
+    )
+
+    val longPeriodDivider = PeriodDivider(
+            date = longSumBound,
+            time = null,
+            interval = longSumPeriodDays.days
+    )
+
+    LogUtils.d("toRecordItemsList shortPeriodDivider=$shortPeriodDivider")
+    LogUtils.d("toRecordItemsList longPeriodDivider=$longPeriodDivider")
+
     val currentTimeMillis = System.currentTimeMillis()
 
     var spendsCount = 0
@@ -34,6 +64,16 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
     var daySpendsCount = 0
     var dayProfitsCount = 0
 
+    var longSumDividerAdded = false
+    var shortSumDividerAdded = false
+
+    fun RecordsListItem.datePlusTime() = when (this) {
+        is Record -> date.date * 100L * 100L + (time?.time ?: 0)
+        is DaySum -> day.date * 100L * 100L
+        is PeriodDivider -> date.date * 100L * 100L + (time?.time ?: 0)
+        else -> null!!
+    }
+
     val result = ArrayList<RecordsListItem>(this.size * 2 + 1)
     (0..this.lastIndex + 1).forEach { index ->
         // FAKE_RECORD is needed to add DaySum for earliest real RecordResult in list.
@@ -42,19 +82,42 @@ fun List<Record>.toRecordItemsList(showInfo: ShowInfo): List<RecordsListItem> {
             if (this[index - 1].date != record.date
                     && (showInfo.showSpends && daySpendsCount > 0 || showInfo.showProfits && dayProfitsCount > 0)
             ) {
-                result.add(DaySum(
+                val daySum = DaySum(
                         day = this[index - 1].date,
                         showSpends = showInfo.showSpends,
                         showProfits = showInfo.showProfits,
                         spends = daySpendsSum,
                         profits = dayProfitsSum
-                ))
+                )
+
+                if (!shortSumDividerAdded && daySum.datePlusTime() < shortPeriodDivider.datePlusTime()) {
+                    shortSumDividerAdded = true
+                    if (index > 0) {
+                        result.add(shortPeriodDivider)
+                    }
+                }
+
+                result.add(daySum)
                 daySpendsSum = 0L
                 dayProfitsSum = 0L
                 daySpendsCount = 0
                 dayProfitsCount = 0
             }
         }
+
+        if (!shortSumDividerAdded && record.datePlusTime() < shortPeriodDivider.datePlusTime()) {
+            shortSumDividerAdded = true
+            if (index > 0) {
+                result.add(shortPeriodDivider)
+            }
+        }
+        if (!longSumDividerAdded && record.date < longSumBound) {
+            longSumDividerAdded = true
+            if (index > 0) {
+                result.add(longPeriodDivider)
+            }
+        }
+
         when {
             record == FAKE_RECORD -> {
                 // nth

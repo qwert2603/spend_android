@@ -68,10 +68,21 @@ class RecordsListPresenter @Inject constructor(
                     .skip(1) // skip initial.
                     .doOnNext { recordsListInteractor.showInfo = it }
                     .map { RecordsListPartialChange.ShowInfoChanged(it) },
-            showInfoChanges
-                    .switchMap { showInfo ->
+            Observable
+                    .combineLatest(
+                            showInfoChanges,
+                            longSumPeriodDaysChanges,
+                            shortSumPeriodMinutesChanges,
+                            makeTriple()
+                    )
+                    .switchMap { triple ->
+                        RxUtils.minuteChanges()
+                                .startWith(Any())
+                                .map { triple }
+                    }
+                    .switchMap { (showInfo, longSumPeriodDays, shortSumPeriodMinutes) ->
                         recordsListInteractor.getRecordsList()
-                                .map { it.toRecordItemsList(showInfo) }
+                                .map { it.toRecordItemsList(showInfo, longSumPeriodDays, shortSumPeriodMinutes) }
                     }
                     .startWith(initialState.records)
                     .buffer(2, 1)
@@ -81,17 +92,7 @@ class RecordsListPresenter @Inject constructor(
                                 newList = current,
                                 id = RecordsListItem::idInList,
                                 compareOrder = RecordsListItem.COMPARE_ORDER,
-                                isEqual = { r1: RecordsListItem, r2: RecordsListItem ->
-                                    if (r1 is Record && r2 is Record) {
-                                        /**
-                                         * difference in [Record.change] is consumed via
-                                         * [RecordsListViewState.recordsChanges] and [RecordsListAdapter.recordsChanges].
-                                         */
-                                        r1.equalIgnoreChange(r2)
-                                    } else {
-                                        r1 == r2
-                                    }
-                                }
+                                isEqual = RecordsListItem.IS_EQUAL
                         )
                         val recordsChanges = hashMapOf<String, RecordChange>()
                         current.forEach {
