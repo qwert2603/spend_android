@@ -67,10 +67,13 @@ fun List<Record>.toRecordItemsList(
     var longSumDividerAdded = false
     var shortSumDividerAdded = false
 
+    var atLeastOneRecordAdded = false
+
+    val dateMultiplier = 100L * 100L
     fun RecordsListItem.datePlusTime() = when (this) {
-        is Record -> date.date * 100L * 100L + (time?.time ?: 0)
-        is DaySum -> day.date * 100L * 100L
-        is PeriodDivider -> date.date * 100L * 100L + (time?.time ?: 0)
+        is Record -> date.date * dateMultiplier + (time?.time ?: 0)
+        is DaySum -> day.date * dateMultiplier
+        is PeriodDivider -> date.date * dateMultiplier + (time?.time ?: 0)
         else -> null!!
     }
 
@@ -92,7 +95,7 @@ fun List<Record>.toRecordItemsList(
 
                 if (!shortSumDividerAdded && daySum.datePlusTime() < shortPeriodDivider.datePlusTime()) {
                     shortSumDividerAdded = true
-                    if (index > 0) {
+                    if (atLeastOneRecordAdded) {
                         result.add(shortPeriodDivider)
                     }
                 }
@@ -107,13 +110,13 @@ fun List<Record>.toRecordItemsList(
 
         if (!shortSumDividerAdded && record.datePlusTime() < shortPeriodDivider.datePlusTime()) {
             shortSumDividerAdded = true
-            if (index > 0) {
+            if (atLeastOneRecordAdded) {
                 result.add(shortPeriodDivider)
             }
         }
         if (!longSumDividerAdded && record.date < longSumBound) {
             longSumDividerAdded = true
-            if (index > 0) {
+            if (atLeastOneRecordAdded) {
                 result.add(longPeriodDivider)
             }
         }
@@ -130,6 +133,7 @@ fun List<Record>.toRecordItemsList(
                 }
                 if (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted())) {
                     result.add(record)
+                    atLeastOneRecordAdded = true
                 }
                 if (!record.isDeleted() || showInfo.showDeleted()) {
                     ++daySpendsCount
@@ -143,6 +147,7 @@ fun List<Record>.toRecordItemsList(
                 }
                 if (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted())) {
                     result.add(record)
+                    atLeastOneRecordAdded = true
                 }
                 if (!record.isDeleted() || showInfo.showDeleted()) {
                     ++dayProfitsCount
