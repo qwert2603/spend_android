@@ -3,4 +3,5 @@
     <color name="icon_stroke">#00FFFF</color>
     <color name="colorPrimary">#5533dd</color>
     <color name="colorPrimaryDark">#4533bd</color>
+    <color name="colorPrimaryTransparent">#e05533dd</color>
 </resources>
