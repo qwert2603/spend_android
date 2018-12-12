@@ -2,16 +2,12 @@
     <string name="app_name">spend</string>
 
     <string name="drawer_records">records</string>
-    <string name="drawer_sums_by_days">&#931; by days</string>
-    <string name="drawer_sums_by_months">&#931; by months</string>
-    <string name="drawer_sums_by_years">&#931; by years</string>
+    <string name="drawer_sums">sums</string>
     <string name="drawer_about">about</string>
 
 
     <string name="fragment_title_records" translatable="false">@string/app_name</string>
-    <string name="fragment_title_sums_by_days">&#931; by days</string>
-    <string name="fragment_title_sums_by_months">&#931; by months</string>
-    <string name="fragment_title_sums_by_years">&#931; by years</string>
+    <string name="fragment_title_sums">sums</string>
     <string name="fragment_title_about">about</string>
 
 

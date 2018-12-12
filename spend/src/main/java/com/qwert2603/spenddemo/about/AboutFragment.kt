@@ -12,7 +12,6 @@ import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
-import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
@@ -39,7 +38,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            container?.inflate(R.layout.fragment_about)
+            inflater.inflate(R.layout.fragment_about, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         toolbar.setTitle(R.string.fragment_title_about)

@@ -3,15 +3,11 @@
 
 
     <string name="drawer_records">записи</string>
-    <string name="drawer_sums_by_days">&#931; по дням</string>
-    <string name="drawer_sums_by_months">&#931; по месяцам</string>
-    <string name="drawer_sums_by_years">&#931; по годам</string>
+    <string name="drawer_sums">суммы</string>
     <string name="drawer_about">о приложении</string>
 
 
-    <string name="fragment_title_sums_by_days">&#931; по дням</string>
-    <string name="fragment_title_sums_by_months">&#931; по месяцам</string>
-    <string name="fragment_title_sums_by_years">&#931; по годам</string>
+    <string name="fragment_title_sums">суммы</string>
     <string name="fragment_title_about">о приложении</string>
 
 
