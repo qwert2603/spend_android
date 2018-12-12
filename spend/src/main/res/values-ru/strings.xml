@@ -1,6 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ru">
     <string name="app_name">расходы</string>
 
+
+    <string name="drawer_records">записи</string>
+    <string name="drawer_sums_by_days">&#931; по дням</string>
+    <string name="drawer_sums_by_months">&#931; по месяцам</string>
+    <string name="drawer_sums_by_years">&#931; по годам</string>
+    <string name="drawer_about">о приложении</string>
+
+
+    <string name="fragment_title_sums_by_days">&#931; по дням</string>
+    <string name="fragment_title_sums_by_months">&#931; по месяцам</string>
+    <string name="fragment_title_sums_by_years">&#931; по годам</string>
+    <string name="fragment_title_about">о приложении</string>
+
+
     <string name="hint_category">категория</string>
     <string name="hint_kind">вид</string>
     <string name="hint_value">сумма</string>
@@ -23,7 +37,6 @@
     <string name="button_cancel" tools:ignore="ButtonCase">отмена</string>
 
     <string name="list_loaded_completely">список загружен полностью</string>
-    <string name="menu_item_send_records">отправить списки</string>
     <string name="send_title">отправить списки</string>
     <string name="about_text">о приложении</string>
 

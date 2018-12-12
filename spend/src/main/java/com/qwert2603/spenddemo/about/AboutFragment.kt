@@ -42,7 +42,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
             container?.inflate(R.layout.fragment_about)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        toolbar.setTitle(R.string.about_text)
+        toolbar.setTitle(R.string.fragment_title_about)
 
         @Suppress("DEPRECATION")
         about_TextView.text = Html.fromHtml(getString(R.string.app_info_text_format,

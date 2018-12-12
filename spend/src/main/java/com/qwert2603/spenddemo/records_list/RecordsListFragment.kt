@@ -268,7 +268,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
 
         renderIfChanged({ syncState }) {
-            toolbar.title = getString(R.string.app_name) + when (it) {
+            toolbar.title = getString(R.string.fragment_title_records) + when (it) {
                 SyncState.SYNCING -> ".."
                 SyncState.SYNCED -> ""
                 SyncState.ERROR -> " X"

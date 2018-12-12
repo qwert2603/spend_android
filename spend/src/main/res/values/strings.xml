@@ -1,6 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">spend</string>
 
+    <string name="drawer_records">records</string>
+    <string name="drawer_sums_by_days">&#931; by days</string>
+    <string name="drawer_sums_by_months">&#931; by months</string>
+    <string name="drawer_sums_by_years">&#931; by years</string>
+    <string name="drawer_about">about</string>
+
+
+    <string name="fragment_title_records" translatable="false">@string/app_name</string>
+    <string name="fragment_title_sums_by_days">&#931; by days</string>
+    <string name="fragment_title_sums_by_months">&#931; by months</string>
+    <string name="fragment_title_sums_by_years">&#931; by years</string>
+    <string name="fragment_title_about">about</string>
+
+
     <string name="hint_category">category</string>
     <string name="hint_kind">kind</string>
     <string name="hint_value">value</string>
@@ -23,7 +37,6 @@
     <string name="button_cancel" tools:ignore="ButtonCase">cancel</string>
 
     <string name="list_loaded_completely">list loaded completely</string>
-    <string name="menu_item_send_records">send records</string>
     <string name="send_title">send dump</string>
     <string name="about_text">about</string>
 

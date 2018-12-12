@@ -159,4 +159,7 @@ abstract class RecordsDao {
                         records = getDumpRecords()
                 )
             }
+
+    @Query("SELECT date, sum(value) FROM RecordTable GROUP BY date ORDER BY date DESC")
+    abstract fun getSumsByDays(): Flowable<List<Any>>//todo
 }
