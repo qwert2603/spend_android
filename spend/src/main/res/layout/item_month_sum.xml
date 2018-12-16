@@ -32,13 +32,24 @@
         android:id="@+id/spendsSum_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="12dp"
         android:gravity="end"
         android:minWidth="100sp"
         android:textColor="@color/spend"
         android:textSize="18sp"
         android:textStyle="bold"
         tools:text="75.634" />
+
+    <TextView
+        android:id="@+id/balance_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:textColor="@color/balance_negative"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="175" />
 
 </LinearLayout>

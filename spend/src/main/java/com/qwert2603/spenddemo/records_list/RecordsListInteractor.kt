@@ -39,11 +39,11 @@ class RecordsListInteractor @Inject constructor(
 
     var showInfo: ShowInfo
         get() = ShowInfo(
-                userSettingsRepo.showSpends,
-                userSettingsRepo.showProfits,
-                userSettingsRepo.showSums,
-                userSettingsRepo.showChangeKinds,
-                userSettingsRepo.showTimes
+                showSpends = userSettingsRepo.showSpends,
+                showProfits = userSettingsRepo.showProfits,
+                showSums = userSettingsRepo.showSums,
+                showChangeKinds = userSettingsRepo.showChangeKinds,
+                showTimes = userSettingsRepo.showTimes
         )
         set(value) {
             userSettingsRepo.showSpends = value.showSpends

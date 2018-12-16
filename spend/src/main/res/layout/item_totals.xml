@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="6dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="6dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,25 +19,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        tools:text="12 profits. sum is 1918"
-        android:textColor="@color/profit" />
+        android:textColor="@color/profit"
+        tools:text="12 profits. sum is 1918" />
 
     <TextView
         android:id="@+id/spends_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        tools:text="25 spends. sum is 1714"
         android:textColor="@color/spend"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:text="25 spends. sum is 1714" />
 
     <TextView
         android:id="@+id/total_TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:textSize="14sp"
         tools:text="total balance: 204"
-        android:textColor="@color/anth"
-        android:textSize="14sp" />
+        tools:textColor="@color/balance_negative" />
 
 </LinearLayout>

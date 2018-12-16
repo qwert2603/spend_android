@@ -4,9 +4,11 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 private val FAKE_RECORD = Record(
         uuid = "FAKE_RECORD",
@@ -161,8 +163,7 @@ fun List<Record>.toRecordItemsList(
             spendsCount = spendsCount,
             spendsSum = spendsSum,
             profitsCount = profitsCount,
-            profitsSum = profitsSum,
-            totalBalance = profitsSum - spendsSum
+            profitsSum = profitsSum
     ))
 
     LogUtils.d("timing_ List<Record>.toRecordItemsList() ${System.currentTimeMillis() - currentTimeMillis} ms")
@@ -228,4 +229,17 @@ fun sumsInfoChanges(
                                 SumsInfo(longSum.t, shortSum.t, changesCount.t)
                             }
                     )
+        }
+
+fun Observable<SyncState>.modifyForUi(): Observable<SyncState> = this
+        .distinctUntilChanged()
+        .switchMapSingle { syncState ->
+            Single.just(syncState)
+                    .let {
+                        when (syncState) {
+                            SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
+                            SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
+                            SyncState.ERROR -> it
+                        }
+                    }
         }

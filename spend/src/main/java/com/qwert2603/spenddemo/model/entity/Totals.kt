@@ -6,8 +6,9 @@ data class Totals(
         val spendsCount: Int,
         val spendsSum: Long,
         val profitsCount: Int,
-        val profitsSum: Long,
-        val totalBalance: Long
+        val profitsSum: Long
 ) : RecordsListItem {
     override val id = 1918L
+
+    val balance = profitsSum - spendsSum
 }

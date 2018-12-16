@@ -49,3 +49,6 @@ infix operator fun SDate.plus(days: Days) = this
         .toSDate()
 
 infix operator fun SDate.minus(days: Days) = this + -days
+
+fun SDate.isSameMonth(other: SDate) = this.date / 100 == other.date / 100
+fun SDate.isSameYear(other: SDate) = this.date / (100 * 100) == other.date / (100 * 100)

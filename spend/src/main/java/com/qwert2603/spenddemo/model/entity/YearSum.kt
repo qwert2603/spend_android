@@ -8,4 +8,6 @@ data class YearSum(
         val profits: Long
 ) : RecordsListItem {
     override val id = year.toLong()
+
+    val balance = profits - spends
 }

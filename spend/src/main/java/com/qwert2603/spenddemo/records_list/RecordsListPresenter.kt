@@ -8,7 +8,6 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -28,7 +27,7 @@ class RecordsListPresenter @Inject constructor(
             syncState = SyncState.SYNCING
     )
 
-    sealed class ShowInfoChange {
+    private sealed class ShowInfoChange {
         data class Spends(val show: Boolean) : ShowInfoChange()
         data class Profits(val show: Boolean) : ShowInfoChange()
         data class Sums(val show: Boolean) : ShowInfoChange()
@@ -122,17 +121,7 @@ class RecordsListPresenter @Inject constructor(
             ).map { RecordsListPartialChange.SumsInfoChanged(it) },
             recordsListInteractor
                     .getSyncState()
-                    .distinctUntilChanged()
-                    .switchMapSingle { syncState ->
-                        Single.just(syncState)
-                                .let {
-                                    when (syncState) {
-                                        SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
-                                        SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
-                                        SyncState.ERROR -> it
-                                    }
-                                }
-                    }
+                    .modifyForUi()
                     .map { RecordsListPartialChange.SyncStateChanged(it) }
     ))
 

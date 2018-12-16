@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.records_list.vh
 
 import android.view.ViewGroup
+import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.model.entity.Totals
@@ -24,6 +25,13 @@ class TotalsViewHolder(parent: ViewGroup) : BaseViewHolder<Totals>(parent, R.lay
                 resources.getQuantityString(R.plurals.spends, t.spendsCount, t.spendsCount),
                 t.spendsSum.toPointedString()
         )
-        total_TextView.text = resources.getString(R.string.text_total_sum_format, t.totalBalance.toPointedString())
+        total_TextView.text = resources.getString(R.string.text_total_sum_format, t.balance.toPointedString())
+        total_TextView.setTextColor(resources.color(
+                if (t.balance >= 0) {
+                    R.color.balance_positive
+                } else {
+                    R.color.balance_negative
+                }
+        ))
     }
 }

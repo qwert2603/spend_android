@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SpendDemo.iml" filepath="$PROJECT_DIR$/SpendDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/spend/spend.iml" filepath="$PROJECT_DIR$/spend/spend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spend_android.iml" filepath="$PROJECT_DIR$/spend_android.iml" />
     </modules>
   </component>
 </project>

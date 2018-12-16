@@ -8,4 +8,6 @@ data class DaySum(
         val profits: Long
 ) : RecordsListItem {
     override val id = day.date.toLong()
+
+    val balance = profits - spends
 }

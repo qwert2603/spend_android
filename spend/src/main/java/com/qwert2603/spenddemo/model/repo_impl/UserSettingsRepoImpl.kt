@@ -25,5 +25,8 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
     override var longSumPeriodDays by PrefsInt(prefs, "longSumPeriodDays", 30)
     override var shortSumPeriodMinutes by PrefsInt(prefs, "shortSumPeriodMinutes", 5)
 
-    override val fixedTime: Pair<SDate, STime?>? by PreferenceUtils.createPrefsObjectNullable(prefs,"fixedTime", Gson())
+    override var showDaySums by PrefsBoolean(prefs, "showDaySums", true)
+    override var showMonthSums by PrefsBoolean(prefs, "showMonthSums", true)
+    override var showYearSums by PrefsBoolean(prefs, "showYearSums", true)
+    override var showBalancesInSums by PrefsBoolean(prefs, "showBalancesInSums", false)
 }

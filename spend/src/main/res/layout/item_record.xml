@@ -17,7 +17,7 @@
         android:layout_marginEnd="4dp"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_local"
-        tools:tint="@color/local_change_edit" />
+        tools:tint="@color/local_change_update" />
 
     <TextView
         android:id="@+id/date_TextView"

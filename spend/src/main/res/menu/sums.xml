@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/show_sums_by_day"
+        android:checkable="true"
+        android:title="@string/menu_item_show_sums_by_day" />
+
+    <item
+        android:id="@+id/show_sums_by_month"
+        android:checkable="true"
+        android:title="@string/menu_item_show_sums_by_month" />
+
+    <item
+        android:id="@+id/show_sums_by_year"
+        android:checkable="true"
+        android:title="@string/menu_item_show_sums_by_year" />
+
+    <item
+        android:id="@+id/show_balances"
+        android:checkable="true"
+        android:title="@string/menu_item_show_balances" />
+
+    <item
+        android:id="@+id/clear_all"
+        android:title="@string/menu_item_clear_all" />
+
+</menu>

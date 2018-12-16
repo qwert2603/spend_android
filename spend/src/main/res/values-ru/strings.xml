@@ -60,6 +60,9 @@
     <string name="menu_item_show_spends">расходы</string>
     <string name="menu_item_show_profits">доходы</string>
     <string name="menu_item_show_sums_by_day">&#931; по дням</string>
+    <string name="menu_item_show_sums_by_month">&#931; по месяцам</string>
+    <string name="menu_item_show_sums_by_year">&#931; по годам</string>
+    <string name="menu_item_show_balances">балансы</string>
     <string name="menu_item_new_profit">новый доход</string>
     <string name="menu_item_show_times">время</string>
 

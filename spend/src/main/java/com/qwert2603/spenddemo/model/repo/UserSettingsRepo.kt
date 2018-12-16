@@ -1,8 +1,5 @@
 package com.qwert2603.spenddemo.model.repo
 
-import com.qwert2603.spenddemo.model.entity.SDate
-import com.qwert2603.spenddemo.model.entity.STime
-
 interface UserSettingsRepo {
     var showSpends: Boolean
     var showProfits: Boolean
@@ -13,5 +10,8 @@ interface UserSettingsRepo {
     var longSumPeriodDays: Int
     var shortSumPeriodMinutes: Int
 
-    val fixedTime: Pair<SDate, STime?>?
+    var showDaySums: Boolean
+    var showMonthSums: Boolean
+    var showYearSums: Boolean
+    var showBalancesInSums: Boolean
 }

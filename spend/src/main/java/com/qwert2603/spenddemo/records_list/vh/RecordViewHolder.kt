@@ -57,7 +57,7 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         if (t.change != null) {
             local_ImageView.setColorFilter(resources.color(when (t.change.isDelete) {
                 true -> R.color.local_change_delete
-                false -> R.color.local_change_edit
+                false -> R.color.local_change_update
             }))
         } else {
             local_ImageView.clearColorFilter()

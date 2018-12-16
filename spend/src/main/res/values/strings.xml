@@ -62,6 +62,9 @@
     <string name="menu_item_show_spends">spends</string>
     <string name="menu_item_show_profits">profits</string>
     <string name="menu_item_show_sums_by_day">&#931; by days</string>
+    <string name="menu_item_show_sums_by_month">&#931; by months</string>
+    <string name="menu_item_show_sums_by_year">&#931; by years</string>
+    <string name="menu_item_show_balances">balances</string>
     <string name="menu_item_new_profit">new profit</string>
     <string name="menu_item_show_times">times</string>
     <string name="menu_item_short_sum_format" formatted="true">short &#931;: %s</string>
