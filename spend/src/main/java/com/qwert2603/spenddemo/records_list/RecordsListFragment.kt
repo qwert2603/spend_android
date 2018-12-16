@@ -18,7 +18,10 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.model.entity.DaySum
+import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.Totals
+import com.qwert2603.spenddemo.model.entity.toFormattedString
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.save_record.SaveRecordDialogFragmentBuilder
