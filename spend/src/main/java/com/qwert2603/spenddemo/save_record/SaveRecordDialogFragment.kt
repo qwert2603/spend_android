@@ -240,12 +240,12 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                     .newChooseRecordKindDialogFragment(ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid))
                     .makeShow(REQUEST_CODE_KIND)
             is SaveRecordViewAction.ShowCategorySuggestions -> {
-                dialogView.category_EditText.setAdapter(CategorySuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search))
+                dialogView.category_EditText.setAdapter(CategorySuggestionAdapter(requireContext(), va.suggestions, va.search))
                 dialogView.category_EditText.showDropDown()
             }
             SaveRecordViewAction.HideCategorySuggestions -> dialogView.category_EditText.dismissDropDown()
             is SaveRecordViewAction.ShowKindSuggestions -> {
-                dialogView.kind_EditText.setAdapter(KindSuggestionAdapter(requireContext(), va.suggestions.reversed(), va.search, va.withCategory))
+                dialogView.kind_EditText.setAdapter(KindSuggestionAdapter(requireContext(), va.suggestions, va.search, va.withCategory))
                 dialogView.kind_EditText.showDropDown()
             }
             SaveRecordViewAction.HideKindSuggestions -> dialogView.kind_EditText.dismissDropDown()

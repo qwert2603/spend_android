@@ -35,7 +35,7 @@ fun SDate.toFormattedString(resources: Resources, stringMonth: Boolean = false):
     isYesterday() -> resources.getString(R.string.yesterday_text)
     isTomorrow() -> resources.getString(R.string.tomorrow_text)
     stringMonth -> String.format(
-            "%02d %s %04d",
+            "%d %s %04d",
             date % 100,
             resources.getStringArray(R.array.month_names_in_date)[date / 100 % 100 - 1],
             date / (100 * 100)
