@@ -100,11 +100,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
         }
 
         renderIfChanged({ syncState }) {
-            toolbar.title = getString(R.string.fragment_title_sums) + when (it) {
-                SyncState.SYNCING -> ".."
-                SyncState.SYNCED -> ""
-                SyncState.ERROR -> " X"
-            }
+            toolbar.title = getString(R.string.fragment_title_sums) + it.indicator
         }
     }
 
