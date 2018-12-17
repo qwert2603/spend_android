@@ -98,8 +98,7 @@ class RecordsRepoImpl @Inject constructor(
                             .filter { record ->
                                 record.recordCategory.recordTypeId == recordTypeId
                                         && !record.isDeleted()
-                                        && record.time != null
-                                        && (record.date > startDate || (record.date == startDate && record.time >= startTime))
+                                        && (record.date > startDate || (record.date == startDate && (record.time ?: STime(0)) >= startTime))
                             }
                             .sumByLong { it.value.toLong() }
                 }
