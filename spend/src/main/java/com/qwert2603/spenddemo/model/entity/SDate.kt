@@ -6,10 +6,11 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.utils.day
 import com.qwert2603.spenddemo.utils.month
 import com.qwert2603.spenddemo.utils.year
+import java.io.Serializable
 import java.util.*
 
 /** format is "yyyyMMdd" */
-data class SDate(val date: Int) : Comparable<SDate> {
+data class SDate(val date: Int) : Comparable<SDate>, Serializable {
     override fun toString() = String.format("%04d-%02d-%02d", date / (100 * 100), date / 100 % 100, date % 100)
 
     fun toDateCalendar() = GregorianCalendar(

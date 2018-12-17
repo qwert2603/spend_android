@@ -18,6 +18,7 @@ import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.records_list.RecordsListKey
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_navigation.view.*
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     }
 
     private val rootNavigationItems = listOf(
-            NavigationItem(R.drawable.icon, R.string.drawer_records, SpendScreen.RecordsList),
+            NavigationItem(R.drawable.icon, R.string.drawer_records, SpendScreen.RecordsList(RecordsListKey.Now)),
             NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, SpendScreen.Sums),
             NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, SpendScreen.About)
     )
@@ -58,12 +59,14 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         super.onCreate(savedInstanceState)
         DIHolder.diManager.viewsComponent.inject(this)
 
-        LogUtils.d("MainActivity onCreate intent.action=${intent.action}")
+        if (savedInstanceState == null) {
+            LogUtils.d("MainActivity onCreate intent.action=${intent.action}")
+        }
 
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(SpendScreen.RecordsList)
+            router.newRootScreen(SpendScreen.RecordsList(RecordsListKey.Now))
         }
 
         headerNavigation = navigation_view.inflate(R.layout.header_navigation)

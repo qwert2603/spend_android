@@ -8,13 +8,17 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.env.E
+import com.qwert2603.spenddemo.navigation.SpendScreen
 import com.qwert2603.spenddemo.records_list.RecordsListAdapter
+import com.qwert2603.spenddemo.records_list.RecordsListKey
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.utils.ConditionDividerDecoration
 import com.qwert2603.spenddemo.utils.MenuHolder
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_sums.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import ru.terrakok.cicerone.Router
+import javax.inject.Inject
 
 class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), SumsView {
 
@@ -24,11 +28,15 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
             .build()
             .createPresenter()
 
+    @Inject
+    lateinit var router: Router
+
     private val adapter: RecordsListAdapter get() = sums_RecyclerView.adapter as RecordsListAdapter
 
     private val menuHolder = MenuHolder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
@@ -43,6 +51,13 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
         sums_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
             vh.adapterPosition > 0 && rv.findViewHolderForAdapterPosition(vh.adapterPosition - 1) is DaySumViewHolder
         })
+
+        adapter.itemClicks
+                .subscribe {
+                    val recordsListKey = RecordsListKey.Date(it.date())
+                    router.navigateTo(SpendScreen.RecordsList(recordsListKey))
+                }
+                .disposeOnDestroyView()
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -70,9 +85,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
 
     override fun render(vs: SumsViewState) {
         LogUtils.d("SumsFragment render")
-        LogUtils.withErrorLoggingOnly {
-            super.render(vs)
-        }
+        LogUtils.withErrorLoggingOnly { super.render(vs) }
 
         renderIfChanged({ sumsShowInfo.showBalances }) { adapter.showBalancesInSums = it }
 

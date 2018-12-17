@@ -10,7 +10,7 @@ data class RecordsListViewState(
         val longSumPeriodDays: Int,
         val shortSumPeriodMinutes: Int,
         val sumsInfo: SumsInfo,
-        val records: List<RecordsListItem>,
+        val records: List<RecordsListItem>?,
         val diff: FastDiffUtils.FastDiffResult,
         val recordsChanges: HashMap<String, RecordChange>, // key is Record::uuid
         val syncState: SyncState

@@ -4,10 +4,11 @@ import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.hour
 import com.qwert2603.spenddemo.utils.millisecond
 import com.qwert2603.spenddemo.utils.minute
+import java.io.Serializable
 import java.util.*
 
 /** format is "HHmm" */
-data class STime(val time: Int) : Comparable<STime> {
+data class STime(val time: Int) : Comparable<STime>, Serializable {
     override fun toString() = String.format("%d:%02d", time / 100, time % 100)
 
     fun toTimeCalendar() = GregorianCalendar(

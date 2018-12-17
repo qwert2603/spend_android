@@ -17,7 +17,7 @@ class RecordsListPresenter @Inject constructor(
 ) : BasePresenter<RecordsListView, RecordsListViewState>(uiSchedulerProvider) {
 
     override val initialState = RecordsListViewState(
-            records = emptyList(),
+            records = null,
             diff = FastDiffUtils.FastDiffResult.EMPTY,
             showInfo = recordsListInteractor.showInfo,
             longSumPeriodDays = recordsListInteractor.longSumPeriodDays,
@@ -83,7 +83,7 @@ class RecordsListPresenter @Inject constructor(
                         recordsListInteractor.getRecordsList()
                                 .map { it.toRecordItemsList(showInfo, longSumPeriodDays, shortSumPeriodMinutes) }
                     }
-                    .startWith(initialState.records)
+                    .startWith(emptyList<RecordsListItem>())
                     .buffer(2, 1)
                     .map { (prev, current) ->
                         val diffResult = FastDiffUtils.fastCalculateDiff(

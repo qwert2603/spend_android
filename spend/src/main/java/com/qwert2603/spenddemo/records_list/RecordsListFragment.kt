@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
+import com.hannesdorfmann.fragmentargs.annotation.Arg
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -34,19 +36,25 @@ import kotlinx.android.synthetic.main.fragment_records_list.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import java.util.concurrent.TimeUnit
 
+@FragmentWithArgs
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
 
     companion object {
         private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
         private const val REQUEST_CHOOSE_SHORT_SUM_PERIOD = 7
+
+        private var layoutAnimationShown = false
     }
+
+    @Arg
+    lateinit var key: RecordsListKey
 
     override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
             .recordsListPresenterCreatorComponent()
             .build()
             .createRecordsListPresenter()
 
-    private var layoutAnimationShown by BundleBoolean("layoutAnimationShown", { arguments!! }, false)
+    private var initialScrollDone by BundleBoolean("initialScrollDone", { arguments!! }, false)
 
     private val adapter: RecordsListAdapter get() = records_RecyclerView.adapter as RecordsListAdapter
     private val itemAnimator: RecordsListAnimator get() = records_RecyclerView.itemAnimator as RecordsListAnimator
@@ -96,7 +104,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                     val lastVisiblePosition = (records_RecyclerView.layoutManager as LinearLayoutManager)
                                             .findLastVisibleItemPosition()
                                     val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
-                                            && currentViewState.records[lastVisiblePosition] is Totals
+                                            && currentViewState.records?.get(lastVisiblePosition) is Totals
                                     return@map !lastIsTotal
                                 },
                         Boolean::and.toRxBiFunction()
@@ -104,7 +112,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 .subscribe { showFromScroll ->
                     val showFloatingDate = currentViewState.showInfo.showFloatingDate()
                     val records = currentViewState.records
-                    floatingDate_TextView.setVisible(showFromScroll && showFloatingDate && records.any { it is DaySum })
+                    floatingDate_TextView.setVisible(showFromScroll && showFloatingDate && records?.any { it is DaySum } == true)
                 }
                 .disposeOnDestroyView()
         RxRecyclerView.scrollEvents(records_RecyclerView)
@@ -113,13 +121,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val floatingCenter = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
                     val viewHolder = records_RecyclerView.findViewHolderForAdapterPosition(i)
-                    if (viewHolder == null) {
+                    val records = currentViewState.records
+                    if (viewHolder == null || records == null) {
                         floatingDate_TextView.text = ""
                         return@subscribe
                     }
                     val vhTop = viewHolder.itemView.getGlobalVisibleRectRightNow().top
                     if (i > 0 && vhTop < floatingCenter) --i
-                    val records = currentViewState.records
                     if (i in 1..records.lastIndex && records[i] is Totals) --i
                     i = records.indexOfFirst(startIndex = i) { it is DaySum }
                     if (i >= 0) {
@@ -188,9 +196,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
+            if (records == null) return@renderIfChangedWithFirstRendering
             adapter.recordsChanges = vs.recordsChanges
             adapter.list = records
-            if (!layoutAnimationShown) {
+            if (key == RecordsListKey.Now && !layoutAnimationShown) {
                 layoutAnimationShown = true
                 records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
@@ -205,6 +214,24 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 if (position >= 0) {
                     records_RecyclerView.scrollToPosition(position)
                 }
+            }
+            if (!initialScrollDone) {
+                initialScrollDone = true
+                val key = key
+                LogUtils.d("RecordsListFragment key=$key")
+                @Suppress("IMPLICIT_CAST_TO_ANY")
+                when (key) {
+                    RecordsListKey.Now -> Unit
+                    is RecordsListKey.Date -> {
+                        records
+                                .indexOfFirst { it.date() <= key.date }
+                                .let { maxOf(it - 5, 0) }
+                                .also {
+                                    LogUtils.d("RecordsListFragment records_RecyclerView.scrollToPosition($it)")
+                                    records_RecyclerView.scrollToPosition(it)
+                                }
+                    }
+                }.also {}
             }
         }
 

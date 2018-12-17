@@ -54,7 +54,7 @@ interface RecordsListItem : IdentifiableLong {
         is MonthSum -> (month * 100L) * DATE_MULTIPLIER
         is YearSum -> (year * 100L * 100L) * DATE_MULTIPLIER
         is PeriodDivider -> date.date * DATE_MULTIPLIER + if (time != null) time.time + 100 * 100 else 0
-        is Totals -> Long.MIN_VALUE
+        is Totals -> 0
         else -> null!!
     }
 
@@ -78,4 +78,6 @@ interface RecordsListItem : IdentifiableLong {
         is Totals -> id
         else -> null!!
     } as Comparable<Any>
+
+    fun date(): SDate = (dateTime() / DATE_MULTIPLIER).toInt().toSDate()
 }
