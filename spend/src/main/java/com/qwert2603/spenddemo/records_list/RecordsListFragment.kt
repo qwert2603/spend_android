@@ -44,6 +44,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     companion object {
         private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
         private const val REQUEST_CHOOSE_SHORT_SUM_PERIOD = 7
+        private const val REQUEST_ASK_FOR_RECORD_ACTIONS = 8
 
         private var layoutAnimationShown = false
     }
@@ -62,6 +63,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val itemAnimator: RecordsListAnimator get() = records_RecyclerView.itemAnimator as RecordsListAnimator
 
     private val menuHolder = MenuHolder()
+
+    private val editRecordClicks = PublishSubject.create<String>()
+    private val deleteRecordClicks = PublishSubject.create<String>()
 
     private val longSumPeriodSelected = PublishSubject.create<Days>()
     private val shortSumPeriodSelected = PublishSubject.create<Minutes>()
@@ -159,6 +163,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 REQUEST_CHOOSE_SHORT_SUM_PERIOD -> data.getSerializableExtra(ChooseShortSumPeriodDialog.MINUTES_KEY)
                         .let { it as? Minutes }
                         ?.also { shortSumPeriodSelected.onNext(it) }
+                REQUEST_ASK_FOR_RECORD_ACTIONS -> data.getSerializableExtra(RecordActionsDialogFragment.RESULT_KEY)
+                        .let { it as? RecordActionsDialogFragment.Result }
+                        ?.also {
+                            when (it.action) {
+                                RecordActionsDialogFragment.Result.Action.EDIT -> editRecordClicks
+                                RecordActionsDialogFragment.Result.Action.DELETE -> deleteRecordClicks
+                            }.onNext(it.recordUuid)
+                        }
             }
         }
     }
@@ -182,6 +194,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun recordClicks(): Observable<Record> = adapter.itemClicks.mapNotNull { it as? Record }
     override fun recordLongClicks(): Observable<Record> = adapter.itemLongClicks.mapNotNull { it as? Record }
+    override fun editRecordClicks(): Observable<String> = editRecordClicks
+    override fun deleteRecordClicks(): Observable<String> = deleteRecordClicks
     override fun createProfitClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.new_profit)
     override fun chooseLongSumPeriodClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.long_sum)
     override fun chooseShortSumPeriodClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.short_sum)
@@ -334,6 +348,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun executeAction(va: ViewAction) {
         if (va !is RecordsListViewAction) null!!
         when (va) {
+            is RecordsListViewAction.AskForRecordActions -> RecordActionsDialogFragmentBuilder
+                    .newRecordActionsDialogFragment(va.recordUuid)
+                    .makeShow(REQUEST_ASK_FOR_RECORD_ACTIONS)
             is RecordsListViewAction.AskToCreateRecord -> SaveRecordDialogFragmentBuilder
                     .newSaveRecordDialogFragment(SaveRecordKey.NewRecord(va.recordTypeId))
                     .makeShow()

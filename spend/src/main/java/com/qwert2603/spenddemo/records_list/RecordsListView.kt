@@ -10,6 +10,9 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun recordClicks(): Observable<Record>
     fun recordLongClicks(): Observable<Record>
 
+    fun editRecordClicks(): Observable<String>
+    fun deleteRecordClicks(): Observable<String>
+
     fun createProfitClicks(): Observable<Any>
 
     fun chooseLongSumPeriodClicks(): Observable<Any>

@@ -5,6 +5,7 @@ import com.qwert2603.spenddemo.model.entity.Days
 import com.qwert2603.spenddemo.model.entity.Minutes
 
 sealed class RecordsListViewAction : ViewAction {
+    data class AskForRecordActions(val recordUuid: String) : RecordsListViewAction()
     data class AskToCreateRecord(val recordTypeId: Long) : RecordsListViewAction()
     data class AskToEditRecord(val recordUuid: String) : RecordsListViewAction()
     data class AskToDeleteRecord(val recordUuid: String) : RecordsListViewAction()

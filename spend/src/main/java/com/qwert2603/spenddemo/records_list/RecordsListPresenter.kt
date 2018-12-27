@@ -99,7 +99,12 @@ class RecordsListPresenter @Inject constructor(
             intent { it.recordClicks() }
                     .filter { !it.isDeleted() }
                     .withLatestFrom(viewStateObservable, makePair())
-                    .filter { (_, vs) -> vs.selectMode }
+                    .filter { (record, vs) ->
+                        if (!vs.selectMode) {
+                            viewActions.onNext(RecordsListViewAction.AskForRecordActions(record.uuid))
+                        }
+                        vs.selectMode
+                    }
                     .map { (record, _) -> RecordsListPartialChange.ToggleRecordSelection(record.uuid) },
             intent { it.cancelSelection() }
                     .map { RecordsListPartialChange.ClearSelection }
@@ -175,13 +180,13 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseShortSumPeriod(it.shortSumPeriod)) }
                 .subscribeToView()
 
-//    todo    intent { it.recordClicks() }
-//                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it.uuid)) }
-//                .subscribeToView()
-//
-//    todo    intent { it.recordLongClicks() }
-//                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.uuid)) }
-//                .subscribeToView()
+        intent { it.editRecordClicks() }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it)) }
+                .subscribeToView()
+
+        intent { it.deleteRecordClicks() }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it)) }
+                .subscribeToView()
 
         intent { it.addStubRecordsClicks() }
                 .flatMapSingle {
