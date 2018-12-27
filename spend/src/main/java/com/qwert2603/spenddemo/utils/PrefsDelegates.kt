@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken
 import com.qwert2603.spenddemo.model.rest.entity.LastChangeInfo
 import com.qwert2603.spenddemo.model.sync_processor.IdCounter
 import com.qwert2603.spenddemo.model.sync_processor.LastChangeStorage
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -90,6 +92,19 @@ class PrefsLastChangeStorage(prefs: SharedPreferences, gson: Gson) : LastChangeS
     override var lastChangeInfo: LastChangeInfo? by PreferenceUtils.createPrefsObjectNullable(prefs, "lastChangeInfo", gson)
 }
 
+abstract class ObservableField<T> {
+    protected val lock = Any()
+
+    abstract var field: T
+    abstract val changes: Observable<T>
+
+    fun updateField(updater: (T) -> T) {
+        synchronized(lock) {
+            field = updater(field)
+        }
+    }
+}
+
 object PreferenceUtils {
 
     inline fun <reified T : Any> createPrefsObjectNullable(
@@ -112,6 +127,38 @@ object PreferenceUtils {
                     remove(key)
                 }
             }
+        }
+    }
+
+    inline fun <reified T : Any> createPrefsObjectObservable(
+            prefs: SharedPreferences,
+            key: String,
+            gson: Gson,
+            defaultValue: T
+    ): ObservableField<T> {
+        val changes = BehaviorSubject.create<T>()
+
+        return object : ObservableField<T>() {
+            init {
+                changes.onNext(field)
+            }
+
+            override var field: T
+                get() =
+                    if (key in prefs) {
+                        gson.fromJson(prefs.getString(key, ""), object : TypeToken<T>() {}.type)
+                    } else {
+                        defaultValue
+                    }
+                set(value) {
+                    synchronized(lock) {
+                        prefs.makeEdit { putString(key, gson.toJson(value)) }
+                        changes.onNext(value)
+                    }
+                }
+
+            override val changes: Observable<T> = changes.hide()
+
         }
     }
 

@@ -19,59 +19,28 @@ class RecordsListPresenter @Inject constructor(
     override val initialState = RecordsListViewState(
             records = null,
             diff = FastDiffUtils.FastDiffResult.EMPTY,
-            showInfo = recordsListInteractor.showInfo,
-            longSumPeriodDays = recordsListInteractor.longSumPeriodDays,
-            shortSumPeriodMinutes = recordsListInteractor.shortSumPeriodMinutes,
+            showInfo = recordsListInteractor.showInfo.field,
+            longSumPeriod = recordsListInteractor.longSumPeriod.field,
+            shortSumPeriod = recordsListInteractor.shortSumPeriod.field,
             sumsInfo = SumsInfo.EMPTY,
             recordsChanges = hashMapOf(),
             syncState = SyncState.SYNCING
     )
 
-    private sealed class ShowInfoChange {
-        data class Spends(val show: Boolean) : ShowInfoChange()
-        data class Profits(val show: Boolean) : ShowInfoChange()
-        data class Sums(val show: Boolean) : ShowInfoChange()
-        data class ChangeKinds(val show: Boolean) : ShowInfoChange()
-        data class Times(val show: Boolean) : ShowInfoChange()
-    }
+    private val showInfoChanges: Observable<ShowInfo> = recordsListInteractor.showInfo.changes.shareAfterViewSubscribed()
 
-    private val showInfoChanges: Observable<ShowInfo> = Observable
-            .merge(listOf(
-                    intent { it.showSpendsChanges() }.map { ShowInfoChange.Spends(it) },
-                    intent { it.showProfitsChanges() }.map { ShowInfoChange.Profits(it) },
-                    intent { it.showSumsChanges() }.map { ShowInfoChange.Sums(it) },
-                    intent { it.showChangeKindsChanges() }.map { ShowInfoChange.ChangeKinds(it) },
-                    intent { it.showTimesChanges() }.map { ShowInfoChange.Times(it) }
-            ))
-            .scan(initialState.showInfo) { info: ShowInfo, ch: ShowInfoChange ->
-                return@scan when (ch) {
-                    is ShowInfoChange.Spends -> info.copy(showSpends = ch.show)
-                    is ShowInfoChange.Profits -> info.copy(showProfits = ch.show)
-                    is ShowInfoChange.Sums -> info.copy(showSums = ch.show)
-                    is ShowInfoChange.ChangeKinds -> info.copy(showChangeKinds = ch.show)
-                    is ShowInfoChange.Times -> info.copy(showTimes = ch.show)
-                }
-            }
-            .shareAfterViewSubscribed()
+    private val longSumPeriodChanges: Observable<Days> = recordsListInteractor.longSumPeriod.changes.shareAfterViewSubscribed()
 
-    private val longSumPeriodDaysChanges = intent { it.longSumPeriodDaysSelected() }
-            .startWith(initialState.longSumPeriodDays)
-            .shareAfterViewSubscribed()
-
-    private val shortSumPeriodMinutesChanges = intent { it.shortSumPeriodMinutesSelected() }
-            .startWith(initialState.shortSumPeriodMinutes)
-            .shareAfterViewSubscribed()
+    private val shortSumPeriodChanges: Observable<Minutes> = recordsListInteractor.shortSumPeriod.changes.shareAfterViewSubscribed()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             showInfoChanges
-                    .skip(1) // skip initial.
-                    .doOnNext { recordsListInteractor.showInfo = it }
                     .map { RecordsListPartialChange.ShowInfoChanged(it) },
             Observable
                     .combineLatest(
                             showInfoChanges,
-                            longSumPeriodDaysChanges,
-                            shortSumPeriodMinutesChanges,
+                            longSumPeriodChanges,
+                            shortSumPeriodChanges,
                             makeTriple()
                     )
                     .switchMap { triple ->
@@ -105,17 +74,13 @@ class RecordsListPresenter @Inject constructor(
                                 recordsChanges = recordsChanges
                         )
                     },
-            longSumPeriodDaysChanges
-                    .skip(1) // skip initial.
-                    .doOnNext { recordsListInteractor.longSumPeriodDays = it }
-                    .map { RecordsListPartialChange.LongSumPeriodDaysChanged(it) },
-            shortSumPeriodMinutesChanges
-                    .skip(1) // skip initial.
-                    .doOnNext { recordsListInteractor.shortSumPeriodMinutes = it }
-                    .map { RecordsListPartialChange.ShortSumPeriodMinutesChanged(it) },
+            longSumPeriodChanges
+                    .map { RecordsListPartialChange.LongSumPeriodChanged(it) },
+            shortSumPeriodChanges
+                    .map { RecordsListPartialChange.ShortSumPeriodChanged(it) },
             sumsInfoChanges(
-                    longSumPeriodDaysChanges,
-                    shortSumPeriodMinutesChanges,
+                    longSumPeriodChanges,
+                    shortSumPeriodChanges,
                     showInfoChanges,
                     recordsListInteractor
             ).map { RecordsListPartialChange.SumsInfoChanged(it) },
@@ -135,25 +100,55 @@ class RecordsListPresenter @Inject constructor(
             )
             is RecordsListPartialChange.ShowInfoChanged -> vs.copy(showInfo = change.showInfo)
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
-            is RecordsListPartialChange.LongSumPeriodDaysChanged -> vs.copy(longSumPeriodDays = change.days)
-            is RecordsListPartialChange.ShortSumPeriodMinutesChanged -> vs.copy(shortSumPeriodMinutes = change.minutes)
+            is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
+            is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
         }
     }
 
     override fun bindIntents() {
+
+        Observable
+                .merge(listOf(
+                        intent { it.showSpendsChanges() }.map { ShowInfoChange.Spends(it) },
+                        intent { it.showProfitsChanges() }.map { ShowInfoChange.Profits(it) },
+                        intent { it.showSumsChanges() }.map { ShowInfoChange.Sums(it) },
+                        intent { it.showChangeKindsChanges() }.map { ShowInfoChange.ChangeKinds(it) },
+                        intent { it.showTimesChanges() }.map { ShowInfoChange.Times(it) }
+                ))
+                .doOnNext { ch ->
+                    recordsListInteractor.showInfo.updateField { info ->
+                        return@updateField when (ch) {
+                            is ShowInfoChange.Spends -> info.copy(showSpends = ch.show)
+                            is ShowInfoChange.Profits -> info.copy(showProfits = ch.show)
+                            is ShowInfoChange.Sums -> info.copy(showSums = ch.show)
+                            is ShowInfoChange.ChangeKinds -> info.copy(showChangeKinds = ch.show)
+                            is ShowInfoChange.Times -> info.copy(showTimes = ch.show)
+                        }
+                    }
+                }
+                .subscribeToView()
+
+        intent { it.longSumPeriodSelected() }
+                .doOnNext { recordsListInteractor.longSumPeriod.field = it }
+                .subscribeToView()
+
+        intent { it.shortSumPeriodSelected() }
+                .doOnNext { recordsListInteractor.shortSumPeriod.field = it }
+                .subscribeToView()
+
         intent { it.createProfitClicks() }
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToCreateRecord(Const.RECORD_TYPE_ID_PROFIT)) }
                 .subscribeToView()
 
         intent { it.chooseLongSumPeriodClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseLongSumPeriod(it.longSumPeriodDays)) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseLongSumPeriod(it.longSumPeriod)) }
                 .subscribeToView()
 
         intent { it.chooseShortSumPeriodClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseShortSumPeriod(it.shortSumPeriodMinutes)) }
+                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseShortSumPeriod(it.shortSumPeriod)) }
                 .subscribeToView()
 
         intent { it.recordClicks() }
@@ -234,5 +229,13 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         super.bindIntents()
+    }
+
+    private sealed class ShowInfoChange {
+        data class Spends(val show: Boolean) : ShowInfoChange()
+        data class Profits(val show: Boolean) : ShowInfoChange()
+        data class Sums(val show: Boolean) : ShowInfoChange()
+        data class ChangeKinds(val show: Boolean) : ShowInfoChange()
+        data class Times(val show: Boolean) : ShowInfoChange()
     }
 }

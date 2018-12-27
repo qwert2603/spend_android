@@ -20,6 +20,8 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.model.entity.Minutes
+import com.qwert2603.spenddemo.model.entity.minutes
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
 import com.qwert2603.spenddemo.utils.*
@@ -35,7 +37,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
 
         const val MINUTES_KEY = "MINUTES_KEY"
 
-        fun variantToString(minutes: Int, resources: Resources): String = if (minutes > 0) {
+        fun variantToString(minutes: Minutes, resources: Resources): String = if (minutes.minutes > 0) {
             resources.formatTime(minutes)
         } else {
             resources.getString(R.string.no_sum_text)
@@ -43,7 +45,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
     }
 
     @Arg
-    var selectedMinutes = 0
+    lateinit var selected: Minutes
 
     @Inject
     lateinit var recordsRepo: RecordsRepo
@@ -54,7 +56,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
 
-    data class Variant(val minutes: Int, var sum: Long?)
+    data class Variant(val minutes: Minutes, var sum: Long?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -62,19 +64,19 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val variants = VARIANTS.map { Variant(it, null) }
+        val variants = VARIANTS.map { Variant(it.minutes, null) }
         val adapter = VariantsAdapter(requireContext(), variants) {
             targetFragment!!.onActivityResult(
                     targetRequestCode,
                     Activity.RESULT_OK,
-                    Intent().putExtra(MINUTES_KEY, VARIANTS[it])
+                    Intent().putExtra(MINUTES_KEY, VARIANTS[it].minutes)
             )
             dismiss()
         }
-        val showProfits = userSettingsRepo.showProfits
-        val showSpends = userSettingsRepo.showSpends
+        val showProfits = userSettingsRepo.showInfo.field.showProfits
+        val showSpends = userSettingsRepo.showInfo.field.showSpends
         variants
-                .filter { it.minutes > 0 }
+                .filter { it.minutes.minutes > 0 }
                 .forEach { variant ->
                     RxUtils.minuteChanges()
                             .cast(Any::class.java)
@@ -106,7 +108,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
                 .setSingleChoiceItems(
                         adapter,
                         VARIANTS
-                                .indexOfFirst { it == selectedMinutes }
+                                .indexOfFirst { it == selected.minutes }
                                 .let { if (it >= 0) it else -1 }
                 ) { _, _ -> }
                 .setTitle(R.string.title_short_sum_dialog)
@@ -126,7 +128,7 @@ class ChooseShortSumPeriodDialog : DialogFragment() {
                 variant_RadioButton.isChecked = position == (parent as ListView).checkedItemPosition
                 val item = getItem(position)!!
                 period_TextView.text = variantToString(item.minutes, resources)
-                if (item.minutes > 0) {
+                if (item.minutes.minutes > 0) {
                     sum_TextView.setVisible(true)
                     sum_TextView.text = resources.getString(
                             R.string.variant_sum_format,

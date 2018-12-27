@@ -26,15 +26,15 @@ private val FAKE_RECORD = Record(
 
 fun List<Record>.toRecordItemsList(
         showInfo: ShowInfo,
-        longSumPeriodDays: Int,
-        shortSumPeriodMinutes: Int
+        longSumPeriod: Days,
+        shortSumPeriod: Minutes
 ): List<RecordsListItem> {
 
     val calendarL = GregorianCalendar.getInstance()
     val calendarS = GregorianCalendar.getInstance().also { it.timeInMillis = calendarL.timeInMillis }
 
-    calendarL.add(Calendar.DAY_OF_MONTH, -longSumPeriodDays + 1)
-    calendarS.add(Calendar.MINUTE, -shortSumPeriodMinutes + 1)
+    calendarL.add(Calendar.DAY_OF_MONTH, -longSumPeriod.days + 1)
+    calendarS.add(Calendar.MINUTE, -shortSumPeriod.minutes + 1)
 
     val longSumBound = calendarL.toSDate()
     val shortSumBound = calendarS.toSDate() to calendarS.toSTime()
@@ -42,13 +42,13 @@ fun List<Record>.toRecordItemsList(
     val shortPeriodDivider = PeriodDivider(
             date = shortSumBound.first,
             time = shortSumBound.second,
-            interval = shortSumPeriodMinutes.minutes
+            interval = shortSumPeriod
     )
 
     val longPeriodDivider = PeriodDivider(
             date = longSumBound,
             time = null,
-            interval = longSumPeriodDays.days
+            interval = longSumPeriod
     )
 
     LogUtils.d("toRecordItemsList shortPeriodDivider=$shortPeriodDivider")
@@ -173,14 +173,14 @@ fun List<Record>.toRecordItemsList(
 
 
 fun sumsInfoChanges(
-        longSumPeriodDaysChanges: Observable<Int>,
-        shortSumPeriodMinutesChanges: Observable<Int>,
+        longSumPeriodChanges: Observable<Days>,
+        shortSumPeriodChanges: Observable<Minutes>,
         showInfoChanges: Observable<ShowInfo>,
         recordsListInteractor: RecordsListInteractor
 ): Observable<SumsInfo> = Observable
         .combineLatest(
-                longSumPeriodDaysChanges,
-                shortSumPeriodMinutesChanges,
+                longSumPeriodChanges,
+                shortSumPeriodChanges,
                 showInfoChanges,
                 RxUtils.minuteChanges().startWith(Any()),
                 makeQuad()
@@ -222,8 +222,8 @@ fun sumsInfoChanges(
 
             Observable
                     .combineLatest(
-                            if (longSumPeriodDays > 0) longSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
-                            if (shortSumPeriodMinutes > 0) shortSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
+                            if (longSumPeriodDays.days > 0) longSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
+                            if (shortSumPeriodMinutes.minutes > 0) shortSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
                             if (showInfo.showChangeKinds) changesCountChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
                             Function3 { longSum: Wrapper<out Long>, shortSum: Wrapper<out Long>, changesCount: Wrapper<out Int> ->
                                 SumsInfo(longSum.t, shortSum.t, changesCount.t)

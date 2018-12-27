@@ -1,9 +1,11 @@
 package com.qwert2603.spenddemo.model.repo_impl
 
 import android.content.Context
+import com.google.gson.Gson
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.utils.PrefsBoolean
-import com.qwert2603.spenddemo.utils.PrefsInt
+import com.qwert2603.spenddemo.utils.ObservableField
+import com.qwert2603.spenddemo.utils.PreferenceUtils
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,17 +14,10 @@ class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettin
 
     private val prefs = appContext.getSharedPreferences("user_settings.prefs", Context.MODE_PRIVATE)
 
-    override var showSpends by PrefsBoolean(prefs, "showSpends", true)
-    override var showProfits by PrefsBoolean(prefs, "showProfits", true)
-    override var showSums by PrefsBoolean(prefs, "showSums", true)
-    override var showChangeKinds by PrefsBoolean(prefs, "showChangeKinds", true)
-    override var showTimes by PrefsBoolean(prefs, "showTimes", true)
+    private val gson = Gson()
 
-    override var longSumPeriodDays by PrefsInt(prefs, "longSumPeriodDays", 30)
-    override var shortSumPeriodMinutes by PrefsInt(prefs, "shortSumPeriodMinutes", 5)
-
-    override var showDaySums by PrefsBoolean(prefs, "showDaySums", true)
-    override var showMonthSums by PrefsBoolean(prefs, "showMonthSums", true)
-    override var showYearSums by PrefsBoolean(prefs, "showYearSums", true)
-    override var showBalancesInSums by PrefsBoolean(prefs, "showBalancesInSums", false)
+    override val longSumPeriod: ObservableField<Days> = PreferenceUtils.createPrefsObjectObservable(prefs, "longSumPeriod", gson, 30.days)
+    override val shortSumPeriod: ObservableField<Minutes> = PreferenceUtils.createPrefsObjectObservable(prefs, "shortSumPeriod", gson, 5.minutes)
+    override val showInfo: ObservableField<ShowInfo> = PreferenceUtils.createPrefsObjectObservable(prefs, "showInfo", gson, ShowInfo.DEFAULT)
+    override val sumsShowInfo: ObservableField<SumsShowInfo> = PreferenceUtils.createPrefsObjectObservable(prefs, "sumsShowInfo", gson, SumsShowInfo.DEFAULT)
 }

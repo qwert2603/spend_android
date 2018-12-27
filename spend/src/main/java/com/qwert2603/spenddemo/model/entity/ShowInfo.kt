@@ -1,4 +1,4 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.model.entity
 
 data class ShowInfo(
         val showSpends: Boolean,
@@ -7,6 +7,10 @@ data class ShowInfo(
         val showChangeKinds: Boolean,
         val showTimes: Boolean
 ) {
+    companion object {
+        val DEFAULT = ShowInfo(true, true, true, true, true)
+    }
+
     fun showSpendsEnable() = showProfits
     fun showProfitsEnable() = showSpends
     fun newProfitEnable() = showProfits

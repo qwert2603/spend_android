@@ -13,17 +13,13 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
-import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.DaySum
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.Totals
-import com.qwert2603.spenddemo.model.entity.toFormattedString
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.save_record.SaveRecordDialogFragmentBuilder
@@ -61,8 +57,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private val menuHolder = MenuHolder()
 
-    private val longSumPeriodDaysSelected = PublishSubject.create<Int>()
-    private val shortSumPeriodMinutesSelected = PublishSubject.create<Int>()
+    private val longSumPeriodSelected = PublishSubject.create<Days>()
+    private val shortSumPeriodSelected = PublishSubject.create<Minutes>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,8 +143,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
-                REQUEST_CHOOSE_LONG_SUM_PERIOD -> longSumPeriodDaysSelected.onNext(data.getIntExtra(ChooseLongSumPeriodDialog.DAYS_KEY, 0))
-                REQUEST_CHOOSE_SHORT_SUM_PERIOD -> shortSumPeriodMinutesSelected.onNext(data.getIntExtra(ChooseShortSumPeriodDialog.MINUTES_KEY, 0))
+                REQUEST_CHOOSE_LONG_SUM_PERIOD -> data.getSerializableExtra(ChooseLongSumPeriodDialog.DAYS_KEY)
+                        .let { it as? Days }
+                        ?.also { longSumPeriodSelected.onNext(it) }
+                REQUEST_CHOOSE_SHORT_SUM_PERIOD -> data.getSerializableExtra(ChooseShortSumPeriodDialog.MINUTES_KEY)
+                        .let { it as? Minutes }
+                        ?.also { shortSumPeriodSelected.onNext(it) }
             }
         }
     }
@@ -182,8 +182,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun showChangeKindsChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.show_change_kinds)
     override fun showTimesChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.show_times)
 
-    override fun longSumPeriodDaysSelected(): Observable<Int> = longSumPeriodDaysSelected
-    override fun shortSumPeriodMinutesSelected(): Observable<Int> = shortSumPeriodMinutesSelected
+    override fun longSumPeriodSelected(): Observable<Days> = longSumPeriodSelected
+    override fun shortSumPeriodSelected(): Observable<Minutes> = shortSumPeriodSelected
 
     override fun addStubRecordsClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.add_stub_records)
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
@@ -254,13 +254,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 menu.findItem(R.id.show_profits).isEnabled = it.showProfitsEnable()
             }
 
-            renderIfChanged({ longSumPeriodDays }) {
+            renderIfChanged({ longSumPeriod }) {
                 menu.findItem(R.id.long_sum).title = resources.getString(
                         R.string.menu_item_long_sum_format,
                         ChooseLongSumPeriodDialog.variantToString(it, resources)
                 )
             }
-            renderIfChanged({ shortSumPeriodMinutes }) {
+            renderIfChanged({ shortSumPeriod }) {
                 menu.findItem(R.id.short_sum).title = resources.getString(
                         R.string.menu_item_short_sum_format,
                         ChooseShortSumPeriodDialog.variantToString(it, resources)
@@ -268,12 +268,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        renderIfChangedThree({ Triple(sumsInfo, longSumPeriodDays, shortSumPeriodMinutes) }) { (sumsInfo, longSumPeriodDays, shortSumPeriodMinutes) ->
+        renderIfChangedThree({ Triple(sumsInfo, longSumPeriod, shortSumPeriod) }) { (sumsInfo, longSumPeriodDays, shortSumPeriodMinutes) ->
             val longSumText = sumsInfo.longSum
                     ?.let {
                         resources.getString(
                                 R.string.text_period_sum_format,
-                                resources.formatTimeLetters(longSumPeriodDays * Const.MINUTES_PER_DAY),
+                                resources.formatTimeLetters(longSumPeriodDays),
                                 it.toPointedString()
                         )
                     }

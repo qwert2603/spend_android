@@ -4,6 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spenddemo.model.entity.RecordsListItem
+import com.qwert2603.spenddemo.model.entity.SumsShowInfo
 import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.records_list.modifyForUi
 import com.qwert2603.spenddemo.utils.FastDiffUtils
@@ -17,40 +18,16 @@ class SumsPresenter @Inject constructor(
 ) : BasePresenter<SumsView, SumsViewState>(uiSchedulerProvider) {
 
     override val initialState = SumsViewState(
-            sumsShowInfo = interactor.sumsShowInfo,
+            sumsShowInfo = interactor.sumsShowInfo.field,
             records = emptyList(),
             diff = FastDiffUtils.FastDiffResult.EMPTY,
             syncState = SyncState.SYNCING
     )
 
-    private sealed class SumsShowInfoChange {
-        data class Days(val show: Boolean) : SumsShowInfoChange()
-        data class Months(val show: Boolean) : SumsShowInfoChange()
-        data class Years(val show: Boolean) : SumsShowInfoChange()
-        data class Balances(val show: Boolean) : SumsShowInfoChange()
-    }
-
-    private val sumsShowInfoChanges: Observable<SumsShowInfo> = Observable
-            .merge(listOf(
-                    intent { it.showDaySums() }.map { SumsShowInfoChange.Days(it) },
-                    intent { it.showMonthSums() }.map { SumsShowInfoChange.Months(it) },
-                    intent { it.showYearSums() }.map { SumsShowInfoChange.Years(it) },
-                    intent { it.showBalances() }.map { SumsShowInfoChange.Balances(it) }
-            ))
-            .scan(initialState.sumsShowInfo) { info: SumsShowInfo, ch: SumsShowInfoChange ->
-                return@scan when (ch) {
-                    is SumsShowInfoChange.Days -> info.copy(showDaySums = ch.show)
-                    is SumsShowInfoChange.Months -> info.copy(showMonthSums = ch.show)
-                    is SumsShowInfoChange.Years -> info.copy(showYearSums = ch.show)
-                    is SumsShowInfoChange.Balances -> info.copy(showBalances = ch.show)
-                }
-            }
-            .shareAfterViewSubscribed()
+    private val sumsShowInfoChanges: Observable<SumsShowInfo> = interactor.sumsShowInfo.changes.shareAfterViewSubscribed()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(
             sumsShowInfoChanges
-                    .skip(1) // skip initial.
-                    .doOnNext { interactor.sumsShowInfo = it }
                     .map { SumsPartialChange.ShowInfoChanged(it) },
             sumsShowInfoChanges
                     .switchMap { sumsShowInfo ->
@@ -88,6 +65,27 @@ class SumsPresenter @Inject constructor(
     }
 
     override fun bindIntents() {
+
+        Observable
+                .merge(listOf(
+                        intent { it.showDaySums() }.map { SumsShowInfoChange.Days(it) },
+                        intent { it.showMonthSums() }.map { SumsShowInfoChange.Months(it) },
+                        intent { it.showYearSums() }.map { SumsShowInfoChange.Years(it) },
+                        intent { it.showBalances() }.map { SumsShowInfoChange.Balances(it) }
+                ))
+                .doOnNext { ch ->
+                    interactor.sumsShowInfo.updateField { info ->
+                        return@updateField when (ch) {
+                            is SumsShowInfoChange.Days -> info.copy(showDaySums = ch.show)
+                            is SumsShowInfoChange.Months -> info.copy(showMonthSums = ch.show)
+                            is SumsShowInfoChange.Years -> info.copy(showYearSums = ch.show)
+                            is SumsShowInfoChange.Balances -> info.copy(showBalances = ch.show)
+                        }
+                    }
+
+                }
+                .subscribeToView()
+
         RxUtils.dateChanges()
                 .doOnNext { viewActions.onNext(SumsViewAction.RerenderAll) }
                 .subscribeToView()
@@ -97,5 +95,12 @@ class SumsPresenter @Inject constructor(
                 .subscribeToView()
 
         super.bindIntents()
+    }
+
+    private sealed class SumsShowInfoChange {
+        data class Days(val show: Boolean) : SumsShowInfoChange()
+        data class Months(val show: Boolean) : SumsShowInfoChange()
+        data class Years(val show: Boolean) : SumsShowInfoChange()
+        data class Balances(val show: Boolean) : SumsShowInfoChange()
     }
 }

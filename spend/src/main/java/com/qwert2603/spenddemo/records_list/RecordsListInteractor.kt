@@ -1,10 +1,7 @@
 package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.andrlib.util.mapList
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordCategory
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.SyncState
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
@@ -15,15 +12,15 @@ import javax.inject.Inject
 class RecordsListInteractor @Inject constructor(
         private val recordsRepo: RecordsRepo,
         private val recordAggregationsRepo: RecordAggregationsRepo,
-        private val userSettingsRepo: UserSettingsRepo
+        userSettingsRepo: UserSettingsRepo
 ) {
     fun getRecordsList(): Observable<List<Record>> = recordsRepo.getRecordsList()
 
     fun getLocalChangesCount(recordTypeIds: List<Long>) = recordsRepo.getLocalChangesCount(recordTypeIds)
 
-    fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> = recordsRepo.getSumLastDays(recordTypeId, days)
+    fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long> = recordsRepo.getSumLastDays(recordTypeId, days)
 
-    fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> = recordsRepo.getSumLastMinutes(recordTypeId, minutes)
+    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long> = recordsRepo.getSumLastMinutes(recordTypeId, minutes)
 
     fun getRecordCreatedLocallyEvents(): Observable<String> = recordsRepo.getRecordCreatedLocallyEvents()
 
@@ -37,33 +34,9 @@ class RecordsListInteractor @Inject constructor(
         recordsRepo.removeAllRecords()
     }
 
-    var showInfo: ShowInfo
-        get() = ShowInfo(
-                showSpends = userSettingsRepo.showSpends,
-                showProfits = userSettingsRepo.showProfits,
-                showSums = userSettingsRepo.showSums,
-                showChangeKinds = userSettingsRepo.showChangeKinds,
-                showTimes = userSettingsRepo.showTimes
-        )
-        set(value) {
-            userSettingsRepo.showSpends = value.showSpends
-            userSettingsRepo.showProfits = value.showProfits
-            userSettingsRepo.showSums = value.showSums
-            userSettingsRepo.showChangeKinds = value.showChangeKinds
-            userSettingsRepo.showTimes = value.showTimes
-        }
-
-    var longSumPeriodDays: Int
-        get() = userSettingsRepo.longSumPeriodDays
-        set(value) {
-            userSettingsRepo.longSumPeriodDays = value
-        }
-
-    var shortSumPeriodMinutes: Int
-        get() = userSettingsRepo.shortSumPeriodMinutes
-        set(value) {
-            userSettingsRepo.shortSumPeriodMinutes = value
-        }
+    val shortSumPeriod = userSettingsRepo.shortSumPeriod
+    val longSumPeriod = userSettingsRepo.longSumPeriod
+    val showInfo = userSettingsRepo.showInfo
 
     fun getRecordCategories(recordTypeId: Long): Single<List<RecordCategory>> = recordAggregationsRepo
             .getRecordCategories(recordTypeId).firstOrError()

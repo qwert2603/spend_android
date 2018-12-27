@@ -64,9 +64,9 @@ class RecordsRepoImpl @Inject constructor(
             }
             .distinctUntilChanged()
 
-    override fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long> {
+    override fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long> {
         val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_MONTH, -days + 1)
+        calendar.add(Calendar.DAY_OF_MONTH, -days.days + 1)
         val startDate = calendar.toSDate()
 
         return recordsDao
@@ -84,9 +84,9 @@ class RecordsRepoImpl @Inject constructor(
                 .distinctUntilChanged()
     }
 
-    override fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long> {
+    override fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long> {
         val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MINUTE, -minutes + 1)
+        calendar.add(Calendar.MINUTE, -minutes.minutes + 1)
         val startDate = calendar.toSDate()
         val startTime = calendar.toSTime()
 

@@ -2,6 +2,7 @@ package com.qwert2603.spenddemo.sums
 
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.spenddemo.model.entity.RecordsListItem
+import com.qwert2603.spenddemo.model.entity.SumsShowInfo
 import com.qwert2603.spenddemo.model.entity.SyncState
 import com.qwert2603.spenddemo.utils.FastDiffUtils
 

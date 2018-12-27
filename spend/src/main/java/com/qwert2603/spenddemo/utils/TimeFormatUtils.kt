@@ -3,8 +3,10 @@ package com.qwert2603.spenddemo.utils
 import android.content.res.Resources
 import com.qwert2603.andrlib.util.Const
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.model.entity.Interval
 
-fun Resources.formatTime(timeInMinutes: Int): String {
+fun Resources.formatTime(time: Interval): String {
+    val timeInMinutes = time.minutes()
     if (timeInMinutes == 0) return getQuantityString(R.plurals.minutes, 0, 0)
     val minutes = timeInMinutes % Const.MINUTES_PER_HOUR
     val hours = timeInMinutes / Const.MINUTES_PER_HOUR % Const.HOURS_PER_DAY
@@ -25,7 +27,8 @@ fun Resources.formatTime(timeInMinutes: Int): String {
             }
 }
 
-fun Resources.formatTimeLetters(timeInMinutes: Int): String {
+fun Resources.formatTimeLetters(time: Interval): String {
+    val timeInMinutes = time.minutes()
     if (timeInMinutes == 0) return "0${getString(R.string.letter_minutes)}"
     val minutes = timeInMinutes % Const.MINUTES_PER_HOUR
     val hours = timeInMinutes / Const.MINUTES_PER_HOUR % Const.HOURS_PER_DAY

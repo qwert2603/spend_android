@@ -1,9 +1,6 @@
 package com.qwert2603.spenddemo.model.repo
 
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordCategory
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.SyncState
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -24,9 +21,9 @@ interface RecordsRepo {
 
     fun getRecord(uuid: String): Observable<Wrapper<Record>>
 
-    fun getSumLastDays(recordTypeId: Long, days: Int): Observable<Long>
+    fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long>
 
-    fun getSumLastMinutes(recordTypeId: Long, minutes: Int): Observable<Long>
+    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long>
 
     fun getDumpFile(): Single<File>
 

@@ -20,12 +20,11 @@ import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.model.entity.Days
+import com.qwert2603.spenddemo.model.entity.days
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.repo.UserSettingsRepo
-import com.qwert2603.spenddemo.utils.Const
-import com.qwert2603.spenddemo.utils.RxUtils
-import com.qwert2603.spenddemo.utils.disposeOnPause
-import com.qwert2603.spenddemo.utils.toPointedString
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.item_sum_variant.view.*
@@ -38,15 +37,15 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
 
         const val DAYS_KEY = "DAYS_KEY"
 
-        fun variantToString(days: Int, resources: Resources): String = if (days > 0) {
-            resources.getQuantityString(R.plurals.days, days, days)
+        fun variantToString(days: Days, resources: Resources): String = if (days.days > 0) {
+            resources.formatTime(days)
         } else {
             resources.getString(R.string.no_sum_text)
         }
     }
 
     @Arg
-    var selectedDays = 0
+    lateinit var selected: Days
 
     @Inject
     lateinit var recordsRepo: RecordsRepo
@@ -57,7 +56,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
     @Inject
     lateinit var uiSchedulerProvider: UiSchedulerProvider
 
-    data class Variant(val days: Int, var sum: Long?)
+    data class Variant(val days: Days, var sum: Long?)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -65,19 +64,19 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val variants = VARIANTS.map { Variant(it, null) }
+        val variants = VARIANTS.map { Variant(it.days, null) }
         val adapter = VariantsAdapter(requireContext(), variants) {
             targetFragment!!.onActivityResult(
                     targetRequestCode,
                     Activity.RESULT_OK,
-                    Intent().putExtra(DAYS_KEY, VARIANTS[it])
+                    Intent().putExtra(DAYS_KEY, VARIANTS[it].days)
             )
             dismiss()
         }
-        val showProfits = userSettingsRepo.showProfits
-        val showSpends = userSettingsRepo.showSpends
+        val showProfits = userSettingsRepo.showInfo.field.showProfits
+        val showSpends = userSettingsRepo.showInfo.field.showSpends
         variants
-                .filter { it.days > 0 }
+                .filter { it.days.days > 0 }
                 .forEach { variant ->
                     RxUtils.dateChanges()
                             .cast(Any::class.java)
@@ -109,7 +108,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
                 .setSingleChoiceItems(
                         adapter,
                         VARIANTS
-                                .indexOfFirst { it == selectedDays }
+                                .indexOfFirst { it == selected.days }
                                 .let { if (it >= 0) it else -1 }
                 ) { _, _ -> }
                 .setTitle(R.string.title_long_sum_dialog)
@@ -129,7 +128,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
                 variant_RadioButton.isChecked = position == (parent as ListView).checkedItemPosition
                 val item = getItem(position)!!
                 period_TextView.text = variantToString(item.days, resources)
-                if (item.days > 0) {
+                if (item.days.days > 0) {
                     sum_TextView.setVisible(true)
                     sum_TextView.text = resources.getString(
                             R.string.variant_sum_format,
