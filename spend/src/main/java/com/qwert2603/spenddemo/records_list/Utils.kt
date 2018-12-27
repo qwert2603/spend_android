@@ -9,6 +9,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 private val FAKE_RECORD = Record(
         uuid = "FAKE_RECORD",
@@ -27,7 +28,8 @@ private val FAKE_RECORD = Record(
 fun List<Record>.toRecordItemsList(
         showInfo: ShowInfo,
         longSumPeriod: Days,
-        shortSumPeriod: Minutes
+        shortSumPeriod: Minutes,
+        selectedRecordsUuids: HashSet<String>
 ): List<RecordsListItem> {
 
     val calendarL = GregorianCalendar.getInstance()
@@ -133,7 +135,7 @@ fun List<Record>.toRecordItemsList(
                     ++spendsCount
                     spendsSum += record.value
                 }
-                if (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted())) {
+                if (record.uuid in selectedRecordsUuids || (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted()))) {
                     result.add(record)
                     atLeastOneRecordAdded = true
                 }
@@ -147,7 +149,7 @@ fun List<Record>.toRecordItemsList(
                     ++profitsCount
                     profitsSum += record.value
                 }
-                if (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted())) {
+                if (record.uuid in selectedRecordsUuids || (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted()))) {
                     result.add(record)
                     atLeastOneRecordAdded = true
                 }

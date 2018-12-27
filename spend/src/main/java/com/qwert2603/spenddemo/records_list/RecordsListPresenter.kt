@@ -42,16 +42,19 @@ class RecordsListPresenter @Inject constructor(
                             showInfoChanges,
                             longSumPeriodChanges,
                             shortSumPeriodChanges,
-                            makeTriple()
+                            viewStateObservable
+                                    .map { it.selectedRecordsUuids }
+                                    .distinctUntilChanged(),
+                            makeQuad()
                     )
-                    .switchMap { triple ->
+                    .switchMap { quad ->
                         RxUtils.minuteChanges()
                                 .startWith(Any())
-                                .map { triple }
+                                .map { quad }
                     }
-                    .switchMap { (showInfo, longSumPeriodDays, shortSumPeriodMinutes) ->
+                    .switchMap { (showInfo, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) ->
                         recordsListInteractor.getRecordsList()
-                                .map { it.toRecordItemsList(showInfo, longSumPeriodDays, shortSumPeriodMinutes) }
+                                .map { it.toRecordItemsList(showInfo, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) }
                     }
                     .startWith(emptyList<RecordsListItem>())
                     .buffer(2, 1)

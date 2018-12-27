@@ -45,6 +45,7 @@ fun <T, U> firstOfTwo() = BiFunction { t: T, _: U -> t }
 fun <T, U> secondOfTwo() = BiFunction { _: T, u: U -> u }
 fun <T, U, V> makeTriple() = Function3 { t: T, u: U, v: V -> Triple(t, u, v) }
 fun <T, U, V, W> makeQuad() = Function4 { t: T, u: U, v: V, w: W -> Quad(t, u, v, w) }
+fun <T, U, V, W> makeQuad3() = BiFunction { (t, u, v): Triple<T, U, V>, w: W -> Quad(t, u, v, w) }
 fun <T, U, V, W, X> makeQuint() = Function5 { t: T, u: U, v: V, w: W, x: X -> Quint(t, u, v, w, x) }
 fun <T, U, V, W, X, Y> makeSextuple() = Function6 { t: T, u: U, v: V, w: W, x: X, y: Y -> Sextuple(t, u, v, w, x, y) }
 
