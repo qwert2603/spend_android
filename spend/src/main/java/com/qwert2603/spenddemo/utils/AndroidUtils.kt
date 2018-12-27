@@ -115,3 +115,14 @@ val Dialog.neutralButton: Button
 
 fun Resources.colorStateList(@ColorRes colorRes: Int, theme: Resources.Theme? = null) = ResourcesCompat
         .getColorStateList(this, colorRes, theme)
+
+fun <T> HashSet<T>.toggle(t: T): HashSet<T> =
+        if (t in this) {
+            this.filterTo(HashSet(size)) { it != t }
+        } else {
+            HashSet<T>(size + 1)
+                    .also {
+                        it.addAll(this)
+                        it.add(t)
+                    }
+        }

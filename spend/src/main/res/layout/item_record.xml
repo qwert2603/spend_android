@@ -1,58 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:foreground="?attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:background="@drawable/record_background"
+    android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/local_ImageView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/record_LinearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4sp"
-        android:layout_marginEnd="4dp"
-        tools:ignore="ContentDescription"
-        tools:src="@drawable/ic_local"
-        tools:tint="@color/local_change_update" />
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/date_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        tools:text="2018-01-11" />
+        <ImageView
+            android:id="@+id/local_ImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4sp"
+            android:layout_marginEnd="4dp"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_local"
+            tools:tint="@color/local_change_update" />
 
-    <TextView
-        android:id="@+id/time_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        tools:text="@string/no_time_text" />
+        <TextView
+            android:id="@+id/date_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="2018-01-11" />
 
-    <TextView
-        android:id="@+id/kind_TextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        tools:text="food fish"
-        tools:textColor="@color/spend" />
+        <TextView
+            android:id="@+id/time_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="@string/no_time_text" />
 
-    <TextView
-        android:id="@+id/value_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
-        tools:text="175" />
+        <TextView
+            android:id="@+id/kind_TextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            tools:text="food fish"
+            tools:textColor="@color/spend" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/value_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            tools:text="175" />
+
+    </LinearLayout>
+
+</FrameLayout>

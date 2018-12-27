@@ -17,4 +17,6 @@ sealed class RecordsListPartialChange : PartialChange {
     data class ShortSumPeriodChanged(val minutes: Minutes) : RecordsListPartialChange()
 
     data class SyncStateChanged(val syncState: SyncState) : RecordsListPartialChange()
+
+    data class ToggleRecordSelection(val recordUuid: String) : RecordsListPartialChange()
 }

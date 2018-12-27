@@ -29,4 +29,6 @@
     <color name="navigation_menu_item_background_pressed">#CCCCCC</color>
 
     <color name="gray">#999999</color>
+
+    <color name="record_selected">#80ff7443</color>
 </resources>

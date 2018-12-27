@@ -1,7 +1,9 @@
 package com.qwert2603.spenddemo.records_list
 
 import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.FastDiffUtils
+import com.qwert2603.spenddemo.utils.sumByLong
 
 data class RecordsListViewState(
         val showInfo: ShowInfo,
@@ -11,5 +13,31 @@ data class RecordsListViewState(
         val records: List<RecordsListItem>?,
         val diff: FastDiffUtils.FastDiffResult,
         val recordsChanges: HashMap<String, RecordChange>, // key is Record::uuid
+        val selectedRecordsUuids: HashSet<String>,
         val syncState: SyncState
-)
+) {
+    val selectMode = selectedRecordsUuids.isNotEmpty()
+
+    val selectedSum by lazy {
+        val recordsByUuid = recordsByUuid
+        return@lazy if (recordsByUuid == null) {
+            0L
+        } else {
+            selectedRecordsUuids.sumByLong {
+                val record = recordsByUuid[it]
+                when {
+                    record == null -> 0
+                    record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> -1 * record.value
+                    record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> record.value
+                    else -> null!!
+                }.toLong()
+            }
+        }
+    }
+
+    private val recordsByUuid: Map<String, Record>? by lazy {
+        records
+                ?.mapNotNull { it as? Record }
+                ?.associateBy { it.uuid }
+    }
+}

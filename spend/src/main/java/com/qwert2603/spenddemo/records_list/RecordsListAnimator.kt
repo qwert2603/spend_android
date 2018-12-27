@@ -44,7 +44,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             val resetActions = mutableListOf<() -> Unit>()
 
             AnimatorUtils.animateHighlight(
-                    view = holder.itemView,
+                    view = holder.itemView.record_LinearLayout,
                     colorRes = R.color.highlight_created_record
             ).also {
                 animators.add(it.animator)

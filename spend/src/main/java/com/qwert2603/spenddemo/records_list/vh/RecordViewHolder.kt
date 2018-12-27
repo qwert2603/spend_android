@@ -22,6 +22,8 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
     override fun bind(t: Record, adapter: RecordsListAdapter) = with(itemView) {
         super.bind(t, adapter)
 
+        itemView.isSelected = t.uuid in adapter.selectedRecordsUuids
+
         drawChange(t.change)
 
         date_TextView.setVisible(adapter.showDatesInRecords)
@@ -62,9 +64,6 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
         } else {
             local_ImageView.clearColorFilter()
         }
-
-        isClickable = t.isChangeable()
-        isLongClickable = t.isChangeable()
 
         val strike = t.change?.isDelete == true
         listOf(date_TextView, time_TextView, kind_TextView, value_TextView)

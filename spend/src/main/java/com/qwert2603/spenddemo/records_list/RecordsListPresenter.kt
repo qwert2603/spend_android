@@ -24,6 +24,7 @@ class RecordsListPresenter @Inject constructor(
             shortSumPeriod = recordsListInteractor.shortSumPeriod.field,
             sumsInfo = SumsInfo.EMPTY,
             recordsChanges = hashMapOf(),
+            selectedRecordsUuids = hashSetOf(),
             syncState = SyncState.SYNCING
     )
 
@@ -87,7 +88,15 @@ class RecordsListPresenter @Inject constructor(
             recordsListInteractor
                     .getSyncState()
                     .modifyForUi()
-                    .map { RecordsListPartialChange.SyncStateChanged(it) }
+                    .map { RecordsListPartialChange.SyncStateChanged(it) },
+            intent { it.recordLongClicks() }
+                    .filter { !it.isDeleted() }
+                    .map { RecordsListPartialChange.ToggleRecordSelection(it.uuid) },
+            intent { it.recordClicks() }
+                    .filter { !it.isDeleted() }
+                    .withLatestFrom(viewStateObservable, makePair())
+                    .filter { (_, vs) -> vs.selectMode }
+                    .map { (record, _) -> RecordsListPartialChange.ToggleRecordSelection(record.uuid) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -103,6 +112,7 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
+            is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(selectedRecordsUuids = vs.selectedRecordsUuids.toggle(change.recordUuid))
         }
     }
 
@@ -151,13 +161,13 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseShortSumPeriod(it.shortSumPeriod)) }
                 .subscribeToView()
 
-        intent { it.recordClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it.uuid)) }
-                .subscribeToView()
-
-        intent { it.recordLongClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.uuid)) }
-                .subscribeToView()
+//    todo    intent { it.recordClicks() }
+//                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it.uuid)) }
+//                .subscribeToView()
+//
+//    todo    intent { it.recordLongClicks() }
+//                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it.uuid)) }
+//                .subscribeToView()
 
         intent { it.addStubRecordsClicks() }
                 .flatMapSingle {

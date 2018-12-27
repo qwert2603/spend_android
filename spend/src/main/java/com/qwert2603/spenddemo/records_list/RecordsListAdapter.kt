@@ -38,6 +38,13 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             redrawViewHolders()
         }
 
+    var selectedRecordsUuids: HashSet<String> = hashSetOf()
+        set(value) {
+            if (value == field) return
+            field = value
+            redrawViewHolders()
+        }
+
     @Suppress("UNCHECKED_CAST")
     private fun redrawViewHolders() {
         LogUtils.d("RecordsListAdapter redrawVisibleViewHolders")
@@ -51,6 +58,11 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     var recordsChanges: HashMap<String, RecordChange> = hashMapOf()
+        set(value) {
+            if (value == field) return
+            field = value
+            redrawViewHolders()
+        }
 
     var list: List<RecordsListItem> = emptyList()
         set(value) {

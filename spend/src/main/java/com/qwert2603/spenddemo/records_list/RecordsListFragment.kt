@@ -194,6 +194,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
         renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
+        renderIfChanged({ selectedRecordsUuids }) { adapter.selectedRecordsUuids = it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
             if (records == null) return@renderIfChangedWithFirstRendering
@@ -299,6 +300,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         renderIfChanged({ syncState }) {
             toolbar.title = getString(R.string.fragment_title_records) + it.indicator
+        }
+        //todo:remove
+        if (vs.selectMode) {
+            toolbar.title = "${vs.selectedRecordsUuids.size} ${vs.selectedSum}"
         }
     }
 
