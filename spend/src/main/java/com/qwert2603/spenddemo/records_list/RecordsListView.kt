@@ -27,4 +27,6 @@ interface RecordsListView : BaseView<RecordsListViewState> {
 
     fun addStubRecordsClicks(): Observable<Any>
     fun clearAllClicks(): Observable<Any>
+
+    fun cancelSelection(): Observable<Any>
 }

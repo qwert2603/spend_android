@@ -94,6 +94,7 @@
     <string name="and_text">and</string>
     <string name="no_sum_text">no</string>
     <string name="comma_text" translatable="false">,</string>
+    <string name="sum_equals" translatable="false">&#931; = </string>
 
     <string name="letter_days">d</string>
     <string name="letter_hours">h</string>

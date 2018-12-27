@@ -19,4 +19,5 @@ sealed class RecordsListPartialChange : PartialChange {
     data class SyncStateChanged(val syncState: SyncState) : RecordsListPartialChange()
 
     data class ToggleRecordSelection(val recordUuid: String) : RecordsListPartialChange()
+    object ClearSelection : RecordsListPartialChange()
 }

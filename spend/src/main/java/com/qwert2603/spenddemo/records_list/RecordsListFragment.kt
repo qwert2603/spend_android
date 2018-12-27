@@ -7,19 +7,25 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
+import com.jakewharton.rxbinding2.view.RxView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
+import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.navigation.BackPressListener
 import com.qwert2603.spenddemo.navigation.KeyboardManager
 import com.qwert2603.spenddemo.records_list.vh.DaySumViewHolder
 import com.qwert2603.spenddemo.save_record.SaveRecordDialogFragmentBuilder
@@ -29,11 +35,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
-import kotlinx.android.synthetic.main.toolbar_default.*
 import java.util.concurrent.TimeUnit
 
 @FragmentWithArgs
-class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView {
+class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView, BackPressListener {
 
     companion object {
         private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
@@ -59,6 +64,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private val longSumPeriodSelected = PublishSubject.create<Days>()
     private val shortSumPeriodSelected = PublishSubject.create<Minutes>()
+
+    private val cancelSelection = PublishSubject.create<Any>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -188,6 +195,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun addStubRecordsClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.add_stub_records)
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
 
+    override fun cancelSelection(): Observable<Any> = Observable.merge(
+            RxView.clicks(closeSelectPanel_ImageView),
+            cancelSelection
+    )
+
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }
 
@@ -301,9 +313,19 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ syncState }) {
             toolbar.title = getString(R.string.fragment_title_records) + it.indicator
         }
-        //todo:remove
-        if (vs.selectMode) {
-            toolbar.title = "${vs.selectedRecordsUuids.size} ${vs.selectedSum}"
+
+        renderIfChangedWithFirstRendering({ selectMode }) { visible, firstRendering -> setDeletePanelVisible(visible, firstRendering) }
+        renderIfChanged({ selectedRecordsUuids.size }) { selectedCount_VectorIntegerView.setInteger(it.toLong(), true) }
+        renderIfChanged({ selectedSum }) {
+            //todo: digits color
+            selectedSum_VectorIntegerView.setBackgroundColor(resources.color(
+                    if (it >= 0) {
+                        R.color.balance_positive
+                    } else {
+                        R.color.balance_negative
+                    }
+            ))
+            selectedSum_VectorIntegerView.setInteger(it, true)
         }
     }
 
@@ -331,8 +353,82 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }.also { }
     }
 
+    override fun onBackPressed(): Boolean {
+        if (currentViewState.selectMode) {
+            cancelSelection.onNext(Any())
+            return true
+        }
+        return false
+    }
+
     private fun DialogFragment.makeShow(requestCode: Int? = null) = this
             .also { if (requestCode != null) it.setTargetFragment(this@RecordsListFragment, requestCode) }
             .show(this@RecordsListFragment.fragmentManager, null)
             .also { (this@RecordsListFragment.context as KeyboardManager).hideKeyboard() }
+
+    private fun setDeletePanelVisible(visible: Boolean, firstRendering: Boolean) {
+        val deleteImageViewTranslationX = resources.toPx(48).toFloat()
+
+        val newState = intArrayOf(
+                R.attr.state_close.let { if (visible) it else -it },
+                R.attr.state_back_arrow.let { if (!visible) it else -it }
+        )
+
+        if (firstRendering) {
+            toolbar.alpha = if (visible) 0f else 1f
+            selectPanel_LinearLayout.alpha = if (visible) 1f else 0f
+            selectPanel_LinearLayout.setVisible(visible)
+            appBarLayout.setBackgroundColor(resources.color(if (visible) R.color.colorAccent else R.color.colorPrimary))
+            closeSelectPanel_ImageView.setImageState(newState, true)
+            closeSelectPanel_ImageView.jumpDrawablesToCurrentState()
+            button_ImageView.translationX = if (visible) 0f else deleteImageViewTranslationX
+            return
+        }
+
+        val animationDuration = resources.getInteger(R.integer.toolbar_icon_animation_duration).toLong()
+        if (visible) {
+            toolbar.animate()
+                    .setDuration(animationDuration)
+                    .alpha(0f)
+            selectPanel_LinearLayout.setVisible(true)
+            selectPanel_LinearLayout.animate()
+                    .setDuration(animationDuration)
+                    .alpha(1f)
+            appBarLayout.animateBackgroundColor(
+                    appBarLayout.getBackgroundColor() ?: resources.color(R.color.colorPrimary),
+                    resources.color(R.color.colorAccent),
+                    animationDuration
+            )
+            closeSelectPanel_ImageView.postDelayed({
+                closeSelectPanel_ImageView?.setImageState(newState, true)
+            }, 100)
+            button_ImageView.translationX = deleteImageViewTranslationX
+            button_ImageView.animate()
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(animationDuration)
+                    .translationX(0f)
+        } else {
+            closeSelectPanel_ImageView.post {
+                closeSelectPanel_ImageView?.setImageState(newState, true)
+            }
+            closeSelectPanel_ImageView.postDelayed({
+                toolbar?.animate()
+                        ?.setDuration(animationDuration)
+                        ?.alpha(1f)
+                selectPanel_LinearLayout?.animate()
+                        ?.setDuration(animationDuration)
+                        ?.alpha(0f)
+                        ?.withEndAction { selectPanel_LinearLayout?.setVisible(false) }
+                appBarLayout?.animateBackgroundColor(
+                        appBarLayout?.getBackgroundColor() ?: resources.color(R.color.colorAccent),
+                        resources.color(R.color.colorPrimary),
+                        animationDuration
+                )
+            }, animationDuration)
+            button_ImageView.animate()
+                    .setInterpolator(AccelerateInterpolator())
+                    .setDuration(animationDuration)
+                    .translationX(deleteImageViewTranslationX)
+        }
+    }
 }

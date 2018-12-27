@@ -1,8 +1,10 @@
 package com.qwert2603.spenddemo.utils
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewTreeObserver
@@ -78,4 +80,12 @@ fun AlertDialog.setShowing(showing: Boolean, keyboardContext: Context) {
     } else {
         dismiss()
     }
+}
+
+fun View.getBackgroundColor() = (background as? ColorDrawable)?.color
+
+fun View.animateBackgroundColor(from: Int, to: Int, duration: Long? = null) {
+    ObjectAnimator.ofArgb(this, "backgroundColor", from, to)
+            .also { animator -> duration?.let { animator.duration = it } }
+            .start()
 }

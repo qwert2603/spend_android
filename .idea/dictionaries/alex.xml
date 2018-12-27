@@ -1,9 +1,13 @@
 <component name="ProjectDictionaryState">
   <dictionary name="alex">
     <words>
+      <w>andrlib</w>
+      <w>fragmentargs</w>
       <w>gson</w>
       <w>interactor</w>
+      <w>okhttp</w>
       <w>rerender</w>
+      <w>stetho</w>
       <w>uuids</w>
     </words>
   </dictionary>

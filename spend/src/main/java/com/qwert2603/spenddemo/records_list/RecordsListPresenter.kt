@@ -96,7 +96,9 @@ class RecordsListPresenter @Inject constructor(
                     .filter { !it.isDeleted() }
                     .withLatestFrom(viewStateObservable, makePair())
                     .filter { (_, vs) -> vs.selectMode }
-                    .map { (record, _) -> RecordsListPartialChange.ToggleRecordSelection(record.uuid) }
+                    .map { (record, _) -> RecordsListPartialChange.ToggleRecordSelection(record.uuid) },
+            intent { it.cancelSelection() }
+                    .map { RecordsListPartialChange.ClearSelection }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -113,6 +115,7 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
             is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(selectedRecordsUuids = vs.selectedRecordsUuids.toggle(change.recordUuid))
+            RecordsListPartialChange.ClearSelection -> vs.copy(selectedRecordsUuids = hashSetOf())
         }
     }
 

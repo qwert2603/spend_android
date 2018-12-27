@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/close"
+        android:drawable="@drawable/close"
+        app:state_close="true" />
+
+    <item
+        android:id="@+id/back_arrow"
+        android:drawable="@drawable/back_arrow" />
+
+    <transition
+        android:drawable="@drawable/back_arrow_to_close"
+        android:fromId="@id/back_arrow"
+        android:toId="@id/close" />
+
+    <transition
+        android:drawable="@drawable/close_to_back_arrow"
+        android:fromId="@id/close"
+        android:toId="@id/back_arrow" />
+
+</animated-selector>
