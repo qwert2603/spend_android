@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashSet
 import kotlin.random.Random
 
 class RecordsListPresenter @Inject constructor(
@@ -111,13 +112,20 @@ class RecordsListPresenter @Inject constructor(
                     records = change.list,
                     diff = change.diff,
                     recordsChanges = change.recordsChanges
-            )
+            ).let { changedVS ->
+                changedVS.copy(selectedRecordsUuids = changedVS.selectedRecordsUuids
+                        .filterTo(HashSet()) { changedVS.recordsByUuid?.get(it)?.isDeleted() == false }
+                )
+            }
             is RecordsListPartialChange.ShowInfoChanged -> vs.copy(showInfo = change.showInfo)
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
             is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
-            is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(selectedRecordsUuids = vs.selectedRecordsUuids.toggle(change.recordUuid))
+            is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(selectedRecordsUuids = vs.selectedRecordsUuids.toggleAndFilter(
+                    itemToToggle = change.recordUuid,
+                    filter = { vs.recordsByUuid?.get(it)?.isDeleted() == false }
+            ))
             RecordsListPartialChange.ClearSelection -> vs.copy(selectedRecordsUuids = hashSetOf())
         }
     }

@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/record_background"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
