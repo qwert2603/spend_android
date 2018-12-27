@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="viv_digit_size">16dp</dimen>
+    <dimen name="viv_digit_margin_horizontal">-2dp</dimen>
+</resources>
