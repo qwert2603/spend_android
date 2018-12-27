@@ -84,7 +84,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         selectPanel_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
-        records_RecyclerView.adapter = RecordsListAdapter()
+        records_RecyclerView.adapter = RecordsListAdapter(isDaySumsClickable = false)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
         records_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
@@ -224,6 +224,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
         renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
         renderIfChanged({ selectedRecordsUuids }) { adapter.selectedRecordsUuids = it }
+        renderIfChanged({ selectMode }) { adapter.selectMode = it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
             if (records == null) return@renderIfChangedWithFirstRendering

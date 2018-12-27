@@ -8,7 +8,7 @@ import com.qwert2603.spenddemo.records_list.vh.*
 import io.reactivex.subjects.PublishSubject
 import java.lang.ref.WeakReference
 
-class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var showChangeKinds = true
         set(value) {
@@ -39,6 +39,13 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
     var selectedRecordsUuids: HashSet<String> = hashSetOf()
+        set(value) {
+            if (value == field) return
+            field = value
+            redrawViewHolders()
+        }
+
+    var selectMode = false
         set(value) {
             if (value == field) return
             field = value
@@ -88,7 +95,7 @@ class RecordsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         VIEW_TYPE_RECORD -> RecordViewHolder(parent)
-        VIEW_TYPE_DATE_SUM -> DaySumViewHolder(parent)
+        VIEW_TYPE_DATE_SUM -> DaySumViewHolder(parent, isDaySumsClickable)
         VIEW_TYPE_MONTH_SUM -> MonthSumViewHolder(parent)
         VIEW_TYPE_YEAR_SUM -> YearSumViewHolder(parent)
         VIEW_TYPE_PERIOD_DIVIDER -> PeriodDividerViewHolder(parent)

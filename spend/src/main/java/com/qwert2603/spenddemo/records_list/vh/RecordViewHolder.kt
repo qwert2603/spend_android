@@ -65,6 +65,10 @@ class RecordViewHolder(parent: ViewGroup) : BaseViewHolder<Record>(parent, R.lay
             local_ImageView.clearColorFilter()
         }
 
+        val canInteract = t.isChangeable() || (adapter.selectMode && !t.isDeleted())
+        isClickable = canInteract
+        isLongClickable = canInteract
+
         val strike = t.change?.isDelete == true
         listOf(date_TextView, time_TextView, kind_TextView, value_TextView)
                 .forEach { it.setStrike(strike) }

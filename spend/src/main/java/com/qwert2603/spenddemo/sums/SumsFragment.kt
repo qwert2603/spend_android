@@ -45,7 +45,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
             inflater.inflate(R.layout.fragment_sums, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        sums_RecyclerView.adapter = RecordsListAdapter()
+        sums_RecyclerView.adapter = RecordsListAdapter(isDaySumsClickable = true)
         sums_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 30)
         sums_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_MONTH_SUM, 20)
         sums_RecyclerView.addItemDecoration(ConditionDividerDecoration(requireContext()) { rv, vh, _ ->
