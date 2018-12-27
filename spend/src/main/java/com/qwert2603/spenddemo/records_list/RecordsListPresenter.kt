@@ -99,7 +99,7 @@ class RecordsListPresenter @Inject constructor(
                     .filter { !it.isDeleted() }
                     .withLatestFrom(viewStateObservable, makePair())
                     .filter { (record, vs) ->
-                        if (!vs.selectMode) {
+                        if (!vs.selectMode && record.isChangeable()) {
                             viewActions.onNext(RecordsListViewAction.AskForRecordActions(record.uuid))
                         }
                         vs.selectMode
