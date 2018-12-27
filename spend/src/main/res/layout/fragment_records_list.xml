@@ -27,10 +27,14 @@
         android:id="@+id/selectPanel_LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:animateLayoutChanges="true"
         android:background="@color/colorAccent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:theme="@style/AppTheme.AppBarOverlay"
         tools:alpha="0.5">
 
         <ImageView
@@ -50,6 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:viv_digit_color="@android:color/white"
             app:viv_vector_integer="0" />
 
@@ -66,7 +72,7 @@
             android:id="@+id/selectedSum_VectorIntegerView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="6dp"
             android:layout_weight="1"
             app:viv_vector_integer="0"
             tools:viv_digit_color="@color/balance_negative" />

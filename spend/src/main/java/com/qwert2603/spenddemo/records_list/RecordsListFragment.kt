@@ -1,5 +1,6 @@
 package com.qwert2603.spenddemo.records_list
 
+import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -77,6 +78,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             inflater.inflate(R.layout.fragment_records_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        selectPanel_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+
         records_RecyclerView.adapter = RecordsListAdapter()
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_DATE_SUM, 20)
@@ -317,14 +320,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChangedWithFirstRendering({ selectMode }) { visible, firstRendering -> setDeletePanelVisible(visible, firstRendering) }
         renderIfChanged({ selectedRecordsUuids.size }) { selectedCount_VectorIntegerView.setInteger(it.toLong(), true) }
         renderIfChanged({ selectedSum }) {
-            //todo: digits color
-            selectedSum_VectorIntegerView.setBackgroundColor(resources.color(
+            selectedSum_VectorIntegerView.digitColor = resources.color(
                     if (it >= 0) {
                         R.color.balance_positive
                     } else {
                         R.color.balance_negative
                     }
-            ))
+            )
             selectedSum_VectorIntegerView.setInteger(it, true)
         }
     }
