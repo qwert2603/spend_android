@@ -105,7 +105,9 @@
     <string name="button_accept">применить</string>
     <string name="text_editing_record_not_found">запись не найдена</string>
     <string name="record_kind_description_no_records"><![CDATA[<i>нет записей</i>]]></string>
-    <string name="fix_time">зафиксировать время</string>
     <string name="text_loading">загрузка..</string>
+    <string name="menu_item_delete">удалить</string>
+    <string name="menu_item_combine">объединить</string>
+    <string name="menu_item_change">изменить</string>
 
 </resources>

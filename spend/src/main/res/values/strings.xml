@@ -73,6 +73,10 @@
     <string name="title_short_sum_dialog">short &#931;</string>
     <string name="text_period_sum_format" formatted="true" translatable="false">&#931;(%1$s) = %2$s</string>
 
+    <string name="menu_item_delete">delete</string>
+    <string name="menu_item_combine">combine</string>
+    <string name="menu_item_change">change</string>
+
     <string name="text_all_records_loaded">&#8704; records loaded</string>
 
     <string name="text_total_items_format" formatted="true" translatable="false">&#931;(%s) = %s</string>
@@ -120,7 +124,6 @@
     <string name="server_change_time_format" formatted="true"><![CDATA[on server <b>time</b> changed to <b>%s</b>]]></string>
 
     <string name="button_accept">accept</string>
-    <string name="fix_time">fix time</string>
     <string name="text_loading">loading..</string>
 
 </resources>

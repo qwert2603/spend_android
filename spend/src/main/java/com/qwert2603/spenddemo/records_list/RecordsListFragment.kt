@@ -8,9 +8,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.view.animation.AccelerateInterpolator
 import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
@@ -20,7 +18,6 @@ import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
-import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
@@ -63,6 +60,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     private val itemAnimator: RecordsListAnimator get() = records_RecyclerView.itemAnimator as RecordsListAnimator
 
     private val menuHolder = MenuHolder()
+    private val selectModeMenuHolder = MenuHolder()
 
     private val editRecordClicks = PublishSubject.create<String>()
     private val deleteRecordClicks = PublishSubject.create<String>()
@@ -83,6 +81,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         selectPanel_LinearLayout.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+
+        requireActivity().menuInflater.inflate(R.menu.records_select, select_ActionMenuView.menu)
+        selectModeMenuHolder.menu = select_ActionMenuView.menu
 
         records_RecyclerView.adapter = RecordsListAdapter(isDaySumsClickable = false)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
@@ -387,8 +388,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             .also { (this@RecordsListFragment.context as KeyboardManager).hideKeyboard() }
 
     private fun setDeletePanelVisible(visible: Boolean, firstRendering: Boolean) {
-        val deleteImageViewTranslationX = resources.toPx(48).toFloat()
-
         val newState = intArrayOf(
                 R.attr.state_close.let { if (visible) it else -it },
                 R.attr.state_back_arrow.let { if (!visible) it else -it }
@@ -401,7 +400,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             appBarLayout.setBackgroundColor(resources.color(if (visible) R.color.colorAccent else R.color.colorPrimary))
             closeSelectPanel_ImageView.setImageState(newState, true)
             closeSelectPanel_ImageView.jumpDrawablesToCurrentState()
-            delete_Button.translationX = if (visible) 0f else deleteImageViewTranslationX
             return
         }
 
@@ -422,11 +420,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             closeSelectPanel_ImageView.postDelayed({
                 closeSelectPanel_ImageView?.setImageState(newState, true)
             }, 100)
-            delete_Button.translationX = deleteImageViewTranslationX
-            delete_Button.animate()
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(animationDuration)
-                    .translationX(0f)
         } else {
             closeSelectPanel_ImageView.post {
                 closeSelectPanel_ImageView?.setImageState(newState, true)
@@ -445,10 +438,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         animationDuration
                 )
             }, animationDuration)
-            delete_Button.animate()
-                    .setInterpolator(AccelerateInterpolator())
-                    .setDuration(animationDuration)
-                    .translationX(deleteImageViewTranslationX)
         }
     }
 }
