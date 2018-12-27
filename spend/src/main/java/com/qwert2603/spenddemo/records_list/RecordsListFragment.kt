@@ -400,7 +400,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             appBarLayout.setBackgroundColor(resources.color(if (visible) R.color.colorAccent else R.color.colorPrimary))
             closeSelectPanel_ImageView.setImageState(newState, true)
             closeSelectPanel_ImageView.jumpDrawablesToCurrentState()
-            button_ImageView.translationX = if (visible) 0f else deleteImageViewTranslationX
+            delete_Button.translationX = if (visible) 0f else deleteImageViewTranslationX
             return
         }
 
@@ -421,8 +421,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             closeSelectPanel_ImageView.postDelayed({
                 closeSelectPanel_ImageView?.setImageState(newState, true)
             }, 100)
-            button_ImageView.translationX = deleteImageViewTranslationX
-            button_ImageView.animate()
+            delete_Button.translationX = deleteImageViewTranslationX
+            delete_Button.animate()
                     .setInterpolator(DecelerateInterpolator())
                     .setDuration(animationDuration)
                     .translationX(0f)
@@ -444,7 +444,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         animationDuration
                 )
             }, animationDuration)
-            button_ImageView.animate()
+            delete_Button.animate()
                     .setInterpolator(AccelerateInterpolator())
                     .setDuration(animationDuration)
                     .translationX(deleteImageViewTranslationX)
