@@ -9,7 +9,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashSet
 import kotlin.random.Random
 
 class RecordsListPresenter @Inject constructor(
@@ -25,8 +24,8 @@ class RecordsListPresenter @Inject constructor(
             shortSumPeriod = recordsListInteractor.shortSumPeriod.field,
             sumsInfo = SumsInfo.EMPTY,
             recordsChanges = hashMapOf(),
-            selectedRecordsUuids = hashSetOf(),
-            syncState = SyncState.SYNCING
+            syncState = SyncState.SYNCING,
+            _selectedRecordsUuids = hashSetOf()
     )
 
     private val showInfoChanges: Observable<ShowInfo> = recordsListInteractor.showInfo.changes.shareAfterViewSubscribed()
@@ -117,21 +116,14 @@ class RecordsListPresenter @Inject constructor(
                     records = change.list,
                     diff = change.diff,
                     recordsChanges = change.recordsChanges
-            ).let { changedVS ->
-                changedVS.copy(selectedRecordsUuids = changedVS.selectedRecordsUuids
-                        .filterTo(HashSet()) { changedVS.recordsByUuid?.get(it)?.isDeleted() == false }
-                )
-            }
+            )
             is RecordsListPartialChange.ShowInfoChanged -> vs.copy(showInfo = change.showInfo)
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
             is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
-            is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(selectedRecordsUuids = vs.selectedRecordsUuids.toggleAndFilter(
-                    itemToToggle = change.recordUuid,
-                    filter = { vs.recordsByUuid?.get(it)?.isDeleted() == false }
-            ))
-            RecordsListPartialChange.ClearSelection -> vs.copy(selectedRecordsUuids = hashSetOf())
+            is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(_selectedRecordsUuids = vs.selectedRecordsUuids.toggle(change.recordUuid))
+            RecordsListPartialChange.ClearSelection -> vs.copy(_selectedRecordsUuids = hashSetOf())
         }
     }
 

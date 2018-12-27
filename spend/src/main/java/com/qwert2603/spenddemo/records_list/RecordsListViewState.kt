@@ -14,10 +14,20 @@ data class RecordsListViewState(
         val records: List<RecordsListItem>?,
         val diff: FastDiffUtils.FastDiffResult,
         val recordsChanges: HashMap<String, RecordChange>, // key is Record::uuid
-        val selectedRecordsUuids: HashSet<String>,
-        val syncState: SyncState
+        val syncState: SyncState,
+        private val _selectedRecordsUuids: HashSet<String>
 ) {
-    val selectMode = selectedRecordsUuids.isNotEmpty()
+    private val recordsByUuid: HashMap<String, Record>? by lazy {
+        records
+                ?.mapNotNull { it as? Record }
+                ?.let { records ->
+                    records.associateByTo(HashMap(records.size)) { it.uuid }
+                }
+    }
+
+    val selectedRecordsUuids: HashSet<String> = _selectedRecordsUuids.filterTo(HashSet()) { recordsByUuid?.get(it)?.isDeleted() == false }
+
+    val selectMode by lazy { selectedRecordsUuids.isNotEmpty() }
 
     val selectedSum by lazy {
         val recordsByUuid = recordsByUuid
@@ -35,13 +45,5 @@ data class RecordsListViewState(
                 }.toLong()
             }
         }
-    }
-
-    val recordsByUuid: HashMap<String, Record>? by lazy {
-        records
-                ?.mapNotNull { it as? Record }
-                ?.let { records ->
-                    records.associateByTo(HashMap(records.size)) { it.uuid }
-                }
     }
 }
