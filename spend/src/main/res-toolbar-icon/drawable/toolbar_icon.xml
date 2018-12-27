@@ -8,6 +8,11 @@
         app:state_close="true" />
 
     <item
+        android:id="@+id/drawer"
+        android:drawable="@drawable/drawer"
+        app:state_drawer="true" />
+
+    <item
         android:id="@+id/back_arrow"
         android:drawable="@drawable/back_arrow" />
 
@@ -20,5 +25,25 @@
         android:drawable="@drawable/close_to_back_arrow"
         android:fromId="@id/close"
         android:toId="@id/back_arrow" />
+
+    <transition
+        android:drawable="@drawable/back_arrow_to_drawer"
+        android:fromId="@id/back_arrow"
+        android:toId="@id/drawer" />
+
+    <transition
+        android:drawable="@drawable/drawer_to_back_arrow"
+        android:fromId="@id/drawer"
+        android:toId="@id/back_arrow" />
+
+    <transition
+        android:drawable="@drawable/close_to_drawer"
+        android:fromId="@id/close"
+        android:toId="@id/drawer" />
+
+    <transition
+        android:drawable="@drawable/drawer_to_close"
+        android:fromId="@id/drawer"
+        android:toId="@id/close" />
 
 </animated-selector>

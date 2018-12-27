@@ -388,9 +388,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             .also { (this@RecordsListFragment.context as KeyboardManager).hideKeyboard() }
 
     private fun setDeletePanelVisible(visible: Boolean, firstRendering: Boolean) {
+        val isRoot = requireFragmentManager().backStackEntryCount == 0
+        val defaultIconState = if (isRoot) R.attr.state_drawer else R.attr.state_back_arrow
         val newState = intArrayOf(
                 R.attr.state_close.let { if (visible) it else -it },
-                R.attr.state_back_arrow.let { if (!visible) it else -it }
+                defaultIconState.let { if (!visible) it else -it }
         )
 
         if (firstRendering) {

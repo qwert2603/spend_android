@@ -3,5 +3,6 @@
     <declare-styleable name="ToolbarIconState">
         <attr name="state_close" format="boolean"/>
         <attr name="state_back_arrow" format="boolean"/>
+        <attr name="state_drawer" format="boolean"/>
     </declare-styleable>
 </resources>
