@@ -150,6 +150,7 @@ class RecordsRepoImpl @Inject constructor(
 
     override fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String) {
         LogUtils.d("RecordsRepoImpl combineRecords $recordUuids $categoryUuid $kind")
-        //todo
+        // todo: recordEditedLocallyEvents.onNext(it.uuid)
+        syncProcessor.combineRecords(recordUuids, categoryUuid, kind)
     }
 }

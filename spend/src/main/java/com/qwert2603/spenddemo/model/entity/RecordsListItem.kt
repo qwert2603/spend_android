@@ -48,13 +48,13 @@ interface RecordsListItem : IdentifiableLong {
     }
 
     // format is "yyyyMMdd0HHmm"; (date * DATE_MULTIPLIER) + time
-    fun dateTime() = when (this) {
+    fun dateTime(): Long = when (this) {
         is Record -> date.date * DATE_MULTIPLIER + if (time != null) time.time + 100 * 100 else 0
         is DaySum -> day.date * DATE_MULTIPLIER
         is MonthSum -> (month * 100L) * DATE_MULTIPLIER
         is YearSum -> (year * 100L * 100L) * DATE_MULTIPLIER
         is PeriodDivider -> date.date * DATE_MULTIPLIER + if (time != null) time.time + 100 * 100 else 0
-        is Totals -> 0
+        is Totals -> 0L
         else -> null!!
     }
 

@@ -4,6 +4,7 @@ import android.arch.persistence.room.*
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.Record
 import com.qwert2603.spenddemo.model.entity.RecordCategory
+import com.qwert2603.spenddemo.model.entity.RecordChange
 import com.qwert2603.spenddemo.model.local_db.entity.ChangesFromServer
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.local_db.results.Dump
@@ -16,6 +17,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import java.util.*
 
 @Dao
 abstract class RecordsDao {
@@ -68,6 +70,9 @@ abstract class RecordsDao {
     @Transaction
     @Query("SELECT * FROM RecordCategoryTable")
     protected abstract fun getRecordCategories(): Flowable<List<RecordCategoryTable>>
+
+    @Query("SELECT * FROM RecordTable WHERE uuid in (:uuids)")
+    protected abstract fun getRecordsByUuid(uuids: List<String>): List<RecordTable>
 
     @Transaction
     @Query("SELECT uuid FROM RecordTable WHERE change_isDelete IS NOT NULL AND uuid in (:uuids)")
@@ -159,4 +164,39 @@ abstract class RecordsDao {
                         records = getDumpRecords()
                 )
             }
+
+    /**
+     * [changeIds] are ids to use when save changes -- locally deleted records and created record.
+     * [changeIds.size] MUST be equal [recordUuids.size] + 1.
+     * (+ 1) is for created record.
+     */
+    @Suppress("KDocUnresolvedReference")
+    @Transaction
+    open fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String, changeIds: List<Long>) {
+        require(changeIds.size == recordUuids.size + 1)
+
+        val recordsToCombine = getRecordsByUuid(recordUuids)
+                .filter { it.recordCategoryUuid == categoryUuid && it.kind == kind }
+        if (recordsToCombine.size <= 1) return // nothing to combine.
+
+        val dateMultiplier = 10L * 100 * 100
+        val lastRecord = recordsToCombine
+                .maxBy { it.date * dateMultiplier + if (it.time != null) it.time + 100 * 100 else 0 }!!
+
+        val combinedRecord = RecordTable(
+                uuid = UUID.randomUUID().toString(),
+                recordCategoryUuid = categoryUuid,
+                kind = kind,
+                date = lastRecord.date,
+                time = lastRecord.time,
+                value = recordsToCombine.sumBy { it.value },
+                change = RecordChange(changeIds.last(), false)
+        )
+
+        locallyDeleteRecords(recordsToCombine
+                .mapIndexed { index, recordTable ->
+                    ItemsIds(recordTable.uuid, changeIds[index])
+                })
+        saveRecords(listOf(combinedRecord))
+    }
 }

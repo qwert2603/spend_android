@@ -117,4 +117,15 @@ class SyncProcessor(
             }
         }
     }
+
+    fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String) {
+        localDBExecutor.execute {
+            recordsDao.combineRecords(
+                    recordUuids = recordUuids,
+                    categoryUuid = categoryUuid,
+                    kind = kind,
+                    changeIds = (0..recordUuids.size).map { changeIdCounter.getNext() }
+            )
+        }
+    }
 }

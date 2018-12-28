@@ -41,6 +41,15 @@ interface RecordsRepo {
 
     fun getSyncState(): Observable<SyncState>
 
+    /**
+     * Combine records with [Record.uuid] in [recordUuids] in one new [Record].
+     * Records with [Record.recordCategory.uuid] != [categoryUuid] or [Record.kind] != [kind] will NOT be combined.
+     * Combined records will be locally deleted ([Record.change.isDelete] equal to [true]).
+     * New created record will have [Record.date] and [Record.time] same as latest combined [Record].
+     * New created record will have [Record.value] equal to sum of [Record.value] of combined records.
+     * New created record will have [Record.change.isDelete] equal to [false].
+     */
+    @Suppress("KDocUnresolvedReference")
     fun combineRecords(
             recordUuids: List<String>,
             categoryUuid: String,
