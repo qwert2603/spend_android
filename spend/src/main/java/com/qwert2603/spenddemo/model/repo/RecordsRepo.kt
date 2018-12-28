@@ -40,4 +40,10 @@ interface RecordsRepo {
     fun removeAllRecords()
 
     fun getSyncState(): Observable<SyncState>
+
+    fun combineRecords(
+            recordUuids: List<String>,
+            categoryUuid: String,
+            kind: String
+    )
 }

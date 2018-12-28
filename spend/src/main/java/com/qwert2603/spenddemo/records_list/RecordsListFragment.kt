@@ -152,6 +152,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onViewCreated(view, savedInstanceState)
     }
 
+    override fun onDestroyView() {
+        selectModeMenuHolder.menu = null
+        super.onDestroyView()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         createSpendViewImpl.onDialogResult(requestCode, resultCode, data)
@@ -217,6 +222,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             RxView.clicks(closeSelectPanel_ImageView),
             cancelSelection
     )
+
+    override fun deleteSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.delete)
+    override fun combineSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.combine)
+    override fun changeSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.change)
 
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }
@@ -345,6 +354,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             )
             selectedSum_VectorIntegerView.setInteger(it, true)
         }
+
+        selectModeMenuHolder.menu?.also { menu ->
+            renderIfChanged({ canDeleteSelected }) { menu.findItem(R.id.delete).isEnabled = it }
+            renderIfChanged({ canChangeSelected }) { menu.findItem(R.id.change).isEnabled = it }
+            renderIfChanged({ canCombineSelected }) { menu.findItem(R.id.combine).isEnabled = it }
+        }
     }
 
     override fun executeAction(va: ViewAction) {
@@ -371,6 +386,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
             is RecordsListViewAction.OnRecordEditedLocally -> Unit
             RecordsListViewAction.RerenderAll -> renderAll()
+            is RecordsListViewAction.AskToCombineRecords -> CombineRecordsDialogFragmentBuilder
+                    .newCombineRecordsDialogFragment(CombineRecordsDialogFragment.Key(va.recordUuids, va.categoryUuid, va.kind))
+                    .makeShow()
         }.also { }
     }
 

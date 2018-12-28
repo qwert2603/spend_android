@@ -249,6 +249,14 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordEditedLocally(it)) }
                 .subscribeToView()
 
+        intent { it.combineSelectedClicks() }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .doOnNext { vs ->
+                    // combined records will be deleted (and automatically deselected).
+                    vs.createCombineAction()?.also { viewActions.onNext(it) }
+                }
+                .subscribeToView()
+
         super.bindIntents()
     }
 

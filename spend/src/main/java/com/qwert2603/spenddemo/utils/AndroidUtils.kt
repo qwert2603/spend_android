@@ -88,16 +88,16 @@ fun Intent.getIntExtraNullable(key: String) =
             null
         }
 
-val AppCompatDialog.positiveButton: Button
+private val AppCompatDialog.positiveButton: Button
     get() = getButton(DialogInterface.BUTTON_POSITIVE)
 
-val SystemDialog.positiveButton: Button
+private val SystemDialog.positiveButton: Button
     get() = getButton(DialogInterface.BUTTON_POSITIVE)
 
-val AppCompatDialog.neutralButton: Button
+private val AppCompatDialog.neutralButton: Button
     get() = getButton(DialogInterface.BUTTON_NEUTRAL)
 
-val SystemDialog.neutralButton: Button
+private val SystemDialog.neutralButton: Button
     get() = getButton(DialogInterface.BUTTON_NEUTRAL)
 
 val Dialog.positiveButton: Button

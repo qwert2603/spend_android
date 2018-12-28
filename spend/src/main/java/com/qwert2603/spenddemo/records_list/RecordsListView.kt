@@ -32,4 +32,8 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun clearAllClicks(): Observable<Any>
 
     fun cancelSelection(): Observable<Any>
+
+    fun deleteSelectedClicks(): Observable<Any>
+    fun combineSelectedClicks(): Observable<Any>
+    fun changeSelectedClicks(): Observable<Any>
 }

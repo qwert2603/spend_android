@@ -14,4 +14,9 @@ sealed class RecordsListViewAction : ViewAction {
     data class OnRecordCreatedLocally(val uuid: String) : RecordsListViewAction()
     data class OnRecordEditedLocally(val uuid: String) : RecordsListViewAction()
     object RerenderAll : RecordsListViewAction()
+    data class AskToCombineRecords(
+            val recordUuids: List<String>,
+            val categoryUuid: String,
+            val kind: String
+    ) : RecordsListViewAction()
 }

@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.model.repo_impl
 import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.model.entity.*
@@ -145,5 +146,10 @@ class RecordsRepoImpl @Inject constructor(
         syncProcessor.clear()
     }
 
-    override fun getSyncState(): Observable<SyncState> = syncProcessor.syncState
+    override fun getSyncState(): Observable<SyncState> = syncProcessor.syncState.hide()
+
+    override fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String) {
+        LogUtils.d("RecordsRepoImpl combineRecords $recordUuids $categoryUuid $kind")
+        //todo
+    }
 }

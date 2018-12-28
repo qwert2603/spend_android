@@ -1,6 +1,5 @@
 package com.qwert2603.spenddemo.records_list
 
-import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.Const
 import com.qwert2603.spenddemo.utils.FastDiffUtils
@@ -35,15 +34,39 @@ data class RecordsListViewState(
             0L
         } else {
             selectedRecordsUuids.sumByLong { uuid ->
-                val record = recordsByUuid[uuid]
+                val record = recordsByUuid[uuid]!!
                 when {
-                    record == null -> 0
-                            .also { LogUtils.e("selected record == null; uuid == $uuid") }
                     record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> -1 * record.value
                     record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> record.value
                     else -> null!!
                 }.toLong()
             }
         }
+    }
+
+    private val selectedRecords: List<Record> by lazy {
+        val recordsByUuid = recordsByUuid ?: return@lazy emptyList<Record>()
+        selectedRecordsUuids.map { recordsByUuid[it]!! }
+    }
+
+    val canCombineSelected: Boolean by lazy {
+        selectedRecords.size > 1
+                && selectedRecords.all { it.isChangeable() }
+                && selectedRecords.distinctBy { it.recordCategory to it.kind }.size == 1
+    }
+
+    val canDeleteSelected by lazy { selectedRecords.all { it.isChangeable() } }
+
+    val canChangeSelected by lazy { selectedRecords.all { it.isChangeable() } }
+
+    fun createCombineAction(): RecordsListViewAction.AskToCombineRecords? {
+        val recordsByUuid = recordsByUuid
+        if (!canCombineSelected || recordsByUuid == null) return null
+        val someSelectedRecord = recordsByUuid[selectedRecordsUuids.first()]!!
+        return RecordsListViewAction.AskToCombineRecords(
+                recordUuids = selectedRecordsUuids.toList(),
+                categoryUuid = someSelectedRecord.recordCategory.uuid,
+                kind = someSelectedRecord.kind
+        )
     }
 }
