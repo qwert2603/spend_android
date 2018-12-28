@@ -149,8 +149,13 @@ class RecordsRepoImpl @Inject constructor(
     override fun getSyncState(): Observable<SyncState> = syncProcessor.syncState.hide()
 
     override fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String) {
-        LogUtils.d("RecordsRepoImpl combineRecords $recordUuids $categoryUuid $kind")
-        // todo: recordEditedLocallyEvents.onNext(it.uuid)
-        syncProcessor.combineRecords(recordUuids, categoryUuid, kind)
+        LogUtils.d { "RecordsRepoImpl combineRecords $recordUuids $categoryUuid $kind" }
+
+        syncProcessor.combineRecords(
+                recordUuids = recordUuids,
+                categoryUuid = categoryUuid,
+                kind = kind,
+                newRecordUuid = UUID.randomUUID().toString()
+        )
     }
 }

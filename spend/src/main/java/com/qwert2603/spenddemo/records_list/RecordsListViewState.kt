@@ -53,6 +53,7 @@ data class RecordsListViewState(
         selectedRecords.size > 1
                 && selectedRecords.all { it.isChangeable() }
                 && selectedRecords.distinctBy { it.recordCategory to it.kind }.size == 1
+                && selectedRecords.sumByLong { it.value.toLong() } <= Int.MAX_VALUE
     }
 
     val canDeleteSelected by lazy { selectedRecords.all { it.isChangeable() } }

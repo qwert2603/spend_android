@@ -17,6 +17,7 @@ object FastDiffUtils {
         }
 
         fun dispatchToAdapter(adapter: RecyclerView.Adapter<*>) {
+            LogUtils.d {  "FastDiffUtils.dispatchToAdapter() $this" }
             changes.forEach { adapter.notifyItemChanged(it) }
             removes.forEach { adapter.notifyItemRangeRemoved(it.first, it.second) }
             inserts.forEach { adapter.notifyItemRangeInserted(it.first, it.second) }

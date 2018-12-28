@@ -13,11 +13,11 @@ import com.qwert2603.spenddemo.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordCategory
 import com.qwert2603.spenddemo.utils.DateUtils
+import com.qwert2603.spenddemo.utils.sumByLong
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import java.util.*
 
 @Dao
 abstract class RecordsDao {
@@ -172,7 +172,13 @@ abstract class RecordsDao {
      */
     @Suppress("KDocUnresolvedReference")
     @Transaction
-    open fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String, changeIds: List<Long>) {
+    open fun combineRecords(
+            recordUuids: List<String>,
+            categoryUuid: String,
+            kind: String,
+            newRecordUuid: String,
+            changeIds: List<Long>
+    ) {
         require(changeIds.size == recordUuids.size + 1)
 
         val recordsToCombine = getRecordsByUuid(recordUuids)
@@ -184,12 +190,20 @@ abstract class RecordsDao {
                 .maxBy { it.date * dateMultiplier + if (it.time != null) it.time + 100 * 100 else 0 }!!
 
         val combinedRecord = RecordTable(
-                uuid = UUID.randomUUID().toString(),
+                uuid = newRecordUuid,
                 recordCategoryUuid = categoryUuid,
                 kind = kind,
                 date = lastRecord.date,
                 time = lastRecord.time,
-                value = recordsToCombine.sumBy { it.value },
+                value = recordsToCombine
+                        .sumByLong { it.value.toLong() }
+                        .let {
+                            if (it <= Int.MAX_VALUE) {
+                                it.toInt()
+                            } else {
+                                1
+                            }
+                        },
                 change = RecordChange(changeIds.last(), false)
         )
 
