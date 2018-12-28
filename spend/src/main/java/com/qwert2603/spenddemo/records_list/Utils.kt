@@ -53,8 +53,8 @@ fun List<Record>.toRecordItemsList(
             interval = longSumPeriod
     )
 
-    LogUtils.d("toRecordItemsList shortPeriodDivider=$shortPeriodDivider")
-    LogUtils.d("toRecordItemsList longPeriodDivider=$longPeriodDivider")
+    LogUtils.d { "toRecordItemsList shortPeriodDivider=$shortPeriodDivider" }
+    LogUtils.d { "toRecordItemsList longPeriodDivider=$longPeriodDivider" }
 
     val currentTimeMillis = System.currentTimeMillis()
 
@@ -68,8 +68,9 @@ fun List<Record>.toRecordItemsList(
     var daySpendsCount = 0
     var dayProfitsCount = 0
 
-    var longSumDividerAdded = false
-    var shortSumDividerAdded = false
+    // don't add divider if interval == 0.
+    var longSumDividerAdded = longSumPeriod.days == 0
+    var shortSumDividerAdded = shortSumPeriod.minutes == 0
 
     var atLeastOneRecordAdded = false
 

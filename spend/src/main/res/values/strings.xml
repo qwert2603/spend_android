@@ -25,7 +25,7 @@
     <string name="dialog_title_edit_profit">edit profit</string>
     <string name="dialog_title_choose_kind">select kind</string>
     <string name="dialog_title_choose_category">select category</string>
-    <string name="dialog_title_combine_records">combine records?</string>
+    <string name="dialog_title_combine_records">combine selected records?</string>
 
     <string name="button_ok" tools:ignore="ButtonCase,Typos">ok</string>
     <string name="button_create">create</string>

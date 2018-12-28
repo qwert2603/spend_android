@@ -110,6 +110,6 @@
     <string name="menu_item_combine">объединить</string>
     <string name="menu_item_change">изменить</string>
     <string name="button_combine">объединить</string>
-    <string name="dialog_title_combine_records">объединить записи?</string>
+    <string name="dialog_title_combine_records">объединить выделенные записи?</string>
 
 </resources>
