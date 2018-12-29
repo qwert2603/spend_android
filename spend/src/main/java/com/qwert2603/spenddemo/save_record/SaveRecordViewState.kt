@@ -15,8 +15,8 @@ data class SaveRecordViewState(
         val serverDate: SDate?,
         val serverTime: Wrapper<STime?>?,
         val serverValue: Int?,
-        val justChangedOnServer: Boolean,
-        val existingRecord: RecordDraft? // null, when creating new record
+        private val justChangedOnServer: Boolean,
+        private val existingRecord: RecordDraft? // null, when creating new record
 ) {
     companion object {
         val DRAFT_IS_LOADING = RecordDraft(

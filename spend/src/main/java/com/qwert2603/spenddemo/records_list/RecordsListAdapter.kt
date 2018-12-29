@@ -52,7 +52,6 @@ class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter
             redrawViewHolders()
         }
 
-    @Suppress("UNCHECKED_CAST")
     private fun redrawViewHolders() {
         LogUtils.d("RecordsListAdapter redrawVisibleViewHolders")
         vhs.forEach {
