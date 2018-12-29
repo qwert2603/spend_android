@@ -34,6 +34,11 @@ data class SaveRecordViewState(
 
     init {
         if (isNewRecord) {
+            require(serverCategory == null)
+            require(serverKind == null)
+            require(serverDate == null)
+            require(serverTime == null)
+            require(serverValue == null)
             require(!justChangedOnServer)
             require(existingRecord == null)
         }
@@ -41,7 +46,10 @@ data class SaveRecordViewState(
 
     val valueString: String = recordDraft.value.takeIf { it != 0 }?.toString() ?: ""
 
-    fun isSaveEnable() = recordDraft.isValid() && !justChangedOnServer && recordDraft != existingRecord
+    fun isSaveEnable() = recordDraft.isValid()
+            && listOfNotNull(serverCategory, serverKind, serverDate, serverTime, serverValue).isEmpty()
+            && !justChangedOnServer
+            && recordDraft != existingRecord
 
     fun categorySelected() = recordDraft.recordCategoryUuid != null
 }

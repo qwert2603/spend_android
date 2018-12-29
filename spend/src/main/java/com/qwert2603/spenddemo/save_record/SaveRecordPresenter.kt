@@ -77,12 +77,13 @@ class SaveRecordPresenter @Inject constructor(
                                 .skip(1)
                                 .map(partialChangesCreator)
 
-                        Observable.merge(
+                        Observable.merge(listOf(
+                                serverPartialChanges({ it.recordCategory }, { SaveRecordPartialChange.CategoryChangeOnServer(it) }),
                                 serverPartialChanges({ it.kind }, { SaveRecordPartialChange.KindChangeOnServer(it) }),
                                 serverPartialChanges({ it.value }, { SaveRecordPartialChange.ValueChangeOnServer(it) }),
                                 serverPartialChanges({ it.date }, { SaveRecordPartialChange.DateChangeOnServer(it) }),
                                 serverPartialChanges({ it.time.wrap() }, { SaveRecordPartialChange.TimeChangeOnServer(it.t) })
-                        )
+                        ))
                     },
             serverRecordChanges
                     .mapNotNull { it.t }
@@ -209,7 +210,7 @@ class SaveRecordPresenter @Inject constructor(
                     } else {
                         vs.recordDraft
                     },
-                    serverKind = null
+                    serverCategory = null
             )
             is SaveRecordPartialChange.KindServerResolved -> vs.copy(
                     recordDraft = if (change.acceptFromServer && vs.serverKind != null) vs.recordDraft.copy(kind = vs.serverKind) else vs.recordDraft,
