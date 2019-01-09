@@ -265,6 +265,13 @@ class RecordsListPresenter @Inject constructor(
                 }
                 .subscribeToView()
 
+        intent { it.changeSelectedClicks() }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .doOnNext { vs ->
+                    viewActions.onNext(RecordsListViewAction.AskToChangeRecords(vs.selectedRecordsUuids.toList()))
+                }
+                .subscribeToView()
+
         super.bindIntents()
     }
 

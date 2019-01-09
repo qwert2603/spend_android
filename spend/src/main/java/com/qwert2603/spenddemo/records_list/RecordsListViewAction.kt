@@ -22,4 +22,5 @@ sealed class RecordsListViewAction : ViewAction {
     ) : RecordsListViewAction()
 
     data class AskToDeleteRecords(val recordUuids: List<String>) : RecordsListViewAction()
+    data class AskToChangeRecords(val recordUuids: List<String>) : RecordsListViewAction()
 }

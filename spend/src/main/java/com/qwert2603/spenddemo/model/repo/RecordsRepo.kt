@@ -55,4 +55,10 @@ interface RecordsRepo {
             categoryUuid: String,
             kind: String
     )
+
+    fun changeRecords(
+            recordsUuids: List<String>,
+            changedDate: SDate?,
+            changedTime: Wrapper<STime>?
+    )
 }

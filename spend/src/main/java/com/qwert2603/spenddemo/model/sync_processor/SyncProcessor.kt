@@ -2,12 +2,11 @@ package com.qwert2603.spenddemo.model.sync_processor
 
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.env.E
-import com.qwert2603.spenddemo.model.entity.RecordChange
-import com.qwert2603.spenddemo.model.entity.RecordDraft
-import com.qwert2603.spenddemo.model.entity.SyncState
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.rest.ApiHelper
+import com.qwert2603.spenddemo.utils.Wrapper
 import com.qwert2603.spenddemo.utils.executeAndWait
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.ExecutorService
@@ -126,6 +125,20 @@ class SyncProcessor(
                     kind = kind,
                     newRecordUuid = newRecordUuid,
                     changeIds = (0..recordUuids.size).map { changeIdCounter.getNext() }
+            )
+        }
+    }
+
+    fun changeRecords(
+            recordsUuids: List<String>,
+            changedDate: SDate?,
+            changedTime: Wrapper<STime>?
+    ) {
+        localDBExecutor.execute {
+            recordsDao.changeRecords(
+                    recordsIds = recordsUuids.map { ItemsIds(it, changeIdCounter.getNext()) },
+                    changedDate = changedDate,
+                    changedTime = changedTime
             )
         }
     }

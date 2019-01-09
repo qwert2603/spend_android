@@ -9,6 +9,7 @@
     <color name="anth">#ff7443</color>
     <color name="button_disabled">#999999</color>
     <color name="date_default">#707070</color>
+    <color name="dont_change">#707070</color>
 
     <color name="local_change_update">#2020DF</color>
     <color name="local_change_delete">#DF2020</color>

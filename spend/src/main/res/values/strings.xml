@@ -27,6 +27,7 @@
     <string name="dialog_title_choose_category">select category</string>
     <string name="dialog_title_combine_records">combine selected records?</string>
     <string name="dialog_title_delete_selected_records">delete selected records?</string>
+    <string name="dialog_title_change_records">change selected records?</string>
 
     <string name="button_ok" tools:ignore="ButtonCase,Typos">ok</string>
     <string name="button_create">create</string>
@@ -34,6 +35,7 @@
     <string name="button_delete">delete</string>
     <string name="button_cancel" tools:ignore="ButtonCase">cancel</string>
     <string name="button_combine">combine</string>
+    <string name="button_change">change</string>
 
     <string name="list_loaded_completely">list loaded completely</string>
     <string name="send_title">send dump</string>
@@ -128,5 +130,7 @@
 
     <string name="button_accept">accept</string>
     <string name="text_loading">loading..</string>
+
+    <string name="dont_change_text">don\'t change</string>
 
 </resources>

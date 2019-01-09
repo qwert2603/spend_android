@@ -112,5 +112,8 @@
     <string name="button_combine">объединить</string>
     <string name="dialog_title_combine_records">объединить выделенные записи?</string>
     <string name="dialog_title_delete_selected_records">удалить выделенные записи?</string>
+    <string name="dialog_title_change_records">изменить выделенные записи</string>
+    <string name="button_change">изменить</string>
+    <string name="dont_change_text">не изменять</string>
 
 </resources>

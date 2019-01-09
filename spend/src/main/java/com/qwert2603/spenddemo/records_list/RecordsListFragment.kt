@@ -19,6 +19,8 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
+import com.qwert2603.spenddemo.change_records.ChangeRecordsDialogFragment
+import com.qwert2603.spenddemo.change_records.ChangeRecordsDialogFragmentBuilder
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
 import com.qwert2603.spenddemo.env.E
@@ -394,6 +396,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .makeShow()
             is RecordsListViewAction.AskToDeleteRecords -> DeleteRecordsListDialogFragmentBuilder
                     .newDeleteRecordsListDialogFragment(DeleteRecordsListDialogFragment.Key(va.recordUuids))
+                    .makeShow()
+            is RecordsListViewAction.AskToChangeRecords -> ChangeRecordsDialogFragmentBuilder
+                    .newChangeRecordsDialogFragment(ChangeRecordsDialogFragment.Key(va.recordUuids))
                     .makeShow()
         }.also { }
     }

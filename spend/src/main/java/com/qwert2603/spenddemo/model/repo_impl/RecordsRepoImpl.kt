@@ -158,4 +158,10 @@ class RecordsRepoImpl @Inject constructor(
                 newRecordUuid = UUID.randomUUID().toString()
         )
     }
+
+    override fun changeRecords(recordsUuids: List<String>, changedDate: SDate?, changedTime: Wrapper<STime>?) {
+        LogUtils.d { "RecordsRepoImpl changeRecords $recordsUuids $changedDate $changedTime" }
+
+        syncProcessor.changeRecords(recordsUuids, changedDate, changedTime)
+    }
 }

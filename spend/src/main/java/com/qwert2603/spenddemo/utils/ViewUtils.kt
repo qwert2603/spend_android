@@ -1,11 +1,13 @@
 package com.qwert2603.spenddemo.utils
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.EditText
@@ -88,4 +90,18 @@ fun View.animateBackgroundColor(from: Int, to: Int, duration: Long? = null) {
     ObjectAnimator.ofArgb(this, "backgroundColor", from, to)
             .also { animator -> duration?.let { animator.duration = it } }
             .start()
+}
+
+@SuppressLint("ClickableViewAccessibility")
+fun EditText.onRightDrawableClicked(onClicked: () -> Unit) {
+    this.setOnTouchListener { _, event ->
+        var hasConsumed = false
+        if (event.x >= width - totalPaddingRight) {
+            if (event.action == MotionEvent.ACTION_UP) {
+                onClicked()
+            }
+            hasConsumed = true
+        }
+        hasConsumed
+    }
 }

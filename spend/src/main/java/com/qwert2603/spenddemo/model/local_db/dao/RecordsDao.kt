@@ -2,9 +2,7 @@ package com.qwert2603.spenddemo.model.local_db.dao
 
 import android.arch.persistence.room.*
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.RecordCategory
-import com.qwert2603.spenddemo.model.entity.RecordChange
+import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.entity.ChangesFromServer
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.local_db.results.Dump
@@ -13,6 +11,7 @@ import com.qwert2603.spenddemo.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spenddemo.model.local_db.tables.RecordTable
 import com.qwert2603.spenddemo.model.local_db.tables.toRecordCategory
 import com.qwert2603.spenddemo.utils.DateUtils
+import com.qwert2603.spenddemo.utils.Wrapper
 import com.qwert2603.spenddemo.utils.sumByLong
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -212,5 +211,30 @@ abstract class RecordsDao {
                     ItemsIds(recordTable.uuid, changeIds[index])
                 })
         saveRecords(listOf(combinedRecord))
+    }
+
+    @Transaction
+    open fun changeRecords(
+            recordsIds: List<ItemsIds>,
+            changedDate: SDate?,
+            changedTime: Wrapper<STime>?
+    ) {
+        val recordsToChange = getRecordsByUuid(recordsIds.map { it.recordUuid })
+
+        if (recordsToChange.isEmpty()) return
+
+        val changeIds = recordsIds.associateBy { it.recordUuid }
+
+        saveRecords(recordsToChange
+                .map { recordTable ->
+                    recordTable.copy(
+                            date = changedDate?.date ?: recordTable.date,
+                            time = if (changedTime != null) changedTime.t?.time else recordTable.time,
+                            change = RecordChange(
+                                    id = changeIds[recordTable.uuid]!!.recordChangeId,
+                                    isDelete = recordTable.change?.isDelete == true
+                            )
+                    )
+                })
     }
 }
