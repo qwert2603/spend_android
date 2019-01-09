@@ -40,20 +40,22 @@ fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
         var dayProfitsSum = 0L
 
         while (record?.date == date) {
-            when (record.recordCategory.recordTypeId) {
-                Const.RECORD_TYPE_ID_SPEND -> {
-                    daySpendsSum += record.value
-                    monthSpendsSum += record.value
-                    yearSpendsSum += record.value
-                    ++spendsCount
-                    spendsSum += record.value
-                }
-                Const.RECORD_TYPE_ID_PROFIT -> {
-                    dayProfitsSum += record.value
-                    monthProfitsSum += record.value
-                    yearProfitsSum += record.value
-                    ++profitsCount
-                    profitsSum += record.value
+            if (!record.isDeleted()) {
+                when (record.recordCategory.recordTypeId) {
+                    Const.RECORD_TYPE_ID_SPEND -> {
+                        daySpendsSum += record.value
+                        monthSpendsSum += record.value
+                        yearSpendsSum += record.value
+                        ++spendsCount
+                        spendsSum += record.value
+                    }
+                    Const.RECORD_TYPE_ID_PROFIT -> {
+                        dayProfitsSum += record.value
+                        monthProfitsSum += record.value
+                        yearProfitsSum += record.value
+                        ++profitsCount
+                        profitsSum += record.value
+                    }
                 }
             }
 

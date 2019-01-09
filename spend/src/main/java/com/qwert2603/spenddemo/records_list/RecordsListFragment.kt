@@ -58,6 +58,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private val adapter: RecordsListAdapter get() = records_RecyclerView.adapter as RecordsListAdapter
     private val itemAnimator: RecordsListAnimator get() = records_RecyclerView.itemAnimator as RecordsListAnimator
+    private val layoutManager: LinearLayoutManager get() = records_RecyclerView.layoutManager as LinearLayoutManager
 
     private val menuHolder = MenuHolder()
     private val selectModeMenuHolder = MenuHolder()
@@ -112,8 +113,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                 .observeOn(AndroidSchedulers.mainThread()),
                         RxRecyclerView.scrollEvents(records_RecyclerView)
                                 .map {
-                                    val lastVisiblePosition = (records_RecyclerView.layoutManager as LinearLayoutManager)
-                                            .findLastVisibleItemPosition()
+                                    val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
                                     val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
                                             && currentViewState.records?.get(lastVisiblePosition) is Totals
                                     return@map !lastIsTotal
@@ -129,7 +129,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         RxRecyclerView.scrollEvents(records_RecyclerView)
                 .subscribe {
                     if (!currentViewState.showInfo.showFloatingDate()) return@subscribe
-                    var i = (records_RecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    var i = layoutManager.findLastVisibleItemPosition()
                     val floatingCenter = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
                     val viewHolder = records_RecyclerView.findViewHolderForAdapterPosition(i)
                     val records = currentViewState.records
@@ -248,6 +248,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 adapter.notifyDataSetChanged()
             } else {
                 vs.diff.dispatchToAdapter(adapter)
+            }
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                records_RecyclerView.scrollToPosition(0)
             }
             val pendingCreatedRecordUuid = itemAnimator.pendingCreatedRecordUuid
             if (pendingCreatedRecordUuid != null) {
