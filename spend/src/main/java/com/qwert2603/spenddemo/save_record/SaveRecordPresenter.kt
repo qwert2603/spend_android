@@ -7,6 +7,7 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -150,11 +151,15 @@ class SaveRecordPresenter @Inject constructor(
             onTimeSelectedIntent
                     .map { SaveRecordPartialChange.TimeSelected(it.t) },
             onCategoryUuidAndKindSelectedIntent
-                    .withLatestFrom(viewStateObservable.map { it.recordDraft.recordTypeId }, makePair())
-                    .switchMapSingle { (pair, recordTypeId) ->
+                    .withLatestFrom(viewStateObservable, makePair())
+                    .switchMapSingle { (pair, vs) ->
                         val (categoryUuid, kind) = pair
-                        saveRecordInteractor.getLastValueOfKind(recordTypeId, categoryUuid, kind)
-                                .map { SaveRecordPartialChange.KindSelected(categoryUuid, kind, it) }
+                        if (vs.recordDraft.value == 0) {
+                            saveRecordInteractor.getLastValueOfKind(vs.recordDraft.recordTypeId, categoryUuid, kind)
+                                    .map { SaveRecordPartialChange.KindSelected(categoryUuid, kind, it) }
+                        } else {
+                            Single.just(SaveRecordPartialChange.KindSelected(categoryUuid, kind, null))
+                        }
                     },
             clearDraft
                     .map { SaveRecordPartialChange.DraftCleared }
@@ -176,7 +181,7 @@ class SaveRecordPresenter @Inject constructor(
             is SaveRecordPartialChange.KindSelected -> vs.copy(recordDraft = vs.recordDraft.copy(
                     recordCategoryUuid = change.categoryUuid,
                     kind = change.kind,
-                    value = change.lastValue
+                    value = change.lastValue ?: vs.recordDraft.value
             ))
             is SaveRecordPartialChange.DateSelected -> {
                 val (nowDate, nowTime) = DateUtils.getNow()
