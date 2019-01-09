@@ -392,6 +392,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.AskToCombineRecords -> CombineRecordsDialogFragmentBuilder
                     .newCombineRecordsDialogFragment(CombineRecordsDialogFragment.Key(va.recordUuids, va.categoryUuid, va.kind))
                     .makeShow()
+            is RecordsListViewAction.AskToDeleteRecords -> DeleteRecordsListDialogFragmentBuilder
+                    .newDeleteRecordsListDialogFragment(DeleteRecordsListDialogFragment.Key(va.recordUuids))
+                    .makeShow()
         }.also { }
     }
 

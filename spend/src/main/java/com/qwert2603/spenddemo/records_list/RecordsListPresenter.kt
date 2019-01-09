@@ -252,8 +252,16 @@ class RecordsListPresenter @Inject constructor(
         intent { it.combineSelectedClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
                 .doOnNext { vs ->
-                    // combined records will be deleted (and automatically deselected).
+                    // combined records will be marked as deleted (and automatically deselected).
                     vs.createCombineAction()?.also { viewActions.onNext(it) }
+                }
+                .subscribeToView()
+
+        intent { it.deleteSelectedClicks() }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .doOnNext { vs ->
+                    // records will be marked as deleted (and automatically deselected).
+                    viewActions.onNext(RecordsListViewAction.AskToDeleteRecords(vs.selectedRecordsUuids.toList()))
                 }
                 .subscribeToView()
 

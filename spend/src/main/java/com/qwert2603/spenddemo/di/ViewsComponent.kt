@@ -15,4 +15,5 @@ interface ViewsComponent {
     fun inject(chooseRecordCategoryDialogFragment: ChooseRecordCategoryDialogFragment)
     fun inject(sumsFragment: SumsFragment)
     fun inject(combineRecordsDialogFragment: CombineRecordsDialogFragment)
+    fun inject(deleteRecordsListDialogFragment: DeleteRecordsListDialogFragment)
 }
