@@ -9,6 +9,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
+import com.qwert2603.spenddemo.records_list_view.RecordsListViewImpl
 import com.qwert2603.spenddemo.utils.colorStateList
 import com.qwert2603.spenddemo.utils.positiveButton
 import java.io.Serializable
@@ -33,6 +34,7 @@ class DeleteRecordsListDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_delete_selected_records)
+                .setView(RecordsListViewImpl(requireContext(), key.recordUuids))
                 .setPositiveButton(R.string.button_delete) { _, _ ->
                     recordsRepo.removeRecords(key.recordUuids)
                 }

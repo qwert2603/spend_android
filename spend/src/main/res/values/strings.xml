@@ -132,5 +132,6 @@
     <string name="text_loading">loading..</string>
 
     <string name="dont_change_text">don\'t change</string>
+    <string name="text_all_selected_records_were_deleted">all selected records were deleted</string>
 
 </resources>

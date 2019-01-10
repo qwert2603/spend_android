@@ -10,4 +10,5 @@ interface PresentersCreatorComponent {
     fun aboutPresenterCreatorComponent(): AboutPresenterCreatorComponent.Builder
     fun sumsPresenterCreatorComponent(): SumsPresenterCreatorComponent.Builder
     fun changeRecordsPresenterCreatorComponent(): ChangeRecordsPresenterCreatorComponent.Builder
+    fun recordsListViewPresenterCreatorComponent(): RecordsListViewPresenterCreatorComponent.Builder
 }

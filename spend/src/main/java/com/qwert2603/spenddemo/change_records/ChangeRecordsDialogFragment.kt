@@ -24,6 +24,7 @@ import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.dialogs.TimePickerDialogFragment
 import com.qwert2603.spenddemo.dialogs.TimePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.model.entity.*
+import com.qwert2603.spenddemo.records_list_view.RecordsListViewImpl
 import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -60,6 +61,8 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
 
         dialogView.date_EditText.onRightDrawableClicked { changedDateSelected.onNext(Wrapper(null)) }
         dialogView.time_EditText.onRightDrawableClicked { changedTimeSelected.onNext(Wrapper(null)) }
+
+        dialogView.dialogChangeRecords_LinearLayout.addView(RecordsListViewImpl(requireContext(), key.recordUuids))
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)

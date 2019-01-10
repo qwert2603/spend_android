@@ -6,11 +6,13 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.support.annotation.IdRes
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
@@ -103,5 +105,12 @@ fun EditText.onRightDrawableClicked(onClicked: () -> Unit) {
             hasConsumed = true
         }
         hasConsumed
+    }
+}
+
+fun FrameLayout.setVisibleChild(@IdRes childId: Int?) {
+    for (i in 0 until childCount) {
+        val childAt = getChildAt(i)
+        childAt.setVisible(childAt.id == childId)
     }
 }

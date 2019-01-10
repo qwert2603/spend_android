@@ -8,6 +8,7 @@
     android:scrollbars="vertical">
 
     <LinearLayout
+        android:id="@+id/dialogChangeRecords_LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"

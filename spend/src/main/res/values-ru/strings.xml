@@ -115,5 +115,6 @@
     <string name="dialog_title_change_records">изменить выделенные записи</string>
     <string name="button_change">изменить</string>
     <string name="dont_change_text">не изменять</string>
+    <string name="text_all_selected_records_were_deleted">все выделенные записи были удалены</string>
 
 </resources>
