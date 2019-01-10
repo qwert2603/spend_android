@@ -74,6 +74,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.setDataAndType(uri, "application/json")
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
                 startActivity(Intent.createChooser(intent, ""))
             }
             AboutViewAction.DumpError -> Toast.makeText(requireContext(), "dump error", Toast.LENGTH_SHORT).show()
