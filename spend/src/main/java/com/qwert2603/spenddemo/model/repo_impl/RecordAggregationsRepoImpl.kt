@@ -163,7 +163,7 @@ class RecordAggregationsRepoImpl @Inject constructor(
                     .filter { !it.isDeleted() }
                     .groupBy { it.recordCategory.uuid }
 
-            for (recordTypeId in listOf(Const.RECORD_TYPE_ID_SPEND, Const.RECORD_TYPE_ID_PROFIT)) {
+            for (recordTypeId in Const.RECORD_TYPE_IDS) {
                 recordsKindsLists[recordTypeId] = hashMapOf()
 
                 categoriesByType.getOrElse(recordTypeId) { emptyList() }

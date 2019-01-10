@@ -10,12 +10,12 @@
     android:paddingBottom="8dp">
 
     <TextView
-        android:id="@+id/kindName_TextView"
+        android:id="@+id/categoryName_TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        tools:text="столовая (26)" />
+        tools:text="еда (26 раз)" />
 
     <TextView
         android:id="@+id/lastRecord_TextView"

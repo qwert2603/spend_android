@@ -133,5 +133,6 @@
 
     <string name="dont_change_text">don\'t change</string>
     <string name="text_all_selected_records_were_deleted">all selected records were deleted</string>
+    <string name="hint_search">search</string>
 
 </resources>

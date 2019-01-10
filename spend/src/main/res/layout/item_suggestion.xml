@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:maxLines="1"
+        android:maxLines="2"
         android:padding="12dp"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        tools:text="столовая" />
+        tools:text="столовая столовая стол овая стол овая столов ая столовая столовая столовая столовая столовая столовая" />
 
 </FrameLayout>
