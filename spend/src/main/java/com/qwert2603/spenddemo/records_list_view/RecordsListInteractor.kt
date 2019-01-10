@@ -10,6 +10,10 @@ class RecordsListInteractor @Inject constructor(
 ) {
     fun getRecordsList(recordsUuids: List<String>): Observable<List<Record>> = recordsRepo
             .getRecordsList()
-            .map { records -> records.filter { it.uuid in recordsUuids } }
+            .map { records ->
+                records
+                        .filter { it.uuid in recordsUuids }
+                        .reversed()
+            }
             .distinctUntilChanged()
 }

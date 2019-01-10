@@ -28,7 +28,6 @@ class RecordsListViewImpl(
     init {
         inflate(R.layout.view_records_list, true)
         records_RecyclerView.adapter = recordsAdapter
-        records_RecyclerView.itemAnimator = null
     }
 
     override fun render(vs: RecordsListViewState) {
