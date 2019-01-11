@@ -93,48 +93,124 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/records_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:scrollbars="vertical"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            app:reverseLayout="true"
-            tools:itemCount="20"
-            tools:listitem="@layout/item_record" />
-
-        <com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
-            android:id="@+id/createSpendViewImpl"
+        <LinearLayout
+            android:id="@+id/filters_LinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:elevation="8dp" />
+            android:elevation="2dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/search_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:drawableEnd="@drawable/ic_close_black_20dp"
+                android:hint="@string/hint_search"
+                android:imeOptions="flagNoFullscreen"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1"
+                tools:targetApi="o" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColorHint="@color/anth"
+                    app:hintTextAppearance="@color/anth">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/startDate_EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:focusable="false"
+                        android:hint="@string/hint_start_date"
+                        android:longClickable="false"
+                        android:singleLine="true"
+                        tools:drawableRight="@drawable/ic_close_black_20dp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColorHint="@color/anth"
+                    app:hintTextAppearance="@color/anth">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/endDate_EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:focusable="false"
+                        android:hint="@string/hint_end_date"
+                        android:longClickable="false"
+                        android:singleLine="true"
+                        tools:drawableRight="@drawable/ic_close_black_20dp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/records_RecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:scrollbars="vertical"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    app:reverseLayout="true"
+                    tools:itemCount="20"
+                    tools:listitem="@layout/item_record" />
+
+                <com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
+                    android:id="@+id/createSpendViewImpl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:elevation="8dp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/floatingDate_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_margin="12dp"
+                android:background="@color/colorPrimaryTransparent"
+                android:elevation="4dp"
+                android:padding="8dp"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:text="2018-05-02" />
+
+        </FrameLayout>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:padding="12dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <TextView
-            android:id="@+id/floatingDate_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/colorPrimaryTransparent"
-            android:elevation="4dp"
-            android:padding="8dp"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            tools:text="2018-05-02" />
-
-    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

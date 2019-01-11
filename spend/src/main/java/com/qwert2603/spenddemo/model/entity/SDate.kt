@@ -9,7 +9,10 @@ import com.qwert2603.spenddemo.utils.year
 import java.io.Serializable
 import java.util.*
 
-/** format is "yyyyMMdd" */
+/**
+ * format is "yyyyMMdd".
+ * 19950326 is March, 26th, 1995 year.
+ */
 data class SDate(val date: Int) : Comparable<SDate>, Serializable {
     override fun toString() = String.format("%04d-%02d-%02d", date / (100 * 100), date / 100 % 100, date % 100)
 

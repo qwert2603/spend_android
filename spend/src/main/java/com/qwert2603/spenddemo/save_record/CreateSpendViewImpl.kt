@@ -184,8 +184,9 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             SaveRecordViewAction.FocusOnCategoryInput -> category_EditText.focus(false)
             SaveRecordViewAction.FocusOnKindInput -> kind_EditText.focus(true)
             SaveRecordViewAction.FocusOnValueInput -> value_EditText.focus(true)
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.date.date, va.minDate.date, true)
+            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, true)
+                    .maxDate(va.minDate.date)
+                    .build()
                     .makeShow(REQUEST_CODE_DATE)
             is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)

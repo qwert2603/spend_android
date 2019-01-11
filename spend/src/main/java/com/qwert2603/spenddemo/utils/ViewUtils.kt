@@ -8,6 +8,8 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.support.annotation.IdRes
 import android.support.v7.app.AlertDialog
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewTreeObserver
@@ -113,4 +115,20 @@ fun FrameLayout.setVisibleChild(@IdRes childId: Int?) {
         val childAt = getChildAt(i)
         childAt.setVisible(childAt.id == childId)
     }
+}
+
+fun EditText.doOnTextChanged(withInitial: Boolean = false, action: (String) -> Unit) {
+    if (withInitial) action(text.toString())
+
+    addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            action(s.toString())
+        }
+    })
 }

@@ -58,9 +58,9 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             .build()
             .createSaveRecordPresenter()
 
-    private val categoryEditText by lazy { UserInputEditText(dialogView.category_EditText) }
-    private val kindEditText by lazy { UserInputEditText(dialogView.kind_EditText) }
-    private val valueEditText by lazy { UserInputEditText(dialogView.value_EditText) }
+    private lateinit var categoryEditText: UserInputEditText
+    private lateinit var kindEditText: UserInputEditText
+    private lateinit var valueEditText: UserInputEditText
 
     private val keyboardManager by lazy { context as KeyboardManager }
 
@@ -75,6 +75,10 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
         dialogView.kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_RECORD_KIND_LENGTH))
+
+        categoryEditText = UserInputEditText(dialogView.category_EditText)
+        kindEditText = UserInputEditText(dialogView.kind_EditText)
+        valueEditText = UserInputEditText(dialogView.value_EditText)
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
@@ -227,8 +231,9 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             SaveRecordViewAction.FocusOnCategoryInput -> dialogView.category_EditText.focus()
             SaveRecordViewAction.FocusOnKindInput -> dialogView.kind_EditText.focus()
             SaveRecordViewAction.FocusOnValueInput -> dialogView.value_EditText.focus()
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.date.date, va.minDate.date, true)
+            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, true)
+                    .minDate(va.minDate.date)
+                    .build()
                     .makeShow(REQUEST_CODE_DATE)
             is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)

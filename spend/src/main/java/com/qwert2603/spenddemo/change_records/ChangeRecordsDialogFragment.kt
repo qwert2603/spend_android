@@ -97,10 +97,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     override fun render(vs: ChangeRecordsViewState) {
         super.render(vs)
 
-        fun renderChangeState(
-                textView: TextView,
-                changeText: String?
-        ) {
+        fun renderChangeState(textView: TextView, changeText: String?) {
             textView.setCompoundDrawablesWithIntrinsicBounds(
                     0,
                     0,
@@ -126,8 +123,9 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         if (va !is ChangeRecordsViewAction) null!!
 
         return when (va) {
-            is ChangeRecordsViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder
-                    .newDatePickerDialogFragment(va.date.date, va.minDate.date, false)
+            is ChangeRecordsViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, false)
+                    .minDate(va.minDate.date)
+                    .build()
                     .makeShow(REQUEST_CODE_DATE)
             is ChangeRecordsViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
                     .newTimePickerDialogFragment(va.time.time)

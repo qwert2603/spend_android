@@ -28,8 +28,11 @@ class DatePickerDialogFragment : DialogFragment() {
     @Arg
     var withNow: Boolean = false
 
-    @Arg
-    var minDate: Int = 0
+    @Arg(required = false)
+    var minDate: Int = -1
+
+    @Arg(required = false)
+    var maxDate: Int = -1
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
@@ -59,7 +62,8 @@ class DatePickerDialogFragment : DialogFragment() {
                     )
                 }
             }
-            it.datePicker.minDate = SDate(minDate).toDateCalendar().timeInMillis
+            if (minDate > 0) it.datePicker.minDate = SDate(minDate).toDateCalendar().timeInMillis
+            if (maxDate > 0) it.datePicker.maxDate = SDate(maxDate).toDateCalendar().timeInMillis
         }
     }
 

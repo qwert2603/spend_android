@@ -73,6 +73,7 @@
     <string name="menu_item_new_profit">new profit</string>
     <string name="menu_item_show_times">times</string>
     <string name="menu_item_sort_by_value">sort by value</string>
+    <string name="menu_item_filters">filters</string>
     <string name="menu_item_short_sum_format" formatted="true">short &#931;: %s</string>
     <string name="menu_item_long_sum_format" formatted="true">long &#931;: %s</string>
     <string name="title_long_sum_dialog">long &#931;</string>
@@ -135,5 +136,8 @@
     <string name="dont_change_text">don\'t change</string>
     <string name="text_all_selected_records_were_deleted">all selected records were deleted</string>
     <string name="hint_search">search</string>
+    <string name="hint_start_date">start date</string>
+    <string name="hint_end_date">end date</string>
+    <string name="text_not_selected">not selected</string>
 
 </resources>

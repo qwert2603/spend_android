@@ -3,12 +3,14 @@ package com.qwert2603.spenddemo.records_list
 import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
@@ -41,9 +43,11 @@ import java.util.concurrent.TimeUnit
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView, BackPressListener {
 
     companion object {
-        private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 6
-        private const val REQUEST_CHOOSE_SHORT_SUM_PERIOD = 7
-        private const val REQUEST_ASK_FOR_RECORD_ACTIONS = 8
+        private const val REQUEST_CHOOSE_LONG_SUM_PERIOD = 5
+        private const val REQUEST_CHOOSE_SHORT_SUM_PERIOD = 6
+        private const val REQUEST_ASK_FOR_RECORD_ACTIONS = 7
+        private const val REQUEST_START_DATE = 8
+        private const val REQUEST_END_DATE = 9
 
         private var layoutAnimationShown = false
     }
@@ -73,6 +77,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private val cancelSelection = PublishSubject.create<Any>()
 
+    private lateinit var searchEditText: UserInputEditText
+
+    private val startDateSelected = PublishSubject.create<Wrapper<SDate>>()
+    private val endDateSelected = PublishSubject.create<Wrapper<SDate>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments = arguments ?: Bundle()
@@ -87,6 +96,20 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         requireActivity().menuInflater.inflate(R.menu.records_select, select_ActionMenuView.menu)
         selectModeMenuHolder.menu = select_ActionMenuView.menu
+
+        search_EditText.doOnTextChanged(withInitial = true) {
+            search_EditText.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    if (it.isNotEmpty()) R.drawable.ic_close_black_20dp else 0,
+                    0
+            )
+        }
+        search_EditText.onRightDrawableClicked { search_EditText.setText("") }
+        searchEditText = UserInputEditText(search_EditText)
+
+        startDate_EditText.onRightDrawableClicked { startDateSelected.onNext(Wrapper(null)) }
+        endDate_EditText.onRightDrawableClicked { endDateSelected.onNext(Wrapper(null)) }
 
         records_RecyclerView.adapter = RecordsListAdapter(isDaySumsClickable = false)
         records_RecyclerView.recycledViewPool.setMaxRecycledViews(RecordsListAdapter.VIEW_TYPE_RECORD, 30)
@@ -179,6 +202,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                 RecordActionsDialogFragment.Result.Action.DELETE -> deleteRecordClicks
                             }.onNext(it.recordUuid)
                         }
+                REQUEST_START_DATE -> startDateSelected.onNext(data.getIntExtra(DatePickerDialogFragment.DATE_KEY, 0).toSDate().wrap())
+                REQUEST_END_DATE -> endDateSelected.onNext(data.getIntExtra(DatePickerDialogFragment.DATE_KEY, 0).toSDate().wrap())
             }
         }
     }
@@ -215,6 +240,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun showTimesChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.show_times)
 
     override fun sortByValueChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.sort_by_value)
+    override fun showFiltersChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.filters)
 
     override fun longSumPeriodSelected(): Observable<Days> = longSumPeriodSelected
     override fun shortSumPeriodSelected(): Observable<Minutes> = shortSumPeriodSelected
@@ -230,6 +256,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun deleteSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.delete)
     override fun combineSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.combine)
     override fun changeSelectedClicks(): Observable<Any> = selectModeMenuHolder.menuItemClicks(R.id.change)
+
+    override fun searchQueryChanges(): Observable<String> = searchEditText.userInputs()
+
+    override fun selectStartDateClicks(): Observable<Any> = RxView.clicks(startDate_EditText)
+    override fun selectEndDateClicks(): Observable<Any> = RxView.clicks(endDate_EditText)
+
+    override fun startDateSelected(): Observable<Wrapper<SDate>> = startDateSelected
+    override fun endDateSelected(): Observable<Wrapper<SDate>> = endDateSelected
 
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }
@@ -288,6 +322,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             if (!it) (requireActivity() as KeyboardManager).hideKeyboard()
         }
 
+        renderIfChanged({ showFilters }) { filters_LinearLayout.setVisible(it) }
+
         menuHolder.menu?.also { menu ->
             renderIfChanged({ showInfo }) {
                 menu.findItem(R.id.new_profit).isEnabled = it.newProfitEnable()
@@ -302,9 +338,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 menu.findItem(R.id.show_profits).isEnabled = it.showProfitsEnable()
             }
 
-            renderIfChanged({ sortByValue }) {
-                menu.findItem(R.id.sort_by_value).isChecked = it
-            }
+            renderIfChanged({ sortByValue }) { menu.findItem(R.id.sort_by_value).isChecked = it }
+            renderIfChanged({ showFilters }) { menu.findItem(R.id.filters).isChecked = it }
 
             renderIfChanged({ longSumPeriod }) {
                 menu.findItem(R.id.long_sum).title = resources.getString(
@@ -371,6 +406,23 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             renderIfChanged({ canChangeSelected }) { menu.findItem(R.id.change).isEnabled = it }
             renderIfChanged({ canCombineSelected }) { menu.findItem(R.id.combine).isEnabled = it }
         }
+
+        renderIfChanged({ searchQuery }) { searchEditText.setText(it) }
+
+        fun renderDate(textView: TextView, date: SDate?) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    if (date != null) R.drawable.ic_close_black_20dp else 0,
+                    0
+            )
+            textView.setTextColor(resources.color(if (date != null) android.R.color.black else R.color.dont_change))
+            textView.setTypeface(null, if (date != null) Typeface.NORMAL else Typeface.ITALIC)
+            textView.text = date?.toFormattedString(resources) ?: getString(R.string.text_not_selected)
+        }
+
+        renderIfChanged({ startDate }) { renderDate(startDate_EditText, it) }
+        renderIfChanged({ endDate }) { renderDate(endDate_EditText, it) }
     }
 
     override fun executeAction(va: ViewAction) {
@@ -407,6 +459,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .newChangeRecordsDialogFragment(ChangeRecordsDialogFragment.Key(va.recordUuids))
                     .makeShow()
             RecordsListViewAction.ScrollToTop -> records_RecyclerView.scrollToPosition(0)
+            is RecordsListViewAction.AskToSelectStartDate -> DatePickerDialogFragmentBuilder(va.startDate.date, false)
+                    .addMaxDate(va.maxDate)
+                    .build()
+                    .makeShow(REQUEST_START_DATE)
+            is RecordsListViewAction.AskToSelectEndDate -> DatePickerDialogFragmentBuilder(va.endDate.date, false)
+                    .addMinDate(va.minDate)
+                    .build()
+                    .makeShow(REQUEST_END_DATE)
         }.also { }
     }
 

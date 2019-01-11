@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
@@ -36,9 +37,10 @@ class CombineRecordsDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dp16 = resources.toPx(16)
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_combine_records)
-                .setView(RecordsListViewImpl(requireContext(), key.recordUuids))
+                .setView(RecordsListViewImpl(requireContext(), key.recordUuids).also { it.setPadding(dp16, dp16, dp16, dp16) })
                 .setPositiveButton(R.string.button_combine) { _, _ ->
                     recordsRepo.combineRecords(
                             recordUuids = key.recordUuids,

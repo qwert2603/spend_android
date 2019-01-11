@@ -118,5 +118,9 @@
     <string name="text_all_selected_records_were_deleted">все выделенные записи были удалены</string>
     <string name="hint_search">поиск</string>
     <string name="menu_item_sort_by_value">сортировка по сумме</string>
+    <string name="hint_start_date">дата начала</string>
+    <string name="hint_end_date">дата конца</string>
+    <string name="text_not_selected">не выбрано</string>
+    <string name="menu_item_filters">фильтры</string>
 
 </resources>

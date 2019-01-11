@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.records_list
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.model.entity.Days
 import com.qwert2603.spenddemo.model.entity.Minutes
+import com.qwert2603.spenddemo.model.entity.SDate
 
 sealed class RecordsListViewAction : ViewAction {
     data class AskForRecordActions(val recordUuid: String) : RecordsListViewAction()
@@ -25,4 +26,7 @@ sealed class RecordsListViewAction : ViewAction {
     data class AskToChangeRecords(val recordUuids: List<String>) : RecordsListViewAction()
 
     object ScrollToTop : RecordsListViewAction()
+
+    data class AskToSelectStartDate(val startDate: SDate, val maxDate: SDate?) : RecordsListViewAction()
+    data class AskToSelectEndDate(val endDate: SDate, val minDate: SDate?) : RecordsListViewAction()
 }

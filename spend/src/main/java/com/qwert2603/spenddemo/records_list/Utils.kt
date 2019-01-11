@@ -30,6 +30,7 @@ fun List<Record>.toRecordItemsList(
         sortByValue: Boolean,
         longSumPeriod: Days,
         shortSumPeriod: Minutes,
+        filters: Filters,
         selectedRecordsUuids: HashSet<String>
 ): List<RecordsListItem> {
 
@@ -127,36 +128,39 @@ fun List<Record>.toRecordItemsList(
             }
         }
 
-        when {
-            record == FAKE_RECORD -> {
-                // nth
-            }
-            record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
-                if (!record.isDeleted()) {
-                    daySpendsSum += record.value
-                    ++spendsCount
-                    spendsSum += record.value
+        val recordIsSelected = record.uuid in selectedRecordsUuids
+        if (recordIsSelected || filters.check(record)) {
+            when {
+                record == FAKE_RECORD -> {
+                    // nth
                 }
-                if (record.uuid in selectedRecordsUuids || (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted()))) {
-                    result.add(record)
-                    atLeastOneRecordAdded = true
+                record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_SPEND -> {
+                    if (!record.isDeleted()) {
+                        daySpendsSum += record.value
+                        ++spendsCount
+                        spendsSum += record.value
+                    }
+                    if (recordIsSelected || (showInfo.showSpends && (!record.isDeleted() || showInfo.showDeleted()))) {
+                        result.add(record)
+                        atLeastOneRecordAdded = true
+                    }
+                    if (!record.isDeleted() || showInfo.showDeleted()) {
+                        ++daySpendsCount
+                    }
                 }
-                if (!record.isDeleted() || showInfo.showDeleted()) {
-                    ++daySpendsCount
-                }
-            }
-            record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
-                if (!record.isDeleted()) {
-                    dayProfitsSum += record.value
-                    ++profitsCount
-                    profitsSum += record.value
-                }
-                if (record.uuid in selectedRecordsUuids || (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted()))) {
-                    result.add(record)
-                    atLeastOneRecordAdded = true
-                }
-                if (!record.isDeleted() || showInfo.showDeleted()) {
-                    ++dayProfitsCount
+                record.recordCategory.recordTypeId == Const.RECORD_TYPE_ID_PROFIT -> {
+                    if (!record.isDeleted()) {
+                        dayProfitsSum += record.value
+                        ++profitsCount
+                        profitsSum += record.value
+                    }
+                    if (recordIsSelected || (showInfo.showProfits && (!record.isDeleted() || showInfo.showDeleted()))) {
+                        result.add(record)
+                        atLeastOneRecordAdded = true
+                    }
+                    if (!record.isDeleted() || showInfo.showDeleted()) {
+                        ++dayProfitsCount
+                    }
                 }
             }
         }

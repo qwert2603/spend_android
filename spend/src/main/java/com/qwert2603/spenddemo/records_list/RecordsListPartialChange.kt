@@ -16,9 +16,14 @@ sealed class RecordsListPartialChange : PartialChange {
     data class SortByValueChanged(val sortByValue: Boolean) : RecordsListPartialChange()
     data class LongSumPeriodChanged(val days: Days) : RecordsListPartialChange()
     data class ShortSumPeriodChanged(val minutes: Minutes) : RecordsListPartialChange()
+    data class ShowFiltersChanged(val show: Boolean) : RecordsListPartialChange()
 
     data class SyncStateChanged(val syncState: SyncState) : RecordsListPartialChange()
 
     data class ToggleRecordSelection(val recordUuid: String) : RecordsListPartialChange()
     object ClearSelection : RecordsListPartialChange()
+
+    data class SearchQueryChanged(val search: String) : RecordsListPartialChange()
+    data class StartDateChanged(val startDate: SDate?) : RecordsListPartialChange()
+    data class EndDateChanged(val endDate: SDate?) : RecordsListPartialChange()
 }

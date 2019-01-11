@@ -24,18 +24,20 @@ class RecordsListPresenter @Inject constructor(
             shortSumPeriod = recordsListInteractor.shortSumPeriod.field,
             sumsInfo = SumsInfo.EMPTY,
             sortByValue = false,
+            showFilters = false,
+            searchQuery = "",
+            startDate = null,
+            endDate = null,
             recordsChanges = hashMapOf(),
             syncState = SyncState.SYNCING,
             _selectedRecordsUuids = hashSetOf()
     )
 
     private val showInfoChanges: Observable<ShowInfo> = recordsListInteractor.showInfo.changes.shareAfterViewSubscribed()
+    private val longSumPeriodChanges: Observable<Days> = recordsListInteractor.longSumPeriod.changes.shareAfterViewSubscribed()
+    private val shortSumPeriodChanges: Observable<Minutes> = recordsListInteractor.shortSumPeriod.changes.shareAfterViewSubscribed()
 
     private val sortByValueChanges: Observable<Boolean> = intent { it.sortByValueChanges() }.shareAfterViewSubscribed()
-
-    private val longSumPeriodChanges: Observable<Days> = recordsListInteractor.longSumPeriod.changes.shareAfterViewSubscribed()
-
-    private val shortSumPeriodChanges: Observable<Minutes> = recordsListInteractor.shortSumPeriod.changes.shareAfterViewSubscribed()
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             showInfoChanges
@@ -43,6 +45,14 @@ class RecordsListPresenter @Inject constructor(
             sortByValueChanges
                     .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToTop) }
                     .map { RecordsListPartialChange.SortByValueChanged(it) },
+            intent { it.showFiltersChanges() }
+                    .map { RecordsListPartialChange.ShowFiltersChanged(it) },
+            intent { it.searchQueryChanges() }
+                    .map { RecordsListPartialChange.SearchQueryChanged(it) },
+            intent { it.startDateSelected() }
+                    .map { RecordsListPartialChange.StartDateChanged(it.t) },
+            intent { it.endDateSelected() }
+                    .map { RecordsListPartialChange.EndDateChanged(it.t) },
             Observable
                     .combineLatest(
                             showInfoChanges,
@@ -50,18 +60,21 @@ class RecordsListPresenter @Inject constructor(
                             longSumPeriodChanges,
                             shortSumPeriodChanges,
                             viewStateObservable
+                                    .map { Filters(it.searchQuery, it.startDate, it.endDate) }
+                                    .distinctUntilChanged(),
+                            viewStateObservable
                                     .map { it.selectedRecordsUuids }
                                     .distinctUntilChanged(),
-                            makeQuint()
+                            makeSextuple()
                     )
-                    .switchMap { quint ->
+                    .switchMap { sextuple ->
                         RxUtils.minuteChanges()
                                 .startWith(Any())
-                                .map { quint }
+                                .map { sextuple }
                     }
-                    .switchMap { (showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) ->
+                    .switchMap { (showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) ->
                         recordsListInteractor.getRecordsList()
-                                .map { it.toRecordItemsList(showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) }
+                                .map { it.toRecordItemsList(showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) }
                     }
                     .startWith(emptyList<RecordsListItem>())
                     .buffer(2, 1)
@@ -129,9 +142,23 @@ class RecordsListPresenter @Inject constructor(
             is RecordsListPartialChange.SortByValueChanged -> vs.copy(sortByValue = change.sortByValue)
             is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
+            is RecordsListPartialChange.ShowFiltersChanged -> {
+                if (change.show) {
+                    vs.copy(showFilters = true)
+                } else {
+                    vs.copy(showFilters = false, searchQuery = "", startDate = null, endDate = null)
+                }
+            }
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)
             is RecordsListPartialChange.ToggleRecordSelection -> vs.copy(_selectedRecordsUuids = vs.selectedRecordsUuids.toggle(change.recordUuid))
             RecordsListPartialChange.ClearSelection -> vs.copy(_selectedRecordsUuids = hashSetOf())
+            is RecordsListPartialChange.SearchQueryChanged -> vs.copy(searchQuery = change.search)
+            is RecordsListPartialChange.StartDateChanged -> vs.copy(
+                    startDate = change.startDate?.coerceAtMost(vs.endDate ?: SDate(9999_12_31))
+            )
+            is RecordsListPartialChange.EndDateChanged -> vs.copy(
+                    endDate = change.endDate?.coerceAtLeast(vs.startDate ?: SDate(0))
+            )
         }
     }
 
@@ -277,6 +304,26 @@ class RecordsListPresenter @Inject constructor(
                 .withLatestFrom(viewStateObservable, secondOfTwo())
                 .doOnNext { vs ->
                     viewActions.onNext(RecordsListViewAction.AskToChangeRecords(vs.selectedRecordsUuids.toList()))
+                }
+                .subscribeToView()
+
+        intent { it.selectStartDateClicks() }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .doOnNext {
+                    viewActions.onNext(RecordsListViewAction.AskToSelectStartDate(
+                            startDate = it.startDate ?: DateUtils.getNow().first,
+                            maxDate = it.endDate
+                    ))
+                }
+                .subscribeToView()
+
+        intent { it.selectEndDateClicks() }
+                .withLatestFrom(viewStateObservable, secondOfTwo())
+                .doOnNext {
+                    viewActions.onNext(RecordsListViewAction.AskToSelectEndDate(
+                            endDate = it.endDate ?: DateUtils.getNow().first,
+                            minDate = it.startDate
+                    ))
                 }
                 .subscribeToView()
 

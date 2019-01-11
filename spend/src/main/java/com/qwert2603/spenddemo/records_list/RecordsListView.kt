@@ -4,6 +4,8 @@ import com.qwert2603.andrlib.base.mvi.BaseView
 import com.qwert2603.spenddemo.model.entity.Days
 import com.qwert2603.spenddemo.model.entity.Minutes
 import com.qwert2603.spenddemo.model.entity.Record
+import com.qwert2603.spenddemo.model.entity.SDate
+import com.qwert2603.spenddemo.utils.Wrapper
 import io.reactivex.Observable
 
 interface RecordsListView : BaseView<RecordsListViewState> {
@@ -26,6 +28,7 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun showTimesChanges(): Observable<Boolean>
 
     fun sortByValueChanges(): Observable<Boolean>
+    fun showFiltersChanges(): Observable<Boolean>
 
     fun longSumPeriodSelected(): Observable<Days>
     fun shortSumPeriodSelected(): Observable<Minutes>
@@ -38,4 +41,10 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun deleteSelectedClicks(): Observable<Any>
     fun combineSelectedClicks(): Observable<Any>
     fun changeSelectedClicks(): Observable<Any>
+
+    fun searchQueryChanges(): Observable<String>
+    fun selectStartDateClicks(): Observable<Any>
+    fun selectEndDateClicks(): Observable<Any>
+    fun startDateSelected(): Observable<Wrapper<SDate>>
+    fun endDateSelected(): Observable<Wrapper<SDate>>
 }
