@@ -10,6 +10,7 @@ import com.qwert2603.spenddemo.env.E
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
+import java.net.ConnectException
 
 class SpendDemoApplication : Application() {
 
@@ -37,5 +38,6 @@ class SpendDemoApplication : Application() {
 //        listModelChangerInstance = ListModelChangerImpl()
 
         LogUtils.logType = E.env.logType
+        LogUtils.errorsFilter = { it !is ConnectException }
     }
 }

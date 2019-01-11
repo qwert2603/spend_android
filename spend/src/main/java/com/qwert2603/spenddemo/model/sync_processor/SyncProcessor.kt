@@ -9,6 +9,7 @@ import com.qwert2603.spenddemo.model.rest.ApiHelper
 import com.qwert2603.spenddemo.utils.Wrapper
 import com.qwert2603.spenddemo.utils.executeAndWait
 import io.reactivex.subjects.BehaviorSubject
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -84,7 +85,15 @@ class SyncProcessor(
                     syncState.onNext(SyncState.SYNCED)
                 } catch (t: Throwable) {
                     syncState.onNext(SyncState.ERROR)
-                    LogUtils.e(TAG, "remoteDBExecutor.execute", t)
+                    LogUtils.e(
+                            tag = TAG,
+                            msg = "remoteDBExecutor.execute",
+                            t = if (t is ExecutionException) {
+                                t.cause
+                            } else {
+                                t
+                            }
+                    )
                     Thread.sleep(1000)
                 }
             }
