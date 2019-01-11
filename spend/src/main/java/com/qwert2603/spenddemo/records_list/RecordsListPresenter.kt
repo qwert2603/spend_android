@@ -23,12 +23,15 @@ class RecordsListPresenter @Inject constructor(
             longSumPeriod = recordsListInteractor.longSumPeriod.field,
             shortSumPeriod = recordsListInteractor.shortSumPeriod.field,
             sumsInfo = SumsInfo.EMPTY,
+            sortByValue = false,
             recordsChanges = hashMapOf(),
             syncState = SyncState.SYNCING,
             _selectedRecordsUuids = hashSetOf()
     )
 
     private val showInfoChanges: Observable<ShowInfo> = recordsListInteractor.showInfo.changes.shareAfterViewSubscribed()
+
+    private val sortByValueChanges: Observable<Boolean> = intent { it.sortByValueChanges() }.shareAfterViewSubscribed()
 
     private val longSumPeriodChanges: Observable<Days> = recordsListInteractor.longSumPeriod.changes.shareAfterViewSubscribed()
 
@@ -37,24 +40,28 @@ class RecordsListPresenter @Inject constructor(
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             showInfoChanges
                     .map { RecordsListPartialChange.ShowInfoChanged(it) },
+            sortByValueChanges
+                    .doOnNext { viewActions.onNext(RecordsListViewAction.ScrollToTop) }
+                    .map { RecordsListPartialChange.SortByValueChanged(it) },
             Observable
                     .combineLatest(
                             showInfoChanges,
+                            sortByValueChanges.startWith(initialState.sortByValue),
                             longSumPeriodChanges,
                             shortSumPeriodChanges,
                             viewStateObservable
                                     .map { it.selectedRecordsUuids }
                                     .distinctUntilChanged(),
-                            makeQuad()
+                            makeQuint()
                     )
-                    .switchMap { quad ->
+                    .switchMap { quint ->
                         RxUtils.minuteChanges()
                                 .startWith(Any())
-                                .map { quad }
+                                .map { quint }
                     }
-                    .switchMap { (showInfo, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) ->
+                    .switchMap { (showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) ->
                         recordsListInteractor.getRecordsList()
-                                .map { it.toRecordItemsList(showInfo, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) }
+                                .map { it.toRecordItemsList(showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, selectedUuids) }
                     }
                     .startWith(emptyList<RecordsListItem>())
                     .buffer(2, 1)
@@ -119,6 +126,7 @@ class RecordsListPresenter @Inject constructor(
             )
             is RecordsListPartialChange.ShowInfoChanged -> vs.copy(showInfo = change.showInfo)
             is RecordsListPartialChange.SumsInfoChanged -> vs.copy(sumsInfo = change.sumsInfo)
+            is RecordsListPartialChange.SortByValueChanged -> vs.copy(sortByValue = change.sortByValue)
             is RecordsListPartialChange.LongSumPeriodChanged -> vs.copy(longSumPeriod = change.days)
             is RecordsListPartialChange.ShortSumPeriodChanged -> vs.copy(shortSumPeriod = change.minutes)
             is RecordsListPartialChange.SyncStateChanged -> vs.copy(syncState = change.syncState)

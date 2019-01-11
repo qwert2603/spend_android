@@ -13,6 +13,7 @@ sealed class RecordsListPartialChange : PartialChange {
 
     data class ShowInfoChanged(val showInfo: ShowInfo) : RecordsListPartialChange()
     data class SumsInfoChanged(val sumsInfo: SumsInfo) : RecordsListPartialChange()
+    data class SortByValueChanged(val sortByValue: Boolean) : RecordsListPartialChange()
     data class LongSumPeriodChanged(val days: Days) : RecordsListPartialChange()
     data class ShortSumPeriodChanged(val minutes: Minutes) : RecordsListPartialChange()
 

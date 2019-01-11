@@ -27,6 +27,7 @@ private val FAKE_RECORD = Record(
 
 fun List<Record>.toRecordItemsList(
         showInfo: ShowInfo,
+        sortByValue: Boolean,
         longSumPeriod: Days,
         shortSumPeriod: Minutes,
         selectedRecordsUuids: HashSet<String>
@@ -69,8 +70,8 @@ fun List<Record>.toRecordItemsList(
     var dayProfitsCount = 0
 
     // don't add divider if interval == 0.
-    var longSumDividerAdded = longSumPeriod.days == 0
-    var shortSumDividerAdded = shortSumPeriod.minutes == 0
+    var needAddLongSumDivider = !sortByValue && longSumPeriod.days > 0
+    var needAddShortSumDivider = !sortByValue && shortSumPeriod.minutes > 0
 
     var atLeastOneRecordAdded = false
 
@@ -86,7 +87,7 @@ fun List<Record>.toRecordItemsList(
     (0..this.lastIndex + 1).forEach { index ->
         // FAKE_RECORD is needed to add DaySum for earliest real RecordResult in list.
         val record = this.getOrNull(index) ?: FAKE_RECORD
-        if (index > 0 && showInfo.showSums) {
+        if (!sortByValue && index > 0 && showInfo.showSums) {
             if (this[index - 1].date != record.date
                     && (showInfo.showSpends && daySpendsCount > 0 || showInfo.showProfits && dayProfitsCount > 0)
             ) {
@@ -98,8 +99,8 @@ fun List<Record>.toRecordItemsList(
                         profits = dayProfitsSum
                 )
 
-                if (!shortSumDividerAdded && daySum.datePlusTime() < shortPeriodDivider.datePlusTime()) {
-                    shortSumDividerAdded = true
+                if (needAddShortSumDivider && daySum.datePlusTime() < shortPeriodDivider.datePlusTime()) {
+                    needAddShortSumDivider = false
                     if (atLeastOneRecordAdded) {
                         result.add(shortPeriodDivider)
                     }
@@ -113,14 +114,14 @@ fun List<Record>.toRecordItemsList(
             }
         }
 
-        if (!shortSumDividerAdded && record.datePlusTime() < shortPeriodDivider.datePlusTime()) {
-            shortSumDividerAdded = true
+        if (needAddShortSumDivider && record.datePlusTime() < shortPeriodDivider.datePlusTime()) {
+            needAddShortSumDivider = false
             if (atLeastOneRecordAdded) {
                 result.add(shortPeriodDivider)
             }
         }
-        if (!longSumDividerAdded && record.date < longSumBound) {
-            longSumDividerAdded = true
+        if (needAddLongSumDivider && record.date < longSumBound) {
+            needAddLongSumDivider = false
             if (atLeastOneRecordAdded) {
                 result.add(longPeriodDivider)
             }
@@ -160,6 +161,12 @@ fun List<Record>.toRecordItemsList(
             }
         }
     }
+
+    if (sortByValue) {
+        // sort is stable
+        result.sortByDescending { (it as Record).value }
+    }
+
     result.add(Totals(
             showSpends = showInfo.showSpends,
             showProfits = showInfo.showProfits,

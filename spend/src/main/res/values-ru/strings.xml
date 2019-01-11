@@ -114,8 +114,9 @@
     <string name="dialog_title_delete_selected_records">удалить выделенные записи?</string>
     <string name="dialog_title_change_records">изменить выделенные записи</string>
     <string name="button_change">изменить</string>
-    <string name="dont_change_text">не изменять</string>
+    <string name="dont_change_text">не менять</string>
     <string name="text_all_selected_records_were_deleted">все выделенные записи были удалены</string>
     <string name="hint_search">поиск</string>
+    <string name="menu_item_sort_by_value">сортировка по сумме</string>
 
 </resources>

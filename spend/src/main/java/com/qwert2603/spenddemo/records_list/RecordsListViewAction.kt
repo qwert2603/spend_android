@@ -23,4 +23,6 @@ sealed class RecordsListViewAction : ViewAction {
 
     data class AskToDeleteRecords(val recordUuids: List<String>) : RecordsListViewAction()
     data class AskToChangeRecords(val recordUuids: List<String>) : RecordsListViewAction()
+
+    object ScrollToTop : RecordsListViewAction()
 }

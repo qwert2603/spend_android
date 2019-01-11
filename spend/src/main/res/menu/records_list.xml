@@ -31,6 +31,11 @@
         android:title="@string/menu_item_show_times" />
 
     <item
+        android:id="@+id/sort_by_value"
+        android:checkable="true"
+        android:title="@string/menu_item_sort_by_value" />
+
+    <item
         android:id="@+id/long_sum"
         android:title="@string/menu_item_long_sum_format" />
 

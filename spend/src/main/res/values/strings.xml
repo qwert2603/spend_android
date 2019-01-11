@@ -72,6 +72,7 @@
     <string name="menu_item_show_balances">balances</string>
     <string name="menu_item_new_profit">new profit</string>
     <string name="menu_item_show_times">times</string>
+    <string name="menu_item_sort_by_value">sort by value</string>
     <string name="menu_item_short_sum_format" formatted="true">short &#931;: %s</string>
     <string name="menu_item_long_sum_format" formatted="true">long &#931;: %s</string>
     <string name="title_long_sum_dialog">long &#931;</string>

@@ -214,6 +214,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun showChangeKindsChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.show_change_kinds)
     override fun showTimesChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.show_times)
 
+    override fun sortByValueChanges(): Observable<Boolean> = menuHolder.menuItemCheckedChanges(R.id.sort_by_value)
+
     override fun longSumPeriodSelected(): Observable<Days> = longSumPeriodSelected
     override fun shortSumPeriodSelected(): Observable<Minutes> = shortSumPeriodSelected
 
@@ -234,7 +236,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
-        renderIfChanged({ showInfo.showSums }) { adapter.showDatesInRecords = !it }
+        renderIfChanged({ !showInfo.showSums || sortByValue }) { adapter.showDatesInRecords = it }
         renderIfChanged({ selectedRecordsUuids }) { adapter.selectedRecordsUuids = it }
         renderIfChanged({ selectMode }) { adapter.selectMode = it }
 
@@ -298,6 +300,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
                 menu.findItem(R.id.show_spends).isEnabled = it.showSpendsEnable()
                 menu.findItem(R.id.show_profits).isEnabled = it.showProfitsEnable()
+            }
+
+            renderIfChanged({ sortByValue }) {
+                menu.findItem(R.id.sort_by_value).isChecked = it
             }
 
             renderIfChanged({ longSumPeriod }) {
@@ -400,6 +406,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             is RecordsListViewAction.AskToChangeRecords -> ChangeRecordsDialogFragmentBuilder
                     .newChangeRecordsDialogFragment(ChangeRecordsDialogFragment.Key(va.recordUuids))
                     .makeShow()
+            RecordsListViewAction.ScrollToTop -> records_RecyclerView.scrollToPosition(0)
         }.also { }
     }
 

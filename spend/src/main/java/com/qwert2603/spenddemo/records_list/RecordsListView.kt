@@ -25,6 +25,8 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun showChangeKindsChanges(): Observable<Boolean>
     fun showTimesChanges(): Observable<Boolean>
 
+    fun sortByValueChanges(): Observable<Boolean>
+
     fun longSumPeriodSelected(): Observable<Days>
     fun shortSumPeriodSelected(): Observable<Minutes>
 
