@@ -85,6 +85,11 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
                 }
                 .disposeOnPause(this)
 
+        RxTextView.textChanges(dialogView.search_EditText)
+                .skipInitialValue()
+                .subscribe { dialogView.categories_RecyclerView.scrollToPosition(0) }
+                .disposeOnPause(this)
+
         adapter.modelItemClicks
                 .subscribe {
                     targetFragment!!.onActivityResult(
