@@ -9,14 +9,12 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.records_list.vh.RecordViewHolder
 import com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
-import com.qwert2603.spenddemo.utils.AnimatorUtils
-import com.qwert2603.spenddemo.utils.Const
-import com.qwert2603.spenddemo.utils.doOnEnd
-import com.qwert2603.spenddemo.utils.getGlobalVisibleRectRightNow
+import com.qwert2603.spenddemo.utils.*
 import kotlinx.android.synthetic.main.item_record.view.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,9 +30,10 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
     private val createRecordAnimators = ConcurrentHashMap<RecyclerView.ViewHolder, Pair<Animator, () -> Unit>>()
 
     var pendingCreatedRecordUuid: String? = null
+    var pendingEditedRecordUuid: String? = null
 
     override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
-        if (holder is RecordViewHolder && holder.t?.uuid == pendingCreatedRecordUuid) {
+        if (holder is RecordViewHolder && holder.t!!.uuid == pendingCreatedRecordUuid) {
 
             pendingCreatedRecordUuid = null
 
@@ -84,7 +83,25 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             animatorSet.start()
             return false
         }
+
+        /**
+         * if record's time was changed, it will be moved in list.
+         * (but actually it will be removed and added via [FastDiffUtils]).
+         * so we need to check here if edited record is "added".
+         */
+        if (animateEditIfNeeded(oldHolder = null, newHolder = holder)) return false
+
         return super.animateAdd(holder)
+    }
+
+    override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder, payloads: MutableList<Any>): Boolean {
+        return true
+    }
+
+    override fun animateChange(oldHolder: RecyclerView.ViewHolder, newHolder: RecyclerView.ViewHolder, preInfo: ItemHolderInfo, postInfo: ItemHolderInfo): Boolean {
+        if (animateEditIfNeeded(oldHolder = oldHolder, newHolder = newHolder)) return false
+
+        return super.animateChange(oldHolder, newHolder, preInfo, postInfo)
     }
 
     override fun endAnimation(item: RecyclerView.ViewHolder) {
@@ -122,5 +139,37 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
                 .also { it.interpolator = AccelerateDecelerateInterpolator() }
                 .doOnEnd(resetAction)
                 .let { Pair(it, resetAction) }
+    }
+
+    /**
+     * @return true if animating edit.
+     */
+    private fun animateEditIfNeeded(oldHolder: RecyclerView.ViewHolder?, newHolder: RecyclerView.ViewHolder): Boolean {
+        LogUtils.d { "RecordsListAnimator wregkjengk_Edit $oldHolder $newHolder" }
+
+        if (newHolder is RecordViewHolder && newHolder.t!!.uuid == pendingEditedRecordUuid) {
+
+            LogUtils.d { "RecordsListAnimator wregkjengk_Edit ${newHolder.t}" }
+
+            pendingEditedRecordUuid = null
+
+            endAnimation(newHolder)
+
+            val (animator, resetAction) = AnimatorUtils.animateHighlight(
+                    view = newHolder.itemView.record_LinearLayout,
+                    colorRes = R.color.highlight_edited_record
+            )
+
+            animator.doOnEnd {
+                dispatchAnimationFinished(newHolder)
+                if (oldHolder != null && oldHolder != newHolder) dispatchAnimationFinished(oldHolder)
+                createRecordAnimators.remove(newHolder)
+            }
+
+            createRecordAnimators[newHolder] = animator to resetAction
+            animator.start()
+            return true
+        }
+        return false
     }
 }

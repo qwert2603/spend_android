@@ -293,6 +293,15 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     records_RecyclerView.scrollToPosition(position)
                 }
             }
+            val pendingEditedRecordUuid = itemAnimator.pendingEditedRecordUuid
+            if (pendingEditedRecordUuid != null) {
+                LogUtils.d { "RecordsListAnimator pendingEditedRecordUuid $pendingEditedRecordUuid" }
+                val position = records.indexOfFirst { it is Record && it.uuid == pendingEditedRecordUuid }
+                LogUtils.d { "RecordsListAnimator position $position" }
+                if (position >= 0) {
+                    records_RecyclerView.scrollToPosition(position)
+                }
+            }
             if (!initialScrollDone) {
                 initialScrollDone = true
                 val key = key
@@ -445,7 +454,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     .newChooseShortSumPeriodDialog(va.minutes)
                     .makeShow(REQUEST_CHOOSE_SHORT_SUM_PERIOD)
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
-            is RecordsListViewAction.OnRecordEditedLocally -> Unit
+            is RecordsListViewAction.OnRecordEditedLocally -> itemAnimator.pendingEditedRecordUuid = va.uuid
             RecordsListViewAction.RerenderAll -> renderAll()
             is RecordsListViewAction.AskToCombineRecords -> CombineRecordsDialogFragmentBuilder
                     .newCombineRecordsDialogFragment(CombineRecordsDialogFragment.Key(va.recordUuids, va.categoryUuid, va.kind))

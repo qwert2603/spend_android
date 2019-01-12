@@ -8,7 +8,7 @@ import android.view.View
 import com.qwert2603.andrlib.util.color
 
 object AnimatorUtils {
-    class AnimateHighlightResult(
+    data class AnimateHighlightResult(
             val animator: Animator,
             val resetAction: () -> Unit
     )
