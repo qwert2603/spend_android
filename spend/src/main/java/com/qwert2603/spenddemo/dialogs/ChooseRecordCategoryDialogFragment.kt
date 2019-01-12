@@ -29,6 +29,7 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_choose_record_category.view.*
 import kotlinx.android.synthetic.main.item_record_category.view.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentWithArgs
@@ -73,13 +74,14 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
 
         Observable
                 .combineLatest(
-                        recordAggregationsRepo.getRecordCategories(recordTypeId)
-                                .observeOn(uiSchedulerProvider.ui),
-                        RxTextView.textChanges(dialogView.search_EditText),
+                        recordAggregationsRepo.getRecordCategories(recordTypeId),
+                        RxTextView.textChanges(dialogView.search_EditText)
+                                .debounce(230, TimeUnit.MILLISECONDS),
                         BiFunction { categories: List<RecordCategoryAggregation>, search: CharSequence ->
                             categories.filter { it.recordCategory.name.contains(search, ignoreCase = true) }
                         }
                 )
+                .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
                     adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(it)
                 }

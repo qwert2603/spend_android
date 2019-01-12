@@ -29,6 +29,7 @@ import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_choose_record_kind.view.*
 import kotlinx.android.synthetic.main.item_record_kind.view.*
 import java.io.Serializable
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentWithArgs
@@ -88,7 +89,8 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
         Observable
                 .combineLatest(
                         recordAggregationsRepo.getRecordKinds(key.recordTypeId, key.recordCategoryUuid),
-                        RxTextView.textChanges(dialogView.search_EditText),
+                        RxTextView.textChanges(dialogView.search_EditText)
+                                .debounce(230, TimeUnit.MILLISECONDS),
                         BiFunction { kinds: List<RecordKindAggregation>, search: CharSequence ->
                             kinds.filter {
                                 it.kind.contains(search, ignoreCase = true)
