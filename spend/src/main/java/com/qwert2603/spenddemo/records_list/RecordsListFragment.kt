@@ -317,7 +317,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        renderIfChanged({ showInfo.newSpendVisible() }) {
+        renderIfChanged({ showInfo.showSpends && !showFilters }) {
             createSpendViewImpl.setVisible(it)
             if (!it) (requireActivity() as KeyboardManager).hideKeyboard()
         }
@@ -325,9 +325,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ showFilters }) { filters_LinearLayout.setVisible(it) }
 
         menuHolder.menu?.also { menu ->
-            renderIfChanged({ showInfo }) {
-                menu.findItem(R.id.new_profit).isEnabled = it.newProfitEnable()
+            renderIfChanged({ showInfo.showProfits && !showFilters }) {
+                menu.findItem(R.id.new_profit).isEnabled = it
+            }
 
+            renderIfChanged({ showInfo }) {
                 menu.findItem(R.id.show_spends).isChecked = it.showSpends
                 menu.findItem(R.id.show_profits).isChecked = it.showProfits
                 menu.findItem(R.id.show_sums).isChecked = it.showSums

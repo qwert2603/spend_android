@@ -11,7 +11,7 @@ data class RecordsListViewState(
         val shortSumPeriod: Minutes,
         val sumsInfo: SumsInfo,
         val sortByValue: Boolean,
-        val showFilters:Boolean,
+        val showFilters: Boolean,
         val searchQuery: String,
         val startDate: SDate?,
         val endDate: SDate?,
