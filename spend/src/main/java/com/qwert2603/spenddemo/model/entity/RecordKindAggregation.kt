@@ -11,5 +11,5 @@ data class RecordKindAggregation(
         val recordsCount: Int,
         val totalValue: Long
 ) : IdentifiableLong {
-    override val id = kind.hashCodeLong() + recordTypeId
+    override val id = recordCategory.uuid.hashCodeLong() + kind.hashCodeLong()
 }

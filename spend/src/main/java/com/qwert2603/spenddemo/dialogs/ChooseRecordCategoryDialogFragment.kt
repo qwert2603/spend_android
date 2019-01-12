@@ -84,12 +84,8 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
                     adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(it)
+                    dialogView.categories_RecyclerView.scrollToPosition(0)
                 }
-                .disposeOnPause(this)
-
-        RxTextView.textChanges(dialogView.search_EditText)
-                .skipInitialValue()
-                .subscribe { dialogView.categories_RecyclerView.scrollToPosition(0) }
                 .disposeOnPause(this)
 
         adapter.modelItemClicks
