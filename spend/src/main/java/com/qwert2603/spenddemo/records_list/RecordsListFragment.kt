@@ -139,9 +139,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         RxRecyclerView.scrollEvents(records_RecyclerView)
                                 .map {
                                     val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-                                    val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
-                                            && currentViewState.records?.get(lastVisiblePosition) is Totals
-                                    return@map !lastIsTotal
+                                    val lastIsTotalOrDivider = lastVisiblePosition != RecyclerView.NO_POSITION
+                                            && currentViewState.records?.get(lastVisiblePosition)
+                                            .let { recordsListItem -> recordsListItem is Totals || recordsListItem is PeriodDivider }
+                                    return@map !lastIsTotalOrDivider
                                 },
                         Boolean::and.toRxBiFunction()
                 )
@@ -154,23 +155,18 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         RxRecyclerView.scrollEvents(records_RecyclerView)
                 .subscribe {
                     if (!currentViewState.showInfo.showFloatingDate()) return@subscribe
-                    var i = layoutManager.findLastVisibleItemPosition()
+                    var lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+                    if (lastVisiblePosition == RecyclerView.NO_POSITION) return@subscribe
                     val floatingCenter = floatingDate_TextView.getGlobalVisibleRectRightNow().centerY()
-                    val viewHolder = records_RecyclerView.findViewHolderForAdapterPosition(i)
+                    val viewHolder = records_RecyclerView.findViewHolderForAdapterPosition(lastVisiblePosition)
                     val records = currentViewState.records
                     if (viewHolder == null || records == null) {
                         floatingDate_TextView.text = ""
                         return@subscribe
                     }
-                    val vhTop = viewHolder.itemView.getGlobalVisibleRectRightNow().top
-                    if (i > 0 && vhTop < floatingCenter) --i
-                    if (i in 1..records.lastIndex && records[i] is Totals) --i
-                    i = records.indexOfFirst(startIndex = i) { it is DaySum }
-                    if (i >= 0) {
-                        floatingDate_TextView.text = (records[i] as DaySum).day.toFormattedString(resources, stringMonth = true)
-                    } else {
-                        floatingDate_TextView.text = ""
-                    }
+                    val vhBottom = viewHolder.itemView.getGlobalVisibleRectRightNow().bottom
+                    if (lastVisiblePosition > 0 && vhBottom < floatingCenter) --lastVisiblePosition
+                    floatingDate_TextView.text = (records[lastVisiblePosition].date()).toFormattedString(resources, stringMonth = true)
                 }
                 .disposeOnDestroyView()
 

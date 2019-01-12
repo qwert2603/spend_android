@@ -8,6 +8,7 @@ import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -48,6 +49,7 @@ class RecordsListPresenter @Inject constructor(
             intent { it.showFiltersChanges() }
                     .map { RecordsListPartialChange.ShowFiltersChanged(it) },
             intent { it.searchQueryChanges() }
+                    .debounce(230, TimeUnit.MILLISECONDS)
                     .map { RecordsListPartialChange.SearchQueryChanged(it) },
             intent { it.startDateSelected() }
                     .map { RecordsListPartialChange.StartDateChanged(it.t) },
