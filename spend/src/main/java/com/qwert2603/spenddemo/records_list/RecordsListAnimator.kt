@@ -31,6 +31,7 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
 
     var pendingCreatedRecordUuid: String? = null
     var pendingEditedRecordUuid: String? = null
+    var pendingCombinedRecordUuid: String? = null
 
     override fun animateAdd(holder: RecyclerView.ViewHolder): Boolean {
         if (holder is RecordViewHolder && holder.t!!.uuid == pendingCreatedRecordUuid) {
@@ -83,6 +84,30 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
             animatorSet.start()
             return false
         }
+
+        if (holder is RecordViewHolder && holder.t!!.uuid == pendingCombinedRecordUuid) {
+
+            LogUtils.d { "RecordsListAnimator pendingCombinedRecordUuid ${holder.t}" }
+
+            pendingCombinedRecordUuid = null
+
+            endAnimation(holder)
+
+            val (animator, resetAction) = AnimatorUtils.animateHighlight(
+                    view = holder.itemView.record_LinearLayout,
+                    colorRes = R.color.highlight_combined_record
+            )
+
+            animator.doOnEnd {
+                dispatchAnimationFinished(holder)
+                createRecordAnimators.remove(holder)
+            }
+
+            createRecordAnimators[holder] = animator to resetAction
+            animator.start()
+            return false
+        }
+
 
         /**
          * if record's time was changed, it will be moved in list.
@@ -145,11 +170,11 @@ class RecordsListAnimator(private val spendOrigin: SpendOrigin?) : DefaultItemAn
      * @return true if animating edit.
      */
     private fun animateEditIfNeeded(oldHolder: RecyclerView.ViewHolder?, newHolder: RecyclerView.ViewHolder): Boolean {
-        LogUtils.d { "RecordsListAnimator wregkjengk_Edit $oldHolder $newHolder" }
+        LogUtils.d { "RecordsListAnimator animateEditIfNeeded $oldHolder $newHolder" }
 
         if (newHolder is RecordViewHolder && newHolder.t!!.uuid == pendingEditedRecordUuid) {
 
-            LogUtils.d { "RecordsListAnimator wregkjengk_Edit ${newHolder.t}" }
+            LogUtils.d { "RecordsListAnimator animateEditIfNeeded ${newHolder.t}" }
 
             pendingEditedRecordUuid = null
 

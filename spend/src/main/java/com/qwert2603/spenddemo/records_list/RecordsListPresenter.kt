@@ -286,6 +286,10 @@ class RecordsListPresenter @Inject constructor(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordEditedLocally(it)) }
                 .subscribeToView()
 
+        recordsListInteractor.getRecordCombinedLocallyEvents()
+                .doOnNext { viewActions.onNext(RecordsListViewAction.OnRecordCombinedLocally(it)) }
+                .subscribeToView()
+
         intent { it.combineSelectedClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
                 .doOnNext { vs ->

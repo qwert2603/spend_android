@@ -47,6 +47,8 @@ class RecordsRepoImpl @Inject constructor(
 
     private val recordEditedLocallyEvents = PublishSubject.create<String>()
 
+    private val recordCombinedLocallyEvents = PublishSubject.create<String>()
+
     init {
         syncProcessor.start()
     }
@@ -122,6 +124,8 @@ class RecordsRepoImpl @Inject constructor(
 
     override fun getRecordEditedLocallyEvents(): Observable<String> = recordEditedLocallyEvents.hide()
 
+    override fun getRecordCombinedLocallyEvents(): Observable<String> = recordCombinedLocallyEvents.hide()
+
     override fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int> = recordsDao
             .recordsList
             .observeOn(modelSchedulersProvider.computation)
@@ -151,11 +155,15 @@ class RecordsRepoImpl @Inject constructor(
     override fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String) {
         LogUtils.d { "RecordsRepoImpl combineRecords $recordUuids $categoryUuid $kind" }
 
+        val newRecordUuid = UUID.randomUUID().toString()
+
+        recordCombinedLocallyEvents.onNext(newRecordUuid)
+
         syncProcessor.combineRecords(
                 recordUuids = recordUuids,
                 categoryUuid = categoryUuid,
                 kind = kind,
-                newRecordUuid = UUID.randomUUID().toString()
+                newRecordUuid = newRecordUuid
         )
     }
 

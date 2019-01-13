@@ -31,6 +31,8 @@ interface RecordsRepo {
 
     fun getRecordEditedLocallyEvents(): Observable<String>
 
+    fun getRecordCombinedLocallyEvents(): Observable<String>
+
     fun getLocalChangesCount(recordTypeIds: List<Long>): Observable<Int>
 
     fun saveRecords(records: List<RecordDraft>)

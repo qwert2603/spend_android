@@ -14,6 +14,7 @@ sealed class RecordsListViewAction : ViewAction {
     data class AskToChooseShortSumPeriod(val minutes: Minutes) : RecordsListViewAction()
     data class OnRecordCreatedLocally(val uuid: String) : RecordsListViewAction()
     data class OnRecordEditedLocally(val uuid: String) : RecordsListViewAction()
+    data class OnRecordCombinedLocally(val uuid: String) : RecordsListViewAction()
     object RerenderAll : RecordsListViewAction()
 
     data class AskToCombineRecords(
