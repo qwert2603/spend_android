@@ -139,10 +139,9 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         RxRecyclerView.scrollEvents(records_RecyclerView)
                                 .map {
                                     val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-                                    val lastIsTotalOrDivider = lastVisiblePosition != RecyclerView.NO_POSITION
-                                            && currentViewState.records?.get(lastVisiblePosition)
-                                            .let { recordsListItem -> recordsListItem is Totals || recordsListItem is PeriodDivider }
-                                    return@map !lastIsTotalOrDivider
+                                    val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
+                                            && currentViewState.records?.get(lastVisiblePosition) is Totals
+                                    return@map !lastIsTotal
                                 },
                         Boolean::and.toRxBiFunction()
                 )
