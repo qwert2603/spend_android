@@ -40,6 +40,11 @@ class RecordsListPresenter @Inject constructor(
 
     private val sortByValueChanges: Observable<Boolean> = intent { it.sortByValueChanges() }.shareAfterViewSubscribed()
 
+    private val recordsFiltersChanges = viewStateObservable
+            .map { RecordsFilters(it.searchQuery, it.startDate, it.endDate) }
+            .distinctUntilChanged()
+            .shareAfterViewSubscribed()
+
     override val partialChanges: Observable<PartialChange> = Observable.merge(listOf(
             showInfoChanges
                     .map { RecordsListPartialChange.ShowInfoChanged(it) },
@@ -61,9 +66,7 @@ class RecordsListPresenter @Inject constructor(
                             sortByValueChanges.startWith(initialState.sortByValue),
                             longSumPeriodChanges,
                             shortSumPeriodChanges,
-                            viewStateObservable
-                                    .map { Filters(it.searchQuery, it.startDate, it.endDate) }
-                                    .distinctUntilChanged(),
+                            recordsFiltersChanges,
                             viewStateObservable
                                     .map { it.selectedRecordsUuids }
                                     .distinctUntilChanged(),
@@ -108,6 +111,7 @@ class RecordsListPresenter @Inject constructor(
                     longSumPeriodChanges,
                     shortSumPeriodChanges,
                     showInfoChanges,
+                    recordsFiltersChanges,
                     recordsListInteractor
             ).map { RecordsListPartialChange.SumsInfoChanged(it) },
             recordsListInteractor

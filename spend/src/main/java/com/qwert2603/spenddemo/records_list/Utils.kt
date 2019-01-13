@@ -30,7 +30,7 @@ fun List<Record>.toRecordItemsList(
         sortByValue: Boolean,
         longSumPeriod: Days,
         shortSumPeriod: Minutes,
-        filters: Filters,
+        recordsFilters: RecordsFilters,
         selectedRecordsUuids: HashSet<String>
 ): List<RecordsListItem> {
 
@@ -129,7 +129,7 @@ fun List<Record>.toRecordItemsList(
         }
 
         val recordIsSelected = record.uuid in selectedRecordsUuids
-        if (recordIsSelected || filters.check(record)) {
+        if (recordIsSelected || recordsFilters.check(record)) {
             when {
                 record == FAKE_RECORD -> {
                     // nth
@@ -190,25 +190,27 @@ fun sumsInfoChanges(
         longSumPeriodChanges: Observable<Days>,
         shortSumPeriodChanges: Observable<Minutes>,
         showInfoChanges: Observable<ShowInfo>,
+        recordsFiltersChanges: Observable<RecordsFilters>,
         recordsListInteractor: RecordsListInteractor
 ): Observable<SumsInfo> = Observable
         .combineLatest(
                 longSumPeriodChanges,
                 shortSumPeriodChanges,
                 showInfoChanges,
+                recordsFiltersChanges,
                 RxUtils.minuteChanges().startWith(Any()),
-                makeQuad()
+                makeQuint()
         )
-        .switchMap { (longSumPeriodDays, shortSumPeriodMinutes, showInfo) ->
+        .switchMap { (longSumPeriodDays, shortSumPeriodMinutes, showInfo, recordsFilters) ->
             val longSumChanges = Observable
                     .combineLatest(
                             if (showInfo.showSpends) {
-                                recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_SPEND, longSumPeriodDays)
+                                recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_SPEND, longSumPeriodDays, recordsFilters)
                             } else {
                                 Observable.just(0L)
                             },
                             if (showInfo.showProfits) {
-                                recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_PROFIT, longSumPeriodDays)
+                                recordsListInteractor.getSumLastDays(Const.RECORD_TYPE_ID_PROFIT, longSumPeriodDays, recordsFilters)
                             } else {
                                 Observable.just(0L)
                             },
@@ -217,12 +219,12 @@ fun sumsInfoChanges(
             val shortSumChanges = Observable
                     .combineLatest(
                             if (showInfo.showSpends) {
-                                recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_SPEND, shortSumPeriodMinutes)
+                                recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_SPEND, shortSumPeriodMinutes, recordsFilters)
                             } else {
                                 Observable.just(0L)
                             },
                             if (showInfo.showProfits) {
-                                recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_PROFIT, shortSumPeriodMinutes)
+                                recordsListInteractor.getSumLastMinutes(Const.RECORD_TYPE_ID_PROFIT, shortSumPeriodMinutes, recordsFilters)
                             } else {
                                 Observable.just(0L)
                             },

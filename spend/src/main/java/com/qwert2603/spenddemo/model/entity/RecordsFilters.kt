@@ -1,9 +1,6 @@
-package com.qwert2603.spenddemo.records_list
+package com.qwert2603.spenddemo.model.entity
 
-import com.qwert2603.spenddemo.model.entity.Record
-import com.qwert2603.spenddemo.model.entity.SDate
-
-data class Filters(
+data class RecordsFilters(
         val searchQuery: String,
         val startDate: SDate?,
         val endDate: SDate?

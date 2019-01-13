@@ -21,9 +21,9 @@ interface RecordsRepo {
 
     fun getRecord(uuid: String): Observable<Wrapper<Record>>
 
-    fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long>
+    fun getSumLastDays(recordTypeId: Long, days: Days, recordsFilters: RecordsFilters? = null): Observable<Long>
 
-    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long>
+    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes, recordsFilters: RecordsFilters? = null): Observable<Long>
 
     fun getDumpFile(): Single<File>
 

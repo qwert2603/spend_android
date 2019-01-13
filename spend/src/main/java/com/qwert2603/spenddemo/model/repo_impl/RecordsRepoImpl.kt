@@ -67,7 +67,7 @@ class RecordsRepoImpl @Inject constructor(
             }
             .distinctUntilChanged()
 
-    override fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long> {
+    override fun getSumLastDays(recordTypeId: Long, days: Days, recordsFilters: RecordsFilters?): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_MONTH, -days.days + 1)
         val startDate = calendar.toSDate()
@@ -81,13 +81,14 @@ class RecordsRepoImpl @Inject constructor(
                                 record.recordCategory.recordTypeId == recordTypeId
                                         && !record.isDeleted()
                                         && record.date >= startDate
+                                        && recordsFilters?.check(record) != false
                             }
                             .sumByLong { it.value.toLong() }
                 }
                 .distinctUntilChanged()
     }
 
-    override fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long> {
+    override fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes, recordsFilters: RecordsFilters?): Observable<Long> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.MINUTE, -minutes.minutes + 1)
         val startDate = calendar.toSDate()
@@ -102,6 +103,7 @@ class RecordsRepoImpl @Inject constructor(
                                 record.recordCategory.recordTypeId == recordTypeId
                                         && !record.isDeleted()
                                         && (record.date > startDate || (record.date == startDate && (record.time ?: STime(0)) >= startTime))
+                                        && recordsFilters?.check(record) != false
                             }
                             .sumByLong { it.value.toLong() }
                 }

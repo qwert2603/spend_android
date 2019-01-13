@@ -18,9 +18,11 @@ class RecordsListInteractor @Inject constructor(
 
     fun getLocalChangesCount(recordTypeIds: List<Long>) = recordsRepo.getLocalChangesCount(recordTypeIds)
 
-    fun getSumLastDays(recordTypeId: Long, days: Days): Observable<Long> = recordsRepo.getSumLastDays(recordTypeId, days)
+    fun getSumLastDays(recordTypeId: Long, days: Days, recordsFilters: RecordsFilters?): Observable<Long> =
+            recordsRepo.getSumLastDays(recordTypeId, days, recordsFilters)
 
-    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes): Observable<Long> = recordsRepo.getSumLastMinutes(recordTypeId, minutes)
+    fun getSumLastMinutes(recordTypeId: Long, minutes: Minutes, recordsFilters: RecordsFilters?): Observable<Long> =
+            recordsRepo.getSumLastMinutes(recordTypeId, minutes, recordsFilters)
 
     fun getRecordCreatedLocallyEvents(): Observable<String> = recordsRepo.getRecordCreatedLocallyEvents()
 
