@@ -18,9 +18,7 @@ import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.view.RxView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
-import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.andrlib.util.color
-import com.qwert2603.andrlib.util.setVisible
+import com.qwert2603.andrlib.util.*
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.change_records.ChangeRecordsDialogFragment
 import com.qwert2603.spenddemo.change_records.ChangeRecordsDialogFragmentBuilder

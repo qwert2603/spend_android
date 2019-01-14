@@ -22,6 +22,8 @@ import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
+import com.qwert2603.andrlib.util.renderIfChanged
+import com.qwert2603.andrlib.util.renderIfChangedTwo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder

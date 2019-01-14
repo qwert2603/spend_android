@@ -5,6 +5,8 @@ import android.view.*
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.andrlib.util.renderIfChanged
+import com.qwert2603.andrlib.util.renderIfChangedWithFirstRendering
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.env.E

@@ -18,6 +18,7 @@ import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.inflate
+import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.dialogs.*
