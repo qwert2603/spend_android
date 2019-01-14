@@ -3,6 +3,7 @@ package com.qwert2603.spenddemo.model.sync_processor
 import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.SpendDemoApplication
 import com.qwert2603.spenddemo.di.LocalDBExecutor
 import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.env.E
@@ -40,16 +41,21 @@ class SyncProcessor @Inject constructor(
     private val changeIdCounter = PrefsCounter(prefs, "last_change_id")
 
     private val pendingClearAll = AtomicBoolean(false)
+    private val pendingOneSync = AtomicBoolean(false)
+    private val running = AtomicBoolean(false)
 
-    val syncState = BehaviorSubject.create<SyncState>()
+    val syncState = BehaviorSubject.createDefault(SyncState.SYNCING)
 
-    fun start() {
-        if (!E.env.syncWithServer) return
+    init {
         Executors.newSingleThreadExecutor().execute {
             while (true) {
+
                 try {
                     Thread.yield()
                     Thread.sleep(42)
+
+                    LogUtils.d{ "SyncProcessor while (true) ${pendingOneSync.get()} ${running.get()}" }
+                    if (!pendingOneSync.getAndSet(false) && !running.get()) continue
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -111,6 +117,24 @@ class SyncProcessor @Inject constructor(
             }
         }
     }
+
+    fun start() {
+        LogUtils.d("SyncProcessor start")
+        SpendDemoApplication.debugHolder.logLine { "SyncProcessor start" }
+        if (!E.env.syncWithServer) return
+        running.set(true)
+    }
+
+    fun stop() {
+        LogUtils.d("SyncProcessor stop")
+        SpendDemoApplication.debugHolder.logLine { "SyncProcessor stop" }
+        running.set(false)
+    }
+
+    fun makeOneSync() {
+        pendingOneSync.set(true)
+    }
+
 
     fun saveItems(ts: List<RecordDraft>) {
         localDBExecutor.execute {

@@ -140,4 +140,8 @@
     <string name="hint_end_date">end date</string>
     <string name="text_not_selected">not selected</string>
 
+    <string name="notification_channel_sync_id" translatable="false">sync</string>
+    <string name="notification_channel_sync_name">synchronization</string>
+    <string name="notification_text_sync_done">sync done</string>
+
 </resources>

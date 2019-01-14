@@ -122,5 +122,7 @@
     <string name="hint_end_date">дата конца</string>
     <string name="text_not_selected">не выбрано</string>
     <string name="menu_item_filters">фильтры</string>
+    <string name="notification_channel_sync_name">синхронизация</string>
+    <string name="notification_text_sync_done">синхронизация выполнена</string>
 
 </resources>
