@@ -47,8 +47,9 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                     t?.let { LogUtils.e("SyncWorker subscribe", it) }
                     SpendDemoApplication.debugHolder.logLine { "SyncWorker subscribe $syncState $t" }
 
-                    result = if (t == null && syncState == SyncState.SYNCED) {
-                        showNotification()
+                    val success = t == null && syncState == SyncState.SYNCED
+                    showNotification(success)
+                    result = if (success) {
                         Result.success()
                     } else {
                         Result.failure()
@@ -74,7 +75,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         SpendDemoApplication.debugHolder.logLine { "SyncWorker onStopped" }
     }
 
-    private fun showNotification() {
+    private fun showNotification(success: Boolean) {
 
         createNotificationChannel()
 
@@ -86,11 +87,16 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                 .setShowWhen(true)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(applicationContext.getString(R.string.app_name))
-                .setContentText(applicationContext.getString(R.string.notification_text_sync_done))
+                .setContentText(applicationContext.getString(if (success) {
+                    R.string.notification_text_sync_done
+                } else {
+                    R.string.notification_text_sync_error
+                }))
                 .setGroup("sync")
                 .build()
 
-        NotificationManagerCompat.from(applicationContext).notify(SystemClock.elapsedRealtime().toString(), 1, notification)
+        NotificationManagerCompat.from(applicationContext)
+                .notify(SystemClock.elapsedRealtime().toString(), 1, notification)
     }
 
     private fun createNotificationChannel() {

@@ -124,5 +124,6 @@
     <string name="menu_item_filters">фильтры</string>
     <string name="notification_channel_sync_name">синхронизация</string>
     <string name="notification_text_sync_done">синхронизация выполнена</string>
+    <string name="notification_text_sync_error">ошибка синхронизации</string>
 
 </resources>

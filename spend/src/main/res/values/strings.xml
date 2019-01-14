@@ -143,5 +143,6 @@
     <string name="notification_channel_sync_id" translatable="false">sync</string>
     <string name="notification_channel_sync_name">synchronization</string>
     <string name="notification_text_sync_done">sync done</string>
+    <string name="notification_text_sync_error">sync error</string>
 
 </resources>
