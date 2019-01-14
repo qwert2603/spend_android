@@ -1,11 +1,17 @@
 package com.qwert2603.spenddemo.model.sync_processor
 
+import android.content.Context
+import com.google.gson.Gson
 import com.qwert2603.andrlib.util.LogUtils
+import com.qwert2603.spenddemo.di.LocalDBExecutor
+import com.qwert2603.spenddemo.di.RemoteDBExecutor
 import com.qwert2603.spenddemo.env.E
 import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.local_db.entity.ItemsIds
 import com.qwert2603.spenddemo.model.rest.ApiHelper
+import com.qwert2603.spenddemo.utils.PrefsCounter
+import com.qwert2603.spenddemo.utils.PrefsLastChangeStorage
 import com.qwert2603.spenddemo.utils.Wrapper
 import com.qwert2603.spenddemo.utils.executeAndWait
 import io.reactivex.subjects.BehaviorSubject
@@ -13,19 +19,25 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SyncProcessor(
-        private val remoteDBExecutor: ExecutorService,
-        private val localDBExecutor: ExecutorService,
-        private val lastChangeStorage: LastChangeStorage,
+@Singleton
+class SyncProcessor @Inject constructor(
+        appContext: Context,
+        @RemoteDBExecutor private val remoteDBExecutor: ExecutorService,
+        @LocalDBExecutor private val localDBExecutor: ExecutorService,
         private val apiHelper: ApiHelper,
-        private val recordsDao: RecordsDao,
-        private val changeIdCounter: IdCounter
+        private val recordsDao: RecordsDao
 ) {
 
     companion object {
         private const val TAG = "SyncProcessor"
     }
+
+    private val prefs = appContext.getSharedPreferences("records.prefs", Context.MODE_PRIVATE)
+    private val lastChangeStorage = PrefsLastChangeStorage(prefs, Gson())
+    private val changeIdCounter = PrefsCounter(prefs, "last_change_id")
 
     private val pendingClearAll = AtomicBoolean(false)
 

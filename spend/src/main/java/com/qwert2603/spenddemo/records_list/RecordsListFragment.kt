@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.records_list
 
 import android.animation.LayoutTransition
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
@@ -203,6 +204,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
     }
 
+    @SuppressLint("CheckResult")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
@@ -210,6 +212,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menu.findItem(R.id.show_change_kinds).isVisible = E.env.syncWithServer
         menu.findItem(R.id.add_stub_records).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
+        menu.findItem(R.id.debug_dialog).isVisible = E.env.buildForTesting()
+
+        menuHolder.menuItemClicks(R.id.debug_dialog)
+                .subscribe { DebugDialogFragment().makeShow() }
 
         menuHolder.menu = menu
         renderAll()

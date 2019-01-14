@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/new_profit"
@@ -55,5 +56,10 @@
     <item
         android:id="@+id/clear_all"
         android:title="@string/menu_item_clear_all" />
+
+    <item
+        android:id="@+id/debug_dialog"
+        android:title="debug_dialog"
+        tools:ignore="HardcodedText" />
 
 </menu>

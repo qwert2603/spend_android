@@ -1,6 +1,7 @@
 package com.qwert2603.spenddemo.di
 
 import com.qwert2603.spenddemo.dialogs.*
+import com.qwert2603.spenddemo.model.sync_processor.SyncWorker
 import com.qwert2603.spenddemo.navigation.MainActivity
 import com.qwert2603.spenddemo.sums.SumsFragment
 import dagger.Subcomponent
@@ -16,4 +17,5 @@ interface ViewsComponent {
     fun inject(sumsFragment: SumsFragment)
     fun inject(combineRecordsDialogFragment: CombineRecordsDialogFragment)
     fun inject(deleteRecordsListDialogFragment: DeleteRecordsListDialogFragment)
+    fun inject(syncWorker: SyncWorker)
 }
