@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.support.v4.app.AlarmManagerCompat
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.work.*
 import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.SpendDemoApplication
@@ -36,6 +34,9 @@ class SyncWorkReceiver : BroadcastReceiver() {
         scheduleNext(context.applicationContext)
 
         val workRequest = OneTimeWorkRequest.Builder(SyncWorker::class.java)
+                .setConstraints(Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.UNMETERED)
+                        .build())
                 .build()
 
         WorkManager.getInstance()
