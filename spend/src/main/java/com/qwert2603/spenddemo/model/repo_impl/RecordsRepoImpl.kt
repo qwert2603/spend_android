@@ -110,6 +110,7 @@ class RecordsRepoImpl @Inject constructor(
             .recordsList
             .buffer(1L, TimeUnit.SECONDS)
             .mapNotNull { it.lastOrNull() }
+            .startWith(recordsDao.recordsList.take(1))
             .map { records ->
                 val currentTimeMillis = System.currentTimeMillis()
                 records
