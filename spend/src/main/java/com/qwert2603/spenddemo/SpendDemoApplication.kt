@@ -58,10 +58,7 @@ class SpendDemoApplication : Application() {
         private fun logSyncWorker() {
             WorkManager.getInstance()
                     .getWorkInfosForUniqueWorkLiveData(uniqueWorkName)
-                    .observeForever {
-                        LogUtils.d { "SyncWorker observeForever $it" }
-                        debugHolder.logLine { "SyncWorker observeForever $it" }
-                    }
+                    .observeForever { LogUtils.d { "SyncWorker observeForever $it" } }
         }
     }
 }
