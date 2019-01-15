@@ -125,5 +125,6 @@
     <string name="notification_channel_sync_name">синхронизация</string>
     <string name="notification_text_sync_done">синхронизация выполнена</string>
     <string name="notification_text_sync_error">ошибка синхронизации</string>
+    <string name="not_deleted_records_hash">хеш неудаленных записей</string>
 
 </resources>

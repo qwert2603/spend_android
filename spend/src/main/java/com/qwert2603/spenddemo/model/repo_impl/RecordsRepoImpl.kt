@@ -8,15 +8,14 @@ import com.qwert2603.spenddemo.model.entity.*
 import com.qwert2603.spenddemo.model.local_db.dao.RecordsDao
 import com.qwert2603.spenddemo.model.repo.RecordsRepo
 import com.qwert2603.spenddemo.model.sync_processor.SyncProcessor
-import com.qwert2603.spenddemo.utils.Wrapper
-import com.qwert2603.spenddemo.utils.sumByLong
-import com.qwert2603.spenddemo.utils.wrap
+import com.qwert2603.spenddemo.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import java.io.File
 import java.io.PrintWriter
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -104,6 +103,22 @@ class RecordsRepoImpl @Inject constructor(
                 val file = File(dir, filename)
                 PrintWriter(file).use { it.write(Gson().toJson(dump)) }
                 file
+            }
+            .subscribeOn(modelSchedulersProvider.computation)
+
+    override fun getNotDeletedRecordsHash(): Observable<String> = recordsDao
+            .recordsList
+            .buffer(1L, TimeUnit.SECONDS)
+            .mapNotNull { it.lastOrNull() }
+            .map { records ->
+                val currentTimeMillis = System.currentTimeMillis()
+                records
+                        .filter { !it.isDeleted() }
+                        .sortedBy { it.uuid }
+                        .map { it.toNotDeletedRecord() }
+                        .toString()
+                        .sha256()
+                        .also { LogUtils.d("timing_ getNotDeletedRecordsHash() ${System.currentTimeMillis() - currentTimeMillis} ms") }
             }
             .subscribeOn(modelSchedulersProvider.computation)
 

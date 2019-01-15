@@ -34,6 +34,8 @@ fun List<Record>.toRecordItemsList(
         selectedRecordsUuids: HashSet<String>
 ): List<RecordsListItem> {
 
+    val currentTimeMillis = System.currentTimeMillis()
+
     val calendarL = GregorianCalendar.getInstance()
     val calendarS = GregorianCalendar.getInstance().also { it.timeInMillis = calendarL.timeInMillis }
 
@@ -57,8 +59,6 @@ fun List<Record>.toRecordItemsList(
 
     LogUtils.d { "toRecordItemsList shortPeriodDivider=$shortPeriodDivider" }
     LogUtils.d { "toRecordItemsList longPeriodDivider=$longPeriodDivider" }
-
-    val currentTimeMillis = System.currentTimeMillis()
 
     var spendsCount = 0
     var spendsSum = 0L

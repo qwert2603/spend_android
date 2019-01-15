@@ -39,6 +39,7 @@
 
     <string name="list_loaded_completely">list loaded completely</string>
     <string name="send_title">send dump</string>
+    <string name="not_deleted_records_hash">not deleted records hash</string>
     <string name="about_text">about</string>
 
     <string name="today_text">today</string>

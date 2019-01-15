@@ -27,6 +27,8 @@ interface RecordsRepo {
 
     fun getDumpFile(): Single<File>
 
+    fun getNotDeletedRecordsHash(): Observable<String>
+
     fun getRecordCreatedLocallyEvents(): Observable<String>
 
     fun getRecordEditedLocallyEvents(): Observable<String>

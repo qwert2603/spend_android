@@ -18,4 +18,5 @@ interface ViewsComponent {
     fun inject(combineRecordsDialogFragment: CombineRecordsDialogFragment)
     fun inject(deleteRecordsListDialogFragment: DeleteRecordsListDialogFragment)
     fun inject(syncWorker: SyncWorker)
+    fun inject(notDeletedRecordsHashDialogFragment: NotDeletedRecordsHashDialogFragment)
 }

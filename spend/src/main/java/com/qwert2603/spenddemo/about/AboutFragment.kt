@@ -15,6 +15,7 @@ import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spenddemo.BuildConfig
 import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.di.DIHolder
+import com.qwert2603.spenddemo.dialogs.NotDeletedRecordsHashDialogFragment
 import com.qwert2603.spenddemo.utils.setShowing
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_about.*
@@ -51,6 +52,11 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
                 SimpleDateFormat("H:mm", Locale.getDefault()).format(Date(BuildConfig.BIULD_TIME)),
                 BuildConfig.BIULD_HASH
         ))
+
+        notDeletedRecordsHash_Button.setOnClickListener {
+            NotDeletedRecordsHashDialogFragment().show(fragmentManager, null)
+        }
+
         super.onViewCreated(view, savedInstanceState)
     }
 

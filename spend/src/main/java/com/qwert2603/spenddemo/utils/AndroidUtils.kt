@@ -12,6 +12,7 @@ import android.widget.Button
 import com.qwert2603.spenddemo.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spenddemo.model.entity.SDate
 import io.reactivex.functions.BiFunction
+import java.security.MessageDigest
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
@@ -132,3 +133,17 @@ fun <T> HashSet<T>.toggle(itemToToggle: T): HashSet<T> =
 
 fun DatePickerDialogFragmentBuilder.addMinDate(minDate: SDate?): DatePickerDialogFragmentBuilder = apply { if (minDate != null) minDate(minDate.date) }
 fun DatePickerDialogFragmentBuilder.addMaxDate(maxDate: SDate?): DatePickerDialogFragmentBuilder = apply { if (maxDate != null) maxDate(maxDate.date) }
+
+fun String.sha256(): String {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val hash = digest.digest(this.toByteArray(charset("UTF-8")))
+    val hexString = StringBuffer()
+
+    for (i in hash.indices) {
+        val hex = Integer.toHexString(0xff and hash[i].toInt())
+        if (hex.length == 1) hexString.append('0')
+        hexString.append(hex)
+    }
+
+    return hexString.toString()
+}
