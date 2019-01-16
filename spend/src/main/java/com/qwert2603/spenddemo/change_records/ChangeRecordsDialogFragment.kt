@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.view.RxView
@@ -62,7 +63,12 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         dialogView.date_EditText.onRightDrawableClicked { changedDateSelected.onNext(Wrapper(null)) }
         dialogView.time_EditText.onRightDrawableClicked { changedTimeSelected.onNext(Wrapper(null)) }
 
-        dialogView.dialogChangeRecords_LinearLayout.addView(RecordsListViewImpl(requireContext(), key.recordUuids))
+        val recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
+        recordsListViewImpl.onRenderEmptyListListener = {
+            Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
+            dismiss()
+        }
+        dialogView.dialogChangeRecords_LinearLayout.addView(recordsListViewImpl)
 
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)

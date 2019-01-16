@@ -61,7 +61,19 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .shareReplayLast()
 
         recordChanges
+                .take(1)
+                .observeOn(uiSchedulerProvider.ui)
+                .doOnNext {
+                    if (it.t == null) {
+                        Toast.makeText(requireContext(), R.string.text_deleting_record_not_found, Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    }
+                }
+                .subscribeUntilPaused()
+
+        recordChanges
                 .mapNotNull { it.t?.recordCategory?.recordTypeId }
+                .observeOn(uiSchedulerProvider.ui)
                 .doOnNext {
                     dialogView.dialogTitle_TextView.setText(when (it) {
                         Const.RECORD_TYPE_ID_SPEND -> R.string.dialog_title_delete_spend

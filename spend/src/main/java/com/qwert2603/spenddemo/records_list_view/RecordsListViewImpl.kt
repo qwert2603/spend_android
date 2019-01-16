@@ -25,6 +25,8 @@ class RecordsListViewImpl(
 
     private val recordsAdapter = RecordsAdapter()
 
+    var onRenderEmptyListListener: (() -> Unit)? = null
+
     init {
         inflate(R.layout.view_records_list, true)
         records_RecyclerView.adapter = recordsAdapter
@@ -36,6 +38,7 @@ class RecordsListViewImpl(
         viewRecordsList_FrameLayout.setVisibleChild(when {
             vs.records == null -> R.id.loading_ProgressBar
             vs.records.isEmpty() -> R.id.noRecords_TextView
+                    .also { onRenderEmptyListListener?.invoke() }
             else -> R.id.records_RecyclerView
                     .also { recordsAdapter.adapterList = BaseRecyclerViewAdapter.AdapterList(vs.records) }
         })

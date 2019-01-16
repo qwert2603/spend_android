@@ -54,7 +54,7 @@ class SyncProcessor @Inject constructor(
                     Thread.yield()
                     Thread.sleep(42)
 
-                    LogUtils.d { "SyncProcessor while (true) ${pendingOneSync.get()} ${running.get()}" }
+                    LogUtils.d(TAG) { "while (true) ${pendingOneSync.get()} ${running.get()}" }
                     if (!pendingOneSync.getAndSet(false) && !running.get()) continue
 
                     if (pendingClearAll.compareAndSet(true, false)) {
@@ -120,20 +120,20 @@ class SyncProcessor @Inject constructor(
     }
 
     fun start() {
-        LogUtils.d("SyncProcessor start")
+        LogUtils.d(TAG, "start")
         SpendDemoApplication.debugHolder.logLine { "SyncProcessor start" }
         if (!E.env.syncWithServer) return
         running.set(true)
     }
 
     fun stop() {
-        LogUtils.d("SyncProcessor stop")
+        LogUtils.d(TAG, "stop")
         SpendDemoApplication.debugHolder.logLine { "SyncProcessor stop" }
         running.set(false)
     }
 
     fun makeOneSync() {
-        LogUtils.d("SyncProcessor makeOneSync")
+        LogUtils.d(TAG, "makeOneSync")
         SpendDemoApplication.debugHolder.logLine { "SyncProcessor makeOneSync" }
         pendingOneSync.set(true)
     }

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.widget.Toast
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.util.toPx
@@ -33,10 +34,16 @@ class DeleteRecordsListDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
         val dp16 = resources.toPx(16)
+        recordsListViewImpl.setPadding(dp16, dp16, dp16, dp16)
+        recordsListViewImpl.onRenderEmptyListListener = {
+            Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
+            dismiss()
+        }
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_delete_selected_records)
-                .setView(RecordsListViewImpl(requireContext(), key.recordUuids).also { it.setPadding(dp16, dp16, dp16, dp16) })
+                .setView(recordsListViewImpl)
                 .setPositiveButton(R.string.button_delete) { _, _ ->
                     recordsRepo.removeRecords(key.recordUuids)
                 }

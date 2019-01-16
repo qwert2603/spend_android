@@ -124,6 +124,7 @@
     <string name="text_deleted_while_deleted_spend">deleting spend was deleted on server</string>
     <string name="text_deleted_while_edited_spend">editing spend was deleted on server</string>
     <string name="text_editing_record_not_found">record not found</string>
+    <string name="text_deleting_record_not_found">record not found</string>
 
     <string name="server_change_category_format" formatted="true"><![CDATA[on server <b>category</b> changed to <b>%s</b>]]></string>
     <string name="server_change_kind_format" formatted="true"><![CDATA[on server <b>kind</b> changed to <b>%s</b>]]></string>
