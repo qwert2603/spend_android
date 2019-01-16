@@ -44,7 +44,7 @@ class SyncProcessor @Inject constructor(
     private val pendingOneSync = AtomicBoolean(false)
     private val running = AtomicBoolean(false)
 
-    val syncState = BehaviorSubject.createDefault(SyncState.SYNCING)
+    val syncState: BehaviorSubject<SyncState> = BehaviorSubject.createDefault(SyncState.Syncing)
 
     init {
         Executors.newSingleThreadExecutor().execute {
@@ -64,13 +64,15 @@ class SyncProcessor @Inject constructor(
                         }
                     }
 
+                    var updatedRecordsCount = 0
+
                     while (true) {
                         val locallyChangedItems = localDBExecutor.executeAndWait {
                             recordsDao.getLocallyChangedRecords(50)
                         }
                         if (locallyChangedItems.isEmpty()) break
 
-                        syncState.onNext(SyncState.SYNCING)
+                        syncState.onNext(SyncState.Syncing)
                         val (deleted, updated) = locallyChangedItems.partition { it.change!!.isDelete }
                         val deletedUuids = deleted.map { it.uuid }
                         remoteDBExecutor.executeAndWait {
@@ -85,6 +87,7 @@ class SyncProcessor @Inject constructor(
                                     deletedUuids = deletedUuids
                             )
                         }
+                        updatedRecordsCount += locallyChangedItems.size
                     }
 
                     while (true) {
@@ -93,16 +96,17 @@ class SyncProcessor @Inject constructor(
                         }
                         if (updatesFromRemote.isEmpty()) break
 
-                        syncState.onNext(SyncState.SYNCING)
+                        syncState.onNext(SyncState.Syncing)
                         localDBExecutor.executeAndWait {
                             recordsDao.saveChangesFromServer(updatesFromRemote.toChangesFromServer())
                             lastChangeStorage.lastChangeInfo = updatesFromRemote.lastChangeInfo
                         }
+                        updatedRecordsCount += updatesFromRemote.updatedRecords.size + updatesFromRemote.deletedRecordsUuid.size
                     }
 
-                    syncState.onNext(SyncState.SYNCED)
+                    syncState.onNext(SyncState.Synced(updatedRecordsCount))
                 } catch (t: Throwable) {
-                    syncState.onNext(SyncState.ERROR)
+                    syncState.onNext(SyncState.Error(t))
                     LogUtils.e(
                             tag = TAG,
                             msg = "remoteDBExecutor.execute",

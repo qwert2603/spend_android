@@ -21,7 +21,7 @@ class SumsPresenter @Inject constructor(
             sumsShowInfo = interactor.sumsShowInfo.field,
             records = emptyList(),
             diff = FastDiffUtils.FastDiffResult.EMPTY,
-            syncState = SyncState.SYNCING
+            syncState = SyncState.Syncing
     )
 
     private val sumsShowInfoChanges: Observable<SumsShowInfo> = interactor.sumsShowInfo.changes.shareAfterViewSubscribed()

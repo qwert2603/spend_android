@@ -2,9 +2,10 @@ package com.qwert2603.spenddemo.model.sync_processor
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
-import android.os.SystemClock
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import androidx.work.ListenableWorker
@@ -16,6 +17,7 @@ import com.qwert2603.spenddemo.R
 import com.qwert2603.spenddemo.SpendDemoApplication
 import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.SyncState
+import com.qwert2603.spenddemo.navigation.MainActivity
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -40,16 +42,17 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         syncProcessor.syncState
                 .skip(1)
-                .filter { it in listOf(SyncState.SYNCED, SyncState.ERROR) }
+                .filter { it is SyncState.Synced || it is SyncState.Error }
                 .firstOrError()
                 .subscribe { syncState, t ->
                     syncState?.let { LogUtils.d("SyncWorker subscribe $it") }
                     t?.let { LogUtils.e("SyncWorker subscribe", it) }
                     SpendDemoApplication.debugHolder.logLine { "SyncWorker subscribe $syncState $t" }
 
-                    val success = t == null && syncState == SyncState.SYNCED
-//                    showNotification(success)
-                    result = if (success) {
+                    result = if (t == null && syncState is SyncState.Synced) {
+                        if (syncState.updatedRecordsCount > 0) {
+                            showNotification(true)
+                        }
                         Result.success()
                     } else {
                         Result.failure()
@@ -79,6 +82,8 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         createNotificationChannel()
 
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notification = NotificationCompat
                 .Builder(
                         applicationContext,
@@ -92,11 +97,11 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                 } else {
                     R.string.notification_text_sync_error
                 }))
-                .setGroup("sync")
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
                 .build()
 
-        NotificationManagerCompat.from(applicationContext)
-                .notify(SystemClock.elapsedRealtime().toString(), 1, notification)
+        NotificationManagerCompat.from(applicationContext).notify(1, notification)
     }
 
     private fun createNotificationChannel() {

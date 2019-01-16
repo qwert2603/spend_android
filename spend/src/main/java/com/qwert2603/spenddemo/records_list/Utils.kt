@@ -253,9 +253,9 @@ fun Observable<SyncState>.modifyForUi(): Observable<SyncState> = this
             Single.just(syncState)
                     .let {
                         when (syncState) {
-                            SyncState.SYNCING -> it.delay(100, TimeUnit.MILLISECONDS)
-                            SyncState.SYNCED -> it.delay(300, TimeUnit.MILLISECONDS)
-                            SyncState.ERROR -> it
+                            SyncState.Syncing -> it.delay(100, TimeUnit.MILLISECONDS)
+                            is SyncState.Synced -> it.delay(300, TimeUnit.MILLISECONDS)
+                            is SyncState.Error -> it
                         }
                     }
         }

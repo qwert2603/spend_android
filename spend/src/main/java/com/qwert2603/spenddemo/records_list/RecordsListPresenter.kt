@@ -30,7 +30,7 @@ class RecordsListPresenter @Inject constructor(
             startDate = null,
             endDate = null,
             recordsChanges = hashMapOf(),
-            syncState = SyncState.SYNCING,
+            syncState = SyncState.Syncing,
             _selectedRecordsUuids = hashSetOf()
     )
 
