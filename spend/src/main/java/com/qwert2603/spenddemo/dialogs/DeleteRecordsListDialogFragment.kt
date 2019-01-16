@@ -39,7 +39,7 @@ class DeleteRecordsListDialogFragment : DialogFragment() {
         recordsListViewImpl.setPadding(dp16, dp16, dp16, dp16)
         recordsListViewImpl.onRenderEmptyListListener = {
             Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
-            dismiss()
+            dismissAllowingStateLoss()
         }
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_delete_selected_records)

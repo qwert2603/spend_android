@@ -277,7 +277,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             if (records == null) return@renderIfChangedWithFirstRendering
             adapter.recordsChanges = vs.recordsChanges
             adapter.list = records
-            if (key == RecordsListKey.Now && !layoutAnimationShown) {
+            if (key is RecordsListKey.Now && !layoutAnimationShown) {
                 layoutAnimationShown = true
                 records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
@@ -320,7 +320,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 LogUtils.d("RecordsListFragment key=$key")
                 @Suppress("IMPLICIT_CAST_TO_ANY")
                 when (key) {
-                    RecordsListKey.Now -> Unit
+                    is RecordsListKey.Now -> Unit
                     is RecordsListKey.Date -> {
                         records
                                 .indexOfFirst { it.date() <= key.date }

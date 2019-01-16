@@ -66,7 +66,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                 .doOnNext {
                     if (it.t == null) {
                         Toast.makeText(requireContext(), R.string.text_deleting_record_not_found, Toast.LENGTH_SHORT).show()
-                        dismiss()
+                        dismissAllowingStateLoss()
                     }
                 }
                 .subscribeUntilPaused()
@@ -100,7 +100,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                         Const.RECORD_TYPE_ID_PROFIT -> R.string.text_deleted_while_deleted_profit
                         else -> null!!
                     }, Toast.LENGTH_SHORT).show()
-                    dismiss()
+                    dismissAllowingStateLoss()
                 }
                 .subscribeUntilPaused()
         recordChanges

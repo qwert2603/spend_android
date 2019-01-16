@@ -127,5 +127,6 @@
     <string name="notification_text_sync_error">ошибка синхронизации</string>
     <string name="not_deleted_records_hash">хеш неудаленных записей</string>
     <string name="text_deleting_record_not_found">запись не найдена</string>
+    <string name="text_record_was_deleted">запись была удалена</string>
 
 </resources>

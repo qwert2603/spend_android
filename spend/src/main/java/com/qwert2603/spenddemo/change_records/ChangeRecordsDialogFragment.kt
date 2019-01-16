@@ -66,7 +66,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         val recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
         recordsListViewImpl.onRenderEmptyListListener = {
             Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
-            dismiss()
+            dismissAllowingStateLoss()
         }
         dialogView.dialogChangeRecords_LinearLayout.addView(recordsListViewImpl)
 
