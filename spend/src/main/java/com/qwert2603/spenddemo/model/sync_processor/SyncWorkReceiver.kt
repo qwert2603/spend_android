@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.support.v4.app.AlarmManagerCompat
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spenddemo.SpendDemoApplication
@@ -20,7 +22,7 @@ class SyncWorkReceiver : BroadcastReceiver() {
             AlarmManagerCompat.setAndAllowWhileIdle(
                     alarmManager,
                     AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + 25 * Const.MILLIS_PER_MINUTE,
+                    SystemClock.elapsedRealtime() + 45 * Const.MILLIS_PER_MINUTE,
                     PendingIntent.getBroadcast(appContext, 0, Intent(appContext, SyncWorkReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
             )
         }
@@ -34,9 +36,6 @@ class SyncWorkReceiver : BroadcastReceiver() {
         scheduleNext(context.applicationContext)
 
         val workRequest = OneTimeWorkRequest.Builder(SyncWorker::class.java)
-                .setConstraints(Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        .build())
                 .build()
 
         WorkManager.getInstance()

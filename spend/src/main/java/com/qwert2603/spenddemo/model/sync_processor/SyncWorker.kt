@@ -48,7 +48,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                     SpendDemoApplication.debugHolder.logLine { "SyncWorker subscribe $syncState $t" }
 
                     val success = t == null && syncState == SyncState.SYNCED
-                    showNotification(success)
+//                    showNotification(success)
                     result = if (success) {
                         Result.success()
                     } else {
