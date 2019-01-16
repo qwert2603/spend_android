@@ -46,3 +46,22 @@ class BundleLongNullable(private val key: String, argsProvider: () -> Bundle) : 
         }
     }
 }
+
+class BundleIntNullable(private val key: String, argsProvider: () -> Bundle) : ReadWriteProperty<Any, Int?> {
+    private val args by lazy(argsProvider)
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): Int? =
+            if (args.containsKey(key)) {
+                args.getInt(key)
+            } else {
+                null
+            }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Int?) {
+        if (value != null) {
+            args.putInt(key, value)
+        } else {
+            args.remove(key)
+        }
+    }
+}

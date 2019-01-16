@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.RecordKindAggregation
 import com.qwert2603.spenddemo.model.entity.toFormattedString
 import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
+import com.qwert2603.spenddemo.utils.BundleIntNullable
 import com.qwert2603.spenddemo.utils.disposeOnPause
 import com.qwert2603.spenddemo.utils.toPointedString
 import io.reactivex.Observable
@@ -62,6 +64,8 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
     private lateinit var adapter: RecordKindsAdapter
 
+    private var firstVisiblePosition by BundleIntNullable("firstVisiblePosition") { arguments!! }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
@@ -101,7 +105,13 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
                     adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(it)
-                    dialogView.kinds_RecyclerView.scrollToPosition(0)
+                    val prevScroll = firstVisiblePosition
+                    if (prevScroll != null) {
+                        firstVisiblePosition = null
+                        dialogView.kinds_RecyclerView.scrollToPosition(prevScroll)
+                    } else {
+                        dialogView.kinds_RecyclerView.scrollToPosition(0)
+                    }
                 }
                 .disposeOnPause(this)
 
@@ -118,6 +128,11 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
                     dismiss()
                 }
                 .disposeOnPause(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        firstVisiblePosition = (dialogView.kinds_RecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
     }
 
     private class RecordKindsAdapter(private val categoryUuid: String?) : BaseRecyclerViewAdapter<RecordKindAggregation>() {

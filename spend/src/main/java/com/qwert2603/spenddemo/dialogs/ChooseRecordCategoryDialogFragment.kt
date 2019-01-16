@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import com.qwert2603.spenddemo.di.DIHolder
 import com.qwert2603.spenddemo.model.entity.RecordCategoryAggregation
 import com.qwert2603.spenddemo.model.entity.toFormattedString
 import com.qwert2603.spenddemo.model.repo.RecordAggregationsRepo
+import com.qwert2603.spenddemo.utils.BundleIntNullable
 import com.qwert2603.spenddemo.utils.disposeOnPause
 import com.qwert2603.spenddemo.utils.toPointedString
 import io.reactivex.Observable
@@ -51,6 +53,8 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
     private lateinit var dialogView: View
 
     private val adapter = RecordCategoriesAdapter()
+
+    private var firstVisiblePosition by BundleIntNullable("firstVisiblePosition") { arguments!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         DIHolder.diManager.viewsComponent.inject(this)
@@ -84,7 +88,13 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
                 .observeOn(uiSchedulerProvider.ui)
                 .subscribe {
                     adapter.adapterList = BaseRecyclerViewAdapter.AdapterList(it)
-                    dialogView.categories_RecyclerView.scrollToPosition(0)
+                    val prevScroll = firstVisiblePosition
+                    if (prevScroll != null) {
+                        firstVisiblePosition = null
+                        dialogView.categories_RecyclerView.scrollToPosition(prevScroll)
+                    } else {
+                        dialogView.categories_RecyclerView.scrollToPosition(0)
+                    }
                 }
                 .disposeOnPause(this)
 
@@ -98,6 +108,11 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
                     dismiss()
                 }
                 .disposeOnPause(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        firstVisiblePosition = (dialogView.categories_RecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
     }
 
     private class RecordCategoriesAdapter : BaseRecyclerViewAdapter<RecordCategoryAggregation>() {
