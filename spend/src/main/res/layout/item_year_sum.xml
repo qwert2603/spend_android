@@ -7,7 +7,7 @@
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="6dp"
+    android:padding="8dp"
     android:theme="@style/AppTheme.AppBarOverlay">
 
     <TextView

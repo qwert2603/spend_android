@@ -6,7 +6,7 @@
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="6dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/date_TextView"
