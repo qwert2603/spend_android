@@ -32,12 +32,6 @@ fun TextView.setStrike(strike: Boolean) {
     }
 }
 
-fun EditText.setTextIfNotYet(text: String) {
-    if (this.text.toString() != text) {
-        this.setText(text)
-    }
-}
-
 fun View.getGlobalVisibleRectRightNow() = Rect().also { getGlobalVisibleRect(it) }
 
 object DateTimeTextViews {

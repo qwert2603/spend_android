@@ -20,7 +20,9 @@ class UserInputEditText(private val editText: EditText) {
 
     fun setText(text: String) {
         userInput = false
-        editText.setTextIfNotYet(text)
+        if (editText.text.toString() != text) {
+            editText.setText(text)
+        }
         userInput = true
     }
 
