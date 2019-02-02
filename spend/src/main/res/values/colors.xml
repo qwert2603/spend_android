@@ -6,7 +6,6 @@
     <color name="colorAccent">#444444</color>
     <color name="colorAccentDark">#333333</color>
 
-    <color name="anth">#ff7443</color>
     <color name="button_disabled">#999999</color>
     <color name="date_default">#707070</color>
     <color name="dont_change">#707070</color>
@@ -16,7 +15,7 @@
 
     <color name="spend">#d02222</color>
     <color name="profit">#129622</color>
-    <color name="balance_negative">@color/anth</color>
+    <color name="balance_negative">#ff7443</color>
     <color name="balance_positive">#00cd46</color>
 
     <color name="highlight_created_record">#AADCCF20</color>

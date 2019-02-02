@@ -34,9 +34,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColorHint="@color/anth"
-                app:hintTextAppearance="@color/anth">
+                android:layout_weight="1">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/date_EditText"
@@ -54,9 +52,7 @@
                 android:id="@+id/time_TextInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColorHint="@color/anth"
-                app:hintTextAppearance="@color/anth">
+                android:layout_weight="1">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/time_EditText"
@@ -74,9 +70,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="@color/anth"
-            app:hintTextAppearance="@color/anth">
+            android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputAutoCompleteTextView
                 android:id="@+id/category_EditText"
@@ -92,9 +86,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="@color/anth"
-            app:hintTextAppearance="@color/anth">
+            android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputAutoCompleteTextView
                 android:id="@+id/kind_EditText"
@@ -110,9 +102,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="@color/anth"
-            app:hintTextAppearance="@color/anth">
+            android:layout_height="wrap_content">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/value_EditText"
