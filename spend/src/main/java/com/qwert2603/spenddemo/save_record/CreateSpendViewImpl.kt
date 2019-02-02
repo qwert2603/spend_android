@@ -161,7 +161,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
 
         renderIfChanged({ isSaveEnable() }) {
             save_Button.isEnabled = it
-            save_Button.setColorFilter(resources.color(if (it) R.color.colorAccentDark else R.color.button_disabled))
+            save_Button.setColorFilter(resources.color(if (it) R.color.colorPrimary else R.color.button_disabled))
         }
     }
 
