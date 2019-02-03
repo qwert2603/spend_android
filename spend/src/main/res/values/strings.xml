@@ -53,12 +53,11 @@
         <b>spend</b> application<br/>
         <br/>
         developed by <b>Alexander Zhdanov</b><br/>
-        https://github.com/qwert2603/Spend<br/>
+        https://github.com/qwert2603/spend_android<br/>
         telegram: <b>qwert2603</b><br/>
         https://vk.com/qwert2603<br/>
         <br/>
-        version: <b>%1$s</b><br/>
-        version code: <b>%2$d</b><br/>
+        version: <b>%1$s (%2$d)</b><br/>
         built: <b>%3$s</b> at <b>%4$s</b><br/>
         hash:<br/><b>%5$s</b><br/>
         ]]>

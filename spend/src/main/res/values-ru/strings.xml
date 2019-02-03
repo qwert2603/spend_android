@@ -45,12 +45,11 @@
         приложение <b>расходы</b><br/>
         <br/>
         разработчик: <b>Александр Жданов</b><br/>
-        https://github.com/qwert2603/Spend<br/>
+        https://github.com/qwert2603/spend_android<br/>
         telegram: <b>qwert2603</b><br/>
         https://vk.com/qwert2603<br/>
         <br/>
-        версия: <b>%1$s</b><br/>
-        код версии: <b>%2$d</b><br/>
+        версия: <b>%1$s (%2$d)</b><br/>
         собрано: <b>%3$s</b> в <b>%4$s</b><br/>
         хеш:<br/><b>%5$s</b><br/>
         ]]>

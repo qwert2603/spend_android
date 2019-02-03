@@ -47,11 +47,15 @@
 -keep public class * extends java.lang.Exception
 
 
--keep class com.qwert2603.spenddemo.model.rest.entity.** { *; }
--keep class com.qwert2603.spenddemo.model.entity.** { *; }
--keep class com.qwert2603.spenddemo.model.local_db.results.** { *; }
--keep class com.qwert2603.spenddemo.model.local_db.entity.** { *; }
--keep class com.qwert2603.spenddemo.model.local_db.tables.** { *; }
+# firebase performance
+-keep class com.google.firebase.** { *; }
 
 
--dontwarn com.qwert2603.spenddemo.dialogs.**
+-keep class com.qwert2603.spend.model.rest.entity.** { *; }
+-keep class com.qwert2603.spend.model.entity.** { *; }
+-keep class com.qwert2603.spend.model.local_db.results.** { *; }
+-keep class com.qwert2603.spend.model.local_db.entity.** { *; }
+-keep class com.qwert2603.spend.model.local_db.tables.** { *; }
+
+
+-dontwarn com.qwert2603.spend.dialogs.**
