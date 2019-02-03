@@ -186,7 +186,7 @@
                     tools:itemCount="20"
                     tools:listitem="@layout/item_record" />
 
-                <com.qwert2603.spenddemo.save_record.CreateSpendViewImpl
+                <com.qwert2603.spend.save_record.CreateSpendViewImpl
                     android:id="@+id/createSpendViewImpl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

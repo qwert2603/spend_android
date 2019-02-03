@@ -15,7 +15,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
     defaultConfig {
-        applicationId "com.qwert2603.spenddemo"
+        applicationId "com.qwert2603.spend"
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 34

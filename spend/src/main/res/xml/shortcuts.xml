@@ -6,9 +6,9 @@
         android:shortcutId="about"
         android:shortcutShortLabel="@string/about_text">
         <intent
-            android:action="com.qwert2603.spenddemo.navigation.ACTION_ABOUT"
+            android:action="com.qwert2603.spend.navigation.ACTION_ABOUT"
             android:targetPackage="${applicationId}"
-            android:targetClass="com.qwert2603.spenddemo.navigation.MainActivity" />
+            android:targetClass="com.qwert2603.spend.navigation.MainActivity" />
     </shortcut>
 
     <shortcut
