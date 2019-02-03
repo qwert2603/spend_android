@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
-apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     signingConfigs {
@@ -21,7 +21,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 40
-        versionName "4.10.0"
+        versionName "4.10.40"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
         buildConfigField "String", "BIULD_HASH", '"' + UUID.randomUUID().toString() + '"'

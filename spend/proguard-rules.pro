@@ -48,7 +48,7 @@
 
 
 # firebase performance
--keep class com.google.firebase.** { *; }
+#todo: -keep class com.google.firebase.** { *; }
 
 
 -keep class com.qwert2603.spend.model.rest.entity.** { *; }
