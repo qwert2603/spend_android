@@ -1,6 +1,7 @@
 package com.qwert2603.spend.model.repo_impl
 
 import android.content.Context
+import com.google.firebase.perf.metrics.AddTrace
 import com.google.gson.Gson
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.LogUtils
@@ -114,11 +115,7 @@ class RecordsRepoImpl @Inject constructor(
             .map { records ->
                 val currentTimeMillis = System.currentTimeMillis()
                 records
-                        .filter { !it.isDeleted() }
-                        .sortedBy { it.uuid }
-                        .map { it.toNotDeletedRecord() }
-                        .toString()
-                        .sha256()
+                        .calculateNotDeletedRecordsHash()
                         .also { LogUtils.d("timing_ getNotDeletedRecordsHash() ${System.currentTimeMillis() - currentTimeMillis} ms") }
             }
             .subscribeOn(modelSchedulersProvider.computation)
@@ -174,5 +171,16 @@ class RecordsRepoImpl @Inject constructor(
         LogUtils.d { "RecordsRepoImpl changeRecords $recordsUuids $changedDate $changedTime" }
 
         syncProcessor.changeRecords(recordsUuids, changedDate, changedTime)
+    }
+
+    companion object {
+
+        @AddTrace(name = "calculateNotDeletedRecordsHash")
+        private fun List<Record>.calculateNotDeletedRecordsHash(): String = this
+                .filter { !it.isDeleted() }
+                .sortedBy { it.uuid }
+                .map { it.toNotDeletedRecord() }
+                .toString()
+                .sha256()
     }
 }

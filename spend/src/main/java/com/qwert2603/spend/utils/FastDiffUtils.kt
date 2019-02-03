@@ -2,8 +2,8 @@ package com.qwert2603.spend.utils
 
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
+import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.util.LogUtils
-
 
 object FastDiffUtils {
 
@@ -17,7 +17,7 @@ object FastDiffUtils {
         }
 
         fun dispatchToAdapter(adapter: RecyclerView.Adapter<*>) {
-            LogUtils.d {  "FastDiffUtils.dispatchToAdapter() $this" }
+            LogUtils.d { "FastDiffUtils.dispatchToAdapter() $this" }
             changes.forEach { adapter.notifyItemChanged(it) }
             removes.forEach { adapter.notifyItemRangeRemoved(it.first, it.second) }
             inserts.forEach { adapter.notifyItemRangeInserted(it.first, it.second) }
@@ -31,6 +31,7 @@ object FastDiffUtils {
      * All items in lists must be sorted by [compareOrder].
      * [isEqual] is used to determine if same item is changed.
      */
+    @AddTrace(name = "fastCalculateDiff")
     inline fun <T : Any, I : Any> fastCalculateDiff(
             oldList: List<T>,
             newList: List<T>,
