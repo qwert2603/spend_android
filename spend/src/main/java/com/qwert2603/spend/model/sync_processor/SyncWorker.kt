@@ -14,7 +14,7 @@ import androidx.work.WorkerParameters
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.spend.R
-import com.qwert2603.spend.SpendDemoApplication
+import com.qwert2603.spend.SpendApplication
 import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.SyncState
 import com.qwert2603.spend.navigation.MainActivity
@@ -38,7 +38,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
     override fun doWork(): Result {
 
         LogUtils.d("SyncWorker doWork")
-        SpendDemoApplication.debugHolder.logLine { "SyncWorker doWork" }
+        SpendApplication.debugHolder.logLine { "SyncWorker doWork" }
 
         syncProcessor.syncState
                 .skip(1)
@@ -47,7 +47,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
                 .subscribe { syncState, t ->
                     syncState?.let { LogUtils.d("SyncWorker subscribe $it") }
                     t?.let { LogUtils.e("SyncWorker subscribe", it) }
-                    SpendDemoApplication.debugHolder.logLine { "SyncWorker subscribe $syncState $t" }
+                    SpendApplication.debugHolder.logLine { "SyncWorker subscribe $syncState $t" }
 
                     result = if (t == null && syncState is SyncState.Synced) {
                         if (syncState.updatedRecordsCount > 0) {
@@ -65,7 +65,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         while (result == null) Thread.yield()
 
         LogUtils.d("SyncWorker return $result")
-        SpendDemoApplication.debugHolder.logLine { "SyncWorker return $result" }
+        SpendApplication.debugHolder.logLine { "SyncWorker return $result" }
 
         return result!!
     }
@@ -75,7 +75,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         disposable.dispose()
         result = Result.failure()
         LogUtils.d("SyncWorker onStopped")
-        SpendDemoApplication.debugHolder.logLine { "SyncWorker onStopped" }
+        SpendApplication.debugHolder.logLine { "SyncWorker onStopped" }
     }
 
     private fun showNotification(success: Boolean) {

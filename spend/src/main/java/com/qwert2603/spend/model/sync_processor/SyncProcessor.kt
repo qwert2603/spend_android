@@ -3,7 +3,7 @@ package com.qwert2603.spend.model.sync_processor
 import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spend.SpendDemoApplication
+import com.qwert2603.spend.SpendApplication
 import com.qwert2603.spend.di.LocalDBExecutor
 import com.qwert2603.spend.di.RemoteDBExecutor
 import com.qwert2603.spend.env.E
@@ -116,7 +116,7 @@ class SyncProcessor @Inject constructor(
                                 t
                             }
                     )
-                    SpendDemoApplication.debugHolder.logLine { "SyncProcessor error ${t.message}" }
+                    SpendApplication.debugHolder.logLine { "SyncProcessor error ${t.message}" }
                     Thread.sleep(1000)
                 }
             }
@@ -125,20 +125,20 @@ class SyncProcessor @Inject constructor(
 
     fun start() {
         LogUtils.d(TAG, "start")
-        SpendDemoApplication.debugHolder.logLine { "SyncProcessor start" }
+        SpendApplication.debugHolder.logLine { "SyncProcessor start" }
         if (!E.env.syncWithServer) return
         running.set(true)
     }
 
     fun stop() {
         LogUtils.d(TAG, "stop")
-        SpendDemoApplication.debugHolder.logLine { "SyncProcessor stop" }
+        SpendApplication.debugHolder.logLine { "SyncProcessor stop" }
         running.set(false)
     }
 
     fun makeOneSync() {
         LogUtils.d(TAG, "makeOneSync")
-        SpendDemoApplication.debugHolder.logLine { "SyncProcessor makeOneSync" }
+        SpendApplication.debugHolder.logLine { "SyncProcessor makeOneSync" }
         pendingOneSync.set(true)
     }
 

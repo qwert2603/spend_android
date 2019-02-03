@@ -42,6 +42,11 @@
 -keepattributes Exceptions
 
 
+# Crashlytics
+-keepattributes *Annotation*
+-keep public class * extends java.lang.Exception
+
+
 -keep class com.qwert2603.spenddemo.model.rest.entity.** { *; }
 -keep class com.qwert2603.spenddemo.model.entity.** { *; }
 -keep class com.qwert2603.spenddemo.model.local_db.results.** { *; }

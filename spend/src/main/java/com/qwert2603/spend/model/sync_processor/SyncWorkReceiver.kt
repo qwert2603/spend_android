@@ -12,7 +12,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.qwert2603.andrlib.util.Const
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spend.SpendDemoApplication
+import com.qwert2603.spend.SpendApplication
 
 class SyncWorkReceiver : BroadcastReceiver() {
 
@@ -31,7 +31,7 @@ class SyncWorkReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         LogUtils.d("SyncWorkReceiver onReceive")
-        SpendDemoApplication.debugHolder.logLine { "SyncWorkReceiver onReceive" }
+        SpendApplication.debugHolder.logLine { "SyncWorkReceiver onReceive" }
 
         scheduleNext(context.applicationContext)
 
@@ -40,7 +40,7 @@ class SyncWorkReceiver : BroadcastReceiver() {
 
         WorkManager.getInstance()
                 .enqueueUniqueWork(
-                        SpendDemoApplication.uniqueWorkName,
+                        SpendApplication.UNIQUE_WORK_NAME,
                         ExistingWorkPolicy.REPLACE,
                         workRequest
                 )

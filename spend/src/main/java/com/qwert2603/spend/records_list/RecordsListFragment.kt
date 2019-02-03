@@ -106,6 +106,12 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
         search_EditText.onRightDrawableClicked { search_EditText.setText("") }
         searchEditText = UserInputEditText(search_EditText)
+        search_EditText.doOnTextChanged {
+            when (it) {
+                "log error 1918" -> LogUtils.e("log error 19", RuntimeException("log error 1918"))
+                "make error 1918" -> throw RuntimeException("make error 1918")
+            }
+        }
 
         startDate_EditText.onRightDrawableClicked { startDateSelected.onNext(Wrapper(null)) }
         endDate_EditText.onRightDrawableClicked { endDateSelected.onNext(Wrapper(null)) }
