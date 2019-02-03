@@ -20,7 +20,7 @@ android {
         applicationId "com.qwert2603.spend"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 34
+        versionCode 40
         versionName "4.10.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"

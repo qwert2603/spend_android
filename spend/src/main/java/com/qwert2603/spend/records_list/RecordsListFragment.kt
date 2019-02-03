@@ -330,7 +330,14 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     is RecordsListKey.Date -> {
                         records
                                 .indexOfFirst { it.date() < key.date }
-                                .let { maxOf(it - 5, 0) }
+                                .let {
+                                    if (it >= 0) {
+                                        it - 5
+                                    } else {
+                                        records.lastIndex
+                                    }
+                                }
+                                .coerceAtLeast(0)
                                 .also {
                                     LogUtils.d("RecordsListFragment records_RecyclerView.scrollToPosition($it)")
                                     records_RecyclerView.scrollToPosition(it)
