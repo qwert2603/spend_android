@@ -37,10 +37,14 @@ class RecordsRepoImpl @Inject constructor(
     private val recordCombinedLocallyEvents = PublishSubject.create<String>()
 
     init {
-        syncProcessor.start()
-
         isShowingToUserHolder.isShowingToUser.subscribe {
             LogUtils.d("RecordsRepoImpl isShowingToUser $it")
+
+            if (it) {
+                syncProcessor.start()
+            } else {
+                syncProcessor.stop()
+            }
         }
     }
 
@@ -93,7 +97,8 @@ class RecordsRepoImpl @Inject constructor(
                             .filter { record ->
                                 record.recordCategory.recordTypeId == recordTypeId
                                         && !record.isDeleted()
-                                        && (record.date > startDate || (record.date == startDate && (record.time ?: STime(0)) >= startTime))
+                                        && (record.date > startDate || (record.date == startDate && (record.time
+                                        ?: STime(0)) >= startTime))
                                         && recordsFilters?.check(record) != false
                             }
                             .sumByLong { it.value.toLong() }
