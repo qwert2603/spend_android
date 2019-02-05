@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
@@ -272,6 +273,16 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }
+
+        renderIfChanged({ showInfo }) { showInfo ->
+            FirebaseAnalytics.getInstance(requireContext()).logEvent("RecordsListFragment_render", Bundle().also {
+                it.putString("showInfo", showInfo.toString())
+            })
+        }
+
+        renderIfChanged({ records?.size }) {
+            FirebaseAnalytics.getInstance(requireContext()).setUserProperty("recordItems_count", it.toString())
+        }
 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }

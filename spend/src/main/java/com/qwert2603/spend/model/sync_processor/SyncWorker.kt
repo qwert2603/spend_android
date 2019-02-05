@@ -6,11 +6,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import androidx.work.ListenableWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.spend.R
@@ -66,6 +68,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         LogUtils.d("SyncWorker return $result")
         SpendApplication.debugHolder.logLine { "SyncWorker return $result" }
+        FirebaseAnalytics.getInstance(applicationContext).logEvent("SyncWorker", Bundle().also { it.putString("key", result.toString()) })
 
         return result!!
     }
