@@ -59,11 +59,6 @@ android {
     flavorDimensions "server", "aim"
 
     productFlavors {
-        noServer {
-            dimension "server"
-            applicationIdSuffix ".noServer"
-            versionNameSuffix "-noServer"
-        }
         serverTest {
             dimension "server"
             applicationIdSuffix ".serverTest"
@@ -105,7 +100,7 @@ dependencies {
     def room_version = "1.1.1"
     def work_version = "1.0.0-beta03"
 
-    def andrlib_version = '1.13.0'
+    def andrlib_version = '1.13.1'
     def andrlib_generator_version = '1.0.10'
 
     def rxjava_version = '2.2.6'

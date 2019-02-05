@@ -214,7 +214,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)
 
-        menu.findItem(R.id.show_change_kinds).isVisible = E.env.syncWithServer
         menu.findItem(R.id.add_stub_records).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.debug_dialog).isVisible = E.env.buildForTesting()
@@ -416,7 +415,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                         )
                     }
             val changesCountText = sumsInfo.changesCount
-                    .takeIf { E.env.syncWithServer }
                     ?.let {
                         when (it) {
                             0 -> getString(R.string.no_changes_text)

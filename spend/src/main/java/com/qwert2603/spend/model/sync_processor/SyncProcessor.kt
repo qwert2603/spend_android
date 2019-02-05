@@ -126,7 +126,6 @@ class SyncProcessor @Inject constructor(
     fun start() {
         LogUtils.d(TAG, "start")
         SpendApplication.debugHolder.logLine { "SyncProcessor start" }
-        if (!E.env.syncWithServer) return
         running.set(true)
     }
 
@@ -151,22 +150,12 @@ class SyncProcessor @Inject constructor(
 
     fun removeItems(itemsUuids: List<String>) {
         localDBExecutor.execute {
-            if (E.env.syncWithServer) {
-                recordsDao.locallyDeleteRecords(itemsUuids.map { ItemsIds(it, changeIdCounter.getNext()) })
-            } else {
-                recordsDao.deleteRecords(itemsUuids)
-            }
+            recordsDao.locallyDeleteRecords(itemsUuids.map { ItemsIds(it, changeIdCounter.getNext()) })
         }
     }
 
     fun clear() {
-        if (E.env.syncWithServer) {
-            pendingClearAll.set(true)
-        } else {
-            localDBExecutor.execute {
-                recordsDao.deleteAll()
-            }
-        }
+        pendingClearAll.set(true)
     }
 
     fun combineRecords(recordUuids: List<String>, categoryUuid: String, kind: String, newRecordUuid: String) {
