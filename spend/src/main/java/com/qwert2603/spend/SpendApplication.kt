@@ -5,13 +5,13 @@ import android.os.Looper
 import androidx.work.WorkManager
 import com.crashlytics.android.Crashlytics
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spend_android.StethoInstaller
 import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.di.DIManager
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.model.sync_processor.SyncWorkReceiver
 import com.qwert2603.spend.utils.DateUtils
 import com.qwert2603.spend.utils.DebugHolder
+import com.qwert2603.spend_android.StethoInstaller
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins

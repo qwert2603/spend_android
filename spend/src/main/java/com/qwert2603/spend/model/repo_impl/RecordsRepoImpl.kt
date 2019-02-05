@@ -8,6 +8,7 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.local_db.dao.RecordsDao
 import com.qwert2603.spend.model.repo.RecordsRepo
+import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
 import com.qwert2603.spend.model.sync_processor.SyncProcessor
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
@@ -25,7 +26,8 @@ class RecordsRepoImpl @Inject constructor(
         private val recordsDao: RecordsDao,
         private val syncProcessor: SyncProcessor,
         private val appContext: Context,
-        private val modelSchedulersProvider: ModelSchedulersProvider
+        private val modelSchedulersProvider: ModelSchedulersProvider,
+        private val isShowingToUserHolder: IsShowingToUserHolder
 ) : RecordsRepo {
 
     private val recordCreatedLocallyEvents = PublishSubject.create<String>()
@@ -36,6 +38,10 @@ class RecordsRepoImpl @Inject constructor(
 
     init {
         syncProcessor.start()
+
+        isShowingToUserHolder.isShowingToUser.subscribe {
+            LogUtils.d("RecordsRepoImpl isShowingToUser $it")
+        }
     }
 
     override fun getRecordsList(): Observable<List<Record>> = recordsDao

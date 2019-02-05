@@ -18,6 +18,7 @@ import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spend.R
 import com.qwert2603.spend.di.DIHolder
+import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
 import com.qwert2603.spend.records_list.RecordsListKey
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     lateinit var router: Router
     @Inject
     lateinit var navigatorHolder: NavigatorHolder
+    @Inject
+    lateinit var isShowingToUserHolder: IsShowingToUserHolder
 
     private val navigator = Navigator(this, R.id.fragment_container)
 
@@ -58,6 +61,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DIHolder.diManager.viewsComponent.inject(this)
+
+        isShowingToUserHolder.onActivityCreated(this)
 
         if (savedInstanceState == null) {
             LogUtils.d("MainActivity onCreate intent.action=${intent.action}")
