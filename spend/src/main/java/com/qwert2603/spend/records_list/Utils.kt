@@ -10,7 +10,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashSet
 
 private val FAKE_RECORD = Record(
         uuid = "FAKE_RECORD",
@@ -30,6 +29,7 @@ private val FAKE_RECORD = Record(
 fun List<Record>.toRecordItemsList(
         showInfo: ShowInfo,
         sortByValue: Boolean,
+        showFilters: Boolean,
         longSumPeriod: Days,
         shortSumPeriod: Minutes,
         recordsFilters: RecordsFilters,
@@ -73,8 +73,8 @@ fun List<Record>.toRecordItemsList(
     var dayProfitsCount = 0
 
     // don't add divider if interval == 0.
-    var needAddLongSumDivider = !sortByValue && longSumPeriod.days > 0
-    var needAddShortSumDivider = !sortByValue && shortSumPeriod.minutes > 0
+    var needAddLongSumDivider = !sortByValue && !showFilters && longSumPeriod.days > 0
+    var needAddShortSumDivider = !sortByValue && !showFilters && shortSumPeriod.minutes > 0
 
     var atLeastOneRecordAdded = false
 
@@ -90,7 +90,7 @@ fun List<Record>.toRecordItemsList(
     (0..this.lastIndex + 1).forEach { index ->
         // FAKE_RECORD is needed to add DaySum for earliest real RecordResult in list.
         val record = this.getOrNull(index) ?: FAKE_RECORD
-        if (!sortByValue && index > 0 && showInfo.showSums) {
+        if (!sortByValue && !showFilters && index > 0 && showInfo.showSums) {
             if (this[index - 1].date != record.date
                     && (showInfo.showSpends && daySpendsCount > 0 || showInfo.showProfits && dayProfitsCount > 0)
             ) {

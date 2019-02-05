@@ -286,7 +286,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
-        renderIfChanged({ !showInfo.showSums || sortByValue }) { adapter.showDatesInRecords = it }
+        renderIfChanged({ !showInfo.showSums || sortByValue || showFilters }) { adapter.showDatesInRecords = it }
         renderIfChanged({ selectedRecordsUuids }) { adapter.selectedRecordsUuids = it }
         renderIfChanged({ selectMode }) { adapter.selectMode = it }
 

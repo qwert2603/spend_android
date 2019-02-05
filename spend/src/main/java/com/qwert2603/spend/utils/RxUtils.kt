@@ -48,6 +48,7 @@ fun <T, U, V, W> makeQuad() = Function4 { t: T, u: U, v: V, w: W -> Quad(t, u, v
 fun <T, U, V, W> makeQuad3() = BiFunction { (t, u, v): Triple<T, U, V>, w: W -> Quad(t, u, v, w) }
 fun <T, U, V, W, X> makeQuint() = Function5 { t: T, u: U, v: V, w: W, x: X -> Quint(t, u, v, w, x) }
 fun <T, U, V, W, X, Y> makeSextuple() = Function6 { t: T, u: U, v: V, w: W, x: X, y: Y -> Sextuple(t, u, v, w, x, y) }
+fun <T, U, V, W, X, Y, Z> makeSeventuple() = Function7 { t: T, u: U, v: V, w: W, x: X, y: Y, z: Z -> Seventuple(t, u, v, w, x, y, z) }
 
 inline fun <T> Observable<T>.doOnNextIndexed(crossinline action: (T, Long) -> Unit): Observable<T> = this
         .doOnNext(object : Consumer<T> {

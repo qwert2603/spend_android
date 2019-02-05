@@ -64,22 +64,25 @@ class RecordsListPresenter @Inject constructor(
                     .combineLatest(
                             showInfoChanges,
                             sortByValueChanges.startWith(initialState.sortByValue),
+                            viewStateObservable
+                                    .map { it.showFilters }
+                                    .distinctUntilChanged(),
                             longSumPeriodChanges,
                             shortSumPeriodChanges,
                             recordsFiltersChanges,
                             viewStateObservable
                                     .map { it.selectedRecordsUuids }
                                     .distinctUntilChanged(),
-                            makeSextuple()
+                            makeSeventuple()
                     )
-                    .switchMap { sextuple ->
+                    .switchMap { seventuple ->
                         RxUtils.minuteChanges()
                                 .startWith(Any())
-                                .map { sextuple }
+                                .map { seventuple }
                     }
-                    .switchMap { (showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) ->
+                    .switchMap { (showInfo, sortByValue, showFilters, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) ->
                         recordsListInteractor.getRecordsList()
-                                .map { it.toRecordItemsList(showInfo, sortByValue, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) }
+                                .map { it.toRecordItemsList(showInfo, sortByValue, showFilters, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) }
                     }
                     .startWith(emptyList<RecordsListItem>())
                     .buffer(2, 1)
