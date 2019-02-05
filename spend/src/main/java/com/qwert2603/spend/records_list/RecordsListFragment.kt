@@ -218,10 +218,13 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menu.findItem(R.id.clear_all).isVisible = E.env.buildForTesting()
         menu.findItem(R.id.debug_dialog).isVisible = E.env.buildForTesting()
 
-        menuHolder.menuItemClicks(R.id.debug_dialog)
-                .subscribe { DebugDialogFragment().makeShow() }
-
         menuHolder.menu = menu
+
+        menu.findItem(R.id.debug_dialog).setOnMenuItemClickListener {
+            DebugDialogFragment().makeShow()
+            true
+        }
+
         renderAll()
     }
 

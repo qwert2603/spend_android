@@ -22,7 +22,7 @@ class SyncWorkReceiver : BroadcastReceiver() {
             AlarmManagerCompat.setAndAllowWhileIdle(
                     alarmManager,
                     AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + 45 * Const.MILLIS_PER_MINUTE,
+                    SystemClock.elapsedRealtime() + 42 * Const.MILLIS_PER_MINUTE,
                     PendingIntent.getBroadcast(appContext, 0, Intent(appContext, SyncWorkReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
             )
         }
