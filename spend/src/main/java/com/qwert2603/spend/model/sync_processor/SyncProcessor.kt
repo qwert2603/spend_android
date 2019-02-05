@@ -6,7 +6,6 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.SpendApplication
 import com.qwert2603.spend.di.LocalDBExecutor
 import com.qwert2603.spend.di.RemoteDBExecutor
-import com.qwert2603.spend.env.E
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.local_db.dao.RecordsDao
 import com.qwert2603.spend.model.local_db.entity.ItemsIds
@@ -54,8 +53,9 @@ class SyncProcessor @Inject constructor(
                     Thread.yield()
                     Thread.sleep(42)
 
-                    LogUtils.d(TAG) { "while (true) ${pendingOneSync.get()} ${running.get()}" }
-                    if (!pendingOneSync.getAndSet(false) && !running.get()) continue
+                    val oneSync = pendingOneSync.getAndSet(false)
+                    LogUtils.d(TAG) { "while (true) $oneSync ${running.get()}" }
+                    if (!oneSync && !running.get()) continue
 
                     if (pendingClearAll.compareAndSet(true, false)) {
                         localDBExecutor.executeAndWait {
@@ -66,7 +66,7 @@ class SyncProcessor @Inject constructor(
 
                     var updatedRecordsCount = 0
 
-                    while (true) {
+                    while (oneSync || running.get()) {
                         val locallyChangedItems = localDBExecutor.executeAndWait {
                             recordsDao.getLocallyChangedRecords(50)
                         }
@@ -90,7 +90,7 @@ class SyncProcessor @Inject constructor(
                         updatedRecordsCount += locallyChangedItems.size
                     }
 
-                    while (true) {
+                    while (oneSync || running.get()) {
                         val updatesFromRemote = remoteDBExecutor.executeAndWait {
                             apiHelper.getUpdates(lastChangeStorage.lastChangeInfo, 50)
                         }
