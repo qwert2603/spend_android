@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Looper
 import androidx.work.WorkManager
 import com.crashlytics.android.Crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.di.DIManager
@@ -48,6 +49,7 @@ class SpendApplication : Application() {
 
         setupLogs()
         Crashlytics.setString("launch_time", DateUtils.getNow().toString())
+        FirebaseAnalytics.getInstance(this).setUserProperty("version_code", BuildConfig.VERSION_CODE.toString())
 
         SyncWorkReceiver.scheduleNext(this)
         logSyncWorker()
