@@ -68,7 +68,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         LogUtils.d("SyncWorker return $result")
         SpendApplication.debugHolder.logLine { "SyncWorker return $result" }
-        FirebaseAnalytics.getInstance(applicationContext).logEvent("SyncWorker", Bundle().also { it.putString("key", result.toString()) })
+        FirebaseAnalytics.getInstance(applicationContext).logEvent("SyncWorker", Bundle().also { it.putString("key", (result is Result.Success).toString()) })
 
         return result!!
     }

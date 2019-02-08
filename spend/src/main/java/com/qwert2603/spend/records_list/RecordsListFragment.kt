@@ -281,6 +281,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                 it.putString("showInfo", showInfo.toString())
             })
         }
+        renderIfChanged({ showInfo.showSums }) { showSums ->
+            FirebaseAnalytics.getInstance(requireContext()).logEvent("showInfo_showSums", Bundle().also {
+                it.putString("showSums", showSums.toString())
+            })
+        }
 
         renderIfChanged({ showInfo.showChangeKinds }) { adapter.showChangeKinds = it }
         renderIfChanged({ showInfo.showTimes }) { adapter.showTimesInRecords = it }
