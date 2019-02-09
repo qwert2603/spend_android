@@ -5,6 +5,6 @@ import java.io.Serializable
 
 // don't use objects for RecordsListKey.Now because of serialization.
 sealed class RecordsListKey : Serializable {
-    data class Now(@Transient private val ignored: Unit = Unit) : RecordsListKey()
+    data class Now(@Transient private val ignored: Unit? = null) : RecordsListKey()
     data class Date(val date: SDate) : RecordsListKey()
 }

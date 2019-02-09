@@ -86,7 +86,6 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
 
     override fun render(vs: SumsViewState) {
-        LogUtils.d("SumsFragment render")
         LogUtils.withErrorLoggingOnly { super.render(vs) }
 
         renderIfChanged({ sumsShowInfo.showBalances }) { adapter.showBalancesInSums = it }

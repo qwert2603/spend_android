@@ -8,6 +8,7 @@ import com.qwert2603.spend.sums.SumsFragment
 import ru.terrakok.cicerone.android.support.SupportAppScreen
 import java.io.Serializable
 
+// don't use objects because of serialization.
 sealed class SpendScreen(
         private val fragmentCreator: () -> Fragment = { null!! }
 ) : SupportAppScreen(), Serializable {
@@ -15,6 +16,6 @@ sealed class SpendScreen(
     override fun getFragment(): Fragment = fragmentCreator().also { it.setScreen(this) }
 
     data class RecordsList(val recordsListKey: RecordsListKey) : SpendScreen({ RecordsListFragmentBuilder.newRecordsListFragment(recordsListKey) })
-    object Sums : SpendScreen({ SumsFragment() })
-    object About : SpendScreen({ AboutFragment() })
+    data class Sums(@Transient private val ignored: Unit? = null) : SpendScreen({ SumsFragment() })
+    data class About(@Transient private val ignored: Unit? = null) : SpendScreen({ AboutFragment() })
 }

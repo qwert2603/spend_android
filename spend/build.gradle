@@ -20,8 +20,8 @@ android {
         applicationId "com.qwert2603.spend"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 43
-        versionName "4.10.43"
+        versionCode 44
+        versionName "4.10.44"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
         buildConfigField "String", "BIULD_HASH", '"' + UUID.randomUUID().toString() + '"'
@@ -98,9 +98,9 @@ dependencies {
 
     def support_version = '28.0.0'
     def room_version = "1.1.1"
-    def work_version = "1.0.0-beta03"
+    def work_version = "1.0.0-beta05"
 
-    def andrlib_version = '1.13.1'
+    def andrlib_version = '1.13.3'
     def andrlib_generator_version = '1.0.10'
 
     def rxjava_version = '2.2.6'
@@ -115,7 +115,7 @@ dependencies {
     def retrofit_version = '2.5.0'
     def okhttp_version = '3.12.1'
 
-    def firebase_core_version = '16.0.6'
+    def firebase_core_version = '16.0.7'
     def crashlytics_version = '2.9.8'
     def performance_version = '16.2.3'
 

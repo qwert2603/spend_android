@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
     private val rootNavigationItems = listOf(
             NavigationItem(R.drawable.icon, R.string.drawer_records, SpendScreen.RecordsList(RecordsListKey.Now())),
-            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, SpendScreen.Sums),
-            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, SpendScreen.About)
+            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, SpendScreen.Sums()),
+            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, SpendScreen.About())
     )
 
     private val navigationDisposable = CompositeDisposable()
