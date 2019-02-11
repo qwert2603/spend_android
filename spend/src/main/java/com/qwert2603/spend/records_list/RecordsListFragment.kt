@@ -132,9 +132,10 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
+        val scrollEvents = records_RecyclerView.scrollEvents().share()
         Observable
                 .combineLatest(
-                        records_RecyclerView.scrollEvents()
+                        scrollEvents
                                 .switchMap {
                                     Observable.interval(0, 1, TimeUnit.SECONDS)
                                             .take(2)
@@ -142,7 +143,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                 }
                                 .distinctUntilChanged()
                                 .observeOn(AndroidSchedulers.mainThread()),
-                        records_RecyclerView.scrollEvents()
+                        scrollEvents
                                 .map {
                                     val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
                                     val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
@@ -157,7 +158,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     floatingDate_TextView.setVisible(showFromScroll && showFloatingDate && records?.any { it is DaySum } == true)
                 }
                 .disposeOnDestroyView()
-        records_RecyclerView.scrollEvents()
+        scrollEvents
                 .subscribe {
                     if (!currentViewState.showInfo.showFloatingDate()) return@subscribe
                     var lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
