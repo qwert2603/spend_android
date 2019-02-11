@@ -1,6 +1,5 @@
 package com.qwert2603.spend.utils
 
-import androidx.annotation.Keep
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.perf.metrics.AddTrace
@@ -33,7 +32,6 @@ object FastDiffUtils {
      * [isEqual] is used to determine if same item is changed.
      */
     @AddTrace(name = "fastCalculateDiff")
-    @Keep
     inline fun <T : Any, I : Any> fastCalculateDiff(
             oldList: List<T>,
             newList: List<T>,
