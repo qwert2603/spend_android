@@ -6,7 +6,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.spend.R
@@ -69,7 +69,7 @@ class DatePickerDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
-        dialog.neutralButton.setTextColor(resources.colorStateList(R.color.dialog_neutral_button))
+        requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        requireDialog().neutralButton.setTextColor(resources.colorStateList(R.color.dialog_neutral_button))
     }
 }

@@ -1,6 +1,6 @@
 package com.qwert2603.spend.navigation
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import com.qwert2603.spend.about.AboutFragment
 import com.qwert2603.spend.records_list.RecordsListFragmentBuilder
 import com.qwert2603.spend.records_list.RecordsListKey

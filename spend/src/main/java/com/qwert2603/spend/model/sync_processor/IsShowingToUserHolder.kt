@@ -1,8 +1,8 @@
 package com.qwert2603.spend.model.sync_processor
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.qwert2603.spend.navigation.MainActivity
 import io.reactivex.Observable
 import io.reactivex.Single

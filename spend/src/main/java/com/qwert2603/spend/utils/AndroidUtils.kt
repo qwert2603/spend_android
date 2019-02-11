@@ -6,9 +6,9 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
-import android.support.annotation.ColorRes
-import android.support.v4.content.res.ResourcesCompat
 import android.widget.Button
+import androidx.annotation.ColorRes
+import androidx.core.content.res.ResourcesCompat
 import com.qwert2603.spend.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spend.model.entity.SDate
 import io.reactivex.functions.BiFunction
@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
 import kotlin.reflect.KFunction2
 import android.app.AlertDialog as SystemDialog
-import android.support.v7.app.AlertDialog as AppCompatDialog
+import androidx.appcompat.app.AlertDialog as AppCompatDialog
 
 inline fun Animator.doOnEnd(crossinline action: () -> Unit): Animator {
     addListener(object : AnimatorListenerAdapter() {

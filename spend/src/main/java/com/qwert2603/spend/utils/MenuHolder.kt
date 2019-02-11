@@ -1,8 +1,8 @@
 package com.qwert2603.spend.utils
 
-import android.support.annotation.IdRes
-import android.support.annotation.MainThread
 import android.view.Menu
+import androidx.annotation.IdRes
+import androidx.annotation.MainThread
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 

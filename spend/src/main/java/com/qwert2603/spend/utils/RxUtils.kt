@@ -1,9 +1,9 @@
 package com.qwert2603.spend.utils
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.qwert2603.andrlib.util.Quad
 import com.qwert2603.andrlib.util.Quint
 import io.reactivex.Observable

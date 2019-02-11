@@ -5,10 +5,10 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.graphics.Path
 import android.graphics.Rect
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.RecyclerView
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spend.R

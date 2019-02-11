@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
 open class ConditionDividerDecoration(context: Context, private val condition: (RecyclerView, RecyclerView.ViewHolder, RecyclerView.State) -> Boolean) : RecyclerView.ItemDecoration() {
 

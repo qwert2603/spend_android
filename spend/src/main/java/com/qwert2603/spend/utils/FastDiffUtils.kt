@@ -1,8 +1,8 @@
 package com.qwert2603.spend.utils
 
-import android.support.annotation.Keep
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.Keep
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.util.LogUtils
 

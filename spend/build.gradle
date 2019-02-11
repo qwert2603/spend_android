@@ -20,9 +20,9 @@ android {
         applicationId "com.qwert2603.spend"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 44
-        versionName "4.10.44"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionCode 45
+        versionName "4.10.45"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
         buildConfigField "String", "BIULD_HASH", '"' + UUID.randomUUID().toString() + '"'
 
@@ -96,47 +96,50 @@ androidExtensions {
 
 dependencies {
 
-    def support_version = '28.0.0'
-    def room_version = "1.1.1"
+    def appcompat_version = '1.1.0-alpha02'
+    def material_version = '1.0.0'
+    def core_ktx_version = '1.1.0-alpha04'
+    def room_version = '2.1.0-alpha04'
     def work_version = "1.0.0-beta05"
 
-    def andrlib_version = '1.13.3'
+    def andrlib_version = '1.14.2'
     def andrlib_generator_version = '1.0.10'
 
     def rxjava_version = '2.2.6'
     def rxandroid_version = '2.1.0'
-    def rxbinding_version = '2.2.0'
+    def rxbinding_version = '3.0.0-alpha2'
 
-    def mosby_version = '3.1.0'
+    def mosby_version = '3.1.1'
     def fragmentargs_version = '3.0.2'
-    def cicerone_version = '4.0.2'
+    def cicerone_version = '5.0.0'
 
     def dagger_version = '2.21'
     def retrofit_version = '2.5.0'
-    def okhttp_version = '3.12.1'
+    def okhttp_version = '3.13.1'
 
     def firebase_core_version = '16.0.7'
-    def crashlytics_version = '2.9.8'
+    def crashlytics_version = '2.9.9'
     def performance_version = '16.2.3'
 
     def vector_integer_view_version = '1.3.0'
+    def fastscroll_version = '2.0.0'
 
     def stetho_version = '1.5.0'
     def junit_version = '4.12'
-    def android_test_runner_version = "1.0.2"
+    def android_test_runner_version = '1.1.0-alpha4'
 
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation "com.android.support:support-media-compat:$support_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "com.google.android.material:material:$material_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
 
     implementation "com.github.qwert2603:andrlib:$andrlib_version"
     implementation "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
     annotationProcessor "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
     kapt "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
 
-    implementation "android.arch.persistence.room:runtime:$room_version"
-    implementation "android.arch.persistence.room:rxjava2:$room_version"
-    kapt "android.arch.persistence.room:compiler:$room_version"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
     implementation "android.arch.work:work-runtime:$work_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -148,14 +151,17 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     implementation "ru.terrakok.cicerone:cicerone:$cicerone_version"
-    implementation "com.hannesdorfmann.mosby3:mvi:$mosby_version"
+    implementation("com.hannesdorfmann.mosby3:mvi:$mosby_version") {
+        exclude group: 'com.hannesdorfmann.mosby3', module: 'utils-fragment'
+    }
 
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 
-    implementation "com.jakewharton.rxbinding2:rxbinding:$rxbinding_version"
-    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4:$rxbinding_version"
-    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding-core:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxbinding_version"
+    implementation "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rxbinding_version"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
@@ -166,9 +172,10 @@ dependencies {
     implementation "com.google.firebase:firebase-perf:$performance_version"
 
     implementation "com.github.qwert2603:VectorIntegerView:$vector_integer_view_version"
+    implementation "com.simplecityapps:recyclerview-fastscroll:$fastscroll_version"
 
     testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "com.android.support.test:runner:$android_test_runner_version"
+    androidTestImplementation "androidx.test:runner:$android_test_runner_version"
 
     forTestingImplementation "com.facebook.stetho:stetho:$stetho_version"
 }

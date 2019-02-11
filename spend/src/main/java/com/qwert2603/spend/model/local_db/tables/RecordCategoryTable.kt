@@ -1,8 +1,8 @@
 package com.qwert2603.spend.model.local_db.tables
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Index
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.qwert2603.spend.model.entity.RecordCategory
 
 @Entity(indices = [

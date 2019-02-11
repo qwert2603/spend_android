@@ -1,7 +1,7 @@
 package com.qwert2603.spend.model.entity
 
 import android.content.res.Resources
-import android.support.annotation.MainThread
+import androidx.annotation.MainThread
 import com.qwert2603.spend.R
 import com.qwert2603.spend.utils.day
 import com.qwert2603.spend.utils.month

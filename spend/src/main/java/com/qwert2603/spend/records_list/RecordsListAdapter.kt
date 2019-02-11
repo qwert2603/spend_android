@@ -1,14 +1,16 @@
 package com.qwert2603.spend.records_list
 
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.records_list.vh.*
+import com.qwert2603.spend.utils.toPointedString
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import io.reactivex.subjects.PublishSubject
 import java.lang.ref.WeakReference
 
-class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), FastScrollRecyclerView.SectionedAdapter {
 
     var showChangeKinds = true
         set(value) {
@@ -51,6 +53,8 @@ class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter
             field = value
             redrawViewHolders()
         }
+
+    var sortByValue = false
 
     private fun redrawViewHolders() {
         LogUtils.d("RecordsListAdapter redrawVisibleViewHolders")
@@ -138,6 +142,18 @@ class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter
         holder.unbind()
         return super.onFailedToRecycleView(holder)
     }
+
+    override fun getSectionName(position: Int): String = list[position]
+            .let {
+                when {
+                    sortByValue -> (it as? Record)?.value?.toPointedString() ?: ""
+                    it is Totals -> ""
+                    else -> {
+                        val date = it.date().date
+                        String.format("%04d-%02d", date / (100 * 100), date / 100 % 100)
+                    }
+                }
+            }
 
     companion object {
         const val VIEW_TYPE_RECORD = 1

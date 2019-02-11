@@ -2,9 +2,9 @@ package com.qwert2603.spend.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.util.toPx
@@ -61,6 +61,6 @@ class CombineRecordsDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
     }
 }

@@ -6,17 +6,17 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.*
@@ -134,7 +134,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
         Observable
                 .combineLatest(
-                        RxRecyclerView.scrollEvents(records_RecyclerView)
+                        records_RecyclerView.scrollEvents()
                                 .switchMap {
                                     Observable.interval(0, 1, TimeUnit.SECONDS)
                                             .take(2)
@@ -142,7 +142,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                 }
                                 .distinctUntilChanged()
                                 .observeOn(AndroidSchedulers.mainThread()),
-                        RxRecyclerView.scrollEvents(records_RecyclerView)
+                        records_RecyclerView.scrollEvents()
                                 .map {
                                     val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
                                     val lastIsTotal = lastVisiblePosition != RecyclerView.NO_POSITION
@@ -157,7 +157,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                     floatingDate_TextView.setVisible(showFromScroll && showFloatingDate && records?.any { it is DaySum } == true)
                 }
                 .disposeOnDestroyView()
-        RxRecyclerView.scrollEvents(records_RecyclerView)
+        records_RecyclerView.scrollEvents()
                 .subscribe {
                     if (!currentViewState.showInfo.showFloatingDate()) return@subscribe
                     var lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
@@ -292,6 +292,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ !showInfo.showSums || sortByValue || showFilters }) { adapter.showDatesInRecords = it }
         renderIfChanged({ selectedRecordsUuids }) { adapter.selectedRecordsUuids = it }
         renderIfChanged({ selectMode }) { adapter.selectMode = it }
+        renderIfChanged({ sortByValue }) { adapter.sortByValue = it }
 
         renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
             if (records == null) return@renderIfChangedWithFirstRendering
@@ -526,8 +527,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private fun DialogFragment.makeShow(requestCode: Int? = null) = this
             .also { if (requestCode != null) it.setTargetFragment(this@RecordsListFragment, requestCode) }
-            .show(this@RecordsListFragment.fragmentManager, null)
-            .also { (this@RecordsListFragment.context as KeyboardManager).hideKeyboard() }
+            .show(this@RecordsListFragment.requireFragmentManager(), null)
+            .also { (this@RecordsListFragment.requireContext() as KeyboardManager).hideKeyboard() }
 
     private fun setDeletePanelVisible(visible: Boolean, firstRendering: Boolean) {
         val isRoot = requireFragmentManager().backStackEntryCount == 0

@@ -6,15 +6,15 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.text.Html
 import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.view.RxView
@@ -91,7 +91,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     override fun onResume() {
         super.onResume()
-        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -153,7 +153,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun onServerValueResolved(): Observable<Boolean> = dialogView.value_Change.resolvedActions()
 
     override fun saveClicks(): Observable<Any> = Observable.merge(
-            RxView.clicks(dialog.positiveButton),
+            RxView.clicks(requireDialog().positiveButton),
             RxTextView.editorActions(dialogView.value_EditText)
                     .filter { currentViewState.isSaveEnable() }
     )
@@ -175,7 +175,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                     else -> null!!
                 }
             })
-            dialog.positiveButton.setText(
+            requireDialog().positiveButton.setText(
                     if (isNewRecord) R.string.button_create
                     else R.string.button_edit
             )
@@ -215,7 +215,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             )
         }
 
-        dialog.positiveButton.isEnabled = vs.isSaveEnable()
+        requireDialog().positiveButton.isEnabled = vs.isSaveEnable()
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
@@ -279,5 +279,5 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     private fun DialogFragment.makeShow(requestCode: Int) = this
             .also { it.setTargetFragment(this@SaveRecordDialogFragment, requestCode) }
-            .show(this@SaveRecordDialogFragment.fragmentManager, null)
+            .show(this@SaveRecordDialogFragment.requireFragmentManager(), null)
 }

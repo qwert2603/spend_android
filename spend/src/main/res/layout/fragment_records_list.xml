@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -21,7 +21,7 @@
             tools:subtitle="subtitle subtitle subtitle subtitle"
             tools:title="@string/app_name" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/selectPanel_LinearLayout"
@@ -77,7 +77,7 @@
             app:viv_vector_integer="0"
             tools:viv_digit_color="@color/balance_negative" />
 
-        <android.support.v7.widget.ActionMenuView
+        <androidx.appcompat.widget.ActionMenuView
             android:id="@+id/select_ActionMenuView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -120,12 +120,12 @@
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/startDate_EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -136,14 +136,14 @@
                         android:singleLine="true"
                         tools:drawableRight="@drawable/ic_close_black_20dp" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/endDate_EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                         android:singleLine="true"
                         tools:drawableRight="@drawable/ic_close_black_20dp" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
@@ -162,9 +162,9 @@
 
         <FrameLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_height="match_parent">
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -173,7 +173,7 @@
                 android:clipToPadding="false"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.RecyclerView
+                <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
                     android:id="@+id/records_RecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -181,7 +181,9 @@
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:scrollbars="vertical"
-                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    app:fastScrollPopupBackgroundSize="54sp"
+                    app:fastScrollPopupTextSize="32sp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:reverseLayout="true"
                     tools:itemCount="20"
                     tools:listitem="@layout/item_record" />
@@ -213,4 +215,4 @@
 
     </LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

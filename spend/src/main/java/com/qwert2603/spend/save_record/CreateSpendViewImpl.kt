@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.support.v4.app.DialogFragment
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.widget.EditText
+import androidx.fragment.app.DialogFragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
 import com.jakewharton.rxbinding2.widget.RxTextView

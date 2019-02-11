@@ -3,9 +3,9 @@ package com.qwert2603.spend.dialogs
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.qwert2603.spend.R
 import com.qwert2603.spend.SpendApplication
 import kotlinx.android.synthetic.main.dialog_debug.view.*

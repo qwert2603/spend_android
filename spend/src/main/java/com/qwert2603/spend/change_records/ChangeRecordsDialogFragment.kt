@@ -6,12 +6,11 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding2.view.RxView
@@ -79,7 +78,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
 
     override fun onResume() {
         super.onResume()
-        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,7 +97,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     override fun changedDateSelected(): Observable<Wrapper<SDate>> = changedDateSelected
     override fun changedTimeSelected(): Observable<Wrapper<Wrapper<STime>>> = changedTimeSelected
 
-    override fun changeClicks(): Observable<Any> = RxView.clicks(dialog.positiveButton)
+    override fun changeClicks(): Observable<Any> = RxView.clicks(requireDialog().positiveButton)
 
     override fun render(vs: ChangeRecordsViewState) {
         super.render(vs)
@@ -122,7 +121,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
             })
         }
 
-        dialog.positiveButton.isEnabled = vs.isChangeEnable()
+        requireDialog().positiveButton.isEnabled = vs.isChangeEnable()
     }
 
     override fun executeAction(va: ViewAction) {
@@ -141,7 +140,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         }
     }
 
-    private fun DialogFragment.makeShow(requestCode: Int) = this
+    private fun androidx.fragment.app.DialogFragment.makeShow(requestCode: Int) = this
             .also { it.setTargetFragment(this@ChangeRecordsDialogFragment, requestCode) }
-            .show(this@ChangeRecordsDialogFragment.fragmentManager, null)
+            .show(this@ChangeRecordsDialogFragment.requireFragmentManager(), null)
 }

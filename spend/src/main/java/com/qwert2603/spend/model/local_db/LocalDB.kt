@@ -1,7 +1,7 @@
 package com.qwert2603.spend.model.local_db
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.qwert2603.spend.model.local_db.dao.RecordsDao
 import com.qwert2603.spend.model.local_db.tables.RecordCategoryTable
 import com.qwert2603.spend.model.local_db.tables.RecordTable

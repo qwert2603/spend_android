@@ -1,7 +1,7 @@
 package com.qwert2603.spend.di
 
-import android.arch.persistence.room.Room
 import android.content.Context
+import androidx.room.Room
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.model.local_db.LocalDB

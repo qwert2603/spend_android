@@ -86,7 +86,8 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:src="@drawable/ic_save"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:tint="@color/colorPrimary" />
 
     </LinearLayout>
 

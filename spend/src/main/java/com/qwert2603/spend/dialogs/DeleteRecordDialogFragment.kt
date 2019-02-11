@@ -4,12 +4,12 @@ import android.animation.Animator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
@@ -55,7 +55,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
     }
 
     override fun onResume() {
-        dialog.positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
+        requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
 
         val recordChanges = recordsRepo.getRecord(uuid)
                 .shareReplayLast()
@@ -111,7 +111,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
                             .map { it != 0L }
                 }
                 .observeOn(uiSchedulerProvider.ui)
-                .doOnNext { dialog.positiveButton.isEnabled = it }
+                .doOnNext { requireDialog().positiveButton.isEnabled = it }
                 .subscribeUntilPaused()
 
         fun subscribeFieldUpdates(fieldExtractor: (Record) -> String, textView: TextView) {

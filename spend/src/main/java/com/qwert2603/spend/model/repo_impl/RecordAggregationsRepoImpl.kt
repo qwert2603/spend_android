@@ -1,6 +1,6 @@
 package com.qwert2603.spend.model.repo_impl
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.LogUtils

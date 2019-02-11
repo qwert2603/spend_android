@@ -3,8 +3,8 @@ package com.qwert2603.spend.utils
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.graphics.Color
-import android.support.annotation.ColorRes
 import android.view.View
+import androidx.annotation.ColorRes
 import com.qwert2603.andrlib.util.color
 
 object AnimatorUtils {

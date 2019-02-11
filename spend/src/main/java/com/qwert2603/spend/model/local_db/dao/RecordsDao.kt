@@ -1,6 +1,6 @@
 package com.qwert2603.spend.model.local_db.dao
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.local_db.entity.ChangesFromServer

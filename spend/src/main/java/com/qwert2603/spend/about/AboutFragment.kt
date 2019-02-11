@@ -2,13 +2,13 @@ package com.qwert2603.spend.about
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.FileProvider
-import android.support.v7.app.AlertDialog
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import com.jakewharton.rxbinding2.view.RxView
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -54,7 +54,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
         ))
 
         notDeletedRecordsHash_Button.setOnClickListener {
-            NotDeletedRecordsHashDialogFragment().show(fragmentManager, null)
+            NotDeletedRecordsHashDialogFragment().show(requireFragmentManager(), null)
         }
 
         super.onViewCreated(view, savedInstanceState)
