@@ -13,14 +13,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spend.R
 import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
 import com.qwert2603.spend.records_list.RecordsListKey
-import io.reactivex.disposables.CompositeDisposable
+import com.qwert2603.spend.utils.subscribeWhileResumed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_navigation.view.*
 import ru.terrakok.cicerone.NavigatorHolder
@@ -56,8 +55,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
             NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, SpendScreen.About())
     )
 
-    private val navigationDisposable = CompositeDisposable()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DIHolder.diManager.viewsComponent.inject(this)
@@ -76,7 +73,20 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
         headerNavigation = navigation_view.inflate(R.layout.header_navigation)
         navigation_view.addHeaderView(headerNavigation)
+        navigationAdapter.adapterList = BaseRecyclerViewAdapter.AdapterList(rootNavigationItems)
+        headerNavigation.navigation_recyclerView.adapter = navigationAdapter
         headerNavigation.navigation_recyclerView.itemAnimator = null
+
+        navigationAdapter.modelItemClicks
+//                .doOnSubscribe { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnSubscribe") }
+//                .doOnNext { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnNext") }
+//                .doOnDispose { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnDispose") }
+                .doOnNext { navigateToItem(it, true) }
+                .subscribeWhileResumed(this)
+
+        navigationAdapter.modelItemLongClicks
+                .doOnNext { navigateToItem(it, false) }
+                .subscribeWhileResumed(this)
 
         lifecycle.addObserver(navigatorHolder.createLifecycleObserver(navigator))
     }
@@ -84,30 +94,11 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
     override fun onStart() {
         super.onStart()
-
-        navigationAdapter.modelItemClicks
-                .subscribe { navigateToItem(it, true) }
-                .addTo(navigationDisposable)
-
-        navigationAdapter.modelItemLongClicks
-                .subscribe { navigateToItem(it, false) }
-                .addTo(navigationDisposable)
-
-        headerNavigation.navigation_recyclerView.adapter = navigationAdapter
-
-        if (navigationAdapter.adapterList.modelList.isEmpty()) {
-            navigationAdapter.adapterList = BaseRecyclerViewAdapter.AdapterList(rootNavigationItems)
-        }
-
         activity_DrawerLayout.addDrawerListener(drawerListener)
     }
 
     override fun onStop() {
-        with(headerNavigation) {
-            navigation_recyclerView.adapter = null
-        }
         activity_DrawerLayout.removeDrawerListener(drawerListener)
-        navigationDisposable.clear()
         super.onStop()
     }
 

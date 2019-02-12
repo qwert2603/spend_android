@@ -62,11 +62,52 @@ fun <T> Observable<T>.shareReplayLast() = this
         .replay(1)
         .refCount()
 
+fun Disposable.disposeOnDestroy(lifecycleOwner: LifecycleOwner) {
+    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        fun on() {
+            this@disposeOnDestroy.dispose()
+        }
+    })
+}
+
+fun Disposable.disposeOnStop(lifecycleOwner: LifecycleOwner) {
+    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+        fun on() {
+            this@disposeOnStop.dispose()
+        }
+    })
+}
+
+
 fun Disposable.disposeOnPause(lifecycleOwner: LifecycleOwner) {
     lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        fun onPause() {
+        fun on() {
             this@disposeOnPause.dispose()
+        }
+    })
+}
+
+fun <T> Observable<T>.subscribeWhileResumed(lifecycleOwner: LifecycleOwner) {
+    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+        private var disposable: Disposable? = null
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        fun dy() {
+            disposePrev()
+            disposable = this@subscribeWhileResumed.subscribe()
+        }
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun on() {
+            disposePrev()
+        }
+
+        private fun disposePrev() {
+            disposable?.dispose()
+            disposable = null
         }
     })
 }
