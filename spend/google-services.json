@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:824abc9c15ca5fbb",
+        "mobilesdk_app_id": "1:682438566018:android:da9aad3da373b020",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverMother.forMarket"
+          "package_name": "com.qwert2603.spend.serverMother"
         }
       },
       "oauth_client": [
@@ -39,9 +39,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:0e1ade86791311fb",
+        "mobilesdk_app_id": "1:682438566018:android:11917f054ac166d6",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverMother.forMarket.debug"
+          "package_name": "com.qwert2603.spend.serverMother.debug"
         }
       },
       "oauth_client": [
@@ -70,9 +70,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:889fc4135b36d77b",
+        "mobilesdk_app_id": "1:682438566018:android:e85fe6d95229ac07",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverProd.forMarket"
+          "package_name": "com.qwert2603.spend.serverProd"
         }
       },
       "oauth_client": [
@@ -101,9 +101,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:da783368c2941732",
+        "mobilesdk_app_id": "1:682438566018:android:7bec12025749354b",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverProd.forMarket.debug"
+          "package_name": "com.qwert2603.spend.serverProd.debug"
         }
       },
       "oauth_client": [
@@ -194,9 +194,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:e4dc827657cc4d98",
+        "mobilesdk_app_id": "1:682438566018:android:8832828bb0ad1cde",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverTest.forMarket"
+          "package_name": "com.qwert2603.spend.serverTest"
         }
       },
       "oauth_client": [
@@ -225,9 +225,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682438566018:android:347283592efb8de3",
+        "mobilesdk_app_id": "1:682438566018:android:dbb52bb971fa379a",
         "android_client_info": {
-          "package_name": "com.qwert2603.spend.serverTest.forMarket.debug"
+          "package_name": "com.qwert2603.spend.serverTest.debug"
         }
       },
       "oauth_client": [
