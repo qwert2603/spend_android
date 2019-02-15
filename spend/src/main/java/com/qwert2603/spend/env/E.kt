@@ -30,15 +30,15 @@ abstract class Env {
 
 private object ServerTest : Env() {
     override val serverUrl = "http://192.168.1.26:8359"
-    override val token = "137456b7-3824-4927-bc7a-01bfaea0f911"
+    override val token = "91714d99-9919-4e79-85b7-a89c6a477478"
 }
 
 private object ServerProd : Env() {
     override val serverUrl = "http://192.168.1.26:8354"
-    override val token = TODO()
+    override val token = "731ee825-619d-4ba3-a09c-dc24b0b5795b"
 }
 
 private object ServerMother : Env() {
-    override val serverUrl = "http://192.168.1.26:8361"
-    override val token = TODO()
+    override val serverUrl = "http://192.168.1.26:8354"
+    override val token = "56317ae2-437b-4798-b7da-31657d31b43e"
 }
