@@ -48,6 +48,14 @@ class RecordsListViewImpl(
     }
 
     override fun executeAction(va: ViewAction) {
-        // nth
+        if (va !is RecordsListViewAction) null!!
+        when (va) {
+            RecordsListViewAction.RerenderAll -> {
+                renderAll()
+                // items' content was not changed and they were not repainted in #render().
+                // so repaint them here.
+                recordsAdapter.notifyDataSetChanged()
+            }
+        }.also { }
     }
 }

@@ -4,6 +4,7 @@ import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spend.model.entity.Record
+import com.qwert2603.spend.utils.RxUtils
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -24,5 +25,13 @@ class RecordsListPresenter @Inject constructor(
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
         if (change !is RecordsListChanged) throw Exception()
         return vs.copy(records = change.records)
+    }
+
+    override fun bindIntents() {
+        RxUtils.dateChanges()
+                .doOnNext { viewActions.onNext(RecordsListViewAction.RerenderAll) }
+                .subscribeToView()
+
+        super.bindIntents()
     }
 }
