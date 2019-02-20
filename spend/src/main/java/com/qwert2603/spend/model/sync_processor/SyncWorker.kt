@@ -42,6 +42,8 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         LogUtils.d("SyncWorker doWork")
         SpendApplication.debugHolder.logLine { "SyncWorker doWork" }
 
+        var updatedRecordsCount: Int? = null
+
         syncProcessor.syncState
                 .skip(1)
                 .filter { it is SyncState.Synced || it is SyncState.Error }
@@ -53,6 +55,7 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
                     result = if (t == null && syncState is SyncState.Synced) {
                         if (syncState.updatedRecordsCount > 0) {
+                            updatedRecordsCount = syncState.updatedRecordsCount
                             showNotification(true)
                         }
                         Result.success()
@@ -68,7 +71,16 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
 
         LogUtils.d("SyncWorker return $result")
         SpendApplication.debugHolder.logLine { "SyncWorker return $result" }
-        FirebaseAnalytics.getInstance(applicationContext).logEvent("SyncWorker", Bundle().also { it.putString("key", (result is Result.Success).toString()) })
+        FirebaseAnalytics.getInstance(applicationContext).logEvent(
+                "SyncWorker",
+                Bundle().also {
+                    it.putString("key", (result is Result.Success).toString())
+                    val recordsCount = updatedRecordsCount
+                    if (recordsCount != null) {
+                        it.putInt("records_count", recordsCount)
+                    }
+                }
+        )
 
         return result!!
     }
