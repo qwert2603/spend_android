@@ -6,6 +6,7 @@ import com.qwert2603.spend.model.entity.SDate
 import com.qwert2603.spend.model.entity.STime
 import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.Wrapper
+import com.qwert2603.spend.utils.toPointedString
 
 data class SaveRecordViewState(
         val isNewRecord: Boolean,
@@ -44,7 +45,7 @@ data class SaveRecordViewState(
         }
     }
 
-    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toString() ?: ""
+    val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
 
     fun isSaveEnable() = recordDraft.isValid()
             && listOfNotNull(serverCategory, serverKind, serverDate, serverTime, serverValue).isEmpty()

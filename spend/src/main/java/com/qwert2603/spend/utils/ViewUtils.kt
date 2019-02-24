@@ -16,6 +16,8 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
+import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spend.R
@@ -125,4 +127,17 @@ fun EditText.doOnTextChanged(withInitial: Boolean = false, action: (String) -> U
             action(s.toString())
         }
     })
+}
+
+fun EditText.setupForPointedInt() {
+    this.doAfterTextChanged {
+        val selectionStart = this.selectionStart
+        val selectionEnd = this.selectionEnd
+        LogUtils.d { "$this setupForPointedInt $selectionStart $selectionEnd _${this.text}_" }
+        if (selectionStart >= 0 && selectionEnd >= 0 && selectionStart == selectionEnd) {
+            if (selectionStart >= 1 && this.text.toString().getOrNull(selectionStart - 1) == '.') {
+                this.setSelection(selectionStart - 1)
+            }
+        }
+    }
 }

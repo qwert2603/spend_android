@@ -21,7 +21,9 @@ class UserInputEditText(private val editText: EditText) {
     fun setText(text: String) {
         userInput = false
         if (editText.text.toString() != text) {
+            val prevSelectionEndOffset = editText.text.length - editText.selectionEnd
             editText.setText(text)
+            editText.setSelection((text.length - prevSelectionEndOffset).coerceIn(0..text.length))
         }
         userInput = true
     }

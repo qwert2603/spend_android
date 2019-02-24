@@ -77,6 +77,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_record, null)
         dialogView.kind_EditText.filters = arrayOf(InputFilter.LengthFilter(Const.MAX_RECORD_KIND_LENGTH))
+        dialogView.value_EditText.setupForPointedInt()
 
         categoryEditText = UserInputEditText(dialogView.category_EditText)
         kindEditText = UserInputEditText(dialogView.kind_EditText)
