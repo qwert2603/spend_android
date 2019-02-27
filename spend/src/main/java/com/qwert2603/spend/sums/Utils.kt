@@ -80,7 +80,7 @@ fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
         calendar.add(Calendar.DAY_OF_MONTH, -1)
         date = calendar.toSDate()
 
-        // record == null means and of list, so we need to add sums for last month / year.
+        // record == null means end of list, so we need to add sums for last month / year.
 
         if (sumsShowInfo.showMonthSums && (!date.isSameMonth(prevDate) || record == null)) {
             result.add(MonthSum(
