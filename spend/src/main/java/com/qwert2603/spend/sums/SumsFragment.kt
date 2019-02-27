@@ -2,6 +2,7 @@ package com.qwert2603.spend.sums
 
 import android.os.Bundle
 import android.view.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
@@ -34,6 +35,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
     lateinit var router: Router
 
     private val adapter: RecordsListAdapter get() = sums_RecyclerView.adapter as RecordsListAdapter
+    private val layoutManager: LinearLayoutManager get() = sums_RecyclerView.layoutManager as LinearLayoutManager
 
     private val menuHolder = MenuHolder()
 
@@ -96,6 +98,9 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
                 adapter.notifyDataSetChanged()
             } else {
                 vs.diff.dispatchToAdapter(adapter)
+            }
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                sums_RecyclerView.scrollToPosition(0)
             }
         }
 
