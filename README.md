@@ -2,7 +2,7 @@
 
 ## [Showcase Video](https://www.youtube.com/watch?v=9qBF3vvEHZk)
 
-It can:
+## It can:
 * record spends
 * record profits
 * show date / month / year sums
