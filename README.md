@@ -19,3 +19,15 @@ Server is https://github.com/qwert2603/spend_server
 * cache records while offline
 * real time auto-synchronization with server when online
 * share records dump
+
+
+## Screenshots
+
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155450.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155509.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155540.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155551.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155612.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155640.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155650.png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/device-2019-04-05-155705.png)
