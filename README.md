@@ -2,6 +2,12 @@
 
 ## [Showcase Video](https://www.youtube.com/watch?v=9qBF3vvEHZk)
 
+This is Android-app for Spend project.
+
+Web-site is https://github.com/qwert2603/spend_web
+
+Server is https://github.com/qwert2603/spend_server
+
 ## It can:
 * record spends
 * record profits
