@@ -1,6 +1,6 @@
 # Spend Android Application
 
-## [Showcase Video](https://www.youtube.com/watch?v=9qBF3vvEHZk)
+## [Showcase Video](https://www.youtube.com/watch?v=qo0c95fTWHk)
 
 This is Android-app for Spend project.
 
