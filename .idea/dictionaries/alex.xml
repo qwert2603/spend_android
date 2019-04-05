@@ -1,14 +1,25 @@
 <component name="ProjectDictionaryState">
   <dictionary name="alex">
     <words>
+      <w>andrlib</w>
+      <w>crashlytics</w>
       <w>dont</w>
+      <w>fastscroll</w>
+      <w>firebase</w>
+      <w>fragmentargs</w>
       <w>interactor</w>
+      <w>mosby</w>
+      <w>okhttp</w>
       <w>qwert</w>
       <w>recyclerview</w>
       <w>rerender</w>
+      <w>rxandroid</w>
+      <w>rxbinding</w>
+      <w>rxjava</w>
       <w>seventuple</w>
       <w>sextuple</w>
       <w>spenddemo</w>
+      <w>stetho</w>
       <w>uuids</w>
     </words>
   </dictionary>

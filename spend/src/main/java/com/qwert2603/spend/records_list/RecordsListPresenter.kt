@@ -233,12 +233,22 @@ class RecordsListPresenter @Inject constructor(
                     )
                 }
                 .doOnNext { (spendCategories, profitCategories) ->
+                    val stubSpendKinds = mapOf(
+                            "проезд" to listOf("трамвай", "автобус", "троллейбус", "метро"),
+                            "еда" to listOf("шоколадка", "столовая", "фрукты", "рыба", "мясо", "овощи", "хлеб"),
+                            "развлечения" to listOf("кино", "батут", "кафе", "картинг"),
+                            "медицина" to listOf("стоматолог", "анализы", "лор"),
+                            "без категории" to listOf("пакет", "банки", "подарки")
+                    )
 
-                    val stubSpendKinds = listOf("трамвай", "столовая", "шоколадка", "автобус")
-                    val stubProfitKinds = listOf("стипендия", "зарплата", "аванс", "доход")
+                    val stubProfitKinds = mapOf(
+                            "работа" to listOf("зарплата", "аванс", "отпускные"),
+                            "институт" to listOf("стипендия"),
+                            "без категории" to listOf("зарплата", "фриланс")
+                    )
 
                     val spends = if (spendCategories.isNotEmpty()) {
-                        (1..200).map {
+                        (1..2000).map {
                             val recordCategory = spendCategories.random()
                             RecordDraft(
                                     isNewRecord = true,
@@ -248,7 +258,7 @@ class RecordsListPresenter @Inject constructor(
                                     recordCategoryUuid = recordCategory.uuid,
                                     date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
                                     time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
-                                    kind = stubSpendKinds[Random.nextInt(stubSpendKinds.size)],
+                                    kind = stubSpendKinds.getValue(recordCategory.name).random(),
                                     value = Random.nextInt(1, 10000)
                             )
                         }
@@ -256,7 +266,7 @@ class RecordsListPresenter @Inject constructor(
                         emptyList()
                     }
                     val profits = if (profitCategories.isNotEmpty()) {
-                        (1..50).map {
+                        (1..300).map {
                             val recordCategory = profitCategories.random()
                             RecordDraft(
                                     isNewRecord = true,
@@ -266,7 +276,7 @@ class RecordsListPresenter @Inject constructor(
                                     recordCategoryUuid = recordCategory.uuid,
                                     date = Calendar.getInstance().also { it.add(Calendar.DAY_OF_MONTH, -Random.nextInt(5000)) }.toSDate(),
                                     time = Calendar.getInstance().also { it.add(Calendar.MINUTE, -Random.nextInt(1440)) }.toSTime().takeIf { Random.nextBoolean() },
-                                    kind = stubProfitKinds[Random.nextInt(stubProfitKinds.size)],
+                                    kind = stubProfitKinds.getValue(recordCategory.name).random(),
                                     value = Random.nextInt(1, 10000)
                             )
                         }

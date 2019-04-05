@@ -1,7 +1,6 @@
 package com.qwert2603.spend.model.repo_impl
 
 import androidx.annotation.VisibleForTesting
-import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.schedulers.ModelSchedulersProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.Record
@@ -149,7 +148,6 @@ class RecordAggregationsRepoImpl @Inject constructor(
             }
         }
 
-        @AddTrace(name = "RecordAggregationsRepoImpl.aggregate")
         @VisibleForTesting
         fun aggregate(
                 records: List<Record>,

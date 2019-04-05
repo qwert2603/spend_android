@@ -30,7 +30,7 @@ abstract class Env {
 
 private object ServerTest : Env() {
     override val serverUrl = "http://192.168.1.26:8359"
-    override val token = "91714d99-9919-4e79-85b7-a89c6a477478"
+    override val token = "4a36ab03-8fa9-4f96-8551-caa5888176d9"
 }
 
 private object ServerProd : Env() {

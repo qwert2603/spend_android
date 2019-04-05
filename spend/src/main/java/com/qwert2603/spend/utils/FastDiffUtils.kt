@@ -2,7 +2,6 @@ package com.qwert2603.spend.utils
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.util.LogUtils
 
 object FastDiffUtils {
@@ -31,7 +30,6 @@ object FastDiffUtils {
      * All items in lists must be sorted by [compareOrder].
      * [isEqual] is used to determine if same item is changed.
      */
-    @AddTrace(name = "fastCalculateDiff")
     inline fun <T : Any, I : Any> fastCalculateDiff(
             oldList: List<T>,
             newList: List<T>,

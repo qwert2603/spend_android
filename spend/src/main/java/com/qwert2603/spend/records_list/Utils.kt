@@ -1,6 +1,5 @@
 package com.qwert2603.spend.records_list
 
-import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.utils.*
@@ -25,7 +24,6 @@ private val FAKE_RECORD = Record(
         change = null
 )
 
-@AddTrace(name = "toRecordItemsList")
 fun List<Record>.toRecordItemsList(
         showInfo: ShowInfo,
         sortByValue: Boolean,

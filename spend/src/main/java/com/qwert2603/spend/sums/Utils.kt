@@ -1,13 +1,11 @@
 package com.qwert2603.spend.sums
 
-import com.google.firebase.perf.metrics.AddTrace
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.DateUtils
 import java.util.*
 
-@AddTrace(name = "toSumsList")
 fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
     val currentTimeMillis = System.currentTimeMillis()
 
