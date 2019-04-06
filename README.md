@@ -23,6 +23,4 @@ Server is https://github.com/qwert2603/spend_server
 
 ## Screenshots
 
-![](https://github.com/qwert2603/spend_android/blob/master/art/screens%20(1).png)
-
-![](https://github.com/qwert2603/spend_android/blob/master/art/screens%20(2).png)
+![](https://github.com/qwert2603/spend_android/blob/master/art/1.png)
