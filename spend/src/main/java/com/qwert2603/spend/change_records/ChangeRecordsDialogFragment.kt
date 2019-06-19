@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.color
@@ -91,13 +91,13 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     }
 
 
-    override fun askToSelectDateClicks(): Observable<Any> = RxView.clicks(dialogView.date_EditText)
-    override fun askToSelectTimeClicks(): Observable<Any> = RxView.clicks(dialogView.time_EditText)
+    override fun askToSelectDateClicks(): Observable<Any> = dialogView.date_EditText.clicks().map { }
+    override fun askToSelectTimeClicks(): Observable<Any> = dialogView.time_EditText.clicks().map { }
 
     override fun changedDateSelected(): Observable<Wrapper<SDate>> = changedDateSelected
     override fun changedTimeSelected(): Observable<Wrapper<Wrapper<STime>>> = changedTimeSelected
 
-    override fun changeClicks(): Observable<Any> = RxView.clicks(requireDialog().positiveButton)
+    override fun changeClicks(): Observable<Any> = requireDialog().positiveButton.clicks().map { }
 
     override fun render(vs: ChangeRecordsViewState) {
         super.render(vs)

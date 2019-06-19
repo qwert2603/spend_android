@@ -10,9 +10,10 @@ import android.text.InputFilter
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxbinding3.view.clicks
+import com.jakewharton.rxbinding3.view.longClicks
+import com.jakewharton.rxbinding3.widget.editorActions
+import com.jakewharton.rxbinding3.widget.itemClickEvents
 import com.qwert2603.andrlib.base.mvi.BaseFrameLayout
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
@@ -96,18 +97,19 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             .mapToInt()
 
     override fun saveClicks(): Observable<Any> = Observable.merge(
-            RxView.clicks(save_Button),
-            RxTextView.editorActions(value_EditText)
+            save_Button.clicks().map { },
+            value_EditText
+                    .editorActions()
                     .filter { currentViewState.isSaveEnable() }
     )
 
-    override fun selectDateClicks(): Observable<Any> = RxView.clicks(date_EditText)
+    override fun selectDateClicks(): Observable<Any> = date_EditText.clicks().map { }
 
-    override fun selectTimeClicks(): Observable<Any> = RxView.clicks(time_EditText)
+    override fun selectTimeClicks(): Observable<Any> = time_EditText.clicks().map { }
 
-    override fun selectCategoryClicks(): Observable<Any> = RxView.longClicks(category_EditText)
+    override fun selectCategoryClicks(): Observable<Any> = category_EditText.longClicks().map { }
 
-    override fun selectKindClicks(): Observable<Any> = RxView.longClicks(kind_EditText)
+    override fun selectKindClicks(): Observable<Any> = kind_EditText.longClicks().map { }
 
     override fun onDateSelected() = onDateSelected
 
@@ -115,25 +117,25 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
 
     override fun onCategoryUuidSelected(): Observable<String> = Observable.merge(
             onCategoryUuidSelected,
-            RxAutoCompleteTextView
-                    .itemClickEvents(category_EditText)
-                    .map { it.view().adapter.getItem(it.position()) }
+            category_EditText
+                    .itemClickEvents()
+                    .map { it.view.adapter.getItem(it.position) }
                     .ofType(RecordCategoryAggregation::class.java)
                     .map { it.recordCategory.uuid }
     )
 
     override fun onCategoryUuidAndKindSelected(): Observable<Pair<String, String>> = Observable.merge(
             onCategoryUuidAndKindSelected,
-            RxAutoCompleteTextView
-                    .itemClickEvents(kind_EditText)
-                    .map { it.view().adapter.getItem(it.position()) }
+            kind_EditText
+                    .itemClickEvents()
+                    .map { it.view.adapter.getItem(it.position) }
                     .ofType(RecordKindAggregation::class.java)
                     .map { it.recordCategory.uuid to it.kind }
     )
 
-    override fun onCategoryInputClicked(): Observable<Any> = RxView.clicks(category_EditText)
+    override fun onCategoryInputClicked(): Observable<Any> = category_EditText.clicks().map { }
 
-    override fun onKindInputClicked(): Observable<Any> = RxView.clicks(kind_EditText)
+    override fun onKindInputClicked(): Observable<Any> = kind_EditText.clicks().map { }
 
     // not for CreateSpendViewImpl.
 

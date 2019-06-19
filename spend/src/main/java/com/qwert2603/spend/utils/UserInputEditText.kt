@@ -3,7 +3,7 @@ package com.qwert2603.spend.utils
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import com.google.android.material.textfield.TextInputEditText
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.Observable
 
 /**
@@ -28,7 +28,8 @@ class UserInputEditText(private val editText: EditText) {
         userInput = true
     }
 
-    fun userInputs(): Observable<String> = RxTextView.textChanges(editText)
+    fun userInputs(): Observable<String> = editText
+            .textChanges()
             .skipInitialValue()
             .filter { userInput }
             .map { it.toString() }

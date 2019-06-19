@@ -17,9 +17,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxbinding3.view.clicks
+import com.jakewharton.rxbinding3.view.longClicks
+import com.jakewharton.rxbinding3.widget.editorActions
+import com.jakewharton.rxbinding3.widget.itemClickEvents
 import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.renderIfChanged
@@ -46,8 +47,8 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         private const val REQUEST_CODE_KIND = 24
 
         private fun View.resolvedActions(): Observable<Boolean> = Observable.merge(
-                RxView.clicks(this.cancel_Button).map { false },
-                RxView.clicks(this.accept_Button).map { true }
+                this.cancel_Button.clicks().map { false },
+                this.accept_Button.clicks().map { true }
         )
     }
 
@@ -123,29 +124,29 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
 
     override fun onCategoryUuidSelected(): Observable<String> = Observable.merge(
             onCategoryUuidSelected,
-            RxAutoCompleteTextView
-                    .itemClickEvents(dialogView.category_EditText)
-                    .map { it.view().adapter.getItem(it.position()) }
+            dialogView.category_EditText
+                    .itemClickEvents()
+                    .map { it.view.adapter.getItem(it.position) }
                     .ofType(RecordCategoryAggregation::class.java)
                     .map { it.recordCategory.uuid }
     )
 
     override fun onCategoryUuidAndKindSelected(): Observable<Pair<String, String>> = Observable.merge(
             onCategoryUuidAndKindSelected,
-            RxAutoCompleteTextView
-                    .itemClickEvents(dialogView.kind_EditText)
-                    .map { it.view().adapter.getItem(it.position()) }
+            dialogView.kind_EditText
+                    .itemClickEvents()
+                    .map { it.view.adapter.getItem(it.position) }
                     .ofType(RecordKindAggregation::class.java)
                     .map { it.recordCategory.uuid to it.kind }
     )
 
-    override fun selectCategoryClicks(): Observable<Any> = RxView.longClicks(dialogView.category_EditText)
-    override fun selectKindClicks(): Observable<Any> = RxView.longClicks(dialogView.kind_EditText)
-    override fun selectDateClicks(): Observable<Any> = RxView.clicks(dialogView.date_EditText)
-    override fun selectTimeClicks(): Observable<Any> = RxView.clicks(dialogView.time_EditText)
+    override fun selectCategoryClicks(): Observable<Any> = dialogView.category_EditText.longClicks().map { }
+    override fun selectKindClicks(): Observable<Any> = dialogView.kind_EditText.longClicks().map { }
+    override fun selectDateClicks(): Observable<Any> = dialogView.date_EditText.clicks().map { }
+    override fun selectTimeClicks(): Observable<Any> = dialogView.time_EditText.clicks().map { }
 
-    override fun onCategoryInputClicked(): Observable<Any> = RxView.clicks(dialogView.category_EditText)
-    override fun onKindInputClicked(): Observable<Any> = RxView.clicks(dialogView.kind_EditText)
+    override fun onCategoryInputClicked(): Observable<Any> = dialogView.category_EditText.clicks().map { }
+    override fun onKindInputClicked(): Observable<Any> = dialogView.kind_EditText.clicks().map { }
 
     override fun onServerCategoryResolved(): Observable<Boolean> = dialogView.category_Change.resolvedActions()
     override fun onServerKindResolved(): Observable<Boolean> = dialogView.kind_Change.resolvedActions()
@@ -154,8 +155,9 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     override fun onServerValueResolved(): Observable<Boolean> = dialogView.value_Change.resolvedActions()
 
     override fun saveClicks(): Observable<Any> = Observable.merge(
-            RxView.clicks(requireDialog().positiveButton),
-            RxTextView.editorActions(dialogView.value_EditText)
+            requireDialog().positiveButton.clicks().map { },
+            dialogView.value_EditText
+                    .editorActions()
                     .filter { currentViewState.isSaveEnable() }
     )
 

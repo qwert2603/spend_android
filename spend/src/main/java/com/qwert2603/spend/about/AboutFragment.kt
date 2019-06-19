@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
-import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spend.BuildConfig
@@ -65,7 +65,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
         super.onDestroyView()
     }
 
-    override fun sendDumpClicks(): Observable<Any> = RxView.clicks(sendDump_Button)
+    override fun sendDumpClicks(): Observable<Any> = sendDump_Button.clicks().map { }
 
     override fun render(vs: AboutViewState) {
         super.render(vs)

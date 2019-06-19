@@ -29,8 +29,8 @@ abstract class Env {
 }
 
 private object ServerTest : Env() {
-    override val serverUrl = "http://192.168.1.26:8359"
-    override val token = "4a36ab03-8fa9-4f96-8551-caa5888176d9"
+    override val serverUrl = "http://192.168.43.66:8359"
+    override val token = "d75fa6fd-bc6b-4de1-85d1-02b8330a9478"
 }
 
 private object ServerProd : Env() {

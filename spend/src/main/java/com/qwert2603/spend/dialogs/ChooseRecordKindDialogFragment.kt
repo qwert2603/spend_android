@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
@@ -93,7 +93,8 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
         Observable
                 .combineLatest(
                         recordAggregationsRepo.getRecordKinds(key.recordTypeId, key.recordCategoryUuid),
-                        RxTextView.textChanges(dialogView.search_EditText)
+                        dialogView.search_EditText
+                                .textChanges()
                                 .debounce(230, TimeUnit.MILLISECONDS),
                         BiFunction { kinds: List<RecordKindAggregation>, search: CharSequence ->
                             kinds.filter {

@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
+import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.*
@@ -258,7 +258,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun clearAllClicks(): Observable<Any> = menuHolder.menuItemClicks(R.id.clear_all)
 
     override fun cancelSelection(): Observable<Any> = Observable.merge(
-            RxView.clicks(closeSelectPanel_ImageView),
+            closeSelectPanel_ImageView.clicks().map { },
             cancelSelection
     )
 
@@ -268,8 +268,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     override fun searchQueryChanges(): Observable<String> = searchEditText.userInputs()
 
-    override fun selectStartDateClicks(): Observable<Any> = RxView.clicks(startDate_EditText)
-    override fun selectEndDateClicks(): Observable<Any> = RxView.clicks(endDate_EditText)
+    override fun selectStartDateClicks(): Observable<Any> = startDate_EditText.clicks().map { }
+    override fun selectEndDateClicks(): Observable<Any> = endDate_EditText.clicks().map { }
 
     override fun startDateSelected(): Observable<Wrapper<SDate>> = startDateSelected
     override fun endDateSelected(): Observable<Wrapper<SDate>> = endDateSelected
