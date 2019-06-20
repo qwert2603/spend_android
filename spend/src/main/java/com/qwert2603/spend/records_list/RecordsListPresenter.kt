@@ -292,7 +292,11 @@ class RecordsListPresenter @Inject constructor(
                 .subscribeToView()
 
         RxUtils.dateChanges()
-                .doOnNext { viewActions.onNext(RecordsListViewAction.RerenderAll) }
+                .doOnNext {
+                    // we need to rerender all because old view holders with old list items
+                    // in RecyclerView will not be redrawn if just to set list with old items.
+                    viewActions.onNext(RecordsListViewAction.RerenderAll)
+                }
                 .subscribeToView()
 
         recordsListInteractor.getRecordCreatedLocallyEvents()
