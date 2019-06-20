@@ -91,14 +91,6 @@ class SumsPresenter @Inject constructor(
                 }
                 .subscribeToView()
 
-        RxUtils.dateChanges()
-                .doOnNext {
-                    // we need to rerender all because old view holders with old list items
-                    // in RecyclerView will not be redrawn if just to set list with old items.
-                    viewActions.onNext(SumsViewAction.RerenderAll)
-                }
-                .subscribeToView()
-
         intent { it.clearAllClicks() }
                 .doOnNext { interactor.removeAllRecords() }
                 .subscribeToView()

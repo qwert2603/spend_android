@@ -98,6 +98,9 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
                 adapter.notifyDataSetChanged()
             } else {
                 vs.diff.dispatchToAdapter(adapter)
+
+                // redrawViewHolders because in case of date change items will be all the same, but date-text should be changed.
+                adapter.redrawViewHolders()
             }
             if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                 sums_RecyclerView.scrollToPosition(0)

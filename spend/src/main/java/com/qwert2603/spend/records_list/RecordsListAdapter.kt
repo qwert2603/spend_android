@@ -56,7 +56,7 @@ class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter
 
     var sortByValue = false
 
-    private fun redrawViewHolders() {
+    fun redrawViewHolders() {
         LogUtils.d("RecordsListAdapter redrawVisibleViewHolders")
         vhs.forEach {
             val viewHolder = it.get()
