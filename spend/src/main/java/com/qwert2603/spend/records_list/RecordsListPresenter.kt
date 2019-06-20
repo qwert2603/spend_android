@@ -83,25 +83,34 @@ class RecordsListPresenter @Inject constructor(
                     .switchMap { (showInfo, sortByValue, showFilters, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) ->
                         recordsListInteractor.getRecordsList()
                                 .map { it.toRecordItemsList(showInfo, sortByValue, showFilters, longSumPeriodDays, shortSumPeriodMinutes, filters, selectedUuids) }
+                                .map { it to sortByValue }
                     }
-                    .startWith(emptyList<RecordsListItem>())
+                    .startWith(emptyList<RecordsListItem>() to false)
                     .buffer(2, 1)
                     .map { (prev, current) ->
-                        val diffResult = FastDiffUtils.fastCalculateDiff(
-                                oldList = prev,
-                                newList = current,
-                                id = RecordsListItem::idInList,
-                                compareOrder = RecordsListItem.COMPARE_ORDER,
-                                isEqual = RecordsListItem.IS_EQUAL
-                        )
+                        val diffResult = if (prev.second == current.second) {
+                            FastDiffUtils.fastCalculateDiff(
+                                    oldList = prev.first,
+                                    newList = current.first,
+                                    id = RecordsListItem::idInList,
+                                    compareOrder = RecordsListItem.COMPARE_ORDER,
+                                    isEqual = RecordsListItem.IS_EQUAL
+                            )
+                        } else {
+                            FastDiffUtils.FastDiffResult(
+                                    removes = listOf(0 to prev.first.size),
+                                    inserts = listOf(0 to current.first.size),
+                                    changes = emptyList()
+                            )
+                        }
                         val recordsChanges = hashMapOf<String, RecordChange>()
-                        current.forEach {
+                        current.first.forEach {
                             if (it is Record && it.change != null) {
                                 recordsChanges[it.uuid] = it.change
                             }
                         }
                         RecordsListPartialChange.RecordsListChanged(
-                                list = current,
+                                list = current.first,
                                 diff = diffResult,
                                 recordsChanges = recordsChanges
                         )
