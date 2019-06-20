@@ -363,9 +363,16 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
+        renderIfChanged({ showFilters }) {
+            (requireActivity() as KeyboardManager).hideKeyboard()
+        }
+
+        renderIfChanged({ showInfo.showSpends }) { showSpends ->
+            if (!showSpends && !vs.showFilters) (requireActivity() as KeyboardManager).hideKeyboard()
+        }
+
         renderIfChanged({ showInfo.showSpends && !showFilters }) {
             createSpendViewImpl.setVisible(it)
-            if (!it) (requireActivity() as KeyboardManager).hideKeyboard()
         }
 
         renderIfChanged({ showFilters }) { filters_LinearLayout.setVisible(it) }
@@ -465,7 +472,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             )
             textView.setTextColor(resources.color(if (date != null) android.R.color.black else R.color.dont_change))
             textView.setTypeface(null, if (date != null) Typeface.NORMAL else Typeface.ITALIC)
-            textView.text = date?.toFormattedString(resources) ?: getString(R.string.text_not_selected)
+            textView.text = date?.toFormattedString(resources)
+                    ?: getString(R.string.text_not_selected)
         }
 
         renderIfChanged({ startDate }) { renderDate(startDate_EditText, it) }
