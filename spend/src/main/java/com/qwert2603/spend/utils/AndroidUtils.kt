@@ -17,6 +17,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import kotlin.math.absoluteValue
 import kotlin.reflect.KFunction2
+import kotlin.reflect.KMutableProperty0
 import android.app.AlertDialog as SystemDialog
 import androidx.appcompat.app.AlertDialog as AppCompatDialog
 
@@ -146,4 +147,10 @@ fun String.sha256(): String {
     }
 
     return hexString.toString()
+}
+
+fun <T> KMutableProperty0<T>.getLateInitOrNull(): T? = try {
+    get()
+} catch (ignored: UninitializedPropertyAccessException) {
+    null
 }

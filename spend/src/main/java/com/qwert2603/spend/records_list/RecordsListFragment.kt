@@ -1,7 +1,6 @@
 package com.qwert2603.spend.records_list
 
 import android.animation.LayoutTransition
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Typeface
@@ -129,7 +128,11 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
         }
 
-        val scrollEvents = records_RecyclerView.scrollEvents().share()
+        val scrollEvents = records_RecyclerView
+                .scrollEvents()
+                .skip(1)
+                .skipWhile { this::currentViewState.getLateInitOrNull()?.records.isNullOrEmpty() }
+                .share()
         Observable
                 .combineLatest(
                         scrollEvents
