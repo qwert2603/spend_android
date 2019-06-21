@@ -12,9 +12,12 @@ import androidx.core.content.FileProvider
 import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
+import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spend.BuildConfig
 import com.qwert2603.spend.R
 import com.qwert2603.spend.dialogs.NotDeletedRecordsHashDialogFragment
+import com.qwert2603.spend.model.entity.OldRecordsLockState
+import com.qwert2603.spend.utils.formatTime
 import com.qwert2603.spend.utils.setShowing
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_about.*
@@ -63,9 +66,29 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
 
     override fun sendDumpClicks(): Observable<Any> = sendDump_Button.clicks().map { }
 
+    override fun oldRecordsLockInput(): Observable<Boolean> = oldRecordsLock_Button
+            .clicks()
+            .map { currentViewState.oldRecordsLockState is OldRecordsLockState.Unlocked }
+
     override fun render(vs: AboutViewState) {
         super.render(vs)
         loadingDialog.setShowing(vs.isMakingDump, requireContext())
+
+        renderIfChanged({ oldRecordsLockState }) {
+            when (it) {
+                OldRecordsLockState.Locked -> {
+                    oldRecordsLock_Button.setText(R.string.old_records_lock_enable)
+                    oldRecordsLock_TextView.setText(R.string.old_records_lock_text_disabled)
+                }
+                is OldRecordsLockState.Unlocked -> {
+                    oldRecordsLock_Button.setText(R.string.old_records_lock_disable)
+                    oldRecordsLock_TextView.text = getString(
+                            R.string.old_records_lock_text_enabled,
+                            resources.formatTime(timeInSeconds = it.secondsRemain)
+                    )
+                }
+            }
+        }
     }
 
     override fun executeAction(va: ViewAction) {

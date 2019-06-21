@@ -107,7 +107,7 @@ val repoModule = module {
 }
 
 val interactorsModule = module {
-    factory { AboutInteractor(get()) }
+    factory { AboutInteractor(get(), get()) }
     factory { RecordsListInteractor(get(), get(), get()) }
     factory { RecordsListViewInteractor(get()) }
     factory { SumsInteractor(get(), get()) }

@@ -43,4 +43,11 @@
         <item quantity="other">%d минут</item>
     </plurals>
 
+    <plurals name="seconds">
+        <item quantity="one">%d секунда</item>
+        <item quantity="few">%d секунды</item>
+        <item quantity="many">%d секунд</item>
+        <item quantity="other">%d секунд</item>
+    </plurals>
+
 </resources>

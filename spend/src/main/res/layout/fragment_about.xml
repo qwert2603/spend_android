@@ -43,6 +43,24 @@
                 android:layout_margin="12dp"
                 android:text="@string/not_deleted_records_hash" />
 
+            <TextView
+                android:id="@+id/oldRecordsLock_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                tools:text="@string/old_records_lock_text_enabled" />
+
+            <Button
+                android:id="@+id/oldRecordsLock_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:text="@string/old_records_lock_disable" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

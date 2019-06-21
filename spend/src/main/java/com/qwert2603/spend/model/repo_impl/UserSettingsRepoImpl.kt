@@ -4,8 +4,12 @@ import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.repo.UserSettingsRepo
+import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.ObservableField
 import com.qwert2603.spend.utils.PreferenceUtils
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
+import java.util.concurrent.TimeUnit
 
 class UserSettingsRepoImpl(appContext: Context) : UserSettingsRepo {
 
@@ -17,4 +21,30 @@ class UserSettingsRepoImpl(appContext: Context) : UserSettingsRepo {
     override val shortSumPeriod: ObservableField<Minutes> = PreferenceUtils.createPrefsObjectObservable(prefs, "shortSumPeriod", gson, 5.minutes)
     override val showInfo: ObservableField<ShowInfo> = PreferenceUtils.createPrefsObjectObservable(prefs, "showInfo", gson, ShowInfo.DEFAULT)
     override val sumsShowInfo: ObservableField<SumsShowInfo> = PreferenceUtils.createPrefsObjectObservable(prefs, "sumsShowInfo", gson, SumsShowInfo.DEFAULT)
+
+    private val setOldRecordsLockEvents = BehaviorSubject.createDefault(true)
+
+    private val _oldRecordsLockStateChanges = BehaviorSubject.create<OldRecordsLockState>()
+
+    init {
+        setOldRecordsLockEvents
+                .switchMap { setLock ->
+                    if (setLock) {
+                        Observable.just(OldRecordsLockState.Locked)
+                    } else {
+                        Observable.interval(0, 1, TimeUnit.SECONDS)
+                                .map { Const.OLD_RECORDS_UNLOCK_SECONDS - it.toInt() }
+                                .takeWhile { it > 0 }
+                                .map<OldRecordsLockState> { OldRecordsLockState.Unlocked(it) }
+                                .concatWith(Observable.just(OldRecordsLockState.Locked))
+                    }
+                }
+                .subscribe(_oldRecordsLockStateChanges)
+    }
+
+    override fun setOldRecordsLock(lock: Boolean) {
+        setOldRecordsLockEvents.onNext(lock)
+    }
+
+    override fun oldRecordsLockStateChanges(): Observable<OldRecordsLockState> = _oldRecordsLockStateChanges.hide()
 }

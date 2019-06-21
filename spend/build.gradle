@@ -20,7 +20,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 51
-        versionName "4.11.3"
+        versionName "4.12.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
         buildConfigField "String", "BIULD_HASH", '"' + UUID.randomUUID().toString() + '"'

@@ -147,4 +147,9 @@
     <string name="notification_text_sync_done">sync done</string>
     <string name="notification_text_sync_error">sync error</string>
 
+    <string name="old_records_lock_enable">Enable</string>
+    <string name="old_records_lock_disable">Disable</string>
+    <string name="old_records_lock_text_disabled">Editing old records disabled.</string>
+    <string name="old_records_lock_text_enabled" formatted="true">Editing old records enabled. It will be disabled in %s.</string>
+
 </resources>

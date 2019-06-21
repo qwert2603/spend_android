@@ -5,4 +5,5 @@ import io.reactivex.Observable
 
 interface AboutView : BaseView<AboutViewState> {
     fun sendDumpClicks(): Observable<Any>
+    fun oldRecordsLockInput(): Observable<Boolean>
 }

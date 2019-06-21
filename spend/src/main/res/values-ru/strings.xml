@@ -127,5 +127,9 @@
     <string name="not_deleted_records_hash">хеш неудаленных записей</string>
     <string name="text_deleting_record_not_found">запись не найдена</string>
     <string name="text_record_was_deleted">запись была удалена</string>
+    <string name="old_records_lock_enable">Включить</string>
+    <string name="old_records_lock_disable">Отключить</string>
+    <string name="old_records_lock_text_disabled">Редактирование старых записей отключено.</string>
+    <string name="old_records_lock_text_enabled" formatted="true">Редактирование старых записей включено. Отключится через: %s.</string>
 
 </resources>

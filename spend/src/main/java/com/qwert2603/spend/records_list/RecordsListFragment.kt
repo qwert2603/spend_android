@@ -207,7 +207,6 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         }
     }
 
-    @SuppressLint("CheckResult")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.records_list, menu)

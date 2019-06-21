@@ -20,4 +20,5 @@ object Const {
     const val MAX_RECORDS_UPDATES_COUNT = 250
 
     val CHANGE_RECORD_PAST = 7.days
+    const val OLD_RECORDS_UNLOCK_SECONDS = 60
 }
