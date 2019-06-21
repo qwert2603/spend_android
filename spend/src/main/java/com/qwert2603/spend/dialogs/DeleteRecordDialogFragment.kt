@@ -15,11 +15,14 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.R
+import com.qwert2603.spend.model.entity.OldRecordsLockState
 import com.qwert2603.spend.model.entity.Record
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordsRepo
+import com.qwert2603.spend.model.repo.UserSettingsRepo
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_delete_record.view.*
 import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
@@ -31,6 +34,8 @@ class DeleteRecordDialogFragment : DialogFragment() {
     lateinit var uuid: String
 
     private val recordsRepo: RecordsRepo by inject()
+
+    private val userSettingsRepo: UserSettingsRepo by inject()
 
     private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
@@ -95,13 +100,26 @@ class DeleteRecordDialogFragment : DialogFragment() {
                     dismissAllowingStateLoss()
                 }
                 .subscribeUntilPaused()
-        recordChanges
-                .skip(1)
-                .switchMap {
-                    Observable.interval(0, 1000, TimeUnit.MILLISECONDS)
-                            .take(2)
-                            .map { it != 0L }
-                }
+        Observable.combineLatest(
+                recordChanges
+                        .skip(1)
+                        .switchMap {
+                            Observable.interval(0, 1000, TimeUnit.MILLISECONDS)
+                                    .take(2)
+                                    .map { it != 0L }
+                        }
+                        .startWith(true),
+                Observable
+                        .combineLatest(
+                                recordChanges,
+                                userSettingsRepo
+                                        .oldRecordsLockStateChanges(),
+                                BiFunction { record: Wrapper<Record>, oldRecordsLockState: OldRecordsLockState ->
+                                    record.t?.isChangeable(oldRecordsLockState.isLocked) == true
+                                }
+                        ),
+                Boolean::and.toRxBiFunction()
+        )
                 .observeOn(uiSchedulerProvider.ui)
                 .doOnNext { requireDialog().positiveButton.isEnabled = it }
                 .subscribeUntilPaused()
