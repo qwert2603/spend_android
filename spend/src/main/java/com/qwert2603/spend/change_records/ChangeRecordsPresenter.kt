@@ -3,6 +3,8 @@ package com.qwert2603.spend.change_records
 import com.qwert2603.andrlib.base.mvi.BasePresenter
 import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
+import com.qwert2603.spend.model.entity.OldRecordsLockState
+import com.qwert2603.spend.model.entity.SDate
 import com.qwert2603.spend.model.entity.days
 import com.qwert2603.spend.model.entity.plus
 import com.qwert2603.spend.utils.Const
@@ -17,13 +19,16 @@ class ChangeRecordsPresenter(
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<ChangeRecordsView, ChangeRecordsViewState>(uiSchedulerProvider) {
 
-    override val initialState = ChangeRecordsViewState(null, null)
+    override val initialState = ChangeRecordsViewState(null, null, OldRecordsLockState.Locked)
 
     override val partialChanges: Observable<PartialChange> = Observable.merge(
             intent { it.changedDateSelected() }
                     .map { ChangeRecordsPartialChange.ChangedDateSelected(it.t) },
             intent { it.changedTimeSelected() }
-                    .map { ChangeRecordsPartialChange.ChangedTimeSelected(it.t) }
+                    .map { ChangeRecordsPartialChange.ChangedTimeSelected(it.t) },
+            interactor
+                    .oldRecordsLockStateChanges()
+                    .map { ChangeRecordsPartialChange.OldRecordsLockStateChanged(it) }
     )
 
     override fun stateReducer(vs: ChangeRecordsViewState, change: PartialChange): ChangeRecordsViewState {
@@ -31,6 +36,7 @@ class ChangeRecordsPresenter(
         return when (change) {
             is ChangeRecordsPartialChange.ChangedDateSelected -> vs.copy(changedDate = change.date)
             is ChangeRecordsPartialChange.ChangedTimeSelected -> vs.copy(changedTime = change.time)
+            is ChangeRecordsPartialChange.OldRecordsLockStateChanged -> vs.copy(oldRecordsLockState = change.oldRecordsLockState)
         }
     }
 
@@ -41,7 +47,11 @@ class ChangeRecordsPresenter(
                 .doOnNext {
                     viewActions.onNext(ChangeRecordsViewAction.AskToSelectDate(
                             date = it.changedDate ?: DateUtils.getNow().first,
-                            minDate = DateUtils.getNow().first + (-1 * Const.CHANGE_RECORD_PAST.days + 1).days
+                            minDate = if (it.oldRecordsLockState.isLocked) {
+                                DateUtils.getNow().first + (-1 * Const.CHANGE_RECORD_PAST.days + 1).days
+                            } else {
+                                SDate.MIN_VALUE
+                            }
                     ))
                 }
                 .subscribeToView()

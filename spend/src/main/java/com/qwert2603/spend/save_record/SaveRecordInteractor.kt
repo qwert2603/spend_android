@@ -1,12 +1,10 @@
 package com.qwert2603.spend.save_record
 
-import com.qwert2603.spend.model.entity.Record
-import com.qwert2603.spend.model.entity.RecordCategoryAggregation
-import com.qwert2603.spend.model.entity.RecordDraft
-import com.qwert2603.spend.model.entity.RecordKindAggregation
+import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.repo.RecordAggregationsRepo
 import com.qwert2603.spend.model.repo.RecordsDraftsRepo
 import com.qwert2603.spend.model.repo.RecordsRepo
+import com.qwert2603.spend.model.repo.UserSettingsRepo
 import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.Wrapper
 import io.reactivex.Observable
@@ -15,7 +13,8 @@ import io.reactivex.Single
 class SaveRecordInteractor(
         private val recordsRepo: RecordsRepo,
         private val recordsDraftsRepo: RecordsDraftsRepo,
-        private val recordAggregationsRepo: RecordAggregationsRepo
+        private val recordAggregationsRepo: RecordAggregationsRepo,
+        private val userSettingsRepo: UserSettingsRepo
 ) {
     fun getRecordChanges(uuid: String): Observable<Wrapper<Record>> = recordsRepo.getRecord(uuid)
 
@@ -57,4 +56,6 @@ class SaveRecordInteractor(
             .getRecordKind(recordTypeId, recordCategoryUuid, kind)
             .firstOrError()
             .map { it.t?.lastRecord?.value ?: 0 }
+
+    fun oldRecordsLockStateChanges(): Observable<OldRecordsLockState> = userSettingsRepo.oldRecordsLockStateChanges()
 }

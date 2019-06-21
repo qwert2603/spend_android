@@ -109,10 +109,10 @@ val repoModule = module {
 val interactorsModule = module {
     factory { AboutInteractor(get(), get()) }
     factory { RecordsListInteractor(get(), get(), get()) }
-    factory { RecordsListViewInteractor(get()) }
+    factory { RecordsListViewInteractor(get(), get()) }
     factory { SumsInteractor(get(), get()) }
-    factory { ChangeRecordsInteractor(get()) }
-    factory { SaveRecordInteractor(get(), get(), get()) }
+    factory { ChangeRecordsInteractor(get(), get()) }
+    factory { SaveRecordInteractor(get(), get(), get(), get()) }
 }
 
 val presentersModule = module {

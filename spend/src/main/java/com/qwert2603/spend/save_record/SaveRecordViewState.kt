@@ -1,9 +1,6 @@
 package com.qwert2603.spend.save_record
 
-import com.qwert2603.spend.model.entity.RecordCategory
-import com.qwert2603.spend.model.entity.RecordDraft
-import com.qwert2603.spend.model.entity.SDate
-import com.qwert2603.spend.model.entity.STime
+import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.Wrapper
 import com.qwert2603.spend.utils.toPointedString
@@ -17,7 +14,8 @@ data class SaveRecordViewState(
         val serverTime: Wrapper<STime?>?,
         val serverValue: Int?,
         private val justChangedOnServer: Boolean,
-        private val existingRecord: RecordDraft? // null, when creating new record
+        private val existingRecord: RecordDraft?, // null, when creating new record
+        val oldRecordsLockState: OldRecordsLockState
 ) {
     companion object {
         val DRAFT_IS_LOADING = RecordDraft(
@@ -47,7 +45,7 @@ data class SaveRecordViewState(
 
     val valueString: String = recordDraft.value.takeIf { it != 0 }?.toPointedString() ?: ""
 
-    fun isSaveEnable() = recordDraft.isValid()
+    fun isSaveEnable() = recordDraft.isValid(oldRecordsLockState.isLocked)
             && listOfNotNull(serverCategory, serverKind, serverDate, serverTime, serverValue).isEmpty()
             && !justChangedOnServer
             && recordDraft != existingRecord

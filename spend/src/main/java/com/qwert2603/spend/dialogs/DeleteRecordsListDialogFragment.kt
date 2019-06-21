@@ -34,6 +34,9 @@ class DeleteRecordsListDialogFragment : DialogFragment() {
             Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
             dismissAllowingStateLoss()
         }
+        recordsListViewImpl.onCanChangeRecords = {
+            requireDialog().positiveButton.isEnabled = it
+        }
         return AlertDialog.Builder(requireContext())
                 .setTitle(R.string.dialog_title_delete_selected_records)
                 .setView(recordsListViewImpl)

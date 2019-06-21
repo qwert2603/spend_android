@@ -26,4 +26,6 @@ sealed class RecordsListPartialChange : PartialChange {
     data class SearchQueryChanged(val search: String) : RecordsListPartialChange()
     data class StartDateChanged(val startDate: SDate?) : RecordsListPartialChange()
     data class EndDateChanged(val endDate: SDate?) : RecordsListPartialChange()
+
+    data class OldRecordsLockStateChanged(val oldRecordsLockState: OldRecordsLockState) : RecordsListPartialChange()
 }

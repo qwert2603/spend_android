@@ -21,10 +21,10 @@ data class RecordDraft(
         if (date == null) require(time == null)
     }
 
-    fun isValid() = recordCategoryUuid != null
+    fun isValid(oldRecordsLock: Boolean) = recordCategoryUuid != null
             && value > 0
             && kind.length in 1..Const.MAX_RECORD_KIND_LENGTH
-            && (dateTime().first + Const.CHANGE_RECORD_PAST) > DateUtils.getNow().first
+            && (!oldRecordsLock || (dateTime().first + Const.CHANGE_RECORD_PAST) > DateUtils.getNow().first)
 
     fun dateTime(): Pair<SDate, STime?> =
             if (date == null) DateUtils.getNow()

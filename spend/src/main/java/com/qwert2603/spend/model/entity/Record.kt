@@ -31,6 +31,6 @@ data class Record(
     fun isDeleted() = change?.isDelete == true
 
     /*** can update or delete. */
-    fun isChangeable() = !isDeleted()
-            && (date + Const.CHANGE_RECORD_PAST) > DateUtils.getNow().first
+    fun isChangeable(oldRecordsLock: Boolean) = !isDeleted()
+            && (!oldRecordsLock || (date + Const.CHANGE_RECORD_PAST) > DateUtils.getNow().first)
 }

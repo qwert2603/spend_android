@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding3.view.clicks
@@ -51,6 +52,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     private val changedTimeSelected = PublishSubject.create<Wrapper<Wrapper<STime>>>()
 
     private lateinit var dialogView: View
+    private lateinit var recordsListViewImpl: RecordsListViewImpl
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -59,10 +61,16 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         dialogView.date_EditText.onRightDrawableClicked { changedDateSelected.onNext(Wrapper(null)) }
         dialogView.time_EditText.onRightDrawableClicked { changedTimeSelected.onNext(Wrapper(null)) }
 
-        val recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
+        recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
         recordsListViewImpl.onRenderEmptyListListener = {
             Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
             dismissAllowingStateLoss()
+        }
+        recordsListViewImpl.onCanChangeRecords = {
+            updateChangeEnable(
+                    isChangeDateAllowed = currentViewState.isChangeEnable(),
+                    canChangeRecords = it
+            )
         }
         dialogView.dialogChangeRecords_LinearLayout.addView(recordsListViewImpl)
 
@@ -118,7 +126,10 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
             })
         }
 
-        requireDialog().positiveButton.isEnabled = vs.isChangeEnable()
+        updateChangeEnable(
+                isChangeDateAllowed = vs.isChangeEnable(),
+                canChangeRecords = recordsListViewImpl.currentViewState.canChangeRecords()
+        )
     }
 
     override fun executeAction(va: ViewAction) {
@@ -137,7 +148,11 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         }
     }
 
-    private fun androidx.fragment.app.DialogFragment.makeShow(requestCode: Int) = this
+    private fun DialogFragment.makeShow(requestCode: Int) = this
             .also { it.setTargetFragment(this@ChangeRecordsDialogFragment, requestCode) }
             .show(this@ChangeRecordsDialogFragment.requireFragmentManager(), null)
+
+    private fun updateChangeEnable(isChangeDateAllowed: Boolean, canChangeRecords: Boolean) {
+        requireDialog().positiveButton.isEnabled = isChangeDateAllowed && canChangeRecords
+    }
 }

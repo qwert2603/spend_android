@@ -19,7 +19,8 @@ data class RecordsListViewState(
         val diff: FastDiffUtils.FastDiffResult,
         val recordsChanges: HashMap<String, RecordChange>, // key is Record::uuid
         val syncState: SyncState,
-        private val _selectedRecordsUuids: HashSet<String>
+        private val _selectedRecordsUuids: HashSet<String>,
+        val oldRecordsLock: Boolean
 ) {
     private val recordsByUuid: HashMap<String, Record>? by lazy {
         records
@@ -56,14 +57,14 @@ data class RecordsListViewState(
 
     val canCombineSelected: Boolean by lazy {
         selectedRecords.size > 1
-                && selectedRecords.all { it.isChangeable() }
+                && selectedRecords.all { it.isChangeable(oldRecordsLock) }
                 && selectedRecords.distinctBy { it.recordCategory to it.kind }.size == 1
                 && selectedRecords.sumByLong { it.value.toLong() } <= Int.MAX_VALUE
     }
 
-    val canDeleteSelected by lazy { selectedRecords.all { it.isChangeable() } }
+    val canDeleteSelected by lazy { selectedRecords.all { it.isChangeable(oldRecordsLock) } }
 
-    val canChangeSelected by lazy { selectedRecords.all { it.isChangeable() } }
+    val canChangeSelected by lazy { selectedRecords.all { it.isChangeable(oldRecordsLock) } }
 
     fun createCombineAction(): RecordsListViewAction.AskToCombineRecords? {
         val recordsByUuid = recordsByUuid

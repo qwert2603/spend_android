@@ -17,7 +17,7 @@ private val FAKE_RECORD = Record(
                 Const.RECORD_TYPE_ID_SPEND,
                 "nth"
         ),
-        date = SDate(0),
+        date = SDate.MIN_VALUE,
         time = null,
         kind = "nth",
         value = 1,

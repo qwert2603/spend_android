@@ -11,7 +11,7 @@ import io.reactivex.Single
 class RecordsListInteractor(
         private val recordsRepo: RecordsRepo,
         private val recordAggregationsRepo: RecordAggregationsRepo,
-        userSettingsRepo: UserSettingsRepo
+        private val userSettingsRepo: UserSettingsRepo
 ) {
     fun getRecordsList(): Observable<List<Record>> = recordsRepo.getRecordsList()
 
@@ -46,4 +46,6 @@ class RecordsListInteractor(
             .mapList { it.recordCategory }
 
     fun getSyncState(): Observable<SyncState> = recordsRepo.getSyncState()
+
+    fun oldRecordsLockStateChanges(): Observable<OldRecordsLockState> = userSettingsRepo.oldRecordsLockStateChanges()
 }

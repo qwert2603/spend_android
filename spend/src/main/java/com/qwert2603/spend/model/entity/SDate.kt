@@ -13,7 +13,7 @@ import java.util.*
  * format is "yyyyMMdd".
  * 19950326 is March, 26th, 1995 year.
  */
-data class SDate(val date: Int) : Comparable<SDate>, Serializable {
+data class SDate constructor(val date: Int) : Comparable<SDate>, Serializable {
     override fun toString() = String.format("%04d-%02d-%02d", date / (100 * 100), date / 100 % 100, date % 100)
 
     fun toDateCalendar() = GregorianCalendar(
@@ -23,6 +23,11 @@ data class SDate(val date: Int) : Comparable<SDate>, Serializable {
     )
 
     override fun compareTo(other: SDate): Int = this.date.compareTo(other.date)
+
+    companion object {
+        val MIN_VALUE = SDate(19000101)
+        val MAX_VALUE = SDate(20993112)
+    }
 }
 
 fun Int.toSDate() = SDate(this)

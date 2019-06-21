@@ -30,7 +30,8 @@ class RecordsListPresenter(
             endDate = null,
             recordsChanges = hashMapOf(),
             syncState = SyncState.Syncing,
-            _selectedRecordsUuids = hashSetOf()
+            _selectedRecordsUuids = hashSetOf(),
+            oldRecordsLock = true
     )
 
     private val showInfoChanges: Observable<ShowInfo> = recordsListInteractor.showInfo.changes.shareAfterViewSubscribed()
@@ -136,14 +137,17 @@ class RecordsListPresenter(
                     .filter { !it.isDeleted() }
                     .withLatestFrom(viewStateObservable, makePair())
                     .filter { (record, vs) ->
-                        if (!vs.selectMode && record.isChangeable()) {
+                        if (!vs.selectMode && record.isChangeable(vs.oldRecordsLock)) {
                             viewActions.onNext(RecordsListViewAction.AskForRecordActions(record.uuid))
                         }
                         vs.selectMode
                     }
                     .map { (record, _) -> RecordsListPartialChange.ToggleRecordSelection(record.uuid) },
             intent { it.cancelSelection() }
-                    .map { RecordsListPartialChange.ClearSelection }
+                    .map { RecordsListPartialChange.ClearSelection },
+            recordsListInteractor
+                    .oldRecordsLockStateChanges()
+                    .map { RecordsListPartialChange.OldRecordsLockStateChanged(it) }
     ))
 
     override fun stateReducer(vs: RecordsListViewState, change: PartialChange): RecordsListViewState {
@@ -171,11 +175,12 @@ class RecordsListPresenter(
             RecordsListPartialChange.ClearSelection -> vs.copy(_selectedRecordsUuids = hashSetOf())
             is RecordsListPartialChange.SearchQueryChanged -> vs.copy(searchQuery = change.search)
             is RecordsListPartialChange.StartDateChanged -> vs.copy(
-                    startDate = change.startDate?.coerceAtMost(vs.endDate ?: SDate(9999_12_31))
+                    startDate = change.startDate?.coerceAtMost(vs.endDate ?: SDate.MAX_VALUE)
             )
             is RecordsListPartialChange.EndDateChanged -> vs.copy(
-                    endDate = change.endDate?.coerceAtLeast(vs.startDate ?: SDate(0))
+                    endDate = change.endDate?.coerceAtLeast(vs.startDate ?: SDate.MIN_VALUE)
             )
+            is RecordsListPartialChange.OldRecordsLockStateChanged -> vs.copy(oldRecordsLock = change.oldRecordsLockState.isLocked)
         }
     }
 

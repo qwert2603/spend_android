@@ -33,7 +33,8 @@ class SaveRecordPresenter(
             serverTime = null,
             serverValue = null,
             justChangedOnServer = false,
-            existingRecord = null
+            existingRecord = null,
+            oldRecordsLockState = OldRecordsLockState.Locked
     )
 
     private val serverRecordChanges: Observable<Wrapper<Record>> =
@@ -161,7 +162,10 @@ class SaveRecordPresenter(
                         }
                     },
             clearDraft
-                    .map { SaveRecordPartialChange.DraftCleared }
+                    .map { SaveRecordPartialChange.DraftCleared },
+            saveRecordInteractor
+                    .oldRecordsLockStateChanges()
+                    .map { SaveRecordPartialChange.OldRecordsLockStateChanged(it) }
     ))
 
     override fun stateReducer(vs: SaveRecordViewState, change: PartialChange): SaveRecordViewState {
@@ -232,6 +236,7 @@ class SaveRecordPresenter(
                     recordDraft = if (change.acceptFromServer && vs.serverTime != null) vs.recordDraft.copy(time = vs.serverTime.t) else vs.recordDraft,
                     serverTime = null
             )
+            is SaveRecordPartialChange.OldRecordsLockStateChanged -> vs.copy(oldRecordsLockState = change.oldRecordsLockState)
         }
     }
 
@@ -329,7 +334,11 @@ class SaveRecordPresenter(
                 .doOnNext {
                     viewActions.onNext(SaveRecordViewAction.AskToSelectDate(
                             date = it.recordDraft.date ?: DateUtils.getNow().first,
-                            minDate = DateUtils.getNow().first + (-1 * Const.CHANGE_RECORD_PAST.days + 1).days
+                            minDate = if (it.oldRecordsLockState.isLocked) {
+                                DateUtils.getNow().first + (-1 * Const.CHANGE_RECORD_PAST.days + 1).days
+                            } else {
+                                SDate.MIN_VALUE
+                            }
                     ))
                 }
                 .subscribeToView()
@@ -370,13 +379,15 @@ class SaveRecordPresenter(
 
         intent { it.saveClicks() }
                 .withLatestFrom(viewStateObservable, secondOfTwo())
-                .mapNotNull { it.recordDraft }
-                .filter { it.isValid() }
+                .filter {
+                    it.recordDraft != SaveRecordViewState.DRAFT_IS_LOADING &&
+                            it.recordDraft.isValid(it.oldRecordsLockState.isLocked)
+                }
                 .doOnNext {
                     LogUtils.d("SaveRecordPresenter saveClicks #1")
                     clearDraft.onNext(Any())
                     LogUtils.d("SaveRecordPresenter saveClicks #2")
-                    saveRecordInteractor.saveRecord(it)
+                    saveRecordInteractor.saveRecord(it.recordDraft)
                     viewActions.onNext(SaveRecordViewAction.Close) // this is for dialog
                     viewActions.onNext(SaveRecordViewAction.FocusOnCategoryInput) // this is for CreateSpendViewImpl
                 }

@@ -6,6 +6,7 @@ import com.qwert2603.andrlib.base.mvi.BaseFrameLayout
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.util.inflate
+import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spend.R
 import com.qwert2603.spend.utils.setVisibleChild
 import kotlinx.android.extensions.LayoutContainer
@@ -28,6 +29,8 @@ class RecordsListViewImpl(
 
     var onRenderEmptyListListener: (() -> Unit)? = null
 
+    var onCanChangeRecords: ((lock: Boolean) -> Unit)? = null
+
     init {
         inflate(R.layout.view_records_list, true)
         records_RecyclerView.adapter = recordsAdapter
@@ -35,6 +38,8 @@ class RecordsListViewImpl(
 
     override fun render(vs: RecordsListViewState) {
         super.render(vs)
+
+        renderIfChanged({ canChangeRecords() }) { onCanChangeRecords?.invoke(it) }
 
         viewRecordsList_FrameLayout.setVisibleChild(when {
             vs.records == null -> R.id.loading_ProgressBar
