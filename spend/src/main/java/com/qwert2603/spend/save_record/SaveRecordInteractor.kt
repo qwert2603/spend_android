@@ -11,9 +11,8 @@ import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.Wrapper
 import io.reactivex.Observable
 import io.reactivex.Single
-import javax.inject.Inject
 
-class SaveRecordInteractor @Inject constructor(
+class SaveRecordInteractor(
         private val recordsRepo: RecordsRepo,
         private val recordsDraftsRepo: RecordsDraftsRepo,
         private val recordAggregationsRepo: RecordAggregationsRepo

@@ -8,6 +8,8 @@
       <w>firebase</w>
       <w>fragmentargs</w>
       <w>interactor</w>
+      <w>interactors</w>
+      <w>koin</w>
       <w>mosby</w>
       <w>okhttp</w>
       <w>qwert</w>

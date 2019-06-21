@@ -9,10 +9,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.random.Random
 
-class RecordsListPresenter @Inject constructor(
+class RecordsListPresenter(
         private val recordsListInteractor: RecordsListInteractor,
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<RecordsListView, RecordsListViewState>(uiSchedulerProvider) {

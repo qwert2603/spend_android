@@ -42,9 +42,9 @@ public class TextInputAutoCompleteTextView extends AppCompatAutoCompleteTextView
 
     @Nullable
     private TextInputLayout getTextInputLayout() {
-        for(ViewParent parent = this.getParent(); parent instanceof View; parent = parent.getParent()) {
+        for (ViewParent parent = this.getParent(); parent instanceof View; parent = parent.getParent()) {
             if (parent instanceof TextInputLayout) {
-                return (TextInputLayout)parent;
+                return (TextInputLayout) parent;
             }
         }
 

@@ -18,7 +18,6 @@ import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.dialogs.DatePickerDialogFragment
 import com.qwert2603.spend.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spend.dialogs.TimePickerDialogFragment
@@ -29,6 +28,8 @@ import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_change_records.view.*
+import org.koin.android.ext.android.get
+import org.koin.core.parameter.parametersOf
 import java.io.Serializable
 
 @FragmentWithArgs
@@ -44,11 +45,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     @Arg
     lateinit var key: Key
 
-    override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .changeRecordsPresenterCreatorComponent()
-            .recordsUuids(key.recordUuids)
-            .build()
-            .createPresenter()
+    override fun createPresenter() = get<ChangeRecordsPresenter> { parametersOf(key.recordUuids) }
 
     private val changedDateSelected = PublishSubject.create<Wrapper<SDate>>()
     private val changedTimeSelected = PublishSubject.create<Wrapper<Wrapper<STime>>>()

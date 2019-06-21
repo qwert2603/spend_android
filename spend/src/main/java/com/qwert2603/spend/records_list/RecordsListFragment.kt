@@ -23,7 +23,6 @@ import com.qwert2603.andrlib.util.*
 import com.qwert2603.spend.R
 import com.qwert2603.spend.change_records.ChangeRecordsDialogFragment
 import com.qwert2603.spend.change_records.ChangeRecordsDialogFragmentBuilder
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.dialogs.*
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.model.entity.*
@@ -37,6 +36,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_records_list.*
+import org.koin.android.ext.android.get
 import java.util.concurrent.TimeUnit
 
 @FragmentWithArgs
@@ -55,10 +55,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     @Arg
     lateinit var key: RecordsListKey
 
-    override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .recordsListPresenterCreatorComponent()
-            .build()
-            .createRecordsListPresenter()
+    override fun createPresenter() = get<RecordsListPresenter>()
 
     private var initialScrollDone by BundleBoolean("initialScrollDone", { arguments!! }, false)
 

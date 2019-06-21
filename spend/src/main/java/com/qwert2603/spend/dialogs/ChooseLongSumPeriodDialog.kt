@@ -19,7 +19,6 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.Days
 import com.qwert2603.spend.model.entity.days
 import com.qwert2603.spend.model.repo.RecordsRepo
@@ -28,7 +27,7 @@ import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.item_sum_variant.view.*
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 @FragmentWithArgs
 class ChooseLongSumPeriodDialog : DialogFragment() {
@@ -47,21 +46,13 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
     @Arg
     lateinit var selected: Days
 
-    @Inject
-    lateinit var recordsRepo: RecordsRepo
+    private val recordsRepo: RecordsRepo by inject()
 
-    @Inject
-    lateinit var userSettingsRepo: UserSettingsRepo
+    private val userSettingsRepo: UserSettingsRepo by inject()
 
-    @Inject
-    lateinit var uiSchedulerProvider: UiSchedulerProvider
+    private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
     data class Variant(val days: Days, var sum: Long?)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val variants = VARIANTS.map { Variant(it.days, null) }

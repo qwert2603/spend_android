@@ -10,9 +10,8 @@ import com.qwert2603.spend.records_list.modifyForUi
 import com.qwert2603.spend.utils.FastDiffUtils
 import com.qwert2603.spend.utils.RxUtils
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class SumsPresenter @Inject constructor(
+class SumsPresenter(
         private val interactor: SumsInteractor,
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<SumsView, SumsViewState>(uiSchedulerProvider) {

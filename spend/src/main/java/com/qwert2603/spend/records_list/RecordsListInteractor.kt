@@ -7,9 +7,8 @@ import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.model.repo.UserSettingsRepo
 import io.reactivex.Observable
 import io.reactivex.Single
-import javax.inject.Inject
 
-class RecordsListInteractor @Inject constructor(
+class RecordsListInteractor(
         private val recordsRepo: RecordsRepo,
         private val recordAggregationsRepo: RecordAggregationsRepo,
         userSettingsRepo: UserSettingsRepo

@@ -6,11 +6,8 @@ import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.repo.UserSettingsRepo
 import com.qwert2603.spend.utils.ObservableField
 import com.qwert2603.spend.utils.PreferenceUtils
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class UserSettingsRepoImpl @Inject constructor(appContext: Context) : UserSettingsRepo {
+class UserSettingsRepoImpl(appContext: Context) : UserSettingsRepo {
 
     private val prefs = appContext.getSharedPreferences("user_settings.prefs", Context.MODE_PRIVATE)
 

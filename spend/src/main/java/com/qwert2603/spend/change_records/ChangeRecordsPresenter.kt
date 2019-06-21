@@ -10,9 +10,8 @@ import com.qwert2603.spend.utils.DateUtils
 import com.qwert2603.spend.utils.RxUtils
 import com.qwert2603.spend.utils.secondOfTwo
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class ChangeRecordsPresenter @Inject constructor(
+class ChangeRecordsPresenter(
         private val recordsUuids: List<String>,
         private val interactor: ChangeRecordsInteractor,
         uiSchedulerProvider: UiSchedulerProvider

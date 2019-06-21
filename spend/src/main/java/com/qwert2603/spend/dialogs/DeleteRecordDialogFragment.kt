@@ -15,15 +15,14 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.Record
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.dialog_delete_record.view.*
+import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @FragmentWithArgs
 class DeleteRecordDialogFragment : DialogFragment() {
@@ -31,18 +30,11 @@ class DeleteRecordDialogFragment : DialogFragment() {
     @Arg
     lateinit var uuid: String
 
-    @Inject
-    lateinit var recordsRepo: RecordsRepo
+    private val recordsRepo: RecordsRepo by inject()
 
-    @Inject
-    lateinit var uiSchedulerProvider: UiSchedulerProvider
+    private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
     private lateinit var dialogView: View
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        DIHolder.diManager.viewsComponent.inject(this)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         @SuppressLint("InflateParams")

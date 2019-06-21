@@ -6,11 +6,8 @@ import com.qwert2603.spend.model.rest.entity.LastChangeInfo
 import com.qwert2603.spend.model.rest.entity.RecordServer
 import com.qwert2603.spend.model.rest.entity.SaveRecordsParam
 import retrofit2.HttpException
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ApiHelper @Inject constructor(
+class ApiHelper(
         private val rest: Rest
 ) {
     fun getUpdates(lastChangeInfo: LastChangeInfo?, count: Int): GetRecordsUpdatesResult = rest

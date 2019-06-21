@@ -6,8 +6,7 @@ import androidx.work.WorkManager
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.qwert2603.andrlib.util.LogUtils
-import com.qwert2603.spend.di.DIHolder
-import com.qwert2603.spend.di.DIManager
+import com.qwert2603.spend.di.*
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.model.sync_processor.SyncWorkReceiver
 import com.qwert2603.spend.utils.DateUtils
@@ -16,6 +15,10 @@ import com.qwert2603.spend_android.StethoInstaller
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -27,7 +30,19 @@ class SpendApplication : Application() {
 
         StethoInstaller.install(this)
 
-        DIHolder.diManager = DIManager(this)
+        startKoin {
+            androidLogger(Level.DEBUG)
+            androidContext(this@SpendApplication)
+
+            modules(listOf(
+                    navigationModule,
+                    schedulersModule,
+                    modelModule,
+                    repoModule,
+                    interactorsModule,
+                    presentersModule
+            ))
+        }
 
         debugHolder = DebugHolder(this)
 

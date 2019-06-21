@@ -102,7 +102,6 @@ dependencies {
     def work_version = "1.0.1"
 
     def andrlib_version = '1.14.4'
-    def andrlib_generator_version = '1.0.10'
 
     def rxjava_version = '2.2.9'
     def rxandroid_version = '2.1.1'
@@ -112,7 +111,7 @@ dependencies {
     def fragmentargs_version = '3.0.2'
     def cicerone_version = '5.0.0'
 
-    def dagger_version = '2.21'
+    def koin_version = '2.0.1'
     def retrofit_version = '2.6.0'
     def okhttp_version = '3.14.2'
 
@@ -131,9 +130,6 @@ dependencies {
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     implementation "com.github.qwert2603:andrlib:$andrlib_version"
-    implementation "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
-    annotationProcessor "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
-    kapt "com.github.qwert2603:andrlib_generator:$andrlib_generator_version"
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
@@ -145,8 +141,10 @@ dependencies {
     implementation "com.hannesdorfmann.fragmentargs:annotation:$fragmentargs_version"
     kapt "com.hannesdorfmann.fragmentargs:processor:$fragmentargs_version"
 
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    // Koin for Android
+    implementation "org.koin:koin-android:$koin_version"
+    // Koin Android Scope features
+    implementation "org.koin:koin-androidx-scope:$koin_version"
 
     implementation "ru.terrakok.cicerone:cicerone:$cicerone_version"
     implementation("com.hannesdorfmann.mosby3:mvi:$mosby_version") {

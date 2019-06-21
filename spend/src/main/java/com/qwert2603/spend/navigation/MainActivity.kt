@@ -16,24 +16,21 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
 import com.qwert2603.spend.records_list.RecordsListKey
 import com.qwert2603.spend.utils.subscribeWhileResumed
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_navigation.view.*
+import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
-    @Inject
-    lateinit var router: Router
-    @Inject
-    lateinit var navigatorHolder: NavigatorHolder
-    @Inject
-    lateinit var isShowingToUserHolder: IsShowingToUserHolder
+    private val router: Router by inject()
+
+    private val navigatorHolder: NavigatorHolder by inject()
 
     private val navigator = Navigator(this, R.id.fragment_container)
 
@@ -57,9 +54,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DIHolder.diManager.viewsComponent.inject(this)
 
-        isShowingToUserHolder.onActivityCreated(this)
+        get<IsShowingToUserHolder>().onActivityCreated(this)
 
         if (savedInstanceState == null) {
             LogUtils.d("MainActivity onCreate intent.action=${intent.action}")
@@ -126,7 +122,8 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         val screen: SpendScreen = fragment.getScreen() ?: return
         val isRoot = supportFragmentManager.backStackEntryCount == 0
         if (isRoot) {
-            navigationAdapter.selectedItemId = rootNavigationItems.find { screen == it.screen }?.id ?: 0
+            navigationAdapter.selectedItemId = rootNavigationItems.find { screen == it.screen }?.id
+                    ?: 0
         } else {
             navigationAdapter.selectedItemId = 0
         }

@@ -4,8 +4,6 @@ import android.content.Context
 import com.google.gson.Gson
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.SpendApplication
-import com.qwert2603.spend.di.LocalDBExecutor
-import com.qwert2603.spend.di.RemoteDBExecutor
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.model.local_db.dao.RecordsDao
 import com.qwert2603.spend.model.local_db.entity.ItemsIds
@@ -19,14 +17,11 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SyncProcessor @Inject constructor(
+class SyncProcessor(
         appContext: Context,
-        @RemoteDBExecutor private val remoteDBExecutor: ExecutorService,
-        @LocalDBExecutor private val localDBExecutor: ExecutorService,
+        private val remoteDBExecutor: ExecutorService,
+        private val localDBExecutor: ExecutorService,
         private val apiHelper: ApiHelper,
         private val recordsDao: RecordsDao
 ) {

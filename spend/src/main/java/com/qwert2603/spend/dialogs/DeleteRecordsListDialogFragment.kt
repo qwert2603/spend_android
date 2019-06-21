@@ -9,13 +9,12 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.qwert2603.andrlib.util.toPx
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.records_list_view.RecordsListViewImpl
 import com.qwert2603.spend.utils.colorStateList
 import com.qwert2603.spend.utils.positiveButton
+import org.koin.android.ext.android.inject
 import java.io.Serializable
-import javax.inject.Inject
 
 @FragmentWithArgs
 class DeleteRecordsListDialogFragment : DialogFragment() {
@@ -25,13 +24,7 @@ class DeleteRecordsListDialogFragment : DialogFragment() {
     @Arg
     lateinit var key: Key
 
-    @Inject
-    lateinit var recordsRepo: RecordsRepo
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
+    private val recordsRepo: RecordsRepo by inject()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)

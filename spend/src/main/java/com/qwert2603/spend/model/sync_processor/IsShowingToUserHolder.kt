@@ -9,11 +9,8 @@ import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class IsShowingToUserHolder @Inject constructor() {
+class IsShowingToUserHolder() {
 
     private val isStartedChanges = PublishSubject.create<Boolean>()
 

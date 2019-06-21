@@ -7,9 +7,8 @@ import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.model.repo.UserSettingsRepo
 import com.qwert2603.spend.utils.ObservableField
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class SumsInteractor @Inject constructor(
+class SumsInteractor(
         private val recordsRepo: RecordsRepo,
         userSettingsRepo: UserSettingsRepo
 ) {

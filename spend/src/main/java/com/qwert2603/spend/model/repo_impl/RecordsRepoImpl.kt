@@ -17,16 +17,13 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class RecordsRepoImpl @Inject constructor(
+class RecordsRepoImpl(
         private val recordsDao: RecordsDao,
         private val syncProcessor: SyncProcessor,
         private val appContext: Context,
         private val modelSchedulersProvider: ModelSchedulersProvider,
-        private val isShowingToUserHolder: IsShowingToUserHolder
+        isShowingToUserHolder: IsShowingToUserHolder
 ) : RecordsRepo {
 
     private val recordCreatedLocallyEvents = PublishSubject.create<String>()

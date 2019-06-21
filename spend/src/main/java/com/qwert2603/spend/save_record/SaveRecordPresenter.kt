@@ -11,9 +11,8 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class SaveRecordPresenter @Inject constructor(
+class SaveRecordPresenter(
         saveRecordKey: SaveRecordKey,
         private val saveRecordInteractor: SaveRecordInteractor,
         uiSchedulerProvider: UiSchedulerProvider

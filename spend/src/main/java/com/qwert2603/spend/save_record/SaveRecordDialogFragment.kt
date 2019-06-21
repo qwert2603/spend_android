@@ -27,7 +27,6 @@ import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.andrlib.util.renderIfChangedTwo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.dialogs.*
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.navigation.KeyboardManager
@@ -36,6 +35,8 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_edit_record.view.*
 import kotlinx.android.synthetic.main.include_server_change.view.*
+import org.koin.android.ext.android.get
+import org.koin.core.parameter.parametersOf
 
 @FragmentWithArgs
 class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRecordView, SaveRecordPresenter>(), SaveRecordView {
@@ -55,11 +56,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
     @Arg
     lateinit var saveRecordKey: SaveRecordKey
 
-    override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .saveRecordPresenterCreatorComponent()
-            .saveRecordKey(saveRecordKey)
-            .build()
-            .createSaveRecordPresenter()
+    override fun createPresenter() = get<SaveRecordPresenter> { parametersOf(saveRecordKey) }
 
     private lateinit var categoryEditText: UserInputEditText
     private lateinit var kindEditText: UserInputEditText

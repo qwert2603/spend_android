@@ -9,7 +9,6 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.andrlib.util.renderIfChangedWithFirstRendering
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.navigation.SpendScreen
 import com.qwert2603.spend.records_list.RecordsListAdapter
@@ -20,19 +19,15 @@ import com.qwert2603.spend.utils.MenuHolder
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_sums.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import ru.terrakok.cicerone.Router
-import javax.inject.Inject
 
 class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), SumsView {
 
-    override fun createPresenter() = DIHolder.diManager
-            .presentersCreatorComponent
-            .sumsPresenterCreatorComponent()
-            .build()
-            .createPresenter()
+    override fun createPresenter() = get<SumsPresenter>()
 
-    @Inject
-    lateinit var router: Router
+    private val router: Router by inject()
 
     private val adapter: RecordsListAdapter get() = sums_RecyclerView.adapter as RecordsListAdapter
     private val layoutManager: LinearLayoutManager get() = sums_RecyclerView.layoutManager as LinearLayoutManager
@@ -40,7 +35,6 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
     private val menuHolder = MenuHolder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }

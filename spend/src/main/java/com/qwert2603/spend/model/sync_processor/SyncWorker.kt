@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.ListenableWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -17,25 +16,20 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.addTo
 import com.qwert2603.spend.R
 import com.qwert2603.spend.SpendApplication
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.SyncState
 import com.qwert2603.spend.navigation.MainActivity
 import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams), KoinComponent {
 
-    @Inject
-    lateinit var syncProcessor: SyncProcessor
+    private val syncProcessor: SyncProcessor by inject()
 
     private val disposable = CompositeDisposable()
 
     @Volatile
-    var result: ListenableWorker.Result? = null
-
-    init {
-        DIHolder.diManager.viewsComponent.inject(this)
-    }
+    var result: Result? = null
 
     override fun doWork(): Result {
 

@@ -13,11 +13,8 @@ import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class RecordAggregationsRepoImpl @Inject constructor(
+class RecordAggregationsRepoImpl(
         recordsDao: RecordsDao,
         private val modelSchedulersProvider: ModelSchedulersProvider
 ) : RecordAggregationsRepo {

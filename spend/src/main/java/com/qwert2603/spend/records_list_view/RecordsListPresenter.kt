@@ -6,9 +6,8 @@ import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spend.model.entity.Record
 import com.qwert2603.spend.utils.RxUtils
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class RecordsListPresenter @Inject constructor(
+class RecordsListPresenter(
         recordsUuids: List<String>,
         interactor: RecordsListInteractor,
         uiSchedulerProvider: UiSchedulerProvider

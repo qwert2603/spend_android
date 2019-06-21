@@ -5,9 +5,8 @@ import com.qwert2603.andrlib.base.mvi.PartialChange
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import io.reactivex.Observable
-import javax.inject.Inject
 
-class AboutPresenter @Inject constructor(
+class AboutPresenter(
         private val interactor: AboutInteractor,
         uiSchedulerProvider: UiSchedulerProvider
 ) : BasePresenter<AboutView, AboutViewState>(uiSchedulerProvider) {

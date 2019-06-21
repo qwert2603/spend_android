@@ -14,22 +14,18 @@ import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.spend.BuildConfig
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.dialogs.NotDeletedRecordsHashDialogFragment
 import com.qwert2603.spend.utils.setShowing
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_about.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import org.koin.android.ext.android.get
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(), AboutView {
 
-    override fun createPresenter() = DIHolder.diManager
-            .presentersCreatorComponent
-            .aboutPresenterCreatorComponent()
-            .build()
-            .createPresenter()
+    override fun createPresenter() = get<AboutPresenter>()
 
     private val loadingDialog: AlertDialog by lazy {
         AlertDialog.Builder(requireContext())

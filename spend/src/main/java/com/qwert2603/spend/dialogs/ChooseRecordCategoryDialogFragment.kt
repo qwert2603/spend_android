@@ -20,7 +20,6 @@ import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.RecordCategoryAggregation
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordAggregationsRepo
@@ -31,8 +30,8 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_choose_record_category.view.*
 import kotlinx.android.synthetic.main.item_record_category.view.*
+import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @FragmentWithArgs
 class ChooseRecordCategoryDialogFragment : DialogFragment() {
@@ -44,22 +43,15 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
     @Arg
     var recordTypeId: Long = IdentifiableLong.NO_ID
 
-    @Inject
-    lateinit var recordAggregationsRepo: RecordAggregationsRepo
+    private val recordAggregationsRepo: RecordAggregationsRepo by inject()
 
-    @Inject
-    lateinit var uiSchedulerProvider: UiSchedulerProvider
+    private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
     private lateinit var dialogView: View
 
     private val adapter = RecordCategoriesAdapter()
 
     private var firstVisiblePosition by BundleIntNullable("firstVisiblePosition") { arguments!! }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         @SuppressLint("InflateParams")

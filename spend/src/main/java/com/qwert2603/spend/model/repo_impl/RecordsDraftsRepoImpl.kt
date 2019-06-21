@@ -5,11 +5,8 @@ import com.google.gson.Gson
 import com.qwert2603.spend.model.entity.RecordDraft
 import com.qwert2603.spend.model.repo.RecordsDraftsRepo
 import com.qwert2603.spend.utils.PreferenceUtils
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class RecordsDraftsRepoImpl @Inject constructor(
+class RecordsDraftsRepoImpl(
         appContext: Context
 ) : RecordsDraftsRepo {
 

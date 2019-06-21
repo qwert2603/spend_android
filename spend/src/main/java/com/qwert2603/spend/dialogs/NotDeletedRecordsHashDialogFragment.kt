@@ -11,26 +11,18 @@ import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.utils.disposeOnPause
 import kotlinx.android.synthetic.main.dialog_not_deleted_records_hash.view.*
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 class NotDeletedRecordsHashDialogFragment : DialogFragment() {
 
-    @Inject
-    lateinit var recordsRepo: RecordsRepo
+    private val recordsRepo: RecordsRepo by inject()
 
-    @Inject
-    lateinit var uiSchedulerProvider: UiSchedulerProvider
+    private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
     private lateinit var dialogView: View
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         @SuppressLint("InflateParams")

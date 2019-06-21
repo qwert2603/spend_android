@@ -21,7 +21,6 @@ import com.qwert2603.andrlib.util.color
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.dialogs.*
 import com.qwert2603.spend.model.entity.*
 import com.qwert2603.spend.navigation.KeyboardManager
@@ -31,13 +30,17 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.view_spend_draft.*
+import org.koin.core.KoinComponent
+import org.koin.core.get
+import org.koin.core.parameter.parametersOf
 
 class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
         BaseFrameLayout<SaveRecordViewState, SaveRecordView, SaveRecordPresenter>(context, attrs),
         SaveRecordView,
         DialogAwareView,
         RecordsListAnimator.SpendOrigin,
-        LayoutContainer {
+        LayoutContainer,
+        KoinComponent {
 
     companion object {
         private const val REQUEST_CODE_DATE = 11
@@ -48,11 +51,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
 
     override val containerView = this
 
-    override fun createPresenter() = DIHolder.diManager.presentersCreatorComponent
-            .saveRecordPresenterCreatorComponent()
-            .saveRecordKey(SaveRecordKey.NewRecord(Const.RECORD_TYPE_ID_SPEND))
-            .build()
-            .createSaveRecordPresenter()
+    override fun createPresenter() = get<SaveRecordPresenter> { parametersOf(SaveRecordKey.NewRecord(Const.RECORD_TYPE_ID_SPEND)) }
 
     private val categoryEditText by lazy { UserInputEditText(category_EditText) }
     private val kindEditText by lazy { UserInputEditText(kind_EditText) }

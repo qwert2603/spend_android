@@ -19,7 +19,6 @@ import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spend.R
-import com.qwert2603.spend.di.DIHolder
 import com.qwert2603.spend.model.entity.RecordKindAggregation
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordAggregationsRepo
@@ -30,9 +29,9 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.dialog_choose_record_kind.view.*
 import kotlinx.android.synthetic.main.item_record_kind.view.*
+import org.koin.android.ext.android.inject
 import java.io.Serializable
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @FragmentWithArgs
 class ChooseRecordKindDialogFragment : DialogFragment() {
@@ -54,22 +53,15 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
     @Arg
     lateinit var key: Key
 
-    @Inject
-    lateinit var recordAggregationsRepo: RecordAggregationsRepo
+    private val recordAggregationsRepo: RecordAggregationsRepo by inject()
 
-    @Inject
-    lateinit var uiSchedulerProvider: UiSchedulerProvider
+    private val uiSchedulerProvider: UiSchedulerProvider by inject()
 
     private lateinit var dialogView: View
 
     private lateinit var adapter: RecordKindsAdapter
 
     private var firstVisiblePosition by BundleIntNullable("firstVisiblePosition") { arguments!! }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        DIHolder.diManager.viewsComponent.inject(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
