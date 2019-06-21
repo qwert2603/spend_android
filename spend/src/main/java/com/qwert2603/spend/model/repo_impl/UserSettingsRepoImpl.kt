@@ -7,6 +7,7 @@ import com.qwert2603.spend.model.repo.UserSettingsRepo
 import com.qwert2603.spend.utils.Const
 import com.qwert2603.spend.utils.ObservableField
 import com.qwert2603.spend.utils.PreferenceUtils
+import com.qwert2603.spend.utils.RxUtils
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
@@ -29,14 +30,19 @@ class UserSettingsRepoImpl(appContext: Context) : UserSettingsRepo {
     init {
         setOldRecordsLockEvents
                 .switchMap { setLock ->
+                    // emit new "OldRecordsLockState.Locked" on date change to update UI related to "old records lock".
+                    val lockedEvents = RxUtils.dateChanges()
+                            .startWith(Any())
+                            .map { OldRecordsLockState.Locked }
+
                     if (setLock) {
-                        Observable.just(OldRecordsLockState.Locked)
+                        lockedEvents
                     } else {
                         Observable.interval(0, 1, TimeUnit.SECONDS)
                                 .map { Const.OLD_RECORDS_UNLOCK_SECONDS - it.toInt() }
                                 .takeWhile { it > 0 }
                                 .map<OldRecordsLockState> { OldRecordsLockState.Unlocked(it) }
-                                .concatWith(Observable.just(OldRecordsLockState.Locked))
+                                .concatWith(lockedEvents)
                     }
                 }
                 .subscribe(_oldRecordsLockStateChanges)
