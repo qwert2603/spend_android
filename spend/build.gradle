@@ -141,10 +141,7 @@ dependencies {
     implementation "com.hannesdorfmann.fragmentargs:annotation:$fragmentargs_version"
     kapt "com.hannesdorfmann.fragmentargs:processor:$fragmentargs_version"
 
-    // Koin for Android
     implementation "org.koin:koin-android:$koin_version"
-    // Koin Android Scope features
-    implementation "org.koin:koin-androidx-scope:$koin_version"
 
     implementation "ru.terrakok.cicerone:cicerone:$cicerone_version"
     implementation("com.hannesdorfmann.mosby3:mvi:$mosby_version") {
