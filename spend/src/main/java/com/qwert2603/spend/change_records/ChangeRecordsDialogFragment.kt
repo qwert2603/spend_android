@@ -67,10 +67,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
             dismissAllowingStateLoss()
         }
         recordsListViewImpl.onCanChangeRecords = {
-            updateChangeEnable(
-                    isChangeDateAllowed = currentViewState.isChangeEnable(),
-                    canChangeRecords = it
-            )
+            canChangeRecords = it
         }
         dialogView.dialogChangeRecords_LinearLayout.addView(recordsListViewImpl)
 
@@ -126,10 +123,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
             })
         }
 
-        updateChangeEnable(
-                isChangeDateAllowed = vs.isChangeEnable(),
-                canChangeRecords = recordsListViewImpl.currentViewState.canChangeRecords()
-        )
+        isChangeDateAllowed = vs.isChangeEnable()
     }
 
     override fun executeAction(va: ViewAction) {
@@ -151,6 +145,18 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
     private fun DialogFragment.makeShow(requestCode: Int) = this
             .also { it.setTargetFragment(this@ChangeRecordsDialogFragment, requestCode) }
             .show(this@ChangeRecordsDialogFragment.requireFragmentManager(), null)
+
+    private var isChangeDateAllowed = false
+        set(value) {
+            field = value
+            updateChangeEnable(isChangeDateAllowed, canChangeRecords)
+        }
+
+    private var canChangeRecords = false
+        set(value) {
+            field = value
+            updateChangeEnable(isChangeDateAllowed, canChangeRecords)
+        }
 
     private fun updateChangeEnable(isChangeDateAllowed: Boolean, canChangeRecords: Boolean) {
         requireDialog().positiveButton.isEnabled = isChangeDateAllowed && canChangeRecords
