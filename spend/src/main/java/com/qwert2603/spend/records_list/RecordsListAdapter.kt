@@ -67,6 +67,10 @@ class RecordsListAdapter(val isDaySumsClickable: Boolean) : RecyclerView.Adapter
         }
     }
 
+    /**
+     * changes are rendered separately,
+     * because so it can be changes without breaking item's insert/change animation.
+     */
     var recordsChanges: HashMap<String, RecordChange> = hashMapOf()
         set(value) {
             if (value == field) return
