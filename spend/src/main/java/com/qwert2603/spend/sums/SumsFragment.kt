@@ -7,7 +7,6 @@ import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.renderIfChanged
-import com.qwert2603.andrlib.util.renderIfChangedWithFirstRendering
 import com.qwert2603.spend.R
 import com.qwert2603.spend.env.E
 import com.qwert2603.spend.navigation.SpendScreen
@@ -86,12 +85,15 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
 
         renderIfChanged({ sumsShowInfo.showBalances }) { adapter.showBalancesInSums = it }
 
-        renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
+        renderIfChanged({ records }) { records ->
+            val isListEverSet = adapter.isListEverSet
+            val isListChanged = adapter.list !== records
             adapter.list = records
-            if (firstRender) {
-                adapter.notifyDataSetChanged()
+            if (isListEverSet) {
+                adapter.redrawViewHolders()
+                if (isListChanged) vs.diff.dispatchToAdapter(adapter)
             } else {
-                vs.diff.dispatchToAdapter(adapter)
+                adapter.notifyDataSetChanged()
             }
             if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                 sums_RecyclerView.scrollToPosition(0)

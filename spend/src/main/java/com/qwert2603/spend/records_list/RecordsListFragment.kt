@@ -294,18 +294,21 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         renderIfChanged({ selectMode }) { adapter.selectMode = it }
         renderIfChanged({ sortByValue }) { adapter.sortByValue = it }
 
-        renderIfChangedWithFirstRendering({ records }) { records, firstRender ->
-            if (records == null) return@renderIfChangedWithFirstRendering
+        renderIfChanged({ records }) { records ->
+            if (records == null) return@renderIfChanged
             adapter.recordsChanges = vs.recordsChanges
+            val isListEverSet = adapter.isListEverSet
+            val isListChanged = adapter.list !== records
             adapter.list = records
             if (key is RecordsListKey.Now && !layoutAnimationShown) {
                 layoutAnimationShown = true
                 records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
-            if (firstRender) {
-                adapter.notifyDataSetChanged()
+            if (isListEverSet) {
+                adapter.redrawViewHolders()
+                if (isListChanged) vs.diff.dispatchToAdapter(adapter)
             } else {
-                vs.diff.dispatchToAdapter(adapter)
+                adapter.notifyDataSetChanged()
             }
             if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                 records_RecyclerView.scrollToPosition(0)

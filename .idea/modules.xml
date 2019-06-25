@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/spend/spend.iml" filepath="$PROJECT_DIR$/spend/spend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/spend_android.iml" filepath="$PROJECT_DIR$/.idea/spend_android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spend_android.iml" filepath="$PROJECT_DIR$/spend_android.iml" />
     </modules>
   </component>
 </project>
