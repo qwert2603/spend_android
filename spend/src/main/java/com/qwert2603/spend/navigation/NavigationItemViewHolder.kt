@@ -20,7 +20,7 @@ class NavigationItemViewHolder(parent: ViewGroup) : BaseRecyclerViewHolder<Navig
         val selected = itemId == (adapter as? NavigationAdapter)?.selectedItemId
         itemView.isSelected = selected
         with(itemView) {
-            val tintColor = resources.color(if (selected) R.color.colorAccent else android.R.color.black)
+            val tintColor = resources.color(if (selected) R.color.colorPrimary else android.R.color.black)
             title_TextView.setTextColor(tintColor)
             icon_ImageView.setColorFilter(tintColor, PorterDuff.Mode.SRC_ATOP)
         }

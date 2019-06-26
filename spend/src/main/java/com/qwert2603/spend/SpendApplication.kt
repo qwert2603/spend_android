@@ -35,7 +35,6 @@ class SpendApplication : Application() {
             androidContext(this@SpendApplication)
 
             modules(listOf(
-                    navigationModule,
                     schedulersModule,
                     modelModule,
                     repoModule,

@@ -36,19 +36,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.terrakok.cicerone.Cicerone
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Router
 import java.util.concurrent.Executors
 import com.qwert2603.spend.records_list_view.RecordsListInteractor as RecordsListViewInteractor
 import com.qwert2603.spend.records_list_view.RecordsListPresenter as RecordsListViewPresenter
-
-val navigationModule = module {
-    val cicerone: Cicerone<Router> = Cicerone.create()
-
-    single<NavigatorHolder> { cicerone.navigatorHolder }
-    single<Router> { cicerone.router }
-}
 
 val modelModule = module {
     single(named("localDbExecutor")) { Executors.newSingleThreadExecutor() }

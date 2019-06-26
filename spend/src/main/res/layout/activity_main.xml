@@ -14,17 +14,10 @@
         android:focusableInTouchMode="true"
         tools:context=".navigation.MainActivity">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/activity_CoordinatorLayout"
+        <FrameLayout
+            android:id="@+id/navHost_FrameLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_height="match_parent" />
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/navigation_view"

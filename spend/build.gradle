@@ -3,6 +3,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     signingConfigs {
@@ -100,6 +101,7 @@ dependencies {
     def core_ktx_version = '1.2.0-alpha02'
     def room_version = '2.1.0'
     def work_version = "1.0.1"
+    def nav_version = "2.1.0-alpha05"
 
     def andrlib_version = '1.14.4'
 
@@ -109,7 +111,6 @@ dependencies {
 
     def mosby_version = '3.1.1'
     def fragmentargs_version = '3.0.2'
-    def cicerone_version = '5.0.0'
 
     def koin_version = '2.0.1'
     def retrofit_version = '2.6.0'
@@ -134,7 +135,11 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
     implementation "android.arch.work:work-runtime:$work_version"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+//    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -143,7 +148,6 @@ dependencies {
 
     implementation "org.koin:koin-android:$koin_version"
 
-    implementation "ru.terrakok.cicerone:cicerone:$cicerone_version"
     implementation("com.hannesdorfmann.mosby3:mvi:$mosby_version") {
         exclude group: 'com.hannesdorfmann.mosby3', module: 'utils-fragment'
     }

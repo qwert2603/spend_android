@@ -2,6 +2,7 @@ package com.qwert2603.spend.sums
 
 import android.os.Bundle
 import android.view.*
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qwert2603.andrlib.base.mvi.BaseFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
@@ -9,7 +10,6 @@ import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spend.R
 import com.qwert2603.spend.env.E
-import com.qwert2603.spend.navigation.SpendScreen
 import com.qwert2603.spend.records_list.RecordsListAdapter
 import com.qwert2603.spend.records_list.RecordsListKey
 import com.qwert2603.spend.records_list.vh.DaySumViewHolder
@@ -19,14 +19,10 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_sums.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
-import ru.terrakok.cicerone.Router
 
 class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), SumsView {
 
     override fun createPresenter() = get<SumsPresenter>()
-
-    private val router: Router by inject()
 
     private val adapter: RecordsListAdapter get() = sums_RecyclerView.adapter as RecordsListAdapter
     private val layoutManager: LinearLayoutManager get() = sums_RecyclerView.layoutManager as LinearLayoutManager
@@ -52,7 +48,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
         adapter.itemClicks
                 .subscribe {
                     val recordsListKey = RecordsListKey.Date(it.date())
-                    router.navigateTo(SpendScreen.RecordsList(recordsListKey))
+                    findNavController().navigate(SumsFragmentDirections.actionSumsFragmentToRecordsListFragment(recordsListKey))
                 }
                 .disposeOnDestroyView()
 

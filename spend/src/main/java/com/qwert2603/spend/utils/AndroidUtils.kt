@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
+import android.os.Bundle
 import android.widget.Button
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
@@ -153,4 +154,21 @@ fun <T> KMutableProperty0<T>.getLateInitOrNull(): T? = try {
     get()
 } catch (ignored: UninitializedPropertyAccessException) {
     null
+}
+
+fun Bundle?.toMap(): Map<String, Any?> =
+        if (this != null) {
+            this
+                    .keySet()
+                    .map { it to this[it] }
+                    .toMap()
+        } else {
+            emptyMap()
+        }
+
+infix fun Map<*, *>.sameIn(anth: Map<*, *>): Boolean {
+    this.keys.forEach {
+        if (this[it] != anth[it]) return false
+    }
+    return true
 }

@@ -11,45 +11,39 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
+import com.qwert2603.spend.NavGraphDirections
 import com.qwert2603.spend.R
 import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
+import com.qwert2603.spend.records_list.RecordsListFragmentArgs
 import com.qwert2603.spend.records_list.RecordsListKey
+import com.qwert2603.spend.utils.sameIn
 import com.qwert2603.spend.utils.subscribeWhileResumed
+import com.qwert2603.spend.utils.toMap
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_navigation.view.*
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
-import ru.terrakok.cicerone.NavigatorHolder
-import ru.terrakok.cicerone.Router
 
-class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
-
-    private val router: Router by inject()
-
-    private val navigatorHolder: NavigatorHolder by inject()
-
-    private val navigator = Navigator(this, R.id.fragment_container)
+class MainActivity : AppCompatActivity(), KeyboardManager {
 
     private val navigationAdapter = NavigationAdapter()
 
     private lateinit var headerNavigation: View
 
-    private val drawerListener = object : DrawerLayout.SimpleDrawerListener() {
-        override fun onDrawerStateChanged(newState: Int) {
-            if (newState == DrawerLayout.STATE_DRAGGING) {
-                hideKeyboard()
-            }
-        }
-    }
+    private val navHostFragment by lazy { supportFragmentManager.findFragmentById(R.id.navHost_FrameLayout) as NavHostFragment }
+    private val navController by lazy { navHostFragment.findNavController() }
 
     private val rootNavigationItems = listOf(
-            NavigationItem(R.drawable.icon, R.string.drawer_records, SpendScreen.RecordsList(RecordsListKey.Now())),
-            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, SpendScreen.Sums()),
-            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, SpendScreen.About())
+            NavigationItem(R.drawable.icon, R.string.drawer_records, NavGraphDirections.actionGlobalRecordsListFragment(RecordsListKey.Now()), R.id.recordsListFragment),
+            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, NavGraphDirections.actionGlobalSumsFragment(), R.id.sumsFragment),
+            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, NavGraphDirections.actionGlobalAboutFragment(), R.id.aboutFragment)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,8 +58,23 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            router.newRootScreen(SpendScreen.RecordsList(RecordsListKey.Now()))
+            val navHostFragment = NavHostFragment.create(
+                    R.navigation.nav_graph,
+                    RecordsListFragmentArgs(RecordsListKey.Now()).toBundle()
+            )
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.navHost_FrameLayout, navHostFragment)
+                    .setPrimaryNavigationFragment(navHostFragment)
+                    .commitNow()
         }
+
+        activity_DrawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerStateChanged(newState: Int) {
+                if (newState == DrawerLayout.STATE_DRAGGING) {
+                    hideKeyboard()
+                }
+            }
+        })
 
         headerNavigation = navigation_view.inflate(R.layout.header_navigation)
         navigation_view.addHeaderView(headerNavigation)
@@ -74,9 +83,6 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
         headerNavigation.navigation_recyclerView.itemAnimator = null
 
         navigationAdapter.modelItemClicks
-//                .doOnSubscribe { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnSubscribe") }
-//                .doOnNext { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnNext") }
-//                .doOnDispose { LogUtils.d("MainActivity navigationAdapter.modelItemClicks doOnDispose") }
                 .doOnNext { navigateToItem(it, true) }
                 .subscribeWhileResumed(this)
 
@@ -84,74 +90,77 @@ class MainActivity : AppCompatActivity(), NavigationActivity, KeyboardManager {
                 .doOnNext { navigateToItem(it, false) }
                 .subscribeWhileResumed(this)
 
-        lifecycle.addObserver(navigatorHolder.createLifecycleObserver(navigator))
-    }
+        navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
+                val isRoot = navHostFragment.childFragmentManager.backStackEntryCount == 0
+                if (isRoot) {
+                    val currentDestination = navController.currentDestination
+                    navigationAdapter.selectedItemId = rootNavigationItems
+                            .find {
+                                it.destinationId == currentDestination?.id &&
+                                        it.navDirections.arguments.toMap() sameIn fragment.arguments.toMap()
+                            }
+                            ?.id ?: 0
+                } else {
+                    navigationAdapter.selectedItemId = 0
+                }
 
+                fragment.view
+                        ?.findViewById<Toolbar>(R.id.toolbar)
+                        ?.apply {
+                            setSupportActionBar(this)
 
-    override fun onStart() {
-        super.onStart()
-        activity_DrawerLayout.addDrawerListener(drawerListener)
-    }
+                            navigationIcon = resources.drawable(when {
+                                isRoot -> R.drawable.ic_menu_24dp
+                                else -> R.drawable.ic_arrow_back_white_24dp
+                            })
+                            setNavigationOnClickListener {
+                                if (isRoot) {
+                                    hideKeyboard()
+                                    activity_DrawerLayout.openDrawer(GravityCompat.START)
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            }
+                        }
+            }
 
-    override fun onStop() {
-        activity_DrawerLayout.removeDrawerListener(drawerListener)
-        super.onStop()
+            override fun onFragmentPaused(fm: FragmentManager, fragment: Fragment) {
+                fragment.view
+                        ?.findViewById<Toolbar>(R.id.toolbar)
+                        ?.setNavigationOnClickListener(null)
+            }
+        }, false)
     }
 
     private fun navigateToItem(navigationItem: NavigationItem, newRootScreen: Boolean) {
         closeDrawer()
-        if (newRootScreen) {
-            router.newRootScreen(navigationItem.screen)
+        val navOptions = if (newRootScreen) {
+            NavOptions.Builder()
+                    .setPopUpTo(R.id.nav_graph, true)
+                    .setEnterAnim(R.anim.nav_pop_enter)
+                    .setExitAnim(R.anim.nav_exit)
+                    .setPopEnterAnim(R.anim.nav_pop_enter)
+                    .setPopExitAnim(R.anim.nav_pop_exit)
+                    .build()
         } else {
-            router.navigateTo(navigationItem.screen)
+            NavOptions.Builder()
+                    .setEnterAnim(R.anim.nav_enter)
+                    .setExitAnim(R.anim.nav_exit)
+                    .setPopEnterAnim(R.anim.nav_pop_enter)
+                    .setPopExitAnim(R.anim.nav_pop_exit)
+                    .build()
         }
+        navController.navigate(navigationItem.navDirections, navOptions)
     }
 
     override fun onBackPressed() {
         if (closeDrawer()) return
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        val fragment = navHostFragment.childFragmentManager.fragments.find { it.isVisible }
         if ((fragment as? BackPressListener)?.onBackPressed() == true) {
             return
         }
-        router.exit()
-    }
-
-    override fun onFragmentResumed(fragment: Fragment) {
-        if (fragment !in supportFragmentManager.fragments) return
-
-        val screen: SpendScreen = fragment.getScreen() ?: return
-        val isRoot = supportFragmentManager.backStackEntryCount == 0
-        if (isRoot) {
-            navigationAdapter.selectedItemId = rootNavigationItems.find { screen == it.screen }?.id
-                    ?: 0
-        } else {
-            navigationAdapter.selectedItemId = 0
-        }
-
-        fragment.view
-                ?.findViewById<Toolbar>(R.id.toolbar)
-                ?.apply {
-                    setSupportActionBar(this)
-
-                    navigationIcon = resources.drawable(when {
-                        isRoot -> R.drawable.ic_menu_24dp
-                        else -> R.drawable.ic_arrow_back_white_24dp
-                    })
-                    setNavigationOnClickListener {
-                        if (isRoot) {
-                            hideKeyboard()
-                            activity_DrawerLayout.openDrawer(GravityCompat.START)
-                        } else {
-                            router.exit()
-                        }
-                    }
-                }
-    }
-
-    override fun onFragmentPaused(fragment: Fragment) {
-        fragment.view
-                ?.findViewById<Toolbar>(R.id.toolbar)
-                ?.setNavigationOnClickListener(null)
+        super.onBackPressed()
     }
 
     private fun closeDrawer(): Boolean = activity_DrawerLayout.isDrawerOpen(GravityCompat.START)

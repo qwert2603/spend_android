@@ -9,11 +9,10 @@ import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding3.recyclerview.scrollEvents
 import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseFragment
@@ -38,7 +37,6 @@ import kotlinx.android.synthetic.main.fragment_records_list.*
 import org.koin.android.ext.android.get
 import java.util.concurrent.TimeUnit
 
-@FragmentWithArgs
 class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, RecordsListPresenter>(), RecordsListView, BackPressListener {
 
     companion object {
@@ -51,8 +49,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         private var layoutAnimationShown = false
     }
 
-    @Arg
-    lateinit var key: RecordsListKey
+    private val args by navArgs<RecordsListFragmentArgs>()
 
     override fun createPresenter() = get<RecordsListPresenter>()
 
@@ -75,8 +72,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private lateinit var searchEditText: UserInputEditText
 
-    private val startDateSelected = PublishSubject.create<Wrapper<SDate>>()
-    private val endDateSelected = PublishSubject.create<Wrapper<SDate>>()
+    private val startDateSelected = PublishSubject.create<Wrapper<out SDate>>()
+    private val endDateSelected = PublishSubject.create<Wrapper<out SDate>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -270,8 +267,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun selectStartDateClicks(): Observable<Any> = startDate_EditText.clicks().map { }
     override fun selectEndDateClicks(): Observable<Any> = endDate_EditText.clicks().map { }
 
-    override fun startDateSelected(): Observable<Wrapper<SDate>> = startDateSelected
-    override fun endDateSelected(): Observable<Wrapper<SDate>> = endDateSelected
+    override fun startDateSelected(): Observable<Wrapper<out SDate>> = startDateSelected
+    override fun endDateSelected(): Observable<Wrapper<out SDate>> = endDateSelected
 
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }
@@ -300,7 +297,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             val isListEverSet = adapter.isListEverSet
             val isListChanged = adapter.list !== records
             adapter.list = records
-            if (key is RecordsListKey.Now && !layoutAnimationShown) {
+            if (args.key is RecordsListKey.Now && !layoutAnimationShown) {
                 layoutAnimationShown = true
                 records_RecyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_fall_down)
             }
@@ -340,7 +337,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
             }
             if (!initialScrollDone) {
                 initialScrollDone = true
-                val key = key
+                val key = args.key
                 LogUtils.d("RecordsListFragment key=$key")
                 @Suppress("IMPLICIT_CAST_TO_ANY")
                 when (key) {

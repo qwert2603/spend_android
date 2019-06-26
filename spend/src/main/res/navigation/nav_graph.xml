@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/recordsListFragment">
+
+    <fragment
+        android:id="@+id/recordsListFragment"
+        android:name="com.qwert2603.spend.records_list.RecordsListFragment"
+        android:label="RecordsListFragment"
+        tools:layout="@layout/fragment_records_list">
+
+        <argument
+            android:name="key"
+            app:argType="com.qwert2603.spend.records_list.RecordsListKey" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.qwert2603.spend.about.AboutFragment"
+        android:label="AboutFragment"
+        tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/sumsFragment"
+        android:name="com.qwert2603.spend.sums.SumsFragment"
+        android:label="SumsFragment"
+        tools:layout="@layout/fragment_sums">
+
+        <action
+            android:id="@+id/action_sumsFragment_to_recordsListFragment"
+            app:destination="@id/recordsListFragment" />
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_global_aboutFragment"
+        app:destination="@+id/aboutFragment" />
+
+    <action
+        android:id="@+id/action_global_sumsFragment"
+        app:destination="@id/sumsFragment" />
+
+    <action
+        android:id="@+id/action_global_recordsListFragment"
+        app:destination="@id/recordsListFragment" />
+
+</navigation>
