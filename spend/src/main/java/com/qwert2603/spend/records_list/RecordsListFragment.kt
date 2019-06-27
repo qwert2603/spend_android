@@ -203,7 +203,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         menuHolder.menu = menu
 
         menu.findItem(R.id.debug_dialog).setOnMenuItemClickListener {
-            findNavController().navigate(RecordsListFragmentDirections.actionRecordsListFragmentToDebugDialogFragment())
+            findNavController().navigateFixed(RecordsListFragmentDirections.actionRecordsListFragmentToDebugDialogFragment())
             true
         }
 
@@ -466,33 +466,33 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
         if (va !is RecordsListViewAction) null!!
         when (va) {
             is RecordsListViewAction.AskForRecordActions -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToRecordActionsDialogFragment(va.recordUuid))
             is RecordsListViewAction.AskToCreateRecord -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToSaveRecordDialogFragment(SaveRecordKey.NewRecord(va.recordTypeId)))
             is RecordsListViewAction.AskToChooseLongSumPeriod -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToChooseLongSumPeriodDialog(va.days, DialogTarget(getWho(), REQUEST_CHOOSE_LONG_SUM_PERIOD)))
             is RecordsListViewAction.AskToChooseShortSumPeriod -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToChooseShortSumPeriodDialog(va.minutes, DialogTarget(getWho(), REQUEST_CHOOSE_SHORT_SUM_PERIOD)))
             is RecordsListViewAction.OnRecordCreatedLocally -> itemAnimator.pendingCreatedRecordUuid = va.uuid
             is RecordsListViewAction.OnRecordEditedLocally -> itemAnimator.pendingEditedRecordUuid = va.uuid
             is RecordsListViewAction.OnRecordCombinedLocally -> itemAnimator.pendingCombinedRecordUuid = va.uuid
             RecordsListViewAction.RerenderAll -> renderAll()
             is RecordsListViewAction.AskToCombineRecords -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToCombineRecordsDialogFragment(CombineRecordsDialogFragment.Key(va.recordUuids, va.categoryUuid, va.kind)))
             is RecordsListViewAction.AskToDeleteRecords -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToDeleteRecordsListDialogFragment(DeleteRecordsListDialogFragment.Key(va.recordUuids)))
             is RecordsListViewAction.AskToChangeRecords -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToChangeRecordsDialogFragment(ChangeRecordsDialogFragment.Key(va.recordUuids)))
             RecordsListViewAction.ScrollToTop -> records_RecyclerView.scrollToPosition(0)
             is RecordsListViewAction.AskToSelectStartDate -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToDatePickerDialogFragment(
                                     date = va.startDate,
                                     withNow = false,
@@ -501,7 +501,7 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
                                     target = DialogTarget(getWho(), REQUEST_START_DATE)
                             ))
             is RecordsListViewAction.AskToSelectEndDate -> findNavController()
-                    .navigate(RecordsListFragmentDirections
+                    .navigateFixed(RecordsListFragmentDirections
                             .actionRecordsListFragmentToDatePickerDialogFragment(
                                     date = va.endDate,
                                     withNow = false,

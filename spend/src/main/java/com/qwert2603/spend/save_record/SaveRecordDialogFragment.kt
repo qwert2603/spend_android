@@ -236,7 +236,7 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             SaveRecordViewAction.FocusOnKindInput -> dialogView.kind_EditText.focus()
             SaveRecordViewAction.FocusOnValueInput -> dialogView.value_EditText.focus()
             is SaveRecordViewAction.AskToSelectDate -> findNavController()
-                    .navigate(SaveRecordDialogFragmentDirections.actionSaveRecordDialogFragmentToDatePickerDialogFragment(
+                    .navigateFixed(SaveRecordDialogFragmentDirections.actionSaveRecordDialogFragmentToDatePickerDialogFragment(
                             date = va.date,
                             withNow = true,
                             minDate = va.minDate,
@@ -244,13 +244,13 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
                             target = DialogTarget(getWho(), REQUEST_CODE_DATE)
                     ))
             is SaveRecordViewAction.AskToSelectTime -> findNavController()
-                    .navigate(SaveRecordDialogFragmentDirections
+                    .navigateFixed(SaveRecordDialogFragmentDirections
                             .actionSaveRecordDialogFragmentToTimePickerDialogFragment(va.time, DialogTarget(getWho(), REQUEST_CODE_TIME)))
             is SaveRecordViewAction.AskToSelectCategory -> findNavController()
-                    .navigate(SaveRecordDialogFragmentDirections
+                    .navigateFixed(SaveRecordDialogFragmentDirections
                             .actionSaveRecordDialogFragmentToChooseRecordCategoryDialogFragment(va.recordTypeId, DialogTarget(getWho(), REQUEST_CODE_CATEGORY)))
             is SaveRecordViewAction.AskToSelectKind -> findNavController()
-                    .navigate(SaveRecordDialogFragmentDirections
+                    .navigateFixed(SaveRecordDialogFragmentDirections
                             .actionSaveRecordDialogFragmentToChooseRecordKindDialogFragment(
                                     ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid),
                                     DialogTarget(getWho(), REQUEST_CODE_KIND)

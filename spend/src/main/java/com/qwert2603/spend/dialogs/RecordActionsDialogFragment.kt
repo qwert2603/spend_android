@@ -12,6 +12,7 @@ import androidx.navigation.fragment.navArgs
 import com.qwert2603.spend.R
 import com.qwert2603.spend.records_list_view.RecordsListViewImpl
 import com.qwert2603.spend.save_record.SaveRecordKey
+import com.qwert2603.spend.utils.navigateFixed
 import kotlinx.android.synthetic.main.dialog_record_actions.view.*
 
 class RecordActionsDialogFragment : DialogFragment() {
@@ -24,12 +25,12 @@ class RecordActionsDialogFragment : DialogFragment() {
 
         dialogView.edit_Button.setOnClickListener {
             findNavController()
-                    .navigate(RecordActionsDialogFragmentDirections
+                    .navigateFixed(RecordActionsDialogFragmentDirections
                             .actionRecordActionsDialogFragmentToSaveRecordDialogFragment(SaveRecordKey.EditRecord(args.recordUuid)))
         }
         dialogView.delete_Button.setOnClickListener {
             findNavController()
-                    .navigate(RecordActionsDialogFragmentDirections
+                    .navigateFixed(RecordActionsDialogFragmentDirections
                             .actionRecordActionsDialogFragmentToDeleteRecordDialogFragment(args.recordUuid))
         }
 

@@ -188,7 +188,7 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             SaveRecordViewAction.FocusOnCategoryInput -> category_EditText.focus(false)
             SaveRecordViewAction.FocusOnKindInput -> kind_EditText.focus(true)
             SaveRecordViewAction.FocusOnValueInput -> value_EditText.focus(true)
-            is SaveRecordViewAction.AskToSelectDate -> findNavController().navigate(
+            is SaveRecordViewAction.AskToSelectDate -> findNavController().navigateFixed(
                     R.id.datePickerDialogFragment,
                     DatePickerDialogFragmentArgs(
                             date = va.date,
@@ -198,21 +198,21 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
                             target = DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_DATE)
                     ).toBundle()
             )
-            is SaveRecordViewAction.AskToSelectTime -> findNavController().navigate(
+            is SaveRecordViewAction.AskToSelectTime -> findNavController().navigateFixed(
                     R.id.timePickerDialogFragment,
                     TimePickerDialogFragmentArgs(
                             va.time,
                             DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_TIME)
                     ).toBundle()
             )
-            is SaveRecordViewAction.AskToSelectCategory -> findNavController().navigate(
+            is SaveRecordViewAction.AskToSelectCategory -> findNavController().navigateFixed(
                     R.id.chooseRecordCategoryDialogFragment,
                     ChooseRecordCategoryDialogFragmentArgs(
                             va.recordTypeId,
                             DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_CATEGORY)
                     ).toBundle()
             )
-            is SaveRecordViewAction.AskToSelectKind -> findNavController().navigate(
+            is SaveRecordViewAction.AskToSelectKind -> findNavController().navigateFixed(
                     R.id.chooseRecordKindDialogFragment,
                     ChooseRecordKindDialogFragmentArgs(
                             ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid),

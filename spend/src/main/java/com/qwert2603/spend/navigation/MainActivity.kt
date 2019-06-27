@@ -25,6 +25,7 @@ import com.qwert2603.spend.R
 import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
 import com.qwert2603.spend.records_list.RecordsListFragmentArgs
 import com.qwert2603.spend.records_list.RecordsListKey
+import com.qwert2603.spend.utils.navigateFixed
 import com.qwert2603.spend.utils.sameIn
 import com.qwert2603.spend.utils.subscribeWhileResumed
 import com.qwert2603.spend.utils.toMap
@@ -154,7 +155,7 @@ class MainActivity : AppCompatActivity(), KeyboardManager {
                     .setPopExitAnim(R.anim.nav_pop_exit)
                     .build()
         }
-        navController.navigate(navigationItem.navDirections, navOptions)
+        navController.navigateFixed(navigationItem.navDirections, navOptions)
     }
 
     override fun onBackPressed() {

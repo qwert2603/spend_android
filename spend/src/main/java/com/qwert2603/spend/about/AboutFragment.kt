@@ -18,6 +18,7 @@ import com.qwert2603.spend.BuildConfig
 import com.qwert2603.spend.R
 import com.qwert2603.spend.model.entity.OldRecordsLockState
 import com.qwert2603.spend.utils.formatTime
+import com.qwert2603.spend.utils.navigateFixed
 import com.qwert2603.spend.utils.setShowing
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_about.*
@@ -53,7 +54,7 @@ class AboutFragment : BaseFragment<AboutViewState, AboutView, AboutPresenter>(),
         ))
 
         notDeletedRecordsHash_Button.setOnClickListener {
-            findNavController().navigate(AboutFragmentDirections.actionAboutFragmentToNotDeletedRecordsHashDialogFragment())
+            findNavController().navigateFixed(AboutFragmentDirections.actionAboutFragmentToNotDeletedRecordsHashDialogFragment())
         }
 
         super.onViewCreated(view, savedInstanceState)

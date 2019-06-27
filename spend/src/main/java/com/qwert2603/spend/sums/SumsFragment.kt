@@ -15,6 +15,7 @@ import com.qwert2603.spend.records_list.RecordsListKey
 import com.qwert2603.spend.records_list.vh.DaySumViewHolder
 import com.qwert2603.spend.utils.ConditionDividerDecoration
 import com.qwert2603.spend.utils.MenuHolder
+import com.qwert2603.spend.utils.navigateFixed
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_sums.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -48,7 +49,7 @@ class SumsFragment : BaseFragment<SumsViewState, SumsView, SumsPresenter>(), Sum
         adapter.itemClicks
                 .subscribe {
                     val recordsListKey = RecordsListKey.Date(it.date())
-                    findNavController().navigate(SumsFragmentDirections.actionSumsFragmentToRecordsListFragment(recordsListKey))
+                    findNavController().navigateFixed(SumsFragmentDirections.actionSumsFragmentToRecordsListFragment(recordsListKey))
                 }
                 .disposeOnDestroyView()
 

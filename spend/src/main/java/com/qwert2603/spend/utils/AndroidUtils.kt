@@ -7,10 +7,16 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.SystemClock
 import android.widget.Button
 import androidx.annotation.ColorRes
+import androidx.annotation.IdRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
 import io.reactivex.functions.BiFunction
+import java.lang.ref.WeakReference
 import java.security.MessageDigest
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -166,4 +172,32 @@ infix fun Map<*, *>.sameIn(anth: Map<*, *>): Boolean {
         if (this[it] != anth[it]) return false
     }
     return true
+}
+
+private val LAST_NAVS_MILLIS = mutableMapOf<WeakReference<NavController>, Long>()
+
+private fun NavController.canNavigate(): Boolean {
+    LAST_NAVS_MILLIS.keys
+            .toList()
+            .forEach {
+                if (it.get() == null) LAST_NAVS_MILLIS.remove(it)
+            }
+    val weakReference = LAST_NAVS_MILLIS.keys
+            .find { it.get() == this }
+            ?: WeakReference(this)
+    val lastMillis = LAST_NAVS_MILLIS.getOrElse(weakReference) { 0L }
+    val nowMillis = SystemClock.elapsedRealtime()
+    if (lastMillis < nowMillis - 500L) {
+        LAST_NAVS_MILLIS[weakReference] = nowMillis
+        return true
+    }
+    return false
+}
+
+fun NavController.navigateFixed(navDirections: NavDirections, navOptions: NavOptions? = null) {
+    if (canNavigate()) navigate(navDirections, navOptions)
+}
+
+fun NavController.navigateFixed(@IdRes resId: Int, args: Bundle) {
+    if (canNavigate()) navigate(resId, args)
 }

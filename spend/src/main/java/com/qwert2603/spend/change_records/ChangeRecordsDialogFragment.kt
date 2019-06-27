@@ -128,7 +128,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
 
         return when (va) {
             is ChangeRecordsViewAction.AskToSelectDate -> findNavController()
-                    .navigate(ChangeRecordsDialogFragmentDirections.actionChangeRecordsDialogFragmentToDatePickerDialogFragment(
+                    .navigateFixed(ChangeRecordsDialogFragmentDirections.actionChangeRecordsDialogFragmentToDatePickerDialogFragment(
                             date = va.date,
                             withNow = false,
                             minDate = va.minDate,
@@ -136,7 +136,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
                             target = DialogTarget(getWho(), REQUEST_CODE_DATE)
                     ))
             is ChangeRecordsViewAction.AskToSelectTime -> findNavController()
-                    .navigate(ChangeRecordsDialogFragmentDirections
+                    .navigateFixed(ChangeRecordsDialogFragmentDirections
                             .actionChangeRecordsDialogFragmentToTimePickerDialogFragment(va.time, DialogTarget(getWho(), REQUEST_CODE_TIME)))
             ChangeRecordsViewAction.RerenderAll -> renderAll()
             ChangeRecordsViewAction.Close -> dismissAllowingStateLoss()
