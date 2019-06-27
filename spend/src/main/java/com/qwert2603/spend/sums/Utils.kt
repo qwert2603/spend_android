@@ -7,9 +7,11 @@ import com.qwert2603.spend.utils.DateUtils
 import java.util.*
 
 fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
+    val records: List<Record> = this.filter { !it.isDeleted() }
+
     val currentTimeMillis = System.currentTimeMillis()
 
-    if (this.isEmpty()) return listOf(Totals(
+    if (records.isEmpty()) return listOf(Totals(
             showSpends = true,
             showProfits = true,
             spendsCount = 0,
@@ -18,9 +20,9 @@ fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
             profitsSum = 0L
     ))
 
-    val result = ArrayList<RecordsListItem>(this.size * 2 + 1)
+    val result = ArrayList<RecordsListItem>(records.size * 3)
 
-    val calendar = maxOf(this.first().date, DateUtils.getNow().first).toDateCalendar()
+    val calendar = maxOf(records.first().date, DateUtils.getNow().first).toDateCalendar()
 
     var spendsCount = 0
     var spendsSum = 0L
@@ -34,9 +36,9 @@ fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
 
     var date = calendar.toSDate()
     var index = 0
-    var record: Record? = this.first()
+    var record: Record? = records.first()
 
-    while (date >= this.last().date) {
+    while (date >= records.last().date) {
         var daySpendsSum = 0L
         var dayProfitsSum = 0L
 
@@ -61,7 +63,7 @@ fun List<Record>.toSumsList(sumsShowInfo: SumsShowInfo): List<RecordsListItem> {
             }
 
             ++index
-            record = this.getOrNull(index)
+            record = records.getOrNull(index)
         }
 
         if (sumsShowInfo.showDaySums) {
