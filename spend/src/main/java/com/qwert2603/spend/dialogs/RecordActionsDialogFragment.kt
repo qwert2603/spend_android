@@ -2,7 +2,6 @@ package com.qwert2603.spend.dialogs
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -11,28 +10,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.qwert2603.spend.R
-import com.qwert2603.spend.navigation.onTargetActivityResult
 import com.qwert2603.spend.records_list_view.RecordsListViewImpl
 import com.qwert2603.spend.save_record.SaveRecordKey
 import kotlinx.android.synthetic.main.dialog_record_actions.view.*
-import java.io.Serializable
 
 class RecordActionsDialogFragment : DialogFragment() {
-
-    companion object {
-        const val RESULT_KEY = "RESULT_KEY"
-    }
-
-    //todo:remove
-    data class Result(
-            val recordUuid: String,
-            val action: Action
-    ) : Serializable {
-        enum class Action : Serializable {
-            EDIT,
-            DELETE;
-        }
-    }
 
     private val args by navArgs<RecordActionsDialogFragmentArgs>()
 
@@ -62,13 +44,5 @@ class RecordActionsDialogFragment : DialogFragment() {
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create()
-    }
-
-    private fun sendResult(action: Result.Action) {
-        onTargetActivityResult(
-                args.target,
-                Intent().putExtra(RESULT_KEY, Result(args.recordUuid, action))
-        )
-        dismissAllowingStateLoss()
     }
 }

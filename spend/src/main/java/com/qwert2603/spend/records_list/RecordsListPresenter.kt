@@ -229,14 +229,6 @@ class RecordsListPresenter(
                 .doOnNext { viewActions.onNext(RecordsListViewAction.AskToChooseShortSumPeriod(it.shortSumPeriod)) }
                 .subscribeToView()
 
-        intent { it.editRecordClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToEditRecord(it)) }
-                .subscribeToView()
-
-        intent { it.deleteRecordClicks() }
-                .doOnNext { viewActions.onNext(RecordsListViewAction.AskToDeleteRecord(it)) }
-                .subscribeToView()
-
         intent { it.addStubRecordsClicks() }
                 .flatMapSingle {
                     Single.zip(

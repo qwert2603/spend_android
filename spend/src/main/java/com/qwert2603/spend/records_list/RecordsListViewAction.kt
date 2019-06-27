@@ -8,8 +8,6 @@ import com.qwert2603.spend.model.entity.SDate
 sealed class RecordsListViewAction : ViewAction {
     data class AskForRecordActions(val recordUuid: String) : RecordsListViewAction()
     data class AskToCreateRecord(val recordTypeId: Long) : RecordsListViewAction()
-    data class AskToEditRecord(val recordUuid: String) : RecordsListViewAction()
-    data class AskToDeleteRecord(val recordUuid: String) : RecordsListViewAction()
     data class AskToChooseLongSumPeriod(val days: Days) : RecordsListViewAction()
     data class AskToChooseShortSumPeriod(val minutes: Minutes) : RecordsListViewAction()
     data class OnRecordCreatedLocally(val uuid: String) : RecordsListViewAction()

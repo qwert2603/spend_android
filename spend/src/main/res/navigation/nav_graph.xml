@@ -226,9 +226,6 @@
         <argument
             android:name="recordUuid"
             app:argType="string" />
-        <argument
-            android:name="target"
-            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
     </dialog>
     <dialog
         android:id="@+id/saveRecordDialogFragment"
