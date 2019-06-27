@@ -38,7 +38,7 @@ class SyncWorkReceiver : BroadcastReceiver() {
         val workRequest = OneTimeWorkRequest.Builder(SyncWorker::class.java)
                 .build()
 
-        WorkManager.getInstance()
+        WorkManager.getInstance(context)
                 .enqueueUniqueWork(
                         SpendApplication.UNIQUE_WORK_NAME,
                         ExistingWorkPolicy.REPLACE,

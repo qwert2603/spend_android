@@ -1,6 +1,7 @@
 package com.qwert2603.spend
 
 import android.app.Application
+import android.content.Context
 import android.os.Looper
 import androidx.work.WorkManager
 import com.crashlytics.android.Crashlytics
@@ -66,7 +67,7 @@ class SpendApplication : Application() {
         FirebaseAnalytics.getInstance(this).setUserProperty("version_code", BuildConfig.VERSION_CODE.toString())
 
         SyncWorkReceiver.scheduleNext(this)
-        logSyncWorker()
+        logSyncWorker(this)
     }
 
     companion object {
@@ -75,8 +76,8 @@ class SpendApplication : Application() {
 
         const val UNIQUE_WORK_NAME = "sync_records"
 
-        private fun logSyncWorker() {
-            WorkManager.getInstance()
+        private fun logSyncWorker(context: Context) {
+            WorkManager.getInstance(context)
                     .getWorkInfosForUniqueWorkLiveData(UNIQUE_WORK_NAME)
                     .observeForever { LogUtils.d { "SyncWorker observeForever $it" } }
         }
