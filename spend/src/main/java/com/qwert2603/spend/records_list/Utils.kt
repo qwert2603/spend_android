@@ -241,7 +241,7 @@ fun sumsInfoChanges(
                             if (longSumPeriodDays.days > 0) longSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
                             if (shortSumPeriodMinutes.minutes > 0) shortSumChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
                             if (showInfo.showChangeKinds) changesCountChanges.map { it.wrap() } else Observable.just(Wrapper(null)),
-                            Function3 { longSum: Wrapper<out Long>, shortSum: Wrapper<out Long>, changesCount: Wrapper<out Int> ->
+                            Function3 { longSum: Wrapper<Long>, shortSum: Wrapper<Long>, changesCount: Wrapper<Int> ->
                                 SumsInfo(longSum.t, shortSum.t, changesCount.t)
                             }
                     )

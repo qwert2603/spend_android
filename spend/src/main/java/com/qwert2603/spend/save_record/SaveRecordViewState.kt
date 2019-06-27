@@ -11,7 +11,7 @@ data class SaveRecordViewState(
         val serverCategory: RecordCategory?,
         val serverKind: String?,
         val serverDate: SDate?,
-        val serverTime: Wrapper<STime?>?,
+        val serverTime: Wrapper<STime>?,
         val serverValue: Int?,
         private val justChangedOnServer: Boolean,
         private val existingRecord: RecordDraft?, // null, when creating new record

@@ -68,8 +68,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
 
     private lateinit var searchEditText: UserInputEditText
 
-    private val startDateSelected = PublishSubject.create<Wrapper<out SDate>>()
-    private val endDateSelected = PublishSubject.create<Wrapper<out SDate>>()
+    private val startDateSelected = PublishSubject.create<Wrapper<SDate>>()
+    private val endDateSelected = PublishSubject.create<Wrapper<SDate>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -250,8 +250,8 @@ class RecordsListFragment : BaseFragment<RecordsListViewState, RecordsListView, 
     override fun selectStartDateClicks(): Observable<Any> = startDate_EditText.clicks().map { }
     override fun selectEndDateClicks(): Observable<Any> = endDate_EditText.clicks().map { }
 
-    override fun startDateSelected(): Observable<Wrapper<out SDate>> = startDateSelected
-    override fun endDateSelected(): Observable<Wrapper<out SDate>> = endDateSelected
+    override fun startDateSelected(): Observable<Wrapper<SDate>> = startDateSelected
+    override fun endDateSelected(): Observable<Wrapper<SDate>> = endDateSelected
 
     override fun render(vs: RecordsListViewState) {
         LogUtils.withErrorLoggingOnly { super.render(vs) }

@@ -42,6 +42,6 @@ interface RecordsListView : BaseView<RecordsListViewState> {
     fun searchQueryChanges(): Observable<String>
     fun selectStartDateClicks(): Observable<Any>
     fun selectEndDateClicks(): Observable<Any>
-    fun startDateSelected(): Observable<Wrapper<out SDate>>
-    fun endDateSelected(): Observable<Wrapper<out SDate>>
+    fun startDateSelected(): Observable<Wrapper<SDate>>
+    fun endDateSelected(): Observable<Wrapper<SDate>>
 }
