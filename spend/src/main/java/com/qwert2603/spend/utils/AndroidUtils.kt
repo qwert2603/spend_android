@@ -10,8 +10,6 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
-import com.qwert2603.spend.dialogs.DatePickerDialogFragmentBuilder
-import com.qwert2603.spend.model.entity.SDate
 import io.reactivex.functions.BiFunction
 import java.security.MessageDigest
 import java.util.concurrent.Callable
@@ -132,9 +130,6 @@ fun <T> HashSet<T>.toggle(itemToToggle: T): HashSet<T> =
                     }
         }
 
-
-fun DatePickerDialogFragmentBuilder.addMinDate(minDate: SDate?): DatePickerDialogFragmentBuilder = apply { if (minDate != null) minDate(minDate.date) }
-fun DatePickerDialogFragmentBuilder.addMaxDate(maxDate: SDate?): DatePickerDialogFragmentBuilder = apply { if (maxDate != null) maxDate(maxDate.date) }
 
 fun String.sha256(): String {
     val digest = MessageDigest.getInstance("SHA-256")

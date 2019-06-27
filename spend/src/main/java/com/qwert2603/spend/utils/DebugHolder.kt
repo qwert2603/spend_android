@@ -18,7 +18,8 @@ class DebugHolder(appContext: Context) {
     fun logLine(msg: () -> String) {
         if (E.env.buildForTesting()) {
             synchronized(this) {
-                log += "${dateFormat.format(Date())} ${Looper.myLooper() == Looper.getMainLooper()} ${msg()}\n"
+                log = "$log${dateFormat.format(Date())} ${Looper.myLooper() == Looper.getMainLooper()} ${msg()}\n"
+                        .takeLast(12 * 1024)
             }
         }
     }

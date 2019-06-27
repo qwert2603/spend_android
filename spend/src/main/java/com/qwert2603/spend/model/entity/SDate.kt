@@ -25,8 +25,8 @@ data class SDate constructor(val date: Int) : Comparable<SDate>, Serializable {
     override fun compareTo(other: SDate): Int = this.date.compareTo(other.date)
 
     companion object {
-        val MIN_VALUE = SDate(19000101)
-        val MAX_VALUE = SDate(20993112)
+        val MIN_VALUE = SDate(1900_01_01)
+        val MAX_VALUE = SDate(2099_31_12)
     }
 }
 

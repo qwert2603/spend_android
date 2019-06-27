@@ -11,19 +11,18 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import androidx.fragment.app.getWho
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.jakewharton.rxbinding3.view.clicks
 import com.qwert2603.andrlib.base.mvi.BaseDialogFragment
 import com.qwert2603.andrlib.base.mvi.ViewAction
 import com.qwert2603.andrlib.util.color
 import com.qwert2603.spend.R
 import com.qwert2603.spend.dialogs.DatePickerDialogFragment
-import com.qwert2603.spend.dialogs.DatePickerDialogFragmentBuilder
 import com.qwert2603.spend.dialogs.TimePickerDialogFragment
-import com.qwert2603.spend.dialogs.TimePickerDialogFragmentBuilder
 import com.qwert2603.spend.model.entity.*
+import com.qwert2603.spend.navigation.DialogTarget
 import com.qwert2603.spend.records_list_view.RecordsListViewImpl
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
@@ -33,7 +32,6 @@ import org.koin.android.ext.android.get
 import org.koin.core.parameter.parametersOf
 import java.io.Serializable
 
-@FragmentWithArgs
 class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, ChangeRecordsView, ChangeRecordsPresenter>(), ChangeRecordsView {
 
     companion object {
@@ -43,10 +41,9 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
 
     data class Key(val recordUuids: List<String>) : Serializable
 
-    @Arg
-    lateinit var key: Key
+    private val args by navArgs<ChangeRecordsDialogFragmentArgs>()
 
-    override fun createPresenter() = get<ChangeRecordsPresenter> { parametersOf(key.recordUuids) }
+    override fun createPresenter() = get<ChangeRecordsPresenter> { parametersOf(args.key.recordUuids) }
 
     private val changedDateSelected = PublishSubject.create<Wrapper<SDate>>()
     private val changedTimeSelected = PublishSubject.create<Wrapper<Wrapper<STime>>>()
@@ -61,7 +58,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         dialogView.date_EditText.onRightDrawableClicked { changedDateSelected.onNext(Wrapper(null)) }
         dialogView.time_EditText.onRightDrawableClicked { changedTimeSelected.onNext(Wrapper(null)) }
 
-        recordsListViewImpl = RecordsListViewImpl(requireContext(), key.recordUuids)
+        recordsListViewImpl = RecordsListViewImpl(requireContext(), args.key.recordUuids)
         recordsListViewImpl.onRenderEmptyListListener = {
             Toast.makeText(requireContext(), R.string.text_all_selected_records_were_deleted, Toast.LENGTH_SHORT).show()
             dismissAllowingStateLoss()
@@ -130,21 +127,21 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         if (va !is ChangeRecordsViewAction) null!!
 
         return when (va) {
-            is ChangeRecordsViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, false)
-                    .minDate(va.minDate.date)
-                    .build()
-                    .makeShow(REQUEST_CODE_DATE)
-            is ChangeRecordsViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
-                    .newTimePickerDialogFragment(va.time.time)
-                    .makeShow(REQUEST_CODE_TIME)
+            is ChangeRecordsViewAction.AskToSelectDate -> findNavController()
+                    .navigate(ChangeRecordsDialogFragmentDirections.actionChangeRecordsDialogFragmentToDatePickerDialogFragment(
+                            date = va.date,
+                            withNow = false,
+                            minDate = va.minDate,
+                            maxDate = null,
+                            target = DialogTarget(getWho(), REQUEST_CODE_DATE)
+                    ))
+            is ChangeRecordsViewAction.AskToSelectTime -> findNavController()
+                    .navigate(ChangeRecordsDialogFragmentDirections
+                            .actionChangeRecordsDialogFragmentToTimePickerDialogFragment(va.time, DialogTarget(getWho(), REQUEST_CODE_TIME)))
             ChangeRecordsViewAction.RerenderAll -> renderAll()
             ChangeRecordsViewAction.Close -> dismissAllowingStateLoss()
         }
     }
-
-    private fun DialogFragment.makeShow(requestCode: Int) = this
-            .also { it.setTargetFragment(this@ChangeRecordsDialogFragment, requestCode) }
-            .show(this@ChangeRecordsDialogFragment.requireFragmentManager(), null)
 
     private var isChangeDateAllowed = false
         set(value) {

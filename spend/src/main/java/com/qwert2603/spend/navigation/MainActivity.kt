@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavOptions
@@ -92,6 +93,8 @@ class MainActivity : AppCompatActivity(), KeyboardManager {
 
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
+                if (fragment is DialogFragment) return
+
                 val isRoot = navHostFragment.childFragmentManager.backStackEntryCount == 0
                 if (isRoot) {
                     val currentDestination = navController.currentDestination

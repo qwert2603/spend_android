@@ -14,6 +14,42 @@
         <argument
             android:name="key"
             app:argType="com.qwert2603.spend.records_list.RecordsListKey" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_changeRecordsDialogFragment"
+            app:destination="@id/changeRecordsDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_combineRecordsDialogFragment"
+            app:destination="@id/combineRecordsDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_deleteRecordsListDialogFragment"
+            app:destination="@id/deleteRecordsListDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_recordActionsDialogFragment"
+            app:destination="@id/recordActionsDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_debugDialogFragment"
+            app:destination="@id/debugDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_datePickerDialogFragment"
+            app:destination="@id/datePickerDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_chooseRecordKindDialogFragment"
+            app:destination="@id/chooseRecordKindDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_chooseRecordCategoryDialogFragment"
+            app:destination="@id/chooseRecordCategoryDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_chooseLongSumPeriodDialog"
+            app:destination="@id/chooseLongSumPeriodDialog" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_chooseShortSumPeriodDialog"
+            app:destination="@id/chooseShortSumPeriodDialog" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_timePickerDialogFragment"
+            app:destination="@id/timePickerDialogFragment" />
+        <action
+            android:id="@+id/action_recordsListFragment_to_saveRecordDialogFragment"
+            app:destination="@id/saveRecordDialogFragment" />
 
     </fragment>
 
@@ -21,7 +57,11 @@
         android:id="@+id/aboutFragment"
         android:name="com.qwert2603.spend.about.AboutFragment"
         android:label="AboutFragment"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about">
+        <action
+            android:id="@+id/action_aboutFragment_to_notDeletedRecordsHashDialogFragment"
+            app:destination="@id/notDeletedRecordsHashDialogFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/sumsFragment"
@@ -31,7 +71,11 @@
 
         <action
             android:id="@+id/action_sumsFragment_to_recordsListFragment"
-            app:destination="@id/recordsListFragment" />
+            app:destination="@id/recordsListFragment"
+            app:enterAnim="@anim/nav_enter"
+            app:exitAnim="@anim/nav_exit"
+            app:popEnterAnim="@anim/nav_pop_enter"
+            app:popExitAnim="@anim/nav_pop_exit" />
 
     </fragment>
 
@@ -46,5 +90,177 @@
     <action
         android:id="@+id/action_global_recordsListFragment"
         app:destination="@id/recordsListFragment" />
+    <dialog
+        android:id="@+id/changeRecordsDialogFragment"
+        android:name="com.qwert2603.spend.change_records.ChangeRecordsDialogFragment"
+        android:label="ChangeRecordsDialogFragment"
+        tools:layout="@layout/dialog_change_records">
+        <action
+            android:id="@+id/action_changeRecordsDialogFragment_to_timePickerDialogFragment"
+            app:destination="@id/timePickerDialogFragment" />
+        <action
+            android:id="@+id/action_changeRecordsDialogFragment_to_datePickerDialogFragment"
+            app:destination="@id/datePickerDialogFragment" />
+        <argument
+            android:name="key"
+            app:argType="com.qwert2603.spend.change_records.ChangeRecordsDialogFragment$Key" />
+    </dialog>
+    <dialog
+        android:id="@+id/chooseLongSumPeriodDialog"
+        android:name="com.qwert2603.spend.dialogs.ChooseLongSumPeriodDialog"
+        android:label="ChooseLongSumPeriodDialog">
+        <argument
+            android:name="selected"
+            app:argType="com.qwert2603.spend.model.entity.Days" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/chooseRecordCategoryDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.ChooseRecordCategoryDialogFragment"
+        android:label="ChooseRecordCategoryDialogFragment"
+        tools:layout="@layout/dialog_choose_record_category">
+        <argument
+            android:name="recordTypeId"
+            app:argType="long" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/chooseRecordKindDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.ChooseRecordKindDialogFragment"
+        android:label="ChooseRecordKindDialogFragment"
+        tools:layout="@layout/dialog_choose_record_kind">
+        <argument
+            android:name="key"
+            app:argType="com.qwert2603.spend.dialogs.ChooseRecordKindDialogFragment$Key" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/chooseShortSumPeriodDialog"
+        android:name="com.qwert2603.spend.dialogs.ChooseShortSumPeriodDialog"
+        android:label="ChooseShortSumPeriodDialog">
+        <argument
+            android:name="selected"
+            app:argType="com.qwert2603.spend.model.entity.Minutes" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/combineRecordsDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.CombineRecordsDialogFragment"
+        android:label="CombineRecordsDialogFragment">
+        <argument
+            android:name="key"
+            app:argType="com.qwert2603.spend.dialogs.CombineRecordsDialogFragment$Key" />
+    </dialog>
+    <dialog
+        android:id="@+id/datePickerDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.DatePickerDialogFragment"
+        android:label="DatePickerDialogFragment">
+        <argument
+            android:name="date"
+            app:argType="com.qwert2603.spend.model.entity.SDate" />
+        <argument
+            android:name="withNow"
+            app:argType="boolean" />
+        <argument
+            android:name="minDate"
+            app:argType="com.qwert2603.spend.model.entity.SDate"
+            app:nullable="true" />
+        <argument
+            android:name="maxDate"
+            app:argType="com.qwert2603.spend.model.entity.SDate"
+            app:nullable="true" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/debugDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.DebugDialogFragment"
+        android:label="DebugDialogFragment"
+        tools:layout="@layout/dialog_debug" />
+    <dialog
+        android:id="@+id/deleteRecordDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.DeleteRecordDialogFragment"
+        android:label="DeleteRecordDialogFragment"
+        tools:layout="@layout/dialog_delete_record">
+        <argument
+            android:name="uuid"
+            app:argType="string" />
+    </dialog>
+    <dialog
+        android:id="@+id/deleteRecordsListDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.DeleteRecordsListDialogFragment"
+        android:label="DeleteRecordsListDialogFragment">
+        <argument
+            android:name="key"
+            app:argType="com.qwert2603.spend.dialogs.DeleteRecordsListDialogFragment$Key" />
+    </dialog>
+    <dialog
+        android:id="@+id/notDeletedRecordsHashDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.NotDeletedRecordsHashDialogFragment"
+        android:label="NotDeletedRecordsHashDialogFragment"
+        tools:layout="@layout/dialog_not_deleted_records_hash" />
+    <dialog
+        android:id="@+id/recordActionsDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.RecordActionsDialogFragment"
+        android:label="RecordActionsDialogFragment"
+        tools:layout="@layout/dialog_record_actions">
+        <action
+            android:id="@+id/action_recordActionsDialogFragment_to_deleteRecordDialogFragment"
+            app:destination="@id/deleteRecordDialogFragment"
+            app:popUpTo="@id/recordActionsDialogFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_recordActionsDialogFragment_to_saveRecordDialogFragment"
+            app:destination="@id/saveRecordDialogFragment"
+            app:popUpTo="@id/recordActionsDialogFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="recordUuid"
+            app:argType="string" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
+    <dialog
+        android:id="@+id/saveRecordDialogFragment"
+        android:name="com.qwert2603.spend.save_record.SaveRecordDialogFragment"
+        android:label="SaveRecordDialogFragment"
+        tools:layout="@layout/dialog_edit_record">
+        <action
+            android:id="@+id/action_saveRecordDialogFragment_to_timePickerDialogFragment"
+            app:destination="@id/timePickerDialogFragment" />
+        <action
+            android:id="@+id/action_saveRecordDialogFragment_to_datePickerDialogFragment"
+            app:destination="@id/datePickerDialogFragment" />
+        <action
+            android:id="@+id/action_saveRecordDialogFragment_to_chooseRecordCategoryDialogFragment"
+            app:destination="@id/chooseRecordCategoryDialogFragment" />
+        <action
+            android:id="@+id/action_saveRecordDialogFragment_to_chooseRecordKindDialogFragment"
+            app:destination="@id/chooseRecordKindDialogFragment" />
+        <argument
+            android:name="saveRecordKey"
+            app:argType="com.qwert2603.spend.save_record.SaveRecordKey" />
+    </dialog>
+    <dialog
+        android:id="@+id/timePickerDialogFragment"
+        android:name="com.qwert2603.spend.dialogs.TimePickerDialogFragment"
+        android:label="TimePickerDialogFragment">
+        <argument
+            android:name="time"
+            app:argType="com.qwert2603.spend.model.entity.STime" />
+        <argument
+            android:name="target"
+            app:argType="com.qwert2603.spend.navigation.DialogTarget" />
+    </dialog>
 
 </navigation>

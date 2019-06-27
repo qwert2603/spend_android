@@ -10,8 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import androidx.navigation.fragment.navArgs
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.R
@@ -27,11 +26,9 @@ import kotlinx.android.synthetic.main.dialog_delete_record.view.*
 import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
 
-@FragmentWithArgs
 class DeleteRecordDialogFragment : DialogFragment() {
 
-    @Arg
-    lateinit var uuid: String
+    private val args by navArgs<DeleteRecordDialogFragmentArgs>()
 
     private val recordsRepo: RecordsRepo by inject()
 
@@ -46,7 +43,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
         dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_record, null)
         return AlertDialog.Builder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton(R.string.button_delete) { _, _ -> recordsRepo.removeRecords(listOf(uuid)) }
+                .setPositiveButton(R.string.button_delete) { _, _ -> recordsRepo.removeRecords(listOf(args.uuid)) }
                 .setNegativeButton(R.string.button_cancel, null)
                 .create()
     }
@@ -54,7 +51,7 @@ class DeleteRecordDialogFragment : DialogFragment() {
     override fun onResume() {
         requireDialog().positiveButton.setTextColor(resources.colorStateList(R.color.dialog_positive_button))
 
-        val recordChanges = recordsRepo.getRecord(uuid)
+        val recordChanges = recordsRepo.getRecord(args.uuid)
                 .shareReplayLast()
 
         recordChanges

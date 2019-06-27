@@ -1,7 +1,6 @@
 package com.qwert2603.spend.dialogs
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -11,18 +10,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
-import com.qwert2603.andrlib.model.IdentifiableLong
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.spend.R
 import com.qwert2603.spend.model.entity.RecordCategoryAggregation
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordAggregationsRepo
+import com.qwert2603.spend.navigation.onTargetActivityResult
 import com.qwert2603.spend.utils.BundleIntNullable
 import com.qwert2603.spend.utils.disposeOnPause
 import com.qwert2603.spend.utils.toPointedString
@@ -33,15 +31,13 @@ import kotlinx.android.synthetic.main.item_record_category.view.*
 import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
 
-@FragmentWithArgs
 class ChooseRecordCategoryDialogFragment : DialogFragment() {
 
     companion object {
         const val CATEGORY_UUID_KEY = "CATEGORY_UUID_KEY"
     }
 
-    @Arg
-    var recordTypeId: Long = IdentifiableLong.NO_ID
+    private val args by navArgs<ChooseRecordCategoryDialogFragmentArgs>()
 
     private val recordAggregationsRepo: RecordAggregationsRepo by inject()
 
@@ -70,7 +66,7 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
 
         Observable
                 .combineLatest(
-                        recordAggregationsRepo.getRecordCategories(recordTypeId),
+                        recordAggregationsRepo.getRecordCategories(args.recordTypeId),
                         dialogView.search_EditText
                                 .textChanges()
                                 .debounce(230, TimeUnit.MILLISECONDS),
@@ -93,12 +89,8 @@ class ChooseRecordCategoryDialogFragment : DialogFragment() {
 
         adapter.modelItemClicks
                 .subscribe {
-                    targetFragment!!.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent().putExtra(CATEGORY_UUID_KEY, it.recordCategory.uuid)
-                    )
-                    dismiss()
+                    onTargetActivityResult(args.target, Intent().putExtra(CATEGORY_UUID_KEY, it.recordCategory.uuid))
+                    dismissAllowingStateLoss()
                 }
                 .disposeOnPause(this)
     }

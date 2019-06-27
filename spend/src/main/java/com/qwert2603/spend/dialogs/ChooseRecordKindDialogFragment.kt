@@ -1,7 +1,6 @@
 package com.qwert2603.spend.dialogs
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -11,9 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewAdapter
 import com.qwert2603.andrlib.base.recyclerview.BaseRecyclerViewHolder
@@ -22,6 +20,7 @@ import com.qwert2603.spend.R
 import com.qwert2603.spend.model.entity.RecordKindAggregation
 import com.qwert2603.spend.model.entity.toFormattedString
 import com.qwert2603.spend.model.repo.RecordAggregationsRepo
+import com.qwert2603.spend.navigation.onTargetActivityResult
 import com.qwert2603.spend.utils.BundleIntNullable
 import com.qwert2603.spend.utils.disposeOnPause
 import com.qwert2603.spend.utils.toPointedString
@@ -33,7 +32,6 @@ import org.koin.android.ext.android.inject
 import java.io.Serializable
 import java.util.concurrent.TimeUnit
 
-@FragmentWithArgs
 class ChooseRecordKindDialogFragment : DialogFragment() {
 
     companion object {
@@ -50,8 +48,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
             val kind: String
     ) : Serializable
 
-    @Arg
-    lateinit var key: Key
+    private val args by navArgs<ChooseRecordKindDialogFragmentArgs>()
 
     private val recordAggregationsRepo: RecordAggregationsRepo by inject()
 
@@ -65,7 +62,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        adapter = RecordKindsAdapter(key.recordCategoryUuid)
+        adapter = RecordKindsAdapter(args.key.recordCategoryUuid)
 
         @SuppressLint("InflateParams")
         dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_choose_record_kind, null)
@@ -84,7 +81,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
         Observable
                 .combineLatest(
-                        recordAggregationsRepo.getRecordKinds(key.recordTypeId, key.recordCategoryUuid),
+                        recordAggregationsRepo.getRecordKinds(args.key.recordTypeId, args.key.recordCategoryUuid),
                         dialogView.search_EditText
                                 .textChanges()
                                 .debounce(230, TimeUnit.MILLISECONDS),
@@ -110,15 +107,14 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
 
         adapter.modelItemClicks
                 .subscribe {
-                    targetFragment!!.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
+                    onTargetActivityResult(
+                            args.target,
                             Intent().putExtra(RESULT_KEY, Result(
                                     recordCategoryUuid = it.recordCategory.uuid,
                                     kind = it.kind
                             ))
                     )
-                    dismiss()
+                    dismissAllowingStateLoss()
                 }
                 .disposeOnPause(this)
     }

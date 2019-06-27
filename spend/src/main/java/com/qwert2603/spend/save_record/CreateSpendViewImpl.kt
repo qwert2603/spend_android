@@ -9,7 +9,7 @@ import android.graphics.Typeface
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.widget.EditText
-import androidx.fragment.app.DialogFragment
+import androidx.navigation.findNavController
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.view.longClicks
 import com.jakewharton.rxbinding3.widget.editorActions
@@ -23,6 +23,7 @@ import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.spend.R
 import com.qwert2603.spend.dialogs.*
 import com.qwert2603.spend.model.entity.*
+import com.qwert2603.spend.navigation.DialogTarget
 import com.qwert2603.spend.navigation.KeyboardManager
 import com.qwert2603.spend.records_list.RecordsListAnimator
 import com.qwert2603.spend.utils.*
@@ -187,19 +188,37 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             SaveRecordViewAction.FocusOnCategoryInput -> category_EditText.focus(false)
             SaveRecordViewAction.FocusOnKindInput -> kind_EditText.focus(true)
             SaveRecordViewAction.FocusOnValueInput -> value_EditText.focus(true)
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, true)
-                    .minDate(va.minDate.date)
-                    .build()
-                    .makeShow(REQUEST_CODE_DATE)
-            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
-                    .newTimePickerDialogFragment(va.time.time)
-                    .makeShow(REQUEST_CODE_TIME)
-            is SaveRecordViewAction.AskToSelectCategory -> ChooseRecordCategoryDialogFragmentBuilder
-                    .newChooseRecordCategoryDialogFragment(va.recordTypeId)
-                    .makeShow(REQUEST_CODE_CATEGORY)
-            is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
-                    .newChooseRecordKindDialogFragment(ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid))
-                    .makeShow(REQUEST_CODE_KIND)
+            is SaveRecordViewAction.AskToSelectDate -> findNavController().navigate(
+                    R.id.datePickerDialogFragment,
+                    DatePickerDialogFragmentArgs(
+                            date = va.date,
+                            withNow = true,
+                            minDate = va.minDate,
+                            maxDate = null,
+                            target = DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_DATE)
+                    ).toBundle()
+            )
+            is SaveRecordViewAction.AskToSelectTime -> findNavController().navigate(
+                    R.id.timePickerDialogFragment,
+                    TimePickerDialogFragmentArgs(
+                            va.time,
+                            DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_TIME)
+                    ).toBundle()
+            )
+            is SaveRecordViewAction.AskToSelectCategory -> findNavController().navigate(
+                    R.id.chooseRecordCategoryDialogFragment,
+                    ChooseRecordCategoryDialogFragmentArgs(
+                            va.recordTypeId,
+                            DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_CATEGORY)
+                    ).toBundle()
+            )
+            is SaveRecordViewAction.AskToSelectKind -> findNavController().navigate(
+                    R.id.chooseRecordKindDialogFragment,
+                    ChooseRecordKindDialogFragmentArgs(
+                            ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid),
+                            DialogTarget(dialogShower.fragmentWho, REQUEST_CODE_KIND)
+                    ).toBundle()
+            )
             is SaveRecordViewAction.ShowCategorySuggestions -> {
                 category_EditText.setAdapter(CategorySuggestionAdapter(context, va.suggestions.reversed(), va.search))
                 category_EditText.showDropDown()
@@ -217,10 +236,6 @@ class CreateSpendViewImpl constructor(context: Context, attrs: AttributeSet) :
             SaveRecordViewAction.Close -> Unit // not for CreateSpendViewImpl.
         }.also { }
     }
-
-    private fun DialogFragment.makeShow(requestCode: Int) = this
-            .also { dialogShower.showDialog(it, requestCode) }
-            .also { keyboardManager.hideKeyboard() }
 
     override fun getDateGlobalVisibleRect(): Rect = date_EditText.getGlobalVisibleRectRightNow()
     override fun getKindGlobalVisibleRect(): Rect = category_EditText.getGlobalVisibleRectRightNow()

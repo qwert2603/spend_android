@@ -1,6 +1,5 @@
 package com.qwert2603.spend.dialogs
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -12,8 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import androidx.navigation.fragment.navArgs
 import com.qwert2603.andrlib.schedulers.UiSchedulerProvider
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.andrlib.util.inflate
@@ -23,13 +21,13 @@ import com.qwert2603.spend.model.entity.Days
 import com.qwert2603.spend.model.entity.days
 import com.qwert2603.spend.model.repo.RecordsRepo
 import com.qwert2603.spend.model.repo.UserSettingsRepo
+import com.qwert2603.spend.navigation.onTargetActivityResult
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.item_sum_variant.view.*
 import org.koin.android.ext.android.inject
 
-@FragmentWithArgs
 class ChooseLongSumPeriodDialog : DialogFragment() {
     companion object {
         private val VARIANTS = listOf(0, 1, 2, 3, 5, 7, 10, 14, 15, 21, 30, 42, 60, 90, 120, 182, 365, 1461)
@@ -43,8 +41,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
         }
     }
 
-    @Arg
-    lateinit var selected: Days
+    private val args by navArgs<ChooseLongSumPeriodDialogArgs>()
 
     private val recordsRepo: RecordsRepo by inject()
 
@@ -57,12 +54,8 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val variants = VARIANTS.map { Variant(it.days, null) }
         val adapter = VariantsAdapter(requireContext(), variants) {
-            targetFragment!!.onActivityResult(
-                    targetRequestCode,
-                    Activity.RESULT_OK,
-                    Intent().putExtra(DAYS_KEY, VARIANTS[it].days)
-            )
-            dismiss()
+            onTargetActivityResult(args.target, Intent().putExtra(DAYS_KEY, VARIANTS[it].days))
+            dismissAllowingStateLoss()
         }
         val showProfits = userSettingsRepo.showInfo.field.showProfits
         val showSpends = userSettingsRepo.showInfo.field.showSpends
@@ -99,7 +92,7 @@ class ChooseLongSumPeriodDialog : DialogFragment() {
                 .setSingleChoiceItems(
                         adapter,
                         VARIANTS
-                                .indexOfFirst { it == selected.days }
+                                .indexOfFirst { it == args.selected.days }
                                 .let { if (it >= 0) it else -1 }
                 ) { _, _ -> }
                 .setTitle(R.string.title_long_sum_dialog)

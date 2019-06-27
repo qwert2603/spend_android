@@ -110,7 +110,6 @@ dependencies {
     def rxbinding_version = '3.0.0-alpha2'
 
     def mosby_version = '3.1.1'
-    def fragmentargs_version = '3.0.2'
 
     def koin_version = '2.0.1'
     def retrofit_version = '2.6.0'
@@ -142,9 +141,6 @@ dependencies {
 //    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    implementation "com.hannesdorfmann.fragmentargs:annotation:$fragmentargs_version"
-    kapt "com.hannesdorfmann.fragmentargs:processor:$fragmentargs_version"
 
     implementation "org.koin:koin-android:$koin_version"
 

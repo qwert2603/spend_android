@@ -14,9 +14,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import androidx.fragment.app.getWho
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.view.longClicks
 import com.jakewharton.rxbinding3.widget.editorActions
@@ -27,8 +27,12 @@ import com.qwert2603.andrlib.util.renderIfChanged
 import com.qwert2603.andrlib.util.renderIfChangedTwo
 import com.qwert2603.andrlib.util.setVisible
 import com.qwert2603.spend.R
-import com.qwert2603.spend.dialogs.*
+import com.qwert2603.spend.dialogs.ChooseRecordCategoryDialogFragment
+import com.qwert2603.spend.dialogs.ChooseRecordKindDialogFragment
+import com.qwert2603.spend.dialogs.DatePickerDialogFragment
+import com.qwert2603.spend.dialogs.TimePickerDialogFragment
 import com.qwert2603.spend.model.entity.*
+import com.qwert2603.spend.navigation.DialogTarget
 import com.qwert2603.spend.navigation.KeyboardManager
 import com.qwert2603.spend.utils.*
 import io.reactivex.Observable
@@ -38,7 +42,6 @@ import kotlinx.android.synthetic.main.include_server_change.view.*
 import org.koin.android.ext.android.get
 import org.koin.core.parameter.parametersOf
 
-@FragmentWithArgs
 class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRecordView, SaveRecordPresenter>(), SaveRecordView {
 
     companion object {
@@ -53,10 +56,9 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
         )
     }
 
-    @Arg
-    lateinit var saveRecordKey: SaveRecordKey
+    private val args by navArgs<SaveRecordDialogFragmentArgs>()
 
-    override fun createPresenter() = get<SaveRecordPresenter> { parametersOf(saveRecordKey) }
+    override fun createPresenter() = get<SaveRecordPresenter> { parametersOf(args.saveRecordKey) }
 
     private lateinit var categoryEditText: UserInputEditText
     private lateinit var kindEditText: UserInputEditText
@@ -233,19 +235,26 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             SaveRecordViewAction.FocusOnCategoryInput -> dialogView.category_EditText.focus()
             SaveRecordViewAction.FocusOnKindInput -> dialogView.kind_EditText.focus()
             SaveRecordViewAction.FocusOnValueInput -> dialogView.value_EditText.focus()
-            is SaveRecordViewAction.AskToSelectDate -> DatePickerDialogFragmentBuilder(va.date.date, true)
-                    .minDate(va.minDate.date)
-                    .build()
-                    .makeShow(REQUEST_CODE_DATE)
-            is SaveRecordViewAction.AskToSelectTime -> TimePickerDialogFragmentBuilder
-                    .newTimePickerDialogFragment(va.time.time)
-                    .makeShow(REQUEST_CODE_TIME)
-            is SaveRecordViewAction.AskToSelectCategory -> ChooseRecordCategoryDialogFragmentBuilder
-                    .newChooseRecordCategoryDialogFragment(va.recordTypeId)
-                    .makeShow(REQUEST_CODE_CATEGORY)
-            is SaveRecordViewAction.AskToSelectKind -> ChooseRecordKindDialogFragmentBuilder
-                    .newChooseRecordKindDialogFragment(ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid))
-                    .makeShow(REQUEST_CODE_KIND)
+            is SaveRecordViewAction.AskToSelectDate -> findNavController()
+                    .navigate(SaveRecordDialogFragmentDirections.actionSaveRecordDialogFragmentToDatePickerDialogFragment(
+                            date = va.date,
+                            withNow = true,
+                            minDate = va.minDate,
+                            maxDate = null,
+                            target = DialogTarget(getWho(), REQUEST_CODE_DATE)
+                    ))
+            is SaveRecordViewAction.AskToSelectTime -> findNavController()
+                    .navigate(SaveRecordDialogFragmentDirections
+                            .actionSaveRecordDialogFragmentToTimePickerDialogFragment(va.time, DialogTarget(getWho(), REQUEST_CODE_TIME)))
+            is SaveRecordViewAction.AskToSelectCategory -> findNavController()
+                    .navigate(SaveRecordDialogFragmentDirections
+                            .actionSaveRecordDialogFragmentToChooseRecordCategoryDialogFragment(va.recordTypeId, DialogTarget(getWho(), REQUEST_CODE_CATEGORY)))
+            is SaveRecordViewAction.AskToSelectKind -> findNavController()
+                    .navigate(SaveRecordDialogFragmentDirections
+                            .actionSaveRecordDialogFragmentToChooseRecordKindDialogFragment(
+                                    ChooseRecordKindDialogFragment.Key(va.recordTypeId, va.categoryUuid),
+                                    DialogTarget(getWho(), REQUEST_CODE_KIND)
+                            ))
             is SaveRecordViewAction.ShowCategorySuggestions -> {
                 dialogView.category_EditText.setAdapter(CategorySuggestionAdapter(requireContext(), va.suggestions, va.search))
                 dialogView.category_EditText.showDropDown()
@@ -276,8 +285,4 @@ class SaveRecordDialogFragment : BaseDialogFragment<SaveRecordViewState, SaveRec
             SaveRecordViewAction.Close -> dismissAllowingStateLoss()
         }.also { }
     }
-
-    private fun DialogFragment.makeShow(requestCode: Int) = this
-            .also { it.setTargetFragment(this@SaveRecordDialogFragment, requestCode) }
-            .show(this@SaveRecordDialogFragment.requireFragmentManager(), null)
 }

@@ -1,69 +1,48 @@
 package com.qwert2603.spend.dialogs
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import com.hannesdorfmann.fragmentargs.annotation.Arg
-import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
+import androidx.navigation.fragment.navArgs
 import com.qwert2603.spend.R
-import com.qwert2603.spend.model.entity.SDate
 import com.qwert2603.spend.model.entity.toSDate
+import com.qwert2603.spend.navigation.onTargetActivityResult
 import com.qwert2603.spend.utils.*
 import java.util.*
 
-@FragmentWithArgs
 class DatePickerDialogFragment : DialogFragment() {
 
     companion object {
         const val DATE_KEY = "DATE_KEY"
     }
 
-    @Arg
-    var date: Int = 0
-
-    @Arg
-    var withNow: Boolean = false
-
-    @Arg(required = false)
-    var minDate: Int = -1
-
-    @Arg(required = false)
-    var maxDate: Int = -1
+    private val args by navArgs<DatePickerDialogFragmentArgs>()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val calendar = Calendar.getInstance()
-                .also { it.timeInMillis = SDate(date).toDateCalendar().timeInMillis }
+                .also { it.timeInMillis = args.date.toDateCalendar().timeInMillis }
         return DatePickerDialog(
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     calendar.year = year
                     calendar.month = month
                     calendar.day = dayOfMonth
-                    targetFragment!!.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent().putExtra(DATE_KEY, calendar.toSDate().date)
-                    )
+                    onTargetActivityResult(args.target, Intent().putExtra(DATE_KEY, calendar.toSDate().date))
                 },
                 calendar.year,
                 calendar.month,
                 calendar.day
-        ).also {
-            if (withNow) {
-                it.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.now_text)) { _, _ ->
-                    targetFragment!!.onActivityResult(
-                            targetRequestCode,
-                            Activity.RESULT_OK,
-                            Intent()
-                    )
+        ).also { datePickerDialog ->
+            if (args.withNow) {
+                datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.now_text)) { _, _ ->
+                    onTargetActivityResult(args.target, Intent())
                 }
             }
-            if (minDate > 0) it.datePicker.minDate = SDate(minDate).toDateCalendar().timeInMillis
-            if (maxDate > 0) it.datePicker.maxDate = SDate(maxDate).toDateCalendar().timeInMillis
+            args.minDate?.also { datePickerDialog.datePicker.minDate = it.toDateCalendar().timeInMillis }
+            args.maxDate?.also { datePickerDialog.datePicker.maxDate = it.toDateCalendar().timeInMillis }
         }
     }
 
