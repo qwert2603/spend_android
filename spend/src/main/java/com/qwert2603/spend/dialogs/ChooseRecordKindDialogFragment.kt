@@ -8,6 +8,7 @@ import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
@@ -38,6 +39,7 @@ class ChooseRecordKindDialogFragment : DialogFragment() {
         const val RESULT_KEY = "RESULT_KEY"
     }
 
+    @Keep
     data class Key(
             val recordTypeId: Long,
             val recordCategoryUuid: String?

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.getWho
 import androidx.navigation.fragment.findNavController
@@ -39,6 +40,7 @@ class ChangeRecordsDialogFragment : BaseDialogFragment<ChangeRecordsViewState, C
         private const val REQUEST_CODE_TIME = 32
     }
 
+    @Keep
     data class Key(val recordUuids: List<String>) : Serializable
 
     private val args by navArgs<ChangeRecordsDialogFragmentArgs>()

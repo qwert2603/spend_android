@@ -2,10 +2,12 @@ package com.qwert2603.spend.navigation
 
 import android.app.Activity
 import android.content.Intent
+import androidx.annotation.Keep
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.findFragmentByWho
 import java.io.Serializable
 
+@Keep
 data class DialogTarget(
         val fragmentWho: String,
         val requestCode: Int

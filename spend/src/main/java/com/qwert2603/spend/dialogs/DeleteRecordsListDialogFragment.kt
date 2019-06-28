@@ -3,6 +3,7 @@ package com.qwert2603.spend.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
@@ -17,6 +18,7 @@ import java.io.Serializable
 
 class DeleteRecordsListDialogFragment : DialogFragment() {
 
+    @Keep
     data class Key(val recordUuids: List<String>) : Serializable
 
     private val args by navArgs<DeleteRecordsListDialogFragmentArgs>()
