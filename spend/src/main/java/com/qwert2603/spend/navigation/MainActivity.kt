@@ -96,6 +96,8 @@ class MainActivity : AppCompatActivity(), KeyboardManager {
             override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
                 if (fragment is DialogFragment) return
 
+                // fixme: don't work after rotation if dialog is showing.
+
                 val isRoot = navHostFragment.childFragmentManager.backStackEntryCount == 0
                 if (isRoot) {
                     val currentDestination = navController.currentDestination
