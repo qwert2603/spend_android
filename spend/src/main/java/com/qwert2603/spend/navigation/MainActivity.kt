@@ -22,13 +22,13 @@ import com.qwert2603.andrlib.util.drawable
 import com.qwert2603.andrlib.util.inflate
 import com.qwert2603.spend.NavGraphDirections
 import com.qwert2603.spend.R
+import com.qwert2603.spend.about.AboutFragment
 import com.qwert2603.spend.model.sync_processor.IsShowingToUserHolder
+import com.qwert2603.spend.records_list.RecordsListFragment
 import com.qwert2603.spend.records_list.RecordsListFragmentArgs
 import com.qwert2603.spend.records_list.RecordsListKey
-import com.qwert2603.spend.utils.navigateFixed
-import com.qwert2603.spend.utils.sameIn
-import com.qwert2603.spend.utils.subscribeWhileResumed
-import com.qwert2603.spend.utils.toMap
+import com.qwert2603.spend.sums.SumsFragment
+import com.qwert2603.spend.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.header_navigation.view.*
 import org.koin.android.ext.android.get
@@ -43,9 +43,9 @@ class MainActivity : AppCompatActivity(), KeyboardManager {
     private val navController by lazy { navHostFragment.findNavController() }
 
     private val rootNavigationItems = listOf(
-            NavigationItem(R.drawable.icon, R.string.drawer_records, NavGraphDirections.actionGlobalRecordsListFragment(RecordsListKey.Now()), R.id.recordsListFragment),
-            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, NavGraphDirections.actionGlobalSumsFragment(), R.id.sumsFragment),
-            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, NavGraphDirections.actionGlobalAboutFragment(), R.id.aboutFragment)
+            NavigationItem(R.drawable.icon, R.string.drawer_records, NavGraphDirections.actionGlobalRecordsListFragment(RecordsListKey.Now()), RecordsListFragment::class),
+            NavigationItem(R.drawable.ic_summa, R.string.drawer_sums, NavGraphDirections.actionGlobalSumsFragment(), SumsFragment::class),
+            NavigationItem(R.drawable.ic_info_outline_black_24dp, R.string.drawer_about, NavGraphDirections.actionGlobalAboutFragment(), AboutFragment::class)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,14 +96,11 @@ class MainActivity : AppCompatActivity(), KeyboardManager {
             override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
                 if (fragment is DialogFragment) return
 
-                // fixme: don't work after rotation if dialog is showing.
-
                 val isRoot = navHostFragment.childFragmentManager.backStackEntryCount == 0
                 if (isRoot) {
-                    val currentDestination = navController.currentDestination
                     navigationAdapter.selectedItemId = rootNavigationItems
                             .find {
-                                it.destinationId == currentDestination?.id &&
+                                it.fragmentClass == fragment::class &&
                                         it.navDirections.arguments.toMap() sameIn fragment.arguments.toMap()
                             }
                             ?.id ?: 0
