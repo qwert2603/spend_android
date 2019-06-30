@@ -51,7 +51,7 @@ class RecordsListItemTest {
         val categories = (0..500)
                 .map { randomCategory() }
 
-        val recordsListItems = List(100000) { randomRecord(categories) }
+        val recordsListItems = List(400000) { randomRecord(categories) }
                 .sortAsFromRepo()
                 .toRecordItemsList(
                         showInfo = ShowInfo(true, true, true, true, true),
@@ -73,13 +73,13 @@ class RecordsListItemTest {
         val categories = (0..500)
                 .map { randomCategory() }
 
-        val recordsListItems = List(100000) { randomRecord(categories) }
+        val recordsListItems = List(400000) { randomRecord(categories) }
                 .sortAsFromRepo()
                 .toRecordItemsList(
                         showInfo = ShowInfo(true, true, true, true, true),
                         sortByValue = true,
                         showFilters = true,
-                        longSumPeriod = Days(30),
+                        longSumPeriod = Days(182),
                         shortSumPeriod = Minutes(1918),
                         recordsFilters = RecordsFilters("", null, null),
                         selectedRecordsUuids = hashSetOf()
