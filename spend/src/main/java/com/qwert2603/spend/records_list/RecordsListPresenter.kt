@@ -93,7 +93,11 @@ class RecordsListPresenter(
                                     oldList = prev.first,
                                     newList = current.first,
                                     id = RecordsListItem::idInList,
-                                    compareOrder = RecordsListItem.COMPARE_ORDER,//todo: if sortByValue==true, then compare by value DECS first.
+                                    compareOrder = if (current.second /* sortByValue */) {
+                                        RecordsListItem.COMPARE_ORDER_WITH_VALUE
+                                    } else {
+                                        RecordsListItem.COMPARE_ORDER
+                                    },
                                     isEqual = RecordsListItem.IS_EQUAL
                             )
                         } else {

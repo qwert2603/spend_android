@@ -30,6 +30,14 @@ interface RecordsListItem : IdentifiableLong {
             }
         }
 
+        val COMPARE_ORDER_WITH_VALUE = { r1: RecordsListItem, r2: RecordsListItem ->
+            if (r1 is Record && r2 is Record && r1.value != r2.value) {
+                r1.value.compareTo(r2.value).unaryMinus()
+            } else {
+                RecordsListItem.COMPARE_ORDER(r1, r2)
+            }
+        }
+
         private const val ID_IN_LIST_MULTIPLIER = 1_000_000_000_000L
 
         val IS_EQUAL = { r1: RecordsListItem, r2: RecordsListItem ->
