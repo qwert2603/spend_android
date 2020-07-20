@@ -8,6 +8,7 @@ object E {
         "serverTest" -> ServerTest
         "serverProd" -> ServerProd
         "serverMother" -> ServerMother
+        "serverAa" -> ServerAlexAnya
         else -> null!!
     }
 }
@@ -41,4 +42,9 @@ private object ServerProd : Env() {
 private object ServerMother : Env() {
     override val serverUrl = "http://192.168.1.26:8354"
     override val token = "56317ae2-437b-4798-b7da-31657d31b43e"
+}
+
+private object ServerAlexAnya : Env() {
+    override val serverUrl = "http://192.168.1.26:8354"
+    override val token = "e25a41b8-5457-4b2e-a8c6-1b5a9d96ef6c"
 }

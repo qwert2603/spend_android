@@ -74,6 +74,11 @@ android {
             applicationIdSuffix ".serverMother"
             versionNameSuffix "-serverMother"
         }
+        serverAa {
+            dimension "server"
+            applicationIdSuffix ".serverAlexAnya"
+            versionNameSuffix "-serverAlexAnya"
+        }
 
         forTesting {
             dimension "aim"
