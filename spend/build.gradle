@@ -5,6 +5,10 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+static def stringField(String s) {
+    return '"' + s + '"'
+}
+
 android {
     signingConfigs {
         config {
@@ -63,21 +67,25 @@ android {
             dimension "server"
             applicationIdSuffix ".serverTest"
             versionNameSuffix "-serverTest"
+            buildConfigField "String", "SERVER_TOKEN", stringField(token_spend_test)
         }
         serverProd {
             dimension "server"
             applicationIdSuffix ".serverProd"
             versionNameSuffix "-serverProd"
+            buildConfigField "String", "SERVER_TOKEN", stringField(token_spend_prod)
         }
         serverMother {
             dimension "server"
             applicationIdSuffix ".serverMother"
             versionNameSuffix "-serverMother"
+            buildConfigField "String", "SERVER_TOKEN", stringField(token_spend_mother)
         }
         serverAa {
             dimension "server"
             applicationIdSuffix ".serverAlexAnya"
             versionNameSuffix "-serverAlexAnya"
+            buildConfigField "String", "SERVER_TOKEN", stringField(token_spend_aa)
         }
 
         forTesting {
