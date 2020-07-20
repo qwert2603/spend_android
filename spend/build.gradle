@@ -24,8 +24,8 @@ android {
         applicationId "com.qwert2603.spend"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 55
-        versionName "4.13.1"
+        versionCode 56
+        versionName "4.13.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "Long", "BIULD_TIME", System.currentTimeMillis() + "L"
         buildConfigField "String", "BIULD_HASH", '"' + UUID.randomUUID().toString() + '"'
