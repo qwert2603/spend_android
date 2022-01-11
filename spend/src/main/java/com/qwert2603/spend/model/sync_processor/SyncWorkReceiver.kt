@@ -19,11 +19,17 @@ class SyncWorkReceiver : BroadcastReceiver() {
     companion object {
         fun scheduleNext(appContext: Context) {
             val alarmManager = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val pendingIntent = PendingIntent.getBroadcast(
+                appContext,
+                0,
+                Intent(appContext, SyncWorkReceiver::class.java),
+                PendingIntent.FLAG_IMMUTABLE,
+            )
             AlarmManagerCompat.setAndAllowWhileIdle(
-                    alarmManager,
-                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + 42 * Const.MILLIS_PER_MINUTE,
-                    PendingIntent.getBroadcast(appContext, 0, Intent(appContext, SyncWorkReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+                alarmManager,
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 42 * Const.MILLIS_PER_MINUTE,
+                pendingIntent
             )
         }
     }
@@ -36,13 +42,13 @@ class SyncWorkReceiver : BroadcastReceiver() {
         scheduleNext(context.applicationContext)
 
         val workRequest = OneTimeWorkRequest.Builder(SyncWorker::class.java)
-                .build()
+            .build()
 
         WorkManager.getInstance(context)
-                .enqueueUniqueWork(
-                        SpendApplication.UNIQUE_WORK_NAME,
-                        ExistingWorkPolicy.REPLACE,
-                        workRequest
-                )
+            .enqueueUniqueWork(
+                SpendApplication.UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
     }
 }

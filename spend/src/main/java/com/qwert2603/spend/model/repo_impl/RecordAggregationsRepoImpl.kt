@@ -214,8 +214,8 @@ class RecordAggregationsRepoImpl(
                             RecordCategoryAggregation(
                                     recordTypeId = recordTypeId,
                                     recordCategory = category,
-                                    lastRecord = kinds.map { it.lastRecord }.maxBy { it.dateTime() },
-                                    recordsCount = kinds.sumBy { it.recordsCount },
+                                    lastRecord = kinds.map { it.lastRecord }.maxByOrNull { it.dateTime() },
+                                    recordsCount = kinds.sumOf { it.recordsCount },
                                     totalValue = kinds.sumByLong { it.totalValue }
                             )
                         }

@@ -92,7 +92,12 @@ class SyncWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         createNotificationChannel()
 
         val intent = Intent(applicationContext, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification = NotificationCompat
                 .Builder(
                         applicationContext,

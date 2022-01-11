@@ -186,7 +186,7 @@ abstract class RecordsDao {
 
         val dateMultiplier = 10L * 100 * 100
         val lastRecord = recordsToCombine
-                .maxBy { it.date * dateMultiplier + if (it.time != null) it.time + 100 * 100 else 0 }!!
+                .maxByOrNull { it.date * dateMultiplier + if (it.time != null) it.time + 100 * 100 else 0 }!!
 
         val combinedRecord = RecordTable(
                 uuid = newRecordUuid,

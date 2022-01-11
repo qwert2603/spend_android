@@ -3,9 +3,10 @@ package com.qwert2603.spend
 import android.app.Application
 import android.content.Context
 import android.os.Looper
+import androidx.work.Configuration
 import androidx.work.WorkManager
-import com.crashlytics.android.Crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.qwert2603.andrlib.util.LogUtils
 import com.qwert2603.spend.di.*
 import com.qwert2603.spend.env.E
@@ -36,11 +37,11 @@ class SpendApplication : Application() {
             androidContext(this@SpendApplication)
 
             modules(listOf(
-                    schedulersModule,
-                    modelModule,
-                    repoModule,
-                    interactorsModule,
-                    presentersModule
+                schedulersModule,
+                modelModule,
+                repoModule,
+                interactorsModule,
+                presentersModule
             ))
         }
 
@@ -63,9 +64,11 @@ class SpendApplication : Application() {
 //        listModelChangerInstance = ListModelChangerImpl()
 
         setupLogs()
-        Crashlytics.setString("launch_time", DateUtils.getNow().toString())
-        FirebaseAnalytics.getInstance(this).setUserProperty("version_code", BuildConfig.VERSION_CODE.toString())
+        FirebaseCrashlytics.getInstance().setCustomKey("launch_time", DateUtils.getNow().toString())
+        FirebaseAnalytics.getInstance(this)
+            .setUserProperty("version_code", BuildConfig.VERSION_CODE.toString())
 
+        WorkManager.initialize(this, Configuration.Builder().build())
         SyncWorkReceiver.scheduleNext(this)
         logSyncWorker(this)
     }
@@ -78,8 +81,8 @@ class SpendApplication : Application() {
 
         private fun logSyncWorker(context: Context) {
             WorkManager.getInstance(context)
-                    .getWorkInfosForUniqueWorkLiveData(UNIQUE_WORK_NAME)
-                    .observeForever { LogUtils.d { "SyncWorker observeForever $it" } }
+                .getWorkInfosForUniqueWorkLiveData(UNIQUE_WORK_NAME)
+                .observeForever { LogUtils.d { "SyncWorker observeForever $it" } }
         }
 
         private fun setupLogs() {
@@ -95,8 +98,10 @@ class SpendApplication : Application() {
             }
             LogUtils.onErrorLogged = { tag, msg, t ->
                 LogUtils.d("onErrorLogged") { "$tag $msg $t" }
-                Crashlytics.log("$tag $msg $t")
-                Crashlytics.logException(t)
+                FirebaseCrashlytics.getInstance().log("$tag $msg $t")
+                if (t != null) {
+                    FirebaseCrashlytics.getInstance().recordException(t)
+                }
             }
         }
     }
